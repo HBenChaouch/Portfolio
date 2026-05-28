@@ -1,0 +1,2486 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Sidetrade · Valuation Football Field</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,400;6..72,500;6..72,600;6..72,700&family=IBM+Plex+Sans:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    /* surfaces */
+    --bg: #FAF7F2;
+    --bg-alt: #F3EEE4;
+    --bg-card: #FFFFFE;
+    --bg-quiet: #F7F3EB;
+    /* ink */
+    --ink: #161D2B;
+    --ink-2: #2A3142;
+    --ink-3: #5B6271;
+    --ink-4: #8A8F9C;
+    --line: rgba(22,29,43,0.10);
+    --line-strong: rgba(22,29,43,0.22);
+    /* accents */
+    --bordeaux: #7A1F2B;
+    --bordeaux-soft: #A24452;
+    --bordeaux-bg: #F4E7E7;
+    --bear: #6E7480;
+    --bear-bg: #ECEBE8;
+    --bull: #2D5C3D;
+    --bull-bg: #E4ECE5;
+    --market: #8C6A1A; /* dark gold for current market reference */
+
+    --serif: "Newsreader", "Source Serif Pro", Georgia, serif;
+    --sans: "IBM Plex Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    --mono: "IBM Plex Mono", ui-monospace, Menlo, monospace;
+
+    --maxw: 1100px;
+    --pad: 28px;
+  }
+
+  /* reset */
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: var(--sans);
+    font-size: 15px;
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+    font-feature-settings: "kern", "liga", "tnum";
+  }
+  a { color: inherit; }
+  ::selection { background: var(--bordeaux); color: var(--bg); }
+
+  .num, table td.num, .figure { font-feature-settings: "tnum"; font-variant-numeric: tabular-nums; }
+
+  /* Sticky nav */
+  .nav {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    background: rgba(250,247,242,0.92);
+    backdrop-filter: saturate(140%) blur(8px);
+    -webkit-backdrop-filter: saturate(140%) blur(8px);
+    border-bottom: 1px solid var(--line);
+  }
+  .nav-inner {
+    max-width: var(--maxw);
+    margin: 0 auto;
+    padding: 14px var(--pad);
+    display: flex;
+    align-items: center;
+    gap: 24px;
+  }
+  .brand {
+    font-family: var(--serif);
+    font-weight: 600;
+    font-size: 18px;
+    letter-spacing: 0.01em;
+    display: flex; align-items: baseline; gap: 8px;
+  }
+  .brand .tick {
+    font-family: var(--mono);
+    font-size: 10.5px;
+    color: var(--ink-3);
+    letter-spacing: 0.08em;
+  }
+  .nav-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px 2px;
+    margin-left: auto;
+    font-size: 12.5px;
+    letter-spacing: 0.04em;
+  }
+  .nav-links a {
+    color: var(--ink-3);
+    text-decoration: none;
+    padding: 6px 10px;
+    border-radius: 2px;
+    text-transform: uppercase;
+    transition: color .15s, background .15s;
+  }
+  .nav-links a:hover { color: var(--ink); background: var(--bg-alt); }
+  .nav-links a.active { color: var(--bordeaux); }
+
+  /* layout */
+  main { display: block; }
+  section.block {
+    max-width: var(--maxw);
+    margin: 0 auto;
+    padding: 64px var(--pad) 8px;
+  }
+  section.block.tight { padding-top: 36px; }
+  .eyebrow {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--bordeaux);
+    margin-bottom: 14px;
+  }
+  h1, h2, h3 { font-family: var(--serif); font-weight: 600; letter-spacing: -0.005em; margin: 0; color: var(--ink); }
+  h1 { font-size: 56px; line-height: 1.05; font-weight: 500; letter-spacing: -0.015em; }
+  h2 { font-size: 32px; line-height: 1.15; font-weight: 500; }
+  h3 { font-size: 18px; line-height: 1.3; font-weight: 600; }
+  p { margin: 0 0 12px; color: var(--ink-2); }
+  p.lede { font-size: 18px; line-height: 1.5; color: var(--ink-2); max-width: 740px; }
+  small, .caption { font-size: 12px; color: var(--ink-3); }
+  cite, .src {
+    display: block;
+    font-style: italic;
+    font-size: 11.5px;
+    color: var(--ink-4);
+    margin-top: 6px;
+  }
+
+  hr.rule {
+    border: 0;
+    border-top: 1px solid var(--line);
+    margin: 48px 0 0;
+  }
+
+  /* HERO */
+  .hero {
+    max-width: var(--maxw);
+    margin: 0 auto;
+    padding: 64px var(--pad) 28px;
+  }
+  .hero .meta {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+    display: flex;
+    gap: 18px;
+    align-items: center;
+    margin-bottom: 22px;
+  }
+  .hero .meta .dot { width: 5px; height: 5px; border-radius: 50%; background: var(--bordeaux); display: inline-block; }
+  .hero h1 .accent { color: var(--bordeaux); font-style: italic; font-weight: 500; }
+  .hero .sub {
+    margin-top: 22px;
+    font-size: 18px;
+    line-height: 1.5;
+    max-width: 760px;
+    color: var(--ink-2);
+  }
+  .hero .keystats {
+    margin-top: 38px;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0;
+    border-top: 1px solid var(--line);
+    border-bottom: 1px solid var(--line);
+  }
+  .keystats .cell {
+    padding: 18px 18px 18px 0;
+    border-right: 1px solid var(--line);
+  }
+  .keystats .cell:last-child { border-right: 0; padding-right: 0; }
+  .keystats .k { font-family: var(--mono); font-size: 10.5px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink-3); margin-bottom: 8px; }
+  .keystats .v { font-family: var(--serif); font-size: 28px; font-weight: 500; line-height: 1; color: var(--ink); }
+  .keystats .d { font-size: 12px; color: var(--ink-3); margin-top: 6px; font-feature-settings: "tnum"; }
+  .keystats .d.up { color: var(--bull); }
+
+  /* Section heads */
+  .sec-head {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 24px;
+    margin-bottom: 24px;
+    border-bottom: 1px solid var(--line);
+    padding-bottom: 14px;
+  }
+  .sec-head .left .num-tag {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.18em;
+    color: var(--bordeaux);
+    margin-bottom: 6px;
+  }
+  .sec-head h2 { font-size: 28px; }
+  .sec-head .right { font-size: 12.5px; color: var(--ink-3); text-align: right; max-width: 360px; }
+
+  /* Tables */
+  table.data {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13.5px;
+  }
+  table.data th, table.data td {
+    text-align: left;
+    padding: 11px 14px;
+    border-bottom: 1px solid var(--line);
+    vertical-align: top;
+  }
+  table.data thead th {
+    background: var(--bg-quiet);
+    font-weight: 500;
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+    border-bottom: 1px solid var(--line-strong);
+  }
+  table.data tbody tr:hover { background: var(--bg-quiet); }
+  table.data td.num, table.data th.num { text-align: right; font-variant-numeric: tabular-nums; }
+  table.data .label { color: var(--ink-2); }
+  table.data .strong { font-weight: 600; color: var(--ink); }
+  table.data tr.total td { background: var(--bg-alt); font-weight: 600; }
+  table.data .pill {
+    display: inline-block;
+    font-family: var(--mono);
+    font-size: 10px;
+    padding: 2px 6px;
+    border-radius: 2px;
+    background: var(--bordeaux-bg);
+    color: var(--bordeaux);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin-left: 6px;
+  }
+  .star { color: var(--bordeaux); }
+
+  /* Grid */
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 28px; }
+  .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
+
+  /* Cards */
+  .card {
+    background: var(--bg-card);
+    border: 1px solid var(--line);
+    padding: 22px;
+  }
+  .card h3 { margin-bottom: 10px; }
+  .card .kv {
+    display: flex; justify-content: space-between; gap: 12px;
+    padding: 6px 0;
+    border-bottom: 1px dashed var(--line);
+    font-size: 13.5px;
+  }
+  .card .kv:last-child { border-bottom: 0; }
+  .card .kv .k { color: var(--ink-3); }
+  .card .kv .v { font-variant-numeric: tabular-nums; color: var(--ink); font-weight: 500; }
+
+  /* Scenario switch */
+  .scenario-switch {
+    display: inline-flex;
+    border: 1px solid var(--line-strong);
+    background: var(--bg-card);
+    border-radius: 2px;
+    overflow: hidden;
+    font-family: var(--mono);
+    font-size: 12px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+  .scenario-switch button {
+    appearance: none;
+    border: 0;
+    background: transparent;
+    color: var(--ink-3);
+    padding: 10px 22px;
+    cursor: pointer;
+    border-right: 1px solid var(--line);
+    font-family: inherit;
+    font-size: inherit;
+    letter-spacing: inherit;
+    transition: background .15s, color .15s;
+  }
+  .scenario-switch button:last-child { border-right: 0; }
+  .scenario-switch button:hover { color: var(--ink); }
+  .scenario-switch button[data-active="true"][data-s="bear"] { background: var(--bear); color: white; }
+  .scenario-switch button[data-active="true"][data-s="base"] { background: var(--bordeaux); color: white; }
+  .scenario-switch button[data-active="true"][data-s="bull"] { background: var(--bull); color: white; }
+
+  /* tiny toggle */
+  .toggle-row {
+    display: inline-flex;
+    border: 1px solid var(--line-strong);
+    background: var(--bg-card);
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+  .toggle-row button {
+    appearance: none; border: 0; background: transparent; color: var(--ink-3);
+    padding: 8px 14px; cursor: pointer;
+    border-right: 1px solid var(--line);
+    font: inherit; letter-spacing: inherit;
+  }
+  .toggle-row button:last-child { border-right: 0; }
+  .toggle-row button[aria-pressed="true"] { background: var(--ink); color: var(--bg); }
+
+  /* Narrative card */
+  .narrative {
+    margin-top: 24px;
+    border-left: 3px solid var(--bordeaux);
+    padding: 16px 20px;
+    background: var(--bg-quiet);
+  }
+  .narrative[data-s="bear"] { border-left-color: var(--bear); }
+  .narrative[data-s="base"] { border-left-color: var(--bordeaux); }
+  .narrative[data-s="bull"] { border-left-color: var(--bull); }
+  .narrative h4 {
+    margin: 0 0 8px;
+    font-family: var(--serif);
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--ink);
+  }
+  .narrative h4 .tag {
+    font-family: var(--mono);
+    font-size: 10.5px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    padding: 2px 7px;
+    margin-right: 10px;
+    color: var(--bg);
+    vertical-align: 2px;
+  }
+  .narrative[data-s="bear"] h4 .tag { background: var(--bear); }
+  .narrative[data-s="base"] h4 .tag { background: var(--bordeaux); }
+  .narrative[data-s="bull"] h4 .tag { background: var(--bull); }
+  .narrative p { font-size: 14px; line-height: 1.55; color: var(--ink-2); margin: 0; }
+
+  /* Big result */
+  .result-strip {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0;
+    border: 1px solid var(--line-strong);
+    background: var(--bg-card);
+    margin-top: 20px;
+  }
+  .result-strip .cell {
+    padding: 20px 20px;
+    border-right: 1px solid var(--line);
+  }
+  .result-strip .cell:last-child { border-right: 0; }
+  .result-strip .k {
+    font-family: var(--mono);
+    font-size: 10.5px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+    margin-bottom: 8px;
+  }
+  .result-strip .v {
+    font-family: var(--serif);
+    font-size: 30px;
+    font-weight: 500;
+    line-height: 1;
+    color: var(--ink);
+    font-variant-numeric: tabular-nums;
+  }
+  .result-strip .v.accent { color: var(--bordeaux); }
+  .result-strip .d { font-size: 11.5px; color: var(--ink-3); margin-top: 6px; font-variant-numeric: tabular-nums; }
+
+  /* Expandable methodology */
+  details.method {
+    margin-top: 24px;
+    border-top: 1px solid var(--line);
+    border-bottom: 1px solid var(--line);
+  }
+  details.method > summary {
+    list-style: none;
+    cursor: pointer;
+    padding: 14px 0;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-family: var(--mono);
+    font-size: 11.5px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+  }
+  details.method > summary::-webkit-details-marker { display: none; }
+  details.method > summary::before {
+    content: "+";
+    width: 18px; height: 18px;
+    display: inline-flex; align-items: center; justify-content: center;
+    border: 1px solid var(--line-strong);
+    color: var(--ink);
+    font-family: var(--sans);
+    font-size: 14px;
+    line-height: 1;
+  }
+  details.method[open] > summary::before { content: "–"; background: var(--ink); color: var(--bg); border-color: var(--ink); }
+  details.method[open] > summary { color: var(--ink); }
+  details.method > .body {
+    padding: 8px 0 22px;
+    color: var(--ink-2);
+    font-size: 13.5px;
+    line-height: 1.6;
+    max-width: 820px;
+  }
+  details.method .body p { font-size: 13.5px; }
+  details.method .body ol { padding-left: 18px; }
+  details.method .body ol li { margin-bottom: 8px; }
+  details.method .body code {
+    font-family: var(--mono); font-size: 12px;
+    background: var(--bg-alt); padding: 1px 6px;
+  }
+  details.method .body pre {
+    font-family: var(--mono); font-size: 12px;
+    background: var(--bg-alt); padding: 12px; overflow: auto;
+    border-left: 2px solid var(--bordeaux);
+  }
+
+  /* Tooltips */
+  .tip {
+    position: relative;
+    cursor: help;
+    border-bottom: 1px dotted var(--line-strong);
+  }
+  .tip > .tip-body {
+    position: absolute;
+    bottom: calc(100% + 8px);
+    left: 0;
+    width: 280px;
+    background: var(--ink);
+    color: var(--bg);
+    padding: 10px 12px;
+    font-size: 12px;
+    line-height: 1.45;
+    z-index: 30;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity .15s;
+    box-shadow: 0 6px 24px rgba(0,0,0,0.15);
+  }
+  .tip > .tip-body::after {
+    content: "";
+    position: absolute;
+    top: 100%; left: 14px;
+    border: 6px solid transparent;
+    border-top-color: var(--ink);
+  }
+  .tip:hover > .tip-body, .tip:focus-within > .tip-body { opacity: 1; }
+  .tip .tip-k { color: var(--bordeaux-soft); font-family: var(--mono); font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; display: block; margin-bottom: 4px; }
+  .tip .tip-v { color: white; font-variant-numeric: tabular-nums; font-weight: 500; margin-top: 4px; display: block; }
+
+  /* Market reference card */
+  .market-card {
+    background: linear-gradient(180deg, var(--bg-card), var(--bg-quiet));
+    border: 1px solid var(--line-strong);
+    border-top: 3px solid var(--market);
+    padding: 24px;
+  }
+  .market-card .meta-row {
+    font-family: var(--mono);
+    font-size: 10.5px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--market);
+    display: flex; gap: 14px; align-items: center;
+    margin-bottom: 14px;
+  }
+  .market-card .meta-row .placeholder-flag {
+    background: var(--market); color: white; padding: 2px 6px; font-weight: 500;
+  }
+  .market-card .grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 0;
+    border-top: 1px solid var(--line);
+    border-bottom: 1px solid var(--line);
+    margin: 4px 0 14px;
+  }
+  .market-card .grid .cell { padding: 14px 14px 14px 0; border-right: 1px solid var(--line); }
+  .market-card .grid .cell:last-child { border-right: 0; }
+  .market-card .grid .cell:first-child { padding-left: 0; }
+  .market-card .k { font-family: var(--mono); font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink-3); margin-bottom: 6px; }
+  .market-card .v { font-family: var(--serif); font-size: 24px; font-weight: 500; line-height: 1; font-variant-numeric: tabular-nums; }
+  .market-card .v.upside { color: var(--bull); }
+  .market-card .note { font-size: 12px; color: var(--ink-3); font-style: italic; }
+
+  /* Football field */
+  .ff-wrap { margin-top: 18px; }
+  .ff {
+    background: var(--bg-card);
+    border: 1px solid var(--line);
+    padding: 32px 36px 24px;
+    position: relative;
+  }
+  .ff-axis {
+    display: flex;
+    justify-content: space-between;
+    font-family: var(--mono);
+    font-size: 10.5px;
+    color: var(--ink-3);
+    letter-spacing: 0.06em;
+    margin-top: 6px;
+  }
+  .ff-row {
+    display: grid;
+    grid-template-columns: 130px 1fr 100px;
+    gap: 14px;
+    align-items: center;
+    padding: 10px 0;
+  }
+  .ff-row .label {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-2);
+  }
+  .ff-row .label .sub { display: block; color: var(--ink-4); font-size: 9.5px; margin-top: 3px; letter-spacing: 0.08em; }
+  .ff-row .range-track {
+    position: relative;
+    height: 22px;
+  }
+  .ff-row .range-bar {
+    position: absolute;
+    top: 6px;
+    height: 10px;
+    background: var(--bordeaux);
+    transition: left .55s cubic-bezier(.22,.61,.36,1), width .55s cubic-bezier(.22,.61,.36,1), background .25s;
+  }
+  .ff-row[data-method="trading"] .range-bar { background: var(--ink-2); }
+  .ff-row[data-method="transaction"] .range-bar { background: var(--bordeaux-soft); }
+  .ff-row[data-method="lbo"] .range-bar { background: #4a5568; }
+  .ff-row .base-tick {
+    position: absolute;
+    top: 0;
+    width: 2px;
+    height: 22px;
+    background: var(--ink);
+    transition: left .55s cubic-bezier(.22,.61,.36,1);
+  }
+  .ff-row .endpoint {
+    position: absolute;
+    top: 8px;
+    font-family: var(--mono);
+    font-size: 10.5px;
+    color: var(--ink-3);
+    font-variant-numeric: tabular-nums;
+    transition: left .55s cubic-bezier(.22,.61,.36,1);
+    transform: translateY(-2px);
+  }
+  .ff-row .endpoint.left { transform: translate(-100%, -2px); padding-right: 6px; }
+  .ff-row .endpoint.right { padding-left: 6px; }
+  .ff-row .base-val {
+    text-align: right;
+    font-family: var(--mono);
+    font-size: 13px;
+    font-variant-numeric: tabular-nums;
+    color: var(--ink);
+    font-weight: 500;
+  }
+  .ff-row .base-val .euro { color: var(--ink-3); font-weight: 400; }
+
+  /* vertical reference lines layer */
+  .ff-canvas {
+    position: relative;
+    margin-top: 12px;
+  }
+  .ff-canvas .ref {
+    position: absolute;
+    top: 0; bottom: 0;
+    width: 1px;
+    z-index: 1;
+    pointer-events: none;
+  }
+  .ff-canvas .ref.fair { background: var(--bordeaux); }
+  .ff-canvas .ref.control { background: var(--bull); }
+  .ff-canvas .ref.market { background: var(--market); border-left: 1px dashed var(--market); width: 0; }
+  .ff-canvas .ref-label {
+    position: absolute;
+    transform: translateX(-50%);
+    font-family: var(--mono);
+    font-size: 9.5px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    white-space: nowrap;
+    padding: 2px 6px;
+    background: var(--bg-card);
+    border: 1px solid currentColor;
+    z-index: 2;
+  }
+  /* Stagger label rows so close references (market €237 and fair €295) don't collide */
+  .ff-canvas .ref-label.market  { top: -42px; color: var(--market); }
+  .ff-canvas .ref-label.fair    { top: -20px; color: var(--bordeaux); }
+  .ff-canvas .ref-label.control { top: -20px; color: var(--bull); }
+  /* Tiny connector tick from label to its line for the lifted row */
+  .ff-canvas .ref-label.market::after {
+    content: "";
+    position: absolute;
+    left: 50%;
+    top: 100%;
+    width: 1px;
+    height: 18px;
+    background: var(--market);
+    transform: translateX(-50%);
+  }
+
+  .ff-rows { padding-top: 50px; }
+
+  /* Footer */
+  footer.site {
+    border-top: 1px solid var(--line);
+    margin-top: 80px;
+    padding: 48px var(--pad) 64px;
+    background: var(--bg-alt);
+  }
+  footer.site .inner {
+    max-width: var(--maxw);
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 1.2fr 1fr 1fr;
+    gap: 32px;
+  }
+  footer.site h4 {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+    margin: 0 0 12px;
+    font-weight: 500;
+  }
+  footer.site .name {
+    font-family: var(--serif);
+    font-size: 22px;
+    font-weight: 500;
+    margin-bottom: 4px;
+  }
+  footer.site p { font-size: 13px; color: var(--ink-2); }
+  footer.site .disclaimer { font-size: 11px; color: var(--ink-4); font-style: italic; margin-top: 24px; max-width: 680px; }
+
+  /* Two-up content layout */
+  .twoup {
+    display: grid;
+    grid-template-columns: 1.4fr 1fr;
+    gap: 32px;
+    margin-top: 8px;
+  }
+  .twoup .right .label-h {
+    font-family: var(--mono);
+    font-size: 10.5px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+    margin-bottom: 10px;
+  }
+
+  /* Inline KPI list */
+  .kpi-list {
+    list-style: none;
+    padding: 0; margin: 0;
+    border-top: 1px solid var(--line);
+  }
+  .kpi-list li {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--line);
+    font-size: 13.5px;
+    gap: 12px;
+  }
+  .kpi-list li .lbl { color: var(--ink-3); }
+  .kpi-list li .val { font-variant-numeric: tabular-nums; color: var(--ink); font-weight: 500; }
+
+  /* Caveats */
+  .caveats {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 28px;
+    margin-top: 24px;
+  }
+  .caveats h3 {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--bordeaux);
+    margin-bottom: 12px;
+    font-weight: 500;
+  }
+  .caveats ul { margin: 0; padding-left: 0; list-style: none; }
+  .caveats li {
+    padding: 10px 0 10px 18px;
+    border-bottom: 1px solid var(--line);
+    font-size: 13px;
+    color: var(--ink-2);
+    line-height: 1.55;
+    position: relative;
+  }
+  .caveats li::before {
+    content: "—";
+    color: var(--bordeaux);
+    position: absolute;
+    left: 0; top: 10px;
+  }
+
+  /* Highlight changing values */
+  .figure.flash { animation: flash 0.6s ease-out; }
+  @keyframes flash {
+    0%   { background: rgba(122,31,43,0.18); }
+    100% { background: transparent; }
+  }
+
+  /* ───────── v2: Scenario cards ───────── */
+  .scenario-cards {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    margin-bottom: 8px;
+  }
+  .sc-card {
+    appearance: none;
+    background: var(--bg-card);
+    border: 1px solid var(--line);
+    border-left: 3px solid var(--line-strong);
+    padding: 18px 20px;
+    text-align: left;
+    cursor: pointer;
+    font-family: var(--sans);
+    color: var(--ink);
+    transition: background .25s ease, border-color .25s ease;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+  .sc-card:hover { background: var(--bg-quiet); }
+  .sc-card:focus-visible { outline: 2px solid var(--bordeaux); outline-offset: 2px; }
+  .sc-card .sc-row { display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; }
+  .sc-card .sc-tag {
+    font-family: var(--serif);
+    font-size: 22px;
+    font-weight: 500;
+    line-height: 1;
+    color: var(--ink-3);
+    transition: color .25s ease;
+  }
+  .sc-card .sc-sub {
+    font-family: var(--mono);
+    font-size: 10.5px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-4);
+  }
+  .sc-card .sc-ev {
+    font-family: var(--serif);
+    font-size: 28px;
+    font-weight: 500;
+    color: var(--ink-3);
+    font-variant-numeric: tabular-nums;
+    line-height: 1;
+    transition: color .25s ease;
+  }
+  /* Active states */
+  .sc-card[data-active="true"][data-s="bear"]  { background: var(--bear-bg); border-left-color: var(--bear); }
+  .sc-card[data-active="true"][data-s="bear"]  .sc-tag,
+  .sc-card[data-active="true"][data-s="bear"]  .sc-ev { color: var(--bear); }
+  .sc-card[data-active="true"][data-s="base"]  { background: var(--bordeaux-bg); border-left-color: var(--bordeaux); }
+  .sc-card[data-active="true"][data-s="base"]  .sc-tag,
+  .sc-card[data-active="true"][data-s="base"]  .sc-ev { color: var(--bordeaux); }
+  .sc-card[data-active="true"][data-s="bull"]  { background: var(--bull-bg); border-left-color: var(--bull); }
+  .sc-card[data-active="true"][data-s="bull"]  .sc-tag,
+  .sc-card[data-active="true"][data-s="bull"]  .sc-ev { color: var(--bull); }
+
+  /* ───────── v2: Trajectory chart ───────── */
+  .chart-wrap {
+    background: var(--bg-card);
+    border: 1px solid var(--line);
+    padding: 24px 26px 18px;
+    margin-top: 22px;
+  }
+  .chart-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    gap: 16px;
+    margin-bottom: 14px;
+    flex-wrap: wrap;
+  }
+  .chart-head .left h3 { margin: 0 0 4px; }
+  .chart-head .left .sub { font-size: 12px; color: var(--ink-3); }
+  .chart-legend {
+    display: flex;
+    gap: 18px;
+    font-family: var(--mono);
+    font-size: 10.5px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+  }
+  .chart-legend .swatch {
+    display: inline-block;
+    width: 14px; height: 3px;
+    vertical-align: middle;
+    margin-right: 6px;
+    background: var(--ink);
+  }
+  .chart-legend .swatch.rev { background: #2C3953; }
+  .chart-legend .swatch.ebitda { background: var(--bordeaux); }
+  .chart-svg { width: 100%; height: 300px; display: block; overflow: visible; }
+  .chart-svg .grid-line { stroke: var(--line); stroke-width: 1; }
+  .chart-svg .axis-text { font-family: var(--mono); font-size: 10px; fill: var(--ink-3); letter-spacing: 0.06em; }
+  .chart-svg .axis-text.year { font-size: 11px; }
+  .chart-svg .rev-area { fill: rgba(44,57,83,0.10); transition: d 0.45s cubic-bezier(.22,.61,.36,1); }
+  .chart-svg .rev-line { fill: none; stroke: #2C3953; stroke-width: 2; transition: d 0.45s cubic-bezier(.22,.61,.36,1); }
+  .chart-svg .ebitda-line { fill: none; stroke: var(--bordeaux); stroke-width: 1.75; stroke-dasharray: none; transition: d 0.45s cubic-bezier(.22,.61,.36,1); }
+  .chart-svg .pt { transition: cx 0.45s cubic-bezier(.22,.61,.36,1), cy 0.45s cubic-bezier(.22,.61,.36,1); }
+  .chart-svg .pt.rev { fill: #2C3953; }
+  .chart-svg .pt.ebitda { fill: var(--bordeaux); }
+  .chart-svg .pt-hit { fill: transparent; cursor: pointer; }
+  .chart-svg .end-label {
+    font-family: var(--mono); font-size: 11px; font-weight: 500;
+    transition: x 0.45s, y 0.45s;
+  }
+  .chart-svg .end-label.rev { fill: #2C3953; }
+  .chart-svg .end-label.ebitda { fill: var(--bordeaux); }
+  .chart-tip {
+    position: absolute;
+    background: var(--ink);
+    color: var(--bg);
+    padding: 10px 12px;
+    font-size: 12px;
+    line-height: 1.5;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity .15s;
+    z-index: 10;
+    min-width: 160px;
+  }
+  .chart-tip.on { opacity: 1; }
+  .chart-tip .y { font-family: var(--mono); font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--bordeaux-soft); margin-bottom: 6px; }
+  .chart-tip .row { display: flex; justify-content: space-between; gap: 16px; font-variant-numeric: tabular-nums; }
+  .chart-tip .row .lbl { color: rgba(255,255,255,0.7); }
+
+  /* ───────── v2: Sensitivity table ───────── */
+  .sensi-wrap { margin-top: 32px; }
+  .sensi-head { display: flex; justify-content: space-between; align-items: flex-end; gap: 16px; margin-bottom: 12px; flex-wrap: wrap; }
+  .sensi-head .left h3 { margin: 0 0 4px; }
+  .sensi-head .left .sub { font-size: 12px; color: var(--ink-3); max-width: 540px; }
+  .sensi-head .right { font-family: var(--mono); font-size: 10.5px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-3); }
+  .sensi {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+    font-variant-numeric: tabular-nums;
+    background: var(--bg-card);
+    border: 1px solid var(--line);
+  }
+  .sensi th, .sensi td {
+    padding: 10px 12px;
+    text-align: right;
+    border-right: 1px solid var(--line);
+    border-bottom: 1px solid var(--line);
+  }
+  .sensi th:last-child, .sensi td:last-child { border-right: 0; }
+  .sensi tr:last-child td { border-bottom: 0; }
+  .sensi thead th {
+    background: var(--bg-quiet);
+    font-family: var(--mono);
+    font-size: 10.5px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+    font-weight: 500;
+  }
+  .sensi th.corner, .sensi td.row-h {
+    text-align: left;
+    background: var(--bg-quiet);
+    font-family: var(--mono);
+    font-size: 10.5px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+    font-weight: 500;
+  }
+  .sensi td.cell {
+    background: var(--bg-card);
+    color: var(--ink-2);
+  }
+  .sensi td.cell.center {
+    background: var(--bordeaux);
+    color: white;
+    font-weight: 600;
+    box-shadow: inset 0 0 0 2px var(--bordeaux);
+  }
+  .sensi td.cell .heat {
+    /* heat overlay applied via inline background */
+  }
+
+  /* ───────── v2: Football field axis fix ───────── */
+  .ff-canvas { padding-bottom: 4px; }
+  .ff-axis-row {
+    margin-top: 8px;
+    padding-top: 8px;
+    border-top: 1px dashed var(--line);
+  }
+  .ff-axis-row .ff-axis-inner {
+    position: relative;
+    height: 24px;
+  }
+  .ff-axis-row .tick {
+    position: absolute;
+    top: 0;
+    transform: translateX(-50%);
+    font-family: var(--mono);
+    font-size: 10.5px;
+    color: var(--ink-3);
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+  }
+  .ff-axis-row .tick::before {
+    content: "";
+    position: absolute;
+    top: -10px;
+    left: 50%;
+    width: 1px;
+    height: 5px;
+    background: var(--line-strong);
+    transform: translateX(-50%);
+  }
+  .ff-axis-row .tick.tick-accent.fair { color: var(--bordeaux); font-weight: 600; }
+  .ff-axis-row .tick.tick-accent.fair::before { background: var(--bordeaux); height: 9px; top: -12px; }
+  .ff-axis-row .tick.tick-accent.control { color: var(--bull); font-weight: 600; }
+  .ff-axis-row .tick.tick-accent.control::before { background: var(--bull); height: 9px; top: -12px; }
+  /* Hide the old simple axis flexbox — we keep the element but make it empty */
+  .ff-axis { display: none !important; }
+
+  /* ───────── v2: Waterfall EV → Equity ───────── */
+  .waterfall-wrap {
+    margin-top: 24px;
+    background: var(--bg-card);
+    border: 1px solid var(--line);
+    padding: 26px 28px 22px;
+  }
+  .waterfall-svg { width: 100%; height: auto; display: block; overflow: visible; }
+  .waterfall-svg .wf-bar { transition: fill .2s; }
+  .waterfall-svg .wf-bar.ev { fill: var(--bordeaux); }
+  .waterfall-svg .wf-bar.deduct { fill: var(--bear); }
+  .waterfall-svg .wf-bar.equity { fill: var(--bordeaux); opacity: 0.85; }
+  .waterfall-svg .wf-bar.equity-outline { fill: none; stroke: var(--bordeaux); stroke-width: 1.5; stroke-dasharray: 3 3; }
+  .waterfall-svg .wf-connector { stroke: var(--line-strong); stroke-width: 1; stroke-dasharray: 2 3; fill: none; }
+  .waterfall-svg .wf-label { font-family: var(--mono); font-size: 10.5px; letter-spacing: 0.08em; text-transform: uppercase; fill: var(--ink-3); }
+  .waterfall-svg .wf-value { font-family: "Newsreader", serif; font-size: 22px; font-weight: 500; fill: var(--ink); font-feature-settings: "tnum"; }
+  .waterfall-svg .wf-value.accent { fill: var(--bordeaux); }
+  .waterfall-svg .wf-divide { font-family: var(--mono); font-size: 10.5px; letter-spacing: 0.1em; text-transform: uppercase; fill: var(--ink-3); }
+  .waterfall-svg .wf-final { font-family: "Newsreader", serif; font-size: 36px; font-weight: 500; fill: var(--bordeaux); font-feature-settings: "tnum"; }
+  .waterfall-svg .wf-sub { font-family: var(--mono); font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; fill: var(--ink-3); }
+  .waterfall-svg .wf-arrow { stroke: var(--ink-3); stroke-width: 1; fill: none; }
+  .waterfall-svg .wf-deduct-line {
+    stroke: var(--bear); stroke-width: 1.25; fill: none; stroke-dasharray: 4 3;
+  }
+
+  /* mobile */
+  @media (max-width: 860px) {
+    .hero { padding: 40px 20px 16px; }
+    h1 { font-size: 38px; }
+    section.block { padding: 44px 20px 8px; }
+    .grid-2, .grid-3 { grid-template-columns: 1fr; }
+    .twoup { grid-template-columns: 1fr; }
+    .keystats { grid-template-columns: 1fr 1fr; }
+    .keystats .cell:nth-child(2n) { border-right: 0; }
+    .result-strip { grid-template-columns: 1fr 1fr; }
+    .result-strip .cell:nth-child(2n) { border-right: 0; }
+    .market-card .grid { grid-template-columns: 1fr 1fr; }
+    .market-card .grid .cell { border-right: 0; border-bottom: 1px solid var(--line); padding: 12px 0; }
+    .ff-row { grid-template-columns: 90px 1fr 80px; }
+    .nav-links { gap: 0; font-size: 10.5px; }
+    .nav-links a { padding: 6px 6px; }
+    footer.site .inner { grid-template-columns: 1fr; }
+    .caveats { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="nav">
+  <div class="nav-inner">
+    <span class="brand">Sidetrade · Valuation <span class="tick">ALBFR.PA</span></span>
+    <div class="nav-links">
+      <a href="#snapshot">Snapshot</a>
+      <a href="#market">Market</a>
+      <a href="#dcf">DCF</a>
+      <a href="#trading">Trading</a>
+      <a href="#transaction">Transaction</a>
+      <a href="#lbo">LBO</a>
+      <a href="#football">Football&nbsp;Field</a>
+    </div>
+  </div>
+</nav>
+
+<!-- HERO -->
+<header class="hero">
+  <div class="meta">
+    <span class="dot"></span>
+    <span>Independent valuation model · v1.0</span>
+    <span>·</span>
+    <span>Updated May 2026</span>
+  </div>
+  <h1>Sidetrade fair value converges around <span class="accent">~€295m EV</span> stand-alone, ~€410m EV in a control case.</h1>
+  <p class="sub">
+    A four-method triangulation — DCF, trading comps, transaction comps and LBO affordability — applied to <strong>Sidetrade</strong> (Euronext Growth: ALBFR), a profitable AI-native Order-to-Cash SaaS. Toggle Bear / Base / Bull to recompose the DCF and watch the football field react.
+  </p>
+
+  <div class="keystats">
+    <div class="cell">
+      <div class="k">Revenue FY25</div>
+      <div class="v">€61.4m</div>
+      <div class="d up">+14% cc · +12% reported</div>
+    </div>
+    <div class="cell">
+      <div class="k">Subscriptions</div>
+      <div class="v">€53.5m</div>
+      <div class="d up">+20% cc · 87% of revenue</div>
+    </div>
+    <div class="cell">
+      <div class="k">EBITDA margin</div>
+      <div class="v">22%</div>
+      <div class="d">€13.4m · +22% YoY</div>
+    </div>
+    <div class="cell">
+      <div class="k">Net cash position</div>
+      <div class="v">€14.7m</div>
+      <div class="d">Net debt strict · ~€1.5B coverage capacity</div>
+    </div>
+  </div>
+</header>
+
+<!-- SNAPSHOT -->
+<section class="block tight" id="snapshot">
+  <div class="sec-head">
+    <div class="left">
+      <div class="num-tag">01 — Company snapshot</div>
+      <h2>Office-of-CFO SaaS, profitable, founder-led, accessible target size</h2>
+    </div>
+    <div class="right">
+      SaaS Order-to-Cash AI-native · Founded by Olivier Novasque · 406 employees (statutory) / ~450 (corp. comm.) · Present in 85 countries · Agentic AI <em>Aimie</em> trained on $8T of B2B transactions.
+    </div>
+  </div>
+
+  <p class="lede">
+    Clean financial profile — 87% subscription mix, 92% subscription gross margin, 22% EBITDA already, operating leverage still ramping. Modest size (~€61m revenue) makes it accessible to PE mid-cap or a strategic consolidator. Documented 2030 plan and US investors building positions (<span class="tip">Briarwood Chase >10%<span class="tip-body"><span class="tip-k">US shareholder</span>Specialist in compounders; >10% stake disclosed.</span></span>, Mission Trail Capital 5%).
+  </p>
+
+  <div class="twoup" style="margin-top:32px;">
+    <div>
+      <h3>FY25 P&amp;L — reported</h3>
+      <table class="data" style="margin-top:10px;">
+        <thead>
+          <tr><th>Metric</th><th class="num">€m</th><th class="num">% of revenue</th><th class="num">YoY</th></tr>
+        </thead>
+        <tbody>
+          <tr><td class="label">Revenue</td><td class="num strong">61.4</td><td class="num">100%</td><td class="num">+14% cc</td></tr>
+          <tr><td class="label">– of which Subscriptions</td><td class="num">53.5</td><td class="num">87%</td><td class="num">+20% cc</td></tr>
+          <tr><td class="label">Subscriptions organic LFL</td><td class="num">—</td><td class="num">—</td><td class="num">+10%</td></tr>
+          <tr><td class="label">Gross margin</td><td class="num strong">47.4</td><td class="num">77%</td><td class="num">+10%</td></tr>
+          <tr><td class="label">– GM on subscription only</td><td class="num">—</td><td class="num">92%</td><td class="num">—</td></tr>
+          <tr><td class="label">EBITDA (incl. CIR)</td><td class="num strong">13.4</td><td class="num">22%</td><td class="num">+22%</td></tr>
+          <tr><td class="label">EBIT (incl. CIR)</td><td class="num">10.3</td><td class="num">17%</td><td class="num">+23%</td></tr>
+          <tr class="total"><td>Net profit</td><td class="num">9.0</td><td class="num">15%</td><td class="num">+14%</td></tr>
+        </tbody>
+      </table>
+      <cite>Source: Sidetrade FY25 Annual Results · March 30, 2026.</cite>
+    </div>
+
+    <div>
+      <h3>Geographic mix</h3>
+      <table class="data" style="margin-top:10px;">
+        <thead><tr><th>Region</th><th class="num">€m</th><th class="num">% rev.</th></tr></thead>
+        <tbody>
+          <tr><td>France</td><td class="num">18.8</td><td class="num">31%</td></tr>
+          <tr><td>International</td><td class="num strong">42.6</td><td class="num">69%</td></tr>
+          <tr><td class="label">– North America (subs.)</td><td class="num">—</td><td class="num">30%</td></tr>
+          <tr><td class="label">– APAC (via ezyCollect)</td><td class="num">—</td><td class="num">new</td></tr>
+        </tbody>
+      </table>
+      <p style="font-size:12px; color:var(--ink-3); margin-top:10px;">
+        <strong>69%</strong> of total revenue and <strong>71%</strong> of subscription revenue generated outside France. North America is now the leading region with <strong>+25% cc</strong> growth in 2025.
+      </p>
+
+      <h3 style="margin-top:24px;">Balance sheet</h3>
+      <ul class="kpi-list" style="margin-top:8px;">
+        <li><span class="lbl">Cash + marketable sec.</span><span class="val">€16.3m</span></li>
+        <li><span class="lbl">Financial debt</span><span class="val">€30.8m</span></li>
+        <li style="background:var(--bg-quiet);"><span class="lbl" style="font-weight:500;color:var(--ink);">Net debt strict</span><span class="val" style="color:var(--bordeaux);">€14.7m</span></li>
+        <li><span class="lbl">Treasury shares (85,300)</span><span class="val">€20.6m</span></li>
+        <li><span class="lbl">Diluted shares outstanding</span><span class="val">1,536,790</span></li>
+      </ul>
+      <cite>Source: Statutory Report FY25 — Notes 6, 8, 10, 30.</cite>
+    </div>
+  </div>
+
+  <!-- FCF Toggle -->
+  <div style="margin-top:40px; display:grid; grid-template-columns: 1fr; gap: 20px;">
+    <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap: wrap; gap: 12px;">
+      <h3>Free cash flow — two views</h3>
+      <div class="toggle-row" role="group" aria-label="FCF view toggle">
+        <button id="fcf-stat" aria-pressed="false">Statutory · €4.2m</button>
+        <button id="fcf-norm" aria-pressed="true">Normalised · €7.2m</button>
+      </div>
+    </div>
+
+    <div class="twoup">
+      <table class="data">
+        <thead><tr><th></th><th class="num">Statutory</th><th class="num">Normalised</th></tr></thead>
+        <tbody>
+          <tr><td class="label">Net operational cash flow</td><td class="num">5.2</td><td class="num">5.2</td></tr>
+          <tr><td class="label">(−) Capex</td><td class="num">(1.0)</td><td class="num">(1.0)</td></tr>
+          <tr><td class="label">(+) CIR timing adjustment</td><td class="num">—</td><td class="num">2.9</td></tr>
+          <tr class="total"><td>FCF</td><td class="num" id="row-stat">4.2</td><td class="num" id="row-norm">7.2</td></tr>
+          <tr><td class="label">FCF margin</td><td class="num">6.9%</td><td class="num">11.7%</td></tr>
+        </tbody>
+      </table>
+
+      <div class="narrative" id="fcf-narrative" data-s="base" style="margin-top:0;">
+        <h4 id="fcf-title">Normalised view — recurring cash capacity</h4>
+        <p id="fcf-body">This view neutralises the CIR timing decalage to reflect the model's recurring cash capacity. It is the preferred lens for the DCF, since the CIR effect is one-off and non-recurring.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Additional SaaS KPIs -->
+  <div style="margin-top:40px;">
+    <h3>SaaS unit economics</h3>
+    <div class="grid-3" style="margin-top:14px;">
+      <div class="card">
+        <div class="k" style="font-family:var(--mono);font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3);">2025 new bookings</div>
+        <div style="font-family:var(--serif);font-size:30px;font-weight:500;margin-top:6px;color:var(--ink);">€11.04m</div>
+        <div style="font-size:12px;color:var(--ink-3);margin-top:4px;">ACV new contracts · €4.32m New ARR · €6.71m services</div>
+      </div>
+      <div class="card">
+        <div class="k" style="font-family:var(--mono);font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3);">Avg. initial contract length</div>
+        <div style="font-family:var(--serif);font-size:30px;font-weight:500;margin-top:6px;color:var(--bordeaux);">46.4 months</div>
+        <div style="font-size:12px;color:var(--ink-3);margin-top:4px;">Far above SaaS industry standards.</div>
+      </div>
+      <div class="card">
+        <div class="k" style="font-family:var(--mono);font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3);">Customer quality</div>
+        <div style="font-family:var(--serif);font-size:30px;font-weight:500;margin-top:6px;color:var(--ink);">85%</div>
+        <div style="font-size:12px;color:var(--ink-3);margin-top:4px;">of total revenue generated by enterprises &gt;$1B revenue. 54% Corporate portfolio &gt;€2.5B.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- MARKET SANITY CHECK -->
+<section class="block" id="market">
+  <div class="sec-head">
+    <div class="left">
+      <div class="num-tag">02 — Market sanity check</div>
+      <h2>Theoretical valuation vs current listed price</h2>
+    </div>
+    <div class="right">
+      The only data point on this page that decays fast. To be refreshed immediately before any external distribution.
+    </div>
+  </div>
+
+  <div class="market-card">
+    <div class="meta-row">
+      <span class="placeholder-flag">Placeholder</span>
+      <span>Market data as of <strong>[DATE — to be filled before publication]</strong></span>
+    </div>
+
+    <div class="grid">
+      <div class="cell">
+        <div class="k">Current share price</div>
+        <div class="v">€[X]</div>
+      </div>
+      <div class="cell">
+        <div class="k">Market cap</div>
+        <div class="v">€[Y]m</div>
+      </div>
+      <div class="cell">
+        <div class="k">Implied EV</div>
+        <div class="v">€[Z]m</div>
+      </div>
+      <div class="cell">
+        <div class="k">Upside to fair value (€295m EV)</div>
+        <div class="v upside">+[A]%</div>
+      </div>
+      <div class="cell">
+        <div class="k">Upside to control case (€410m EV)</div>
+        <div class="v upside">+[B]%</div>
+      </div>
+    </div>
+
+    <p class="note">
+      The dotted vertical line on the football field below mirrors the current market reference. Replace placeholders with last close + simple bridge (Market cap + net debt strict €14.7m = EV) before publishing.
+    </p>
+  </div>
+</section>
+
+<!-- DCF SECTION -->
+<section class="block" id="dcf">
+  <div class="sec-head">
+    <div class="left">
+      <div class="num-tag">03 — DCF · Bear / Base / Bull</div>
+      <h2>Switch the scenario to recompose the model live</h2>
+    </div>
+    <div class="right">
+      Assumptions, end-state and narrative all update in step. The football field DCF bar follows.
+    </div>
+  </div>
+
+  <div class="scenario-cards" role="tablist" aria-label="DCF scenario">
+    <button class="sc-card" data-s="bear" data-active="false" role="tab">
+      <div class="sc-row">
+        <span class="sc-tag">Bear</span>
+        <span class="sc-sub">Cautious · margin caps at 26%</span>
+      </div>
+      <div class="sc-ev">€155m EV</div>
+    </button>
+    <button class="sc-card" data-s="base" data-active="true" role="tab">
+      <div class="sc-row">
+        <span class="sc-tag">Base</span>
+        <span class="sc-sub">2025 trajectory holds</span>
+      </div>
+      <div class="sc-ev">€298m EV</div>
+    </button>
+    <button class="sc-card" data-s="bull" data-active="false" role="tab">
+      <div class="sc-row">
+        <span class="sc-tag">Bull</span>
+        <span class="sc-sub">AI-native scales · 35% margin</span>
+      </div>
+      <div class="sc-ev">€496m EV</div>
+    </button>
+  </div>
+
+  <!-- v2: Trajectory chart -->
+  <div class="chart-wrap" style="position:relative;">
+    <div class="chart-head">
+      <div class="left">
+        <h3>Revenue &amp; EBITDA trajectory · 2025 → 2030</h3>
+        <div class="sub">Recomposes live with the active scenario above. Hover any year for the bridge.</div>
+      </div>
+      <div class="chart-legend">
+        <span><span class="swatch rev"></span>Revenue</span>
+        <span><span class="swatch ebitda"></span>EBITDA</span>
+      </div>
+    </div>
+    <svg class="chart-svg" id="traj-chart" viewBox="0 0 800 300" preserveAspectRatio="none"></svg>
+    <div class="chart-tip" id="chart-tip"></div>
+  </div>
+
+  <div class="result-strip" style="margin-top:24px;">
+    <div class="cell">
+      <div class="k">Revenue 2030</div>
+      <div class="v figure" id="r-rev30">€113.0m</div>
+      <div class="d" id="r-cagr">CAGR 26–30: 12.9%</div>
+    </div>
+    <div class="cell">
+      <div class="k">EBITDA 2030</div>
+      <div class="v figure" id="r-ebitda30">€36.2m</div>
+      <div class="d" id="r-ebmargin">32.0% margin</div>
+    </div>
+    <div class="cell">
+      <div class="k">FCF 2030</div>
+      <div class="v figure" id="r-fcf30">€25.0m</div>
+      <div class="d" id="r-fcfmargin">22.1% FCF margin</div>
+    </div>
+    <div class="cell">
+      <div class="k">Enterprise Value (DCF)</div>
+      <div class="v figure accent" id="r-ev">€298m</div>
+      <div class="d" id="r-evrev">EV / FY25 Sales: 4.9x</div>
+    </div>
+  </div>
+
+  <div class="twoup" style="margin-top:32px;">
+    <div>
+      <h3>Key assumptions</h3>
+      <table class="data" style="margin-top:10px;">
+        <thead>
+          <tr><th>Driver</th><th class="num">Bear</th><th class="num">Base</th><th class="num">Bull</th></tr>
+        </thead>
+        <tbody>
+          <tr><td class="label">Revenue growth 2026</td><td class="num">12%</td><td class="num strong">17%</td><td class="num">21%</td></tr>
+          <tr><td class="label">Revenue growth 2027</td><td class="num">10%</td><td class="num strong">15%</td><td class="num">18%</td></tr>
+          <tr><td class="label">Revenue growth 2028</td><td class="num">8%</td><td class="num strong">13%</td><td class="num">16%</td></tr>
+          <tr><td class="label">Revenue growth 2029</td><td class="num">7%</td><td class="num strong">11%</td><td class="num">14%</td></tr>
+          <tr><td class="label">Revenue growth 2030</td><td class="num">6%</td><td class="num strong">9%</td><td class="num">12%</td></tr>
+          <tr><td class="label">EBITDA margin 2030</td><td class="num">26%</td><td class="num strong">32%</td><td class="num">35%</td></tr>
+          <tr><td class="label">Effective tax rate</td><td class="num">25%</td><td class="num strong">22%</td><td class="num">20%</td></tr>
+          <tr><td class="label">Capex / revenue</td><td class="num">3.0%</td><td class="num strong">2.7%</td><td class="num">2.5%</td></tr>
+          <tr><td class="label">ΔWC / Δrevenue</td><td class="num">10%</td><td class="num strong">7%</td><td class="num">5%</td></tr>
+          <tr><td class="label">WACC</td><td class="num">10.5%</td><td class="num strong">9.5%</td><td class="num">8.5%</td></tr>
+          <tr><td class="label">Terminal growth</td><td class="num">2.0%</td><td class="num strong">2.5%</td><td class="num">3.0%</td></tr>
+        </tbody>
+      </table>
+      <cite>D&amp;A held constant at 2.0% of revenue (economic proxy, vs ~5.9% reported accounting D&amp;A).</cite>
+    </div>
+
+    <div>
+      <h3>Narrative</h3>
+      <div class="narrative" id="dcf-narrative" data-s="base">
+        <h4><span class="tag" id="narr-tag">BASE</span><span id="narr-title">The 2025 trajectory holds</span></h4>
+        <p id="narr-body">
+          Q1 2026 already published at +17% reported / +21% cc, +27% on subscriptions cc, supports a sustained growth case. EBITDA margin reaches 32% by 2030, mid-range of the O2C Intelligence 2030 plan (30–35% target). The AI Cash Collection Agent signs a few large accounts in 2026–2027 without becoming a mass product. Margins of ezyCollect / SHS Viveon converge progressively toward the group's LFL standard (81%).
+        </p>
+      </div>
+
+      <h3 style="margin-top:24px;">DCF result · all scenarios</h3>
+      <table class="data" style="margin-top:10px;">
+        <thead>
+          <tr><th></th><th class="num">Bear</th><th class="num">Base</th><th class="num">Bull</th></tr>
+        </thead>
+        <tbody>
+          <tr><td class="label">Revenue 2030</td><td class="num">€92.7m</td><td class="num strong">€113.0m</td><td class="num">€129.9m</td></tr>
+          <tr><td class="label">EBITDA 2030</td><td class="num">€24.1m</td><td class="num strong">€36.2m</td><td class="num">€45.5m</td></tr>
+          <tr><td class="label">FCF 2030</td><td class="num">€15.2m</td><td class="num strong">€25.0m</td><td class="num">€32.9m</td></tr>
+          <tr class="total"><td>EV implicit</td><td class="num">€155m</td><td class="num">€298m</td><td class="num">€496m</td></tr>
+          <tr><td class="label">EV / FY25 Sales</td><td class="num">2.5x</td><td class="num strong">4.9x</td><td class="num">8.1x</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- v2: Sensitivity table WACC × Terminal growth -->
+  <div class="sensi-wrap">
+    <div class="sensi-head">
+      <div class="left">
+        <h3>Sensitivity · WACC × Terminal growth</h3>
+        <div class="sub">DCF EV in €m, Base case FCF profile held constant. Recomputed on the fly — center cell is the Base case input.</div>
+      </div>
+      <div class="right">FCF 2026–2030 · Base case</div>
+    </div>
+    <div style="overflow-x:auto;">
+      <table class="sensi" id="sensi-table"></table>
+    </div>
+    <p style="font-size:11.5px; color:var(--ink-4); font-style:italic; margin-top:10px;">
+      Cells shaded by intensity (darker = higher EV). The Base case at WACC 9.5% / g 2.5% is highlighted bordeaux and reconciles with the live DCF output.
+    </p>
+  </div>
+
+  <details class="method">
+    <summary>How we built it · methodology</summary>
+    <div class="body">
+      <p><strong>Starting point.</strong> EBITDA 2025 incl. CIR = €13.4m. We anchor here because (i) Sidetrade communicates in EBITDA incl. CIR, (ii) the CIR is a recurring cash item guaranteed by the French State — not an optional tax break.</p>
+      <p><strong>Core formula.</strong></p>
+      <pre>EBIT = EBITDA − D&amp;A
+FCF  = EBIT × (1 − tax) + D&amp;A − Capex − ΔWC</pre>
+      <ol>
+        <li><strong>Economic vs accounting D&amp;A.</strong> Statutory shows ~€3.6m "amortization, depreciation and provisions" but that includes receivables provisions and operational provisions. Pure economic D&amp;A is ~€1.1m (intangibles €285k + tangibles €540k + goodwill/customer relations €296k). We use 2% of revenue as an economic proxy — not the 5.9% accounting figure.</li>
+        <li><strong>Normalised tax rate.</strong> 2025 P&amp;L shows +€2.15m net tax credit thanks to CIR. Theoretical reconcilable rate is ~17%. We spread by scenario: 25% Bear (progressive CIR erosion), 22% Base (stable regime), 20% Bull (international optimisation).</li>
+        <li><strong>WACC.</strong> Risk-free OAT 10Y ~3.2% + ERP Europe ~5.5% + small-cap SaaS relevered beta ~1.25 + size premium. Yields 8.5%–11.0% across scenarios.</li>
+        <li><strong>Terminal growth.</strong> 2.0%–3.0%, capped at 3% in Bull (above long-run European nominal GDP).</li>
+        <li><strong>Q1 2026 actuals.</strong> Already published at +17% reported / +21% cc total, +27% cc subscriptions — directly supports the Base case 17% 2026 growth assumption.</li>
+      </ol>
+    </div>
+  </details>
+</section>
+
+<!-- TRADING COMPS -->
+<section class="block" id="trading">
+  <div class="sec-head">
+    <div class="left">
+      <div class="num-tag">04 — Trading comps</div>
+      <h2>Market value, stand-alone</h2>
+    </div>
+    <div class="right">
+      Listed B2B SaaS with comparable subscription mix, double-digit EBITDA margins, and CFO-office exposure. Hover any row for rationale.
+    </div>
+  </div>
+
+  <table class="data">
+    <thead>
+      <tr>
+        <th>Peer</th>
+        <th>Why comparable</th>
+        <th class="num">EV / Sales (indicative)</th>
+        <th>Geo</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="tip"><strong>Esker</strong> <span class="star">★</span><span class="tip-body"><span class="tip-k">Central benchmark</span>French listed O2C/P2P SaaS, exact same sector and geography. Pre-Bridgepoint take-private trading multiple. Best read-through to Sidetrade's standalone listed multiple.<span class="tip-v">FY+1 EV/Sales ~5.5–6.0x</span></span></span></td>
+        <td>O2C/P2P · French SaaS · pre-buyout reference</td>
+        <td class="num">~5.5–6.0x</td>
+        <td>FR</td>
+      </tr>
+      <tr>
+        <td><span class="tip"><strong>BlackLine</strong><span class="tip-body"><span class="tip-k">Finance automation</span>Closer to accounting workflow than O2C, but directly Office-of-CFO. Used as a mid-range anchor for SaaS premium multiples on a mature profile.<span class="tip-v">FY+1 EV/Sales ~2.5–3.0x</span></span></span></td>
+        <td>Finance automation · accounting workflow</td>
+        <td class="num">~2.5–3.0x</td>
+        <td>US</td>
+      </tr>
+      <tr>
+        <td><span class="tip"><strong>BILL</strong><span class="tip-body"><span class="tip-k">AP/AR + payments</span>Adjacent O2C in the SME US market — useful low-end anchor for AR automation multiples.<span class="tip-v">FY+1 EV/Sales ~2.0x</span></span></span></td>
+        <td>AP/AR automation + payments</td>
+        <td class="num">~2.0x</td>
+        <td>US</td>
+      </tr>
+      <tr>
+        <td><span class="tip"><strong>nCino</strong><span class="tip-body"><span class="tip-k">Vertical SaaS</span>Vertical banking SaaS — profitable, sticky, multi-year contracts. Adds vertical-SaaS premium reference.<span class="tip-v">FY+1 EV/Sales ~3.0x</span></span></span></td>
+        <td>Vertical SaaS banking</td>
+        <td class="num">~3.0x</td>
+        <td>US</td>
+      </tr>
+      <tr>
+        <td><span class="tip"><strong>Q2 Holdings</strong><span class="tip-body"><span class="tip-k">B2B finance SaaS</span>Digital banking SaaS — comparable subscription mix and growth band.<span class="tip-v">FY+1 EV/Sales ~3.0–3.5x</span></span></span></td>
+        <td>Digital banking SaaS</td>
+        <td class="num">~3.0–3.5x</td>
+        <td>US</td>
+      </tr>
+      <tr>
+        <td><span class="tip"><strong>SPS Commerce</strong><span class="tip-body"><span class="tip-k">Profitable B2B network</span>Network SaaS, vertical-led, profitable. Useful for the "profitable SaaS at scale" multiple anchor.<span class="tip-v">FY+1 EV/Sales ~2.0–2.5x</span></span></span></td>
+        <td>B2B network · profitable SaaS</td>
+        <td class="num">~2.0–2.5x</td>
+        <td>US</td>
+      </tr>
+      <tr>
+        <td><span class="tip"><strong>Workiva</strong><span class="tip-body"><span class="tip-k">CFO adjacency</span>Reporting / compliance SaaS — Office-of-CFO adjacency, not direct O2C.<span class="tip-v">FY+1 EV/Sales ~3.0x</span></span></span></td>
+        <td>Reporting / compliance SaaS</td>
+        <td class="num">~3.0x</td>
+        <td>US</td>
+      </tr>
+    </tbody>
+  </table>
+  <cite>Indicative ranges — to be refreshed before publication. Multiples are forward FY+1 to neutralise 2025 one-offs.</cite>
+
+  <div class="twoup" style="margin-top:32px;">
+    <div>
+      <h3>Retained multiples for Sidetrade</h3>
+      <table class="data" style="margin-top:10px;">
+        <thead><tr><th>Tier</th><th class="num">EV / Sales</th><th class="num">EV / EBITDA</th></tr></thead>
+        <tbody>
+          <tr><td class="label">Low — generalist SaaS peers</td><td class="num">3.0x</td><td class="num">15.0x</td></tr>
+          <tr><td class="label">Base — CFO-office premium peers</td><td class="num strong">5.0x</td><td class="num strong">22.0x</td></tr>
+          <tr><td class="label">High — AI-native vertical SaaS</td><td class="num">7.0x</td><td class="num">30.0x</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div>
+      <h3>Range implied — stand-alone</h3>
+      <div class="result-strip" style="margin-top:10px; grid-template-columns: 1fr 1fr 1fr;">
+        <div class="cell"><div class="k">Low</div><div class="v">€185m</div><div class="d">EV implicit</div></div>
+        <div class="cell"><div class="k">Base</div><div class="v accent">€295m</div><div class="d">EV implicit</div></div>
+        <div class="cell"><div class="k">High</div><div class="v">€425m</div><div class="d">EV implicit</div></div>
+      </div>
+      <p style="font-size:13px; color:var(--ink-3); margin-top:14px;">
+        Convergence with DCF Base case at <strong style="color:var(--bordeaux);">~€295m EV</strong>. This convergence anchors the stand-alone central fair value.
+      </p>
+    </div>
+  </div>
+
+  <details class="method">
+    <summary>How we built it · methodology</summary>
+    <div class="body">
+      <p><strong>Logic.</strong> Value Sidetrade through comparison with listed European and North-American B2B SaaS that share its financial profile: dominant subscription mix, double-digit EBITDA margin, &gt;10% growth, Office-of-CFO or finance-productivity exposure.</p>
+      <p><strong>Limitations.</strong> Sidetrade is small-cap and not very liquid on Euronext Growth — a natural discount applies vs mid-caps listed on Euronext Paris or US markets. We retain forward (FY+1) multiples to neutralise 2025 one-offs. Multiples move daily; this range reflects a market window and should be refreshed before any external publication.</p>
+    </div>
+  </details>
+</section>
+
+<!-- TRANSACTION COMPS -->
+<section class="block" id="transaction">
+  <div class="sec-head">
+    <div class="left">
+      <div class="num-tag">05 — Transaction comps</div>
+      <h2>Control value · what a buyer has actually paid</h2>
+    </div>
+    <div class="right">
+      Forward FY1e multiples on Office-of-CFO / O2C / finance automation precedents. Hover any row for context.
+    </div>
+  </div>
+
+  <table class="data">
+    <thead>
+      <tr>
+        <th>Target</th>
+        <th>Buyer</th>
+        <th>Date</th>
+        <th class="num">EV / Sales FY1e</th>
+        <th class="num">EV / EBITDA FY1e</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="tip"><strong>Esker</strong> <span class="star">★</span><span class="tip-body"><span class="tip-k">Central comp</span>Same sector (O2C), same geography (France), same financial profile, similar starting size. The single most relevant precedent for Sidetrade.<span class="tip-v">7.8x sales · 40.6x EBITDA FY1e</span></span></span></td>
+        <td>Bridgepoint / General Atlantic</td>
+        <td>2024/25</td>
+        <td class="num strong">7.8x</td>
+        <td class="num strong">40.6x</td>
+      </tr>
+      <tr>
+        <td><span class="tip"><strong>Coupa</strong><span class="tip-body"><span class="tip-k">Premium comp</span>Sponsor take-private at peak multiple — sets the high anchor for strategic / sponsor pricing of O2C-adjacent SaaS.<span class="tip-v">9.5x sales · 38.8x EBITDA FY1e</span></span></span></td>
+        <td>Thoma Bravo</td>
+        <td>2023</td>
+        <td class="num">9.5x</td>
+        <td class="num">38.8x</td>
+      </tr>
+      <tr>
+        <td><span class="tip">Billtrust<span class="tip-body"><span class="tip-k">O2C, loss-making</span>Direct O2C peer but unprofitable — EBITDA multiple n/m, but revenue multiple confirms the sales-based premium.<span class="tip-v">9.2x sales</span></span></span></td>
+        <td>EQT</td>
+        <td>2022</td>
+        <td class="num">9.2x</td>
+        <td class="num">n/m</td>
+      </tr>
+      <tr>
+        <td><span class="tip">Pagero<span class="tip-body"><span class="tip-k">Strategic e-invoicing</span>Strategic acquisition by a global data player — premium reflects e-invoicing scarcity.<span class="tip-v">7.9x sales</span></span></span></td>
+        <td>Thomson Reuters</td>
+        <td>2024</td>
+        <td class="num">7.9x</td>
+        <td class="num">n/m</td>
+      </tr>
+      <tr>
+        <td><span class="tip">Bottomline<span class="tip-body"><span class="tip-k">B2B payments</span>Mature B2B payments SaaS — a useful mid-range anchor.<span class="tip-v">5.0x sales · 24.7x EBITDA FY1e</span></span></span></td>
+        <td>Thoma Bravo</td>
+        <td>2022</td>
+        <td class="num">5.0x</td>
+        <td class="num">24.7x</td>
+      </tr>
+      <tr>
+        <td><span class="tip"><strong>Basware</strong><span class="tip-body"><span class="tip-k">European comp</span>European Office-of-CFO SaaS taken private — closest geographical and profile comp after Esker.<span class="tip-v">4.1x sales · 27.2x EBITDA FY1e</span></span></span></td>
+        <td>Accel-KKR</td>
+        <td>2022</td>
+        <td class="num">4.1x</td>
+        <td class="num">27.2x</td>
+      </tr>
+      <tr>
+        <td><span class="tip">Tungsten<span class="tip-body"><span class="tip-k">Legacy · low anchor</span>Legacy e-invoicing transition — sets the floor for the range.<span class="tip-v">1.8x sales · 14.3x EBITDA FY1e</span></span></span></td>
+        <td>Kofax</td>
+        <td>2022</td>
+        <td class="num">1.8x</td>
+        <td class="num">14.3x</td>
+      </tr>
+      <tr>
+        <td><span class="tip">Proactis<span class="tip-body"><span class="tip-k">Small · low anchor</span>Small UK procurement — distressed-end of the range, included for floor.<span class="tip-v">2.4x sales · 9.5x EBITDA FY1e</span></span></span></td>
+        <td>Pollen Street</td>
+        <td>2021</td>
+        <td class="num">2.4x</td>
+        <td class="num">9.5x</td>
+      </tr>
+    </tbody>
+  </table>
+  <cite>Source: Edison Group precedent transactions table (Esker offer, 2024/25), augmented.</cite>
+
+  <div class="twoup" style="margin-top:24px;">
+    <div>
+      <h3>Sidetrade's own M&amp;A — internal benchmarks</h3>
+      <p style="font-size:13.5px;"><strong>ezyCollect (Oct 2025) ·</strong> Total consideration €37.6m (€34.8m cash + €2.6m stock). Contributed €2.241m revenue since 1 Oct 2025, i.e. ~€9m annualised run-rate → implicit multiple ~4.2x revenue run-rate. Lower-mid anchor: smaller, APAC, SME, lower gross margin — not directly comparable to Sidetrade's core but useful as a floor.</p>
+      <p style="font-size:13.5px;"><strong>SHS Viveon (2024) ·</strong> Special situation (delisting tender at €3.00/share). €4.4m revenue since July 2024 i.e. ~€8.8m annualised. Implicit multiple is very low and reflects forced delisting context — use as qualitative floor only.</p>
+    </div>
+    <div>
+      <h3>Retained multiples — forward 2026E</h3>
+      <p style="font-size:12px; color:var(--ink-3);">Base 2026E from model: Revenue €71.9m · EBITDA €17.3m.</p>
+      <table class="data" style="margin-top:8px;">
+        <thead><tr><th>Tier</th><th class="num">EV / Sales</th><th class="num">EV / EBITDA</th><th class="num">EV impl.</th></tr></thead>
+        <tbody>
+          <tr><td class="label">Low</td><td class="num">3.8x</td><td class="num">18.0x</td><td class="num">€273–311m</td></tr>
+          <tr><td class="label">Base</td><td class="num strong">5.5x</td><td class="num strong">25.0x</td><td class="num strong">€395–431m</td></tr>
+          <tr><td class="label">High</td><td class="num">7.5x</td><td class="num">32.0x</td><td class="num">€539–552m</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="result-strip" style="margin-top:18px; grid-template-columns: 1fr 1fr 1fr;">
+    <div class="cell"><div class="k">Low</div><div class="v">€290m</div><div class="d">EV implicit</div></div>
+    <div class="cell"><div class="k">Base · control</div><div class="v accent">€410m</div><div class="d">EV implicit</div></div>
+    <div class="cell"><div class="k">High</div><div class="v">€545m</div><div class="d">EV implicit</div></div>
+  </div>
+  <p style="font-size:13px; color:var(--ink-3); margin-top:12px;">
+    Deliberately above trading comps — these embed control premium (~20–40%), strategic scarcity and synergy potential. Read as <strong>M&amp;A value</strong>, not stand-alone.
+  </p>
+
+  <details class="method">
+    <summary>How we built it · methodology</summary>
+    <div class="body">
+      <p><strong>Logic.</strong> Precedent transactions answer "what did a buyer pay to take control of a comparable", not "what does the market value a comparable". By construction, these embed: (i) control premium 20–40%, (ii) strategic / scarcity premium, (iii) potential synergies, (iv) the buyer's ability to accept a longer horizon.</p>
+      <p><strong>Source.</strong> Primary source is the Edison Group table compiled for the Esker take-private (2024/25), covering O2C / P2P / AP automation / finance workflow deals with forward FY1e / FY2e multiples. We augment with Sidetrade's own M&amp;A as internal benchmarks.</p>
+    </div>
+  </details>
+</section>
+
+<!-- LBO -->
+<section class="block" id="lbo">
+  <div class="sec-head">
+    <div class="left">
+      <div class="num-tag">06 — LBO</div>
+      <h2>Sponsor affordability · what a PE could pay for a 20–25% IRR</h2>
+    </div>
+    <div class="right">
+      Not a fundamental fair value — an affordability test that frames the sponsor pricing logic.
+    </div>
+  </div>
+
+  <div class="twoup">
+    <div>
+      <h3>Base case assumptions</h3>
+      <table class="data" style="margin-top:10px;">
+        <tbody>
+          <tr><td class="label">Entry EV</td><td class="num strong">€295m</td></tr>
+          <tr><td class="label">EBITDA 2025</td><td class="num">€13.4m</td></tr>
+          <tr><td class="label">Acquisition debt (3.5x EBITDA)</td><td class="num">~€47m</td></tr>
+          <tr><td class="label">Sponsor equity</td><td class="num">~€248m</td></tr>
+          <tr><td class="label">Holding period</td><td class="num">5 years</td></tr>
+          <tr><td class="label">Interest rate</td><td class="num">~6.5%</td></tr>
+          <tr><td class="label">Cash sweep</td><td class="num">100% of levered FCF</td></tr>
+          <tr><td class="label">Exit EBITDA 2030 (Base)</td><td class="num">€36.2m</td></tr>
+          <tr><td class="label">Exit multiple (Base)</td><td class="num">~18.0x EBITDA</td></tr>
+          <tr class="total"><td>Target IRR (Base)</td><td class="num">~22.5%</td></tr>
+        </tbody>
+      </table>
+      <p style="font-size:12.5px; color:var(--ink-3); margin-top:12px;">
+        <strong>On leverage:</strong> the existing covenant (Net debt / EBITDA &lt; 2.5x on the BNP/LCL loans tied to ezyCollect) does not constrain a future LBO — in a PE take-control, existing debt is refinanced inside a new package. The 3.5x reflects sensible LBO capacity for a profitable SaaS, not the current balance sheet.
+      </p>
+    </div>
+    <div>
+      <h3>Range</h3>
+      <div class="result-strip" style="grid-template-columns: 1fr 1fr 1fr; margin-top:10px;">
+        <div class="cell"><div class="k">Low</div><div class="v">€135m</div><div class="d">IRR target 25%</div></div>
+        <div class="cell"><div class="k">Base</div><div class="v accent">€283m</div><div class="d">IRR target 22.5%</div></div>
+        <div class="cell"><div class="k">High</div><div class="v">€455m</div><div class="d">IRR target 18%</div></div>
+      </div>
+      <p style="font-size:13px; color:var(--ink-3); margin-top:14px;">
+        Low/High swing principally driven by IRR target (18% Low → 25% High) and exit multiple (15x → 22x). Convergence with DCF / trading comps in Base at ~€283m. Use as <strong>sponsor affordability test</strong>, not fundamental fair value.
+      </p>
+    </div>
+  </div>
+
+  <details class="method">
+    <summary>How we built it · methodology</summary>
+    <div class="body">
+      <p>The LBO is solved for entry EV given target sponsor IRR, holding period, leverage, interest, exit EBITDA and exit multiple. Two levers drive most of the range: the IRR floor a sponsor will accept, and the exit multiple — which itself depends on the operating delivery of the holding period.</p>
+    </div>
+  </details>
+</section>
+
+<!-- FOOTBALL FIELD -->
+<section class="block" id="football">
+  <div class="sec-head">
+    <div class="left">
+      <div class="num-tag">07 — Football field</div>
+      <h2>Four methods, one view</h2>
+    </div>
+    <div class="right">
+      Scroll back up to switch DCF scenario — the DCF bar below recomposes live.
+    </div>
+  </div>
+
+  <div class="ff">
+    <div class="ff-canvas" id="ff-canvas">
+      <!-- reference lines injected by JS -->
+      <div class="ff-rows">
+        <div class="ff-row" data-method="dcf">
+          <div class="label">DCF<span class="sub">Fundamental</span></div>
+          <div class="range-track" id="ff-track-dcf">
+            <div class="range-bar"></div>
+            <div class="base-tick"></div>
+            <div class="endpoint left">€155m</div>
+            <div class="endpoint right">€496m</div>
+          </div>
+          <div class="base-val"><span class="euro">€</span><span id="ff-dcf-base">298m</span></div>
+        </div>
+        <div class="ff-row" data-method="trading">
+          <div class="label">Trading<span class="sub">Stand-alone</span></div>
+          <div class="range-track" id="ff-track-trading">
+            <div class="range-bar"></div>
+            <div class="base-tick"></div>
+            <div class="endpoint left">€185m</div>
+            <div class="endpoint right">€425m</div>
+          </div>
+          <div class="base-val"><span class="euro">€</span>295m</div>
+        </div>
+        <div class="ff-row" data-method="transaction">
+          <div class="label">Transaction<span class="sub">Control</span></div>
+          <div class="range-track" id="ff-track-transaction">
+            <div class="range-bar"></div>
+            <div class="base-tick"></div>
+            <div class="endpoint left">€290m</div>
+            <div class="endpoint right">€545m</div>
+          </div>
+          <div class="base-val"><span class="euro">€</span>410m</div>
+        </div>
+        <div class="ff-row" data-method="lbo">
+          <div class="label">LBO<span class="sub">Affordability</span></div>
+          <div class="range-track" id="ff-track-lbo">
+            <div class="range-bar"></div>
+            <div class="base-tick"></div>
+            <div class="endpoint left">€135m</div>
+            <div class="endpoint right">€455m</div>
+          </div>
+          <div class="base-val"><span class="euro">€</span>283m</div>
+        </div>
+      </div>
+    </div>
+    <div class="ff-row ff-axis-row" aria-hidden="true">
+      <div class="label">&nbsp;</div>
+      <div class="ff-axis-inner">
+        <span class="tick" style="left:0%;">€100m</span>
+        <span class="tick" style="left:20%;">€200m</span>
+        <span class="tick tick-accent fair" style="left:39%;">€295m</span>
+        <span class="tick tick-accent control" style="left:62%;">€410m</span>
+        <span class="tick" style="left:80%;">€500m</span>
+        <span class="tick" style="left:100%;">€600m</span>
+      </div>
+      <div class="base-val">&nbsp;</div>
+    </div>
+  </div>
+
+  <div class="grid-3" style="margin-top:24px;">
+    <div class="card" style="border-top:3px solid var(--bordeaux);">
+      <div class="k" style="font-family:var(--mono);font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--bordeaux);">Stand-alone fair value</div>
+      <div style="font-family:var(--serif);font-size:34px;font-weight:500;margin:6px 0 4px;color:var(--ink);">€295m EV</div>
+      <p style="font-size:13px; color:var(--ink-2); margin:0;">Convergence of DCF + Trading Comps + LBO in Base case. The reference number.</p>
+    </div>
+    <div class="card" style="border-top:3px solid var(--bull);">
+      <div class="k" style="font-family:var(--mono);font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--bull);">Control case</div>
+      <div style="font-family:var(--serif);font-size:34px;font-weight:500;margin:6px 0 4px;color:var(--ink);">€410m EV</div>
+      <p style="font-size:13px; color:var(--ink-2); margin:0;">Convergence with transaction precedents. ~40% control premium embedded.</p>
+    </div>
+    <div class="card" style="border-top:3px solid var(--market);">
+      <div class="k" style="font-family:var(--mono);font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--market);">Implied share price · Base</div>
+      <div style="font-family:var(--serif);font-size:34px;font-weight:500;margin:6px 0 4px;color:var(--ink);">~€182</div>
+      <p style="font-size:13px; color:var(--ink-2); margin:0;">(€295m − €14.7m net debt) / 1.537m diluted shares = ~€182 / share.</p>
+    </div>
+  </div>
+
+  <!-- Bridge -->
+  <!-- Bridge -->
+  <div style="margin-top:32px;">
+    <h3>Bridge · EV → Equity → Share price</h3>
+    <div class="waterfall-wrap">
+      <svg class="waterfall-svg" id="waterfall-svg" viewBox="0 0 1000 280" preserveAspectRatio="xMidYMid meet"></svg>
+    </div>
+
+    <p style="margin-top:18px; font-size:14px; line-height:1.6; color:var(--ink-2); max-width:820px;">
+      <strong>Stand-alone range:</strong> €185m – €425m EV → ~€110–€267 / share. <br/>
+      <strong>Extended range (incl. M&amp;A / LBO):</strong> €135m – €545m EV → ~€78–€345 / share.
+    </p>
+  </div>
+
+  <!-- Conclusion -->
+  <div style="margin-top:32px; padding: 28px 32px; background: var(--bg-card); border: 1px solid var(--line); border-left: 4px solid var(--bordeaux);">
+    <div style="font-family:var(--mono); font-size:10.5px; letter-spacing:.14em; text-transform:uppercase; color:var(--bordeaux); margin-bottom:10px;">Strategic read</div>
+    <p style="font-size:15.5px; line-height:1.6; color:var(--ink); margin:0;">
+      Sidetrade shows a clean financial profile: profitable O2C SaaS, dominant subscription mix (87%), premium subscription gross margin (92%), solid 22% EBITDA already, with operating leverage still ramping. The O2C Intelligence 2030 plan (30–35% EBITDA target) supports the DCF Base case trajectory.
+    </p>
+    <p style="font-size:15.5px; line-height:1.6; color:var(--ink); margin:14px 0 0;">
+      Stand-alone central value <strong style="color:var(--bordeaux);">~€295m EV</strong> places Sidetrade in a defensible zone around €180–190 / share. The control case <strong style="color:var(--bull);">~€410m EV</strong> reflects a real M&amp;A optionality — ideal target profile for a European strategic consolidator or a mid-market PE sponsor, in line with the Esker / Bridgepoint–General Atlantic precedent.
+    </p>
+    <p style="font-size:13.5px; line-height:1.55; color:var(--ink-3); font-style:italic; margin:18px 0 0; max-width:820px;">
+      Sidetrade's stand-alone fair value converges around ~€295m EV, supported by DCF, trading comps and LBO affordability. Transaction precedents suggest a control valuation closer to ~€410m EV, reflecting strategic scarcity in Office-of-CFO / Order-to-Cash software.
+    </p>
+  </div>
+</section>
+
+<!-- CAVEATS -->
+<section class="block" id="caveats">
+  <div class="sec-head">
+    <div class="left">
+      <div class="num-tag">08 — Caveats &amp; limits</div>
+      <h2>What this model is not</h2>
+    </div>
+    <div class="right">
+      Independent v1.0 model built from public data only. Not a research recommendation.
+    </div>
+  </div>
+
+  <div class="caveats">
+    <div>
+      <h3>Methodological</h3>
+      <ul>
+        <li>Independent v0 model built from public data only (FY25 statutory + press release + O2C Intelligence 2030 plan + public market data).</li>
+        <li>Trading multiples are sensitive to market window — refresh before publication if market conditions shift.</li>
+        <li>CIR treated as recurring cash given State-guaranteed reimbursement mechanism. Statutory view available as alternative for transparency.</li>
+        <li>ezyCollect / SHS Viveon margins still converging through 2026–2028 — Base case assumes partial integration. Multi-acquisition execution risk acknowledged.</li>
+        <li>Transaction comps embed a ~40% control premium — not directly comparable to a stand-alone fair value.</li>
+        <li>LBO is an affordability test, not a fundamental fair value.</li>
+        <li>D&amp;A used (2.0% of revenue) is an economic proxy, distinct from French accounting D&amp;A which includes receivable and operating provisions.</li>
+        <li>Treasury shares (€20.6m market value) not included in the equity bridge — treated as optionality, value depends on spot price.</li>
+      </ul>
+    </div>
+    <div>
+      <h3>Accounting specifics</h3>
+      <ul>
+        <li><strong>Gross margin reconstruction.</strong> <em>Gross margin is taken from Sidetrade's FY25 investor communication. It cannot be perfectly reconstructed from the French statutory P&amp;L alone because expenses are presented by nature, not by function.</em> The 77% / 81% LFL / 92% subscription figures come from the press release, not the statutory ANC.</li>
+        <li><strong>ezyCollect PPA pending.</strong> <em>ezyCollect PPA still pending until 31 Dec 2026. Future allocation from goodwill to customer relationships could increase amortization and affect EBIT, while leaving EBITDA broadly unaffected.</em> Part of the €38m goodwill may be reclassified as 20-year-amortisable customer relations after the allocation due end-2026. EBIT-impacting, EBITDA-neutral.</li>
+        <li><strong>Headcount discrepancy.</strong> 406 employees per statutory accounts at 31 December 2025 vs ~450 per corporate communication. The gap can reflect contractors, recent joiners not yet booked, or a rounded comms figure. Noted without dramatising.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="site">
+  <div class="inner">
+    <div>
+      <h4>Author</h4>
+      <div class="name">Hamza ——</div>
+      <p>ESSEC Grande École · Finance &amp; Analytics<br/>
+      <a href="#">LinkedIn</a></p>
+    </div>
+    <div>
+      <h4>Sources</h4>
+      <p>Sidetrade FY25 Annual Results (Mar 30, 2026) · Statutory Report FY25 (KPMG / Yuma Audit, Apr 21, 2026) · O2C Intelligence 2030 Strategic Plan (Apr 7, 2026) · Edison Group precedent transactions table · Damodaran European ERP &amp; sector betas.</p>
+    </div>
+    <div>
+      <h4>Market reference</h4>
+      <p>Market data as of <strong>[DATE — to be filled before publication]</strong>.</p>
+    </div>
+  </div>
+  <div class="inner">
+    <p class="disclaimer">Independent pedagogical model built from public data. Does not constitute an investment recommendation. All multiples and ranges are indicative and reflect a market window — refresh before any external distribution.</p>
+  </div>
+</footer>
+
+<script>
+(function () {
+  'use strict';
+
+  // ─────────────────────────────────────────────────────────────
+  // DCF model · scenarios
+  // ─────────────────────────────────────────────────────────────
+  const REV_2025 = 61.4; // €m
+
+  const SCENARIOS = {
+    bear: {
+      label: 'Bear — "2025 was not an accident"',
+      growth: [0.12, 0.10, 0.08, 0.07, 0.06],
+      ebitdaMargin: 0.26,
+      taxRate: 0.25,
+      daPct: 0.020,
+      capexPct: 0.030,
+      bfrPct: 0.10,
+      wacc: 0.105,
+      g: 0.020,
+      ev: 155,   // €m
+      result: { rev: 92.7, ebitda: 24.1, fcf: 15.2, evRev: 2.5 },
+      tag: 'BEAR',
+      title: 'A profile that decelerates',
+      narrative: 'Organic growth slows despite acquisitions. ezyCollect / SHS Viveon integration is dilutive longer than planned (consolidated gross margin slips under 80%). AI agents struggle to monetise beyond early signings. EBITDA margin caps at 26% in 2030, below the bottom of the 30–35% guidance band. Adverse macro, IT budgets under pressure, North America slowdown.'
+    },
+    base: {
+      label: 'Base — the 2025 trajectory holds',
+      growth: [0.17, 0.15, 0.13, 0.11, 0.09],
+      ebitdaMargin: 0.32,
+      taxRate: 0.22,
+      daPct: 0.020,
+      capexPct: 0.027,
+      bfrPct: 0.07,
+      wacc: 0.095,
+      g: 0.025,
+      ev: 298,
+      result: { rev: 113.0, ebitda: 36.2, fcf: 25.0, evRev: 4.9 },
+      tag: 'BASE',
+      title: 'The 2025 trajectory holds',
+      narrative: 'Q1 2026 already published at +17% reported / +21% cc total, +27% cc subscriptions — supports a sustained growth case. EBITDA margin reaches 32% by 2030, mid-range of the 30–35% O2C Intelligence 2030 plan. The AI Cash Collection Agent signs a few large accounts in 2026–2027 without becoming mass. Acquired margins converge progressively toward the group LFL standard (81%).'
+    },
+    bull: {
+      label: 'Bull — AI-native changes the equation',
+      growth: [0.21, 0.18, 0.16, 0.14, 0.12],
+      ebitdaMargin: 0.35,
+      taxRate: 0.20,
+      daPct: 0.020,
+      capexPct: 0.025,
+      bfrPct: 0.05,
+      wacc: 0.085,
+      g: 0.030,
+      ev: 496,
+      result: { rev: 129.9, ebitda: 45.5, fcf: 32.9, evRev: 8.1 },
+      tag: 'BULL',
+      title: 'AI-native changes the equation',
+      narrative: '"Aimie" agent scales on the pre-committed signings (4 multinationals already announced). North America passes 40% of total revenue. Multiple re-rating toward AI-native peers comparable to post-deal Esker (~23x forward EBITDA). EBITDA margin reaches 35%, top of management guidance. The O2C Intelligence 2030 plan (€18–23m AI-native dedicated revenue in 2030) delivers.'
+    }
+  };
+
+  // football field bounds
+  const FF_MIN = 100;
+  const FF_MAX = 600;
+  const REF_FAIR = 295;
+  const REF_CONTROL = 410;
+  // Market reference is a placeholder — sample €/share assumed; mark as placeholder visually.
+  const REF_MARKET = 237; // €m — placeholder until refresh
+
+  function fmtM(n) { return '€' + n.toFixed(0) + 'm'; }
+  function fmtMxM(n) { return '€' + (Math.round(n*10)/10).toFixed(1) + 'm'; }
+
+  // ─────────────────────────────────────────────────────────────
+  // STATE
+  // ─────────────────────────────────────────────────────────────
+  let activeScenario = 'base';
+  let fcfView = 'norm';
+
+  function applyScenario(s) {
+    activeScenario = s;
+    const sc = SCENARIOS[s];
+
+    // Scenario cards
+    document.querySelectorAll('.sc-card').forEach(b => {
+      b.setAttribute('data-active', b.dataset.s === s ? 'true' : 'false');
+    });
+
+    // Result strip
+    const cagr5 = Math.pow(sc.result.rev / REV_2025, 1/5) - 1; // 26→30 CAGR
+    setFig('r-rev30', '€' + sc.result.rev.toFixed(1) + 'm');
+    document.getElementById('r-cagr').textContent = 'CAGR 25–30: ' + (cagr5 * 100).toFixed(1) + '%';
+    setFig('r-ebitda30', '€' + sc.result.ebitda.toFixed(1) + 'm');
+    document.getElementById('r-ebmargin').textContent = (sc.ebitdaMargin * 100).toFixed(0) + '% margin';
+    setFig('r-fcf30', '€' + sc.result.fcf.toFixed(1) + 'm');
+    const fcfMargin = sc.result.fcf / sc.result.rev * 100;
+    document.getElementById('r-fcfmargin').textContent = fcfMargin.toFixed(1) + '% FCF margin';
+    setFig('r-ev', '€' + sc.ev + 'm');
+    document.getElementById('r-evrev').textContent = 'EV / FY25 Sales: ' + sc.result.evRev.toFixed(1) + 'x';
+
+    // recolor accent EV in result strip
+    const ev = document.getElementById('r-ev');
+    ev.classList.remove('accent');
+    if (s === 'bear') ev.style.color = 'var(--bear)';
+    else if (s === 'bull') ev.style.color = 'var(--bull)';
+    else ev.style.color = 'var(--bordeaux)';
+
+    // narrative
+    const narr = document.getElementById('dcf-narrative');
+    narr.setAttribute('data-s', s);
+    document.getElementById('narr-tag').textContent = sc.tag;
+    document.getElementById('narr-title').textContent = sc.title;
+    document.getElementById('narr-body').textContent = sc.narrative;
+
+    // football field DCF bar
+    updateFootballDCF(s);
+
+    // v2: trajectory chart + sensitivity table (sensitivity is Base-anchored, only redraw center marker)
+    drawTrajectoryChart(s);
+  }
+
+  function setFig(id, value) {
+    const el = document.getElementById(id);
+    if (!el) return;
+    if (el.textContent !== value) {
+      el.textContent = value;
+      el.classList.remove('flash');
+      // force reflow to re-trigger animation
+      void el.offsetWidth;
+      el.classList.add('flash');
+    }
+  }
+
+  // ─────────────────────────────────────────────────────────────
+  // Football field
+  // ─────────────────────────────────────────────────────────────
+  function pctFromValue(v) {
+    return Math.max(0, Math.min(100, ((v - FF_MIN) / (FF_MAX - FF_MIN)) * 100));
+  }
+
+  function updateBar(method, low, base, high) {
+    const track = document.getElementById('ff-track-' + method);
+    if (!track) return;
+    const bar = track.querySelector('.range-bar');
+    const tick = track.querySelector('.base-tick');
+    const endLeft = track.querySelector('.endpoint.left');
+    const endRight = track.querySelector('.endpoint.right');
+
+    const lowPct = pctFromValue(low);
+    const highPct = pctFromValue(high);
+    const basePct = pctFromValue(base);
+
+    bar.style.left = lowPct + '%';
+    bar.style.width = (highPct - lowPct) + '%';
+    tick.style.left = 'calc(' + basePct + '% - 1px)';
+    if (endLeft) {
+      endLeft.style.left = lowPct + '%';
+      endLeft.textContent = '€' + low + 'm';
+    }
+    if (endRight) {
+      endRight.style.left = highPct + '%';
+      endRight.textContent = '€' + high + 'm';
+    }
+  }
+
+  function updateFootballDCF(s) {
+    // DCF bar: Low=Bear EV, Base=Base EV, High=Bull EV always.
+    // The base TICK position depends on selected scenario (visualise active center).
+    const baseEV = SCENARIOS[s].ev;
+    const lowEV = SCENARIOS.bear.ev;
+    const highEV = SCENARIOS.bull.ev;
+    updateBar('dcf', lowEV, baseEV, highEV);
+
+    // Update label number
+    const txt = document.getElementById('ff-dcf-base');
+    if (txt) txt.textContent = baseEV + 'm';
+
+    // Color the DCF bar based on scenario
+    const bar = document.querySelector('.ff-row[data-method="dcf"] .range-bar');
+    if (bar) {
+      bar.style.background =
+        s === 'bear' ? 'var(--bear)' :
+        s === 'bull' ? 'var(--bull)' :
+        'var(--bordeaux)';
+    }
+  }
+
+  function buildReferenceLines() {
+    const canvas = document.getElementById('ff-canvas');
+    // size relative to one track to figure out chart area; lines run full height of canvas
+    // Use the trading track as a reference for left/right inset.
+    // But the lines should span the bar zone only, mirroring percentage placement.
+    // We compute pixel positions inside each track relative to canvas using offsets at runtime.
+
+    // Place 3 vertical lines anchored over the FIRST track and stretched the whole row stack.
+    // Easier: put them as overlays on the row stack with the same percent calc as bars.
+    const refs = [
+      { kind: 'fair', value: REF_FAIR, label: 'Fair value €295m' },
+      { kind: 'control', value: REF_CONTROL, label: 'Control €410m' },
+      { kind: 'market', value: REF_MARKET, label: 'Market ref. [placeholder]' }
+    ];
+
+    // We add them inside each .range-track? Better: inside .ff-rows so they span all bars
+    const stack = canvas.querySelector('.ff-rows');
+    refs.forEach(r => {
+      const line = document.createElement('div');
+      line.className = 'ref ' + r.kind;
+      line.style.left = 'calc(' + (pctFromValue(r.value)) + '% * (1 - var(--ff-label-w, 0px)/100%))';
+      // Simpler: we compute absolute pixel position from a reference track's inner width.
+
+      const label = document.createElement('div');
+      label.className = 'ref-label ' + r.kind;
+      label.textContent = r.label;
+
+      stack.appendChild(line);
+      stack.appendChild(label);
+      r._lineEl = line;
+      r._labelEl = label;
+    });
+
+    // Layout: align lines to the first track's bounding box.
+    function positionRefs() {
+      const sample = document.getElementById('ff-track-dcf');
+      if (!sample) return;
+      const sRect = sample.getBoundingClientRect();
+      const sParent = stack.getBoundingClientRect();
+      const left0 = sRect.left - sParent.left;
+      const width0 = sRect.width;
+
+      refs.forEach(r => {
+        const x = left0 + (pctFromValue(r.value) / 100) * width0;
+        r._lineEl.style.left = x + 'px';
+        r._labelEl.style.left = x + 'px';
+      });
+    }
+    positionRefs();
+    window.addEventListener('resize', positionRefs);
+    // Reposition again after first layout settles
+    setTimeout(positionRefs, 50);
+    setTimeout(positionRefs, 250);
+    setTimeout(positionRefs, 600);
+  }
+
+  // ─────────────────────────────────────────────────────────────
+  // v2 · TRAJECTORY CHART
+  // ─────────────────────────────────────────────────────────────
+  const CHART = {
+    w: 800, h: 300,
+    mL: 56, mR: 70, mT: 28, mB: 40,
+    maxY: 140,
+    years: [2025, 2026, 2027, 2028, 2029, 2030]
+  };
+  function chartXY() {
+    const innerW = CHART.w - CHART.mL - CHART.mR;
+    const innerH = CHART.h - CHART.mT - CHART.mB;
+    return {
+      x: (i) => CHART.mL + (i / 5) * innerW,
+      y: (v) => CHART.mT + innerH - (v / CHART.maxY) * innerH,
+      innerW: innerW, innerH: innerH, baseline: CHART.mT + innerH
+    };
+  }
+  function buildSeries(s) {
+    const sc = SCENARIOS[s];
+    const rev = [REV_2025];
+    for (let i = 0; i < 5; i++) rev.push(rev[i] * (1 + sc.growth[i]));
+    // Linear EBITDA margin glide from 22% (2025) → scenario 2030 target
+    const startMargin = 0.22;
+    const endMargin = sc.ebitdaMargin;
+    const ebitda = rev.map((r, i) => r * (startMargin + (endMargin - startMargin) * (i / 5)));
+    return { rev: rev, ebitda: ebitda, margin: rev.map((_, i) => startMargin + (endMargin - startMargin) * (i / 5)) };
+  }
+  function pathFromSeries(arr, ax) {
+    return arr.map((v, i) => (i === 0 ? 'M' : 'L') + ax.x(i).toFixed(2) + ' ' + ax.y(v).toFixed(2)).join(' ');
+  }
+  function areaFromSeries(arr, ax) {
+    const line = pathFromSeries(arr, ax);
+    return line + ' L ' + ax.x(arr.length - 1).toFixed(2) + ' ' + ax.baseline.toFixed(2)
+                + ' L ' + ax.x(0).toFixed(2) + ' ' + ax.baseline.toFixed(2) + ' Z';
+  }
+
+  function buildTrajectoryChart() {
+    const svg = document.getElementById('traj-chart');
+    if (!svg) return;
+    const NS = 'http://www.w3.org/2000/svg';
+    svg.innerHTML = '';
+    const ax = chartXY();
+
+    // gridlines (5 horizontals)
+    const yTicks = [0, 35, 70, 105, 140];
+    yTicks.forEach(t => {
+      const line = document.createElementNS(NS, 'line');
+      line.setAttribute('class', 'grid-line');
+      line.setAttribute('x1', CHART.mL); line.setAttribute('x2', CHART.w - CHART.mR);
+      line.setAttribute('y1', ax.y(t)); line.setAttribute('y2', ax.y(t));
+      svg.appendChild(line);
+      const lbl = document.createElementNS(NS, 'text');
+      lbl.setAttribute('class', 'axis-text');
+      lbl.setAttribute('x', CHART.mL - 10); lbl.setAttribute('y', ax.y(t) + 3);
+      lbl.setAttribute('text-anchor', 'end');
+      lbl.textContent = '€' + t + 'm';
+      svg.appendChild(lbl);
+    });
+
+    // X axis baseline
+    const xAxis = document.createElementNS(NS, 'line');
+    xAxis.setAttribute('stroke', 'var(--line-strong)');
+    xAxis.setAttribute('x1', CHART.mL); xAxis.setAttribute('x2', CHART.w - CHART.mR);
+    xAxis.setAttribute('y1', ax.baseline); xAxis.setAttribute('y2', ax.baseline);
+    svg.appendChild(xAxis);
+
+    // X labels
+    CHART.years.forEach((y, i) => {
+      const t = document.createElementNS(NS, 'text');
+      t.setAttribute('class', 'axis-text year');
+      t.setAttribute('x', ax.x(i)); t.setAttribute('y', ax.baseline + 22);
+      t.setAttribute('text-anchor', 'middle');
+      t.textContent = y;
+      svg.appendChild(t);
+    });
+
+    // Revenue area + line (paths to be updated)
+    const revArea = document.createElementNS(NS, 'path');
+    revArea.setAttribute('class', 'rev-area'); revArea.setAttribute('id', 'rev-area');
+    svg.appendChild(revArea);
+    const revLine = document.createElementNS(NS, 'path');
+    revLine.setAttribute('class', 'rev-line'); revLine.setAttribute('id', 'rev-line');
+    svg.appendChild(revLine);
+    const ebitdaLine = document.createElementNS(NS, 'path');
+    ebitdaLine.setAttribute('class', 'ebitda-line'); ebitdaLine.setAttribute('id', 'ebitda-line');
+    svg.appendChild(ebitdaLine);
+
+    // Points + hover hitboxes
+    for (let i = 0; i < 6; i++) {
+      const cr = document.createElementNS(NS, 'circle');
+      cr.setAttribute('class', 'pt rev'); cr.setAttribute('id', 'pt-rev-' + i);
+      cr.setAttribute('r', 3.5);
+      svg.appendChild(cr);
+      const ce = document.createElementNS(NS, 'circle');
+      ce.setAttribute('class', 'pt ebitda'); ce.setAttribute('id', 'pt-ebitda-' + i);
+      ce.setAttribute('r', 3);
+      svg.appendChild(ce);
+
+      // Hit zone (full vertical strip per year)
+      const hit = document.createElementNS(NS, 'rect');
+      hit.setAttribute('class', 'pt-hit');
+      hit.setAttribute('x', ax.x(i) - ax.innerW/10); hit.setAttribute('y', CHART.mT);
+      hit.setAttribute('width', ax.innerW/5); hit.setAttribute('height', ax.innerH);
+      hit.dataset.year = CHART.years[i];
+      hit.dataset.i = i;
+      hit.addEventListener('mousemove', onChartHover);
+      hit.addEventListener('mouseleave', onChartLeave);
+      svg.appendChild(hit);
+    }
+
+    // End-of-line labels (€m at 2030)
+    const revEndLbl = document.createElementNS(NS, 'text');
+    revEndLbl.setAttribute('class', 'end-label rev'); revEndLbl.setAttribute('id', 'end-rev');
+    revEndLbl.setAttribute('text-anchor', 'start');
+    svg.appendChild(revEndLbl);
+    const ebEndLbl = document.createElementNS(NS, 'text');
+    ebEndLbl.setAttribute('class', 'end-label ebitda'); ebEndLbl.setAttribute('id', 'end-ebitda');
+    ebEndLbl.setAttribute('text-anchor', 'start');
+    svg.appendChild(ebEndLbl);
+  }
+
+  function drawTrajectoryChart(s) {
+    const svg = document.getElementById('traj-chart');
+    if (!svg) return;
+    const ax = chartXY();
+    const series = buildSeries(s);
+    document.getElementById('rev-area').setAttribute('d', areaFromSeries(series.rev, ax));
+    document.getElementById('rev-line').setAttribute('d', pathFromSeries(series.rev, ax));
+    document.getElementById('ebitda-line').setAttribute('d', pathFromSeries(series.ebitda, ax));
+    for (let i = 0; i < 6; i++) {
+      const r = series.rev[i], e = series.ebitda[i];
+      const ptr = document.getElementById('pt-rev-' + i);
+      const pte = document.getElementById('pt-ebitda-' + i);
+      ptr.setAttribute('cx', ax.x(i)); ptr.setAttribute('cy', ax.y(r));
+      pte.setAttribute('cx', ax.x(i)); pte.setAttribute('cy', ax.y(e));
+    }
+    // End labels
+    const rEnd = series.rev[5], eEnd = series.ebitda[5];
+    const revLbl = document.getElementById('end-rev');
+    revLbl.setAttribute('x', ax.x(5) + 8); revLbl.setAttribute('y', ax.y(rEnd) + 3);
+    revLbl.textContent = '€' + rEnd.toFixed(0) + 'm';
+    const ebLbl = document.getElementById('end-ebitda');
+    ebLbl.setAttribute('x', ax.x(5) + 8); ebLbl.setAttribute('y', ax.y(eEnd) + 3);
+    ebLbl.textContent = '€' + eEnd.toFixed(0) + 'm';
+
+    // cache current series for tooltip lookup
+    svg.__series = series;
+  }
+
+  function onChartHover(e) {
+    const svg = document.getElementById('traj-chart');
+    const series = svg.__series;
+    if (!series) return;
+    const i = parseInt(e.currentTarget.dataset.i, 10);
+    const year = e.currentTarget.dataset.year;
+    const tip = document.getElementById('chart-tip');
+    const rev = series.rev[i], eb = series.ebitda[i], m = series.margin[i];
+    tip.innerHTML =
+      '<div class="y">' + year + ' · ' + (activeScenario.toUpperCase()) + '</div>' +
+      '<div class="row"><span class="lbl">Revenue</span><span>€' + rev.toFixed(1) + 'm</span></div>' +
+      '<div class="row"><span class="lbl">EBITDA</span><span>€' + eb.toFixed(1) + 'm</span></div>' +
+      '<div class="row"><span class="lbl">Margin</span><span>' + (m*100).toFixed(0) + '%</span></div>';
+    tip.classList.add('on');
+    // Position relative to chart wrap
+    const wrap = svg.closest('.chart-wrap');
+    const wrapRect = wrap.getBoundingClientRect();
+    const ev = e;
+    const x = ev.clientX - wrapRect.left + 14;
+    const y = ev.clientY - wrapRect.top - 10;
+    tip.style.left = Math.min(x, wrapRect.width - 200) + 'px';
+    tip.style.top = Math.max(y, 0) + 'px';
+  }
+  function onChartLeave() {
+    const tip = document.getElementById('chart-tip');
+    if (tip) tip.classList.remove('on');
+  }
+
+  // ─────────────────────────────────────────────────────────────
+  // v2 · SENSITIVITY MATRIX  (WACC × Terminal growth on Base FCFs)
+  // ─────────────────────────────────────────────────────────────
+  // Base case FCF profile (derived once from Base assumptions; see methodology pre-print)
+  const BASE_FCF = [11.09, 14.14, 17.53, 21.19, 24.99]; // 2026 → 2030, €m
+
+  function dcfEVfromInputs(wacc, g, fcfs) {
+    fcfs = fcfs || BASE_FCF;
+    let pv = 0;
+    for (let t = 1; t <= 5; t++) pv += fcfs[t - 1] / Math.pow(1 + wacc, t);
+    const tv = (fcfs[4] * (1 + g)) / (wacc - g);
+    pv += tv / Math.pow(1 + wacc, 5);
+    return pv;
+  }
+
+  function buildSensitivity() {
+    const tbl = document.getElementById('sensi-table');
+    if (!tbl) return;
+    const waccs = [0.085, 0.090, 0.095, 0.100, 0.105];
+    const gs    = [0.035, 0.030, 0.025, 0.020, 0.015]; // top→bottom: high g first
+    const centerW = 0.095, centerG = 0.025;
+
+    // Compute grid
+    const grid = gs.map(g => waccs.map(w => dcfEVfromInputs(w, g)));
+    const flat = grid.flat();
+    const mn = Math.min.apply(null, flat), mx = Math.max.apply(null, flat);
+
+    // Build table HTML
+    let html = '<thead><tr><th class="corner">EV €m · WACC →</th>';
+    waccs.forEach(w => { html += '<th>' + (w * 100).toFixed(1) + '%</th>'; });
+    html += '</tr></thead><tbody>';
+
+    gs.forEach((g, gi) => {
+      html += '<tr>';
+      html += '<td class="row-h">g = ' + (g * 100).toFixed(1) + '%</td>';
+      waccs.forEach((w, wi) => {
+        const v = grid[gi][wi];
+        const norm = (v - mn) / (mx - mn); // 0..1
+        const isCenter = Math.abs(w - centerW) < 1e-6 && Math.abs(g - centerG) < 1e-6;
+        const cls = isCenter ? 'cell center' : 'cell';
+        const tint = isCenter ? '' : 'background: rgba(122,31,43,' + (0.04 + norm * 0.20).toFixed(3) + ');';
+        html += '<td class="' + cls + '" style="' + tint + '">€' + Math.round(v) + 'm</td>';
+      });
+      html += '</tr>';
+    });
+    html += '</tbody>';
+    tbl.innerHTML = html;
+  }
+
+  // ─────────────────────────────────────────────────────────────
+  // v2 · EV → EQUITY WATERFALL
+  // ─────────────────────────────────────────────────────────────
+  function buildWaterfall() {
+    const svg = document.getElementById('waterfall-svg');
+    if (!svg) return;
+    const NS = 'http://www.w3.org/2000/svg';
+    svg.innerHTML = '';
+
+    // Data
+    const EV = 295, NETDEBT = 14.7, EQ = 280;
+
+    // Layout — viewBox 1000 × 280
+    const baseline = 230;
+    const maxV = 340;
+    const maxH = 175;
+    const yFor = v => baseline - (v / maxV) * maxH;
+
+    const bar1X = 50, bar2X = 320, barW = 180;
+
+    // Bar 1 — EV €295m (bordeaux solid)
+    const bar1Top = yFor(EV);
+    const r1 = document.createElementNS(NS, 'rect');
+    r1.setAttribute('class', 'wf-bar ev');
+    r1.setAttribute('x', bar1X); r1.setAttribute('y', bar1Top);
+    r1.setAttribute('width', barW); r1.setAttribute('height', baseline - bar1Top);
+    svg.appendChild(r1);
+
+    // Bar 2 — Equity €280m (bordeaux lighter)
+    const bar2Top = yFor(EQ);
+    const r2 = document.createElementNS(NS, 'rect');
+    r2.setAttribute('class', 'wf-bar equity');
+    r2.setAttribute('x', bar2X); r2.setAttribute('y', bar2Top);
+    r2.setAttribute('width', barW); r2.setAttribute('height', baseline - bar2Top);
+    svg.appendChild(r2);
+
+    // Drop indicator (dashed line) from top of bar 1 over to bar 2
+    const dropLine = document.createElementNS(NS, 'line');
+    dropLine.setAttribute('class', 'wf-deduct-line');
+    dropLine.setAttribute('x1', bar1X + barW); dropLine.setAttribute('y1', bar1Top);
+    dropLine.setAttribute('x2', bar2X); dropLine.setAttribute('y2', bar1Top);
+    svg.appendChild(dropLine);
+
+    // Net-debt slice rect sitting on top of equity bar (the "missing" piece)
+    const ndRect = document.createElementNS(NS, 'rect');
+    ndRect.setAttribute('class', 'wf-bar deduct');
+    ndRect.setAttribute('x', bar2X); ndRect.setAttribute('y', bar1Top);
+    ndRect.setAttribute('width', barW); ndRect.setAttribute('height', bar2Top - bar1Top);
+    svg.appendChild(ndRect);
+
+    // Ground line
+    const ground = document.createElementNS(NS, 'line');
+    ground.setAttribute('x1', 30); ground.setAttribute('x2', 560);
+    ground.setAttribute('y1', baseline); ground.setAttribute('y2', baseline);
+    ground.setAttribute('stroke', 'var(--line-strong)'); ground.setAttribute('stroke-width', 1);
+    svg.appendChild(ground);
+
+    function txt(cls, x, y, content, anchor) {
+      const t = document.createElementNS(NS, 'text');
+      t.setAttribute('class', cls);
+      t.setAttribute('x', x); t.setAttribute('y', y);
+      if (anchor) t.setAttribute('text-anchor', anchor);
+      t.textContent = content;
+      svg.appendChild(t);
+      return t;
+    }
+
+    // ENTERPRISE VALUE €295m — labels above bar 1
+    txt('wf-label', bar1X + barW/2, bar1Top - 30, 'Enterprise Value', 'middle');
+    txt('wf-value accent', bar1X + barW/2, bar1Top - 10, '€295m', 'middle');
+
+    // Net debt label tucked between the bars, on the dashed line
+    txt('wf-label', bar1X + barW + (bar2X - bar1X - barW)/2, bar1Top - 8, '(−) Net debt €14.7m', 'middle');
+
+    // EQUITY VALUE €280m — labels above bar 2
+    txt('wf-label', bar2X + barW/2, bar2Top - 30, 'Equity Value', 'middle');
+    txt('wf-value accent', bar2X + barW/2, bar2Top - 10, '€280m', 'middle');
+
+    // Footnotes under bars
+    txt('wf-sub', bar1X + barW/2, baseline + 20, 'EV · DCF + comps central case', 'middle');
+    txt('wf-sub', bar2X + barW/2, baseline + 20, '€30.8m debt − €16.3m cash = €14.7m net debt', 'middle');
+
+    // Vertical divider before the share-price zone
+    const div = document.createElementNS(NS, 'line');
+    div.setAttribute('x1', 600); div.setAttribute('x2', 600);
+    div.setAttribute('y1', 50); div.setAttribute('y2', 240);
+    div.setAttribute('stroke', 'var(--line)'); div.setAttribute('stroke-width', 1);
+    div.setAttribute('stroke-dasharray', '2 4');
+    svg.appendChild(div);
+
+    // Division note
+    // (consolidated into final block below)
+
+    // Arrow
+    const arrow = document.createElementNS(NS, 'path');
+    arrow.setAttribute('class', 'wf-arrow');
+    arrow.setAttribute('d', 'M 620 145 L 700 145');
+    svg.appendChild(arrow);
+    const head = document.createElementNS(NS, 'path');
+    head.setAttribute('class', 'wf-arrow');
+    head.setAttribute('d', 'M 692 139 L 702 145 L 692 151');
+    svg.appendChild(head);
+
+    // Final result — the big number
+    txt('wf-label', 720, 95, 'Implied share price', 'start');
+    txt('wf-final', 720, 158, '€182', 'start');
+    txt('wf-sub', 815, 158, '/ share', 'start');
+    txt('wf-sub', 720, 188, '€280m equity ÷ 1,536,790 diluted shares', 'start');
+    txt('wf-sub', 720, 208, 'Stand-alone central case', 'start');
+  }
+
+  function applyFcf(view) {
+    fcfView = view;
+    document.getElementById('fcf-stat').setAttribute('aria-pressed', view === 'stat' ? 'true' : 'false');
+    document.getElementById('fcf-norm').setAttribute('aria-pressed', view === 'norm' ? 'true' : 'false');
+
+    const title = document.getElementById('fcf-title');
+    const body = document.getElementById('fcf-body');
+    const narr = document.getElementById('fcf-narrative');
+
+    if (view === 'stat') {
+      narr.setAttribute('data-s', 'bear');
+      title.innerHTML = 'Statutory view — CIR timing pressure';
+      body.textContent = 'Sidetrade\u2019s 2025 transition to European mid-cap status triggered a 3-year deferral on the State\u2019s CIR reimbursement. That creates a one-off €2.9m working-capital consumption weighing on 2025 FCF. Management itself communicates an operating cash flow of €8.7m "excluding the timing impact of the Research Tax Credit".';
+    } else {
+      narr.setAttribute('data-s', 'base');
+      title.innerHTML = 'Normalised view — recurring cash capacity';
+      body.textContent = 'This view neutralises the CIR timing decalage to reflect the model\u2019s recurring cash capacity. It is the preferred lens for the DCF, since the CIR effect is one-off and non-recurring.';
+    }
+
+    // Highlight target row in the table
+    document.getElementById('row-stat').style.color = view === 'stat' ? 'var(--bordeaux)' : 'var(--ink)';
+    document.getElementById('row-norm').style.color = view === 'norm' ? 'var(--bordeaux)' : 'var(--ink)';
+  }
+
+  // ─────────────────────────────────────────────────────────────
+  // Scrollspy
+  // ─────────────────────────────────────────────────────────────
+  function setupScrollspy() {
+    const links = Array.from(document.querySelectorAll('.nav-links a'));
+    const sections = links
+      .map(a => ({ a: a, el: document.querySelector(a.getAttribute('href')) }))
+      .filter(x => x.el);
+
+    function onScroll() {
+      const y = window.scrollY + 120;
+      let active = sections[0];
+      sections.forEach(s => { if (s.el.offsetTop <= y) active = s; });
+      links.forEach(l => l.classList.toggle('active', l === active.a));
+    }
+    document.addEventListener('scroll', onScroll, { passive: true });
+    onScroll();
+  }
+
+  // ─────────────────────────────────────────────────────────────
+  // Wiring
+  // ─────────────────────────────────────────────────────────────
+  document.addEventListener('DOMContentLoaded', () => {
+    document.querySelectorAll('.sc-card').forEach(b => {
+      b.addEventListener('click', () => applyScenario(b.dataset.s));
+    });
+    document.getElementById('fcf-stat').addEventListener('click', () => applyFcf('stat'));
+    document.getElementById('fcf-norm').addEventListener('click', () => applyFcf('norm'));
+
+    // Initial paint: trading, transaction, lbo bars
+    updateBar('trading', 185, 295, 425);
+    updateBar('transaction', 290, 410, 545);
+    updateBar('lbo', 135, 283, 455);
+
+    // v2: trajectory chart skeleton + sensitivity table + waterfall
+    buildTrajectoryChart();
+    buildSensitivity();
+    buildWaterfall();
+
+    applyScenario('base');
+    applyFcf('norm');
+    buildReferenceLines();
+    setupScrollspy();
+  });
+})();
+</script>
+
+</body>
+</html>

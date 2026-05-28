@@ -17,15 +17,15 @@ const sidebarGroups = [
     label: "Valuation",
     items: [
       { title: "DCF", to: "/cases/sidetrade-valuation/dcf" },
-      { title: "Trading comps", to: "/cases/sidetrade-valuation/trading" },
-      { title: "Transaction comps", to: "/cases/sidetrade-valuation/transaction" },
+      { title: "Trading comps", to: "/cases/sidetrade-valuation/trading-comps" },
+      { title: "Transaction comps", to: "/cases/sidetrade-valuation/transaction-comps" },
       { title: "LBO", to: "/cases/sidetrade-valuation/lbo" },
     ],
   },
   {
     label: "Synthesis",
     items: [
-      { title: "Football field", to: "/cases/sidetrade-valuation/football" },
+      { title: "Football field", to: "/cases/sidetrade-valuation/football-field" },
       { title: "Equity bridge", to: "/cases/sidetrade-valuation/equity-bridge" },
       { title: "Caveats", to: "/cases/sidetrade-valuation/caveats" },
     ],
@@ -39,7 +39,7 @@ const sidebarGroups = [
   },
   {
     label: "Documents",
-    items: [{ title: "Source files", to: "/cases/sidetrade-valuation/source-files" }],
+    items: [{ title: "Source files", to: "/cases/sidetrade-valuation/documents" }],
   },
 ];
 
@@ -48,15 +48,15 @@ const pageTitles = {
   snapshot: "Company Snapshot",
   market: "Market Reference",
   dcf: "DCF",
-  trading: "Trading Comps",
-  transaction: "Transaction Comps",
+  "trading-comps": "Trading Comps",
+  "transaction-comps": "Transaction Comps",
   lbo: "LBO",
-  football: "Football Field",
+  "football-field": "Football Field",
   "equity-bridge": "Equity Bridge",
   caveats: "Caveats",
   methodology: "Methodology",
   sources: "Sources",
-  "source-files": "Source Files",
+  documents: "Source Files",
 };
 
 const scenarioControls = [

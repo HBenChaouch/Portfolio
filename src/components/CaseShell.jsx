@@ -6,10 +6,6 @@ const analysisBase = "/cases/sidetrade-valuation/analysis";
 
 const sidebarGroups = [
   {
-    label: "Summary",
-    items: [{ title: "Valuation Summary", to: "/cases/sidetrade-valuation/summary", route: true, strong: true }],
-  },
-  {
     label: "Overview",
     items: [
       { title: "Company snapshot", hash: "snapshot" },
@@ -33,12 +29,12 @@ const sidebarGroups = [
     ],
   },
   {
-    label: "Documents",
-    items: [
-      { title: "Methodology", to: "/cases/sidetrade-valuation/methodology", route: true },
-      { title: "Sources", to: "/cases/sidetrade-valuation/documents", route: true },
-    ],
-  },
+  label: "Reference",
+  items: [
+    { title: "Methodology", hash: "methodology" },
+    { title: "Sources", hash: "sources" },
+  ],
+},
 ];
 
 const pageTitles = {

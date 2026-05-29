@@ -1,18 +1,22 @@
 import { pctInRange } from "../utils/finance.js";
-import { VALUATION_CONTEXT, enterpriseValue } from "../utils/dcfEngine.js";
+import { FY25, VALUATION_CONTEXT, enterpriseValue } from "../utils/dcfEngine.js";
 
 export default function FootballField({ ranges, activeScenario }) {
-  const fairValue = enterpriseValue("base");
+  const fairValue = VALUATION_CONTEXT.tradingRange.base;
   const controlValue = VALUATION_CONTEXT.controlEv;
+  const marketValue = (VALUATION_CONTEXT.sharePriceRef * FY25.dilutedShares) / 1000000 + FY25.netDebt;
 
   return (
     <div className="football-field">
       <div className="range-stack">
         <div className="reference fair" style={{ left: `${pctInRange(fairValue)}%` }}>
-          <span>Fair EUR{fairValue.toFixed(0)}m</span>
+          <span>Fair €{fairValue.toFixed(0)}m</span>
         </div>
         <div className="reference control" style={{ left: `${pctInRange(controlValue)}%` }}>
-          <span>Control EUR{controlValue.toFixed(0)}m</span>
+          <span>Control €{controlValue.toFixed(0)}m</span>
+        </div>
+        <div className="reference market" style={{ left: `${pctInRange(marketValue)}%` }}>
+          <span>Market ref. €{marketValue.toFixed(0)}m</span>
         </div>
         {ranges.map((range) => {
           const left = pctInRange(range.low);
@@ -30,13 +34,13 @@ export default function FootballField({ ranges, activeScenario }) {
                 <div className="range-bar" style={{ left: `${left}%`, width: `${right - left}%` }} />
                 <div className="range-tick" style={{ left: `${base}%` }} />
                 <span className="range-end left" style={{ left: `${left}%` }}>
-                  EUR{range.low.toFixed(0)}m
+                  €{range.low.toFixed(0)}m
                 </span>
                 <span className="range-end right" style={{ left: `${right}%` }}>
-                  EUR{range.high.toFixed(0)}m
+                  €{range.high.toFixed(0)}m
                 </span>
               </div>
-              <div className="range-value">EUR{range.base.toFixed(0)}m</div>
+              <div className="range-value">€{range.base.toFixed(0)}m</div>
             </div>
           );
         })}
@@ -44,7 +48,7 @@ export default function FootballField({ ranges, activeScenario }) {
       <div className="range-axis">
         {[100, 200, 300, 400, 500, 600].map((tick) => (
           <span key={tick} style={{ left: `${pctInRange(tick)}%` }}>
-            EUR{tick}m
+            €{tick}m
           </span>
         ))}
       </div>

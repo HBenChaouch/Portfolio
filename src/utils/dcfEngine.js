@@ -58,7 +58,7 @@ const EXIT_MULTIPLE = 15;
 export const VALUATION_CONTEXT = {
   subscriptionRevenue: 53.594,
   controlEv: 410,
-  sharePriceRef: 34.20,
+  sharePriceRef: 166,
   controlPremium: 0.20,
   liquidityDiscount: -0.05,
   interestCoverage: 7.1,
@@ -177,7 +177,8 @@ export function discountedCashflows(scenarioId) {
 
 export function terminalValue(scenarioId) {
   const scenario = getScenario(scenarioId);
-  const terminalYear = buildTrajectory(scenarioId).at(-1);
+  const trajectory = buildTrajectory(scenarioId);
+  const terminalYear = trajectory[trajectory.length - 1];
   const gordon = (terminalYear.fcf * (1 + scenario.g)) / (scenario.wacc - scenario.g);
   const exitMultiple = terminalYear.ebitda * EXIT_MULTIPLE;
   const impliedExitMultiple = gordon / terminalYear.ebitda;
@@ -210,7 +211,7 @@ export function sensitivityWaccG(scenarioId, waccs, gs) {
   const scenario = getScenario(scenarioId);
   const trajectory = buildTrajectory(scenarioId);
   const fcfs = trajectory.slice(1).map((year) => year.fcf);
-  const terminalFcf = fcfs.at(-1);
+  const terminalFcf = fcfs[fcfs.length - 1];
 
   return gs.map((g) =>
     waccs.map((wacc) => {
@@ -226,7 +227,7 @@ export function sensitivityWaccG(scenarioId, waccs, gs) {
 export function sensitivityWaccExit(scenarioId, waccs, multiples) {
   const trajectory = buildTrajectory(scenarioId);
   const fcfs = trajectory.slice(1).map((year) => year.fcf);
-  const terminalEbitda = trajectory.at(-1).ebitda;
+  const terminalEbitda = trajectory[trajectory.length - 1].ebitda;
 
   return multiples.map((multiple) =>
     waccs.map((wacc) => {
@@ -244,7 +245,7 @@ export function marginPathSensitivity(scenarioId) {
   function evFromPath(pathBuilder) {
     const trajectory = buildTrajectoryWithMarginPath(scenarioId, pathBuilder);
     const fcfs = trajectory.slice(1).map((year) => year.fcf);
-    const terminalFcf = fcfs.at(-1);
+    const terminalFcf = fcfs[fcfs.length - 1];
     const pvFcfs = fcfs.reduce((sum, fcf, index) => {
       return sum + fcf / Math.pow(1 + scenario.wacc, index + 0.5);
     }, 0);
@@ -270,7 +271,7 @@ export function crossCheckFcf(scenarioId) {
 
     if (delta > 0.01) {
       console.warn(
-        `FCF cross-check divergence in ${scenarioId} ${year.year}: ${delta.toFixed(3)} EURm`
+        `FCF cross-check divergence in ${scenarioId} ${year.year}: ${delta.toFixed(3)} €m`
       );
     }
 
@@ -287,7 +288,7 @@ export function crossCheckFcf(scenarioId) {
 export function scenarioSummary(scenarioId) {
   const scenario = getScenario(scenarioId);
   const trajectory = buildTrajectory(scenarioId);
-  const terminalYear = trajectory.at(-1);
+  const terminalYear = trajectory[trajectory.length - 1];
   const ev = enterpriseValue(scenarioId);
 
   return {

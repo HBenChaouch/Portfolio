@@ -1,7 +1,7 @@
 import { buildTrajectory, sensitivityWaccG } from "./dcfEngine.js";
 
 export function fmtMoney(value, decimals = 0) {
-  return `EUR${value.toFixed(decimals)}m`;
+  return `€${value.toFixed(decimals)}m`;
 }
 
 export function fmtPercent(value, decimals = 1) {

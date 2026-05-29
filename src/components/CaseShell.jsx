@@ -1,62 +1,51 @@
+import { useEffect, useMemo, useState } from "react";
 import { Link, NavLink, Outlet, useLocation } from "react-router-dom";
 import { useSidetradeScenario } from "../context/SidetradeScenarioContext.jsx";
 
+const analysisBase = "/cases/sidetrade-valuation/analysis";
+
 const sidebarGroups = [
   {
-    label: null,
-    items: [{ title: "Valuation Summary", to: "/cases/sidetrade-valuation/summary", strong: true }],
+    label: "Summary",
+    items: [{ title: "Valuation Summary", to: "/cases/sidetrade-valuation/summary", route: true, strong: true }],
   },
   {
     label: "Overview",
     items: [
-      { title: "Company snapshot", to: "/cases/sidetrade-valuation/snapshot" },
-      { title: "Market reference", to: "/cases/sidetrade-valuation/market" },
+      { title: "Company snapshot", hash: "snapshot" },
+      { title: "Market sanity check", hash: "market" },
     ],
   },
   {
     label: "Valuation",
     items: [
-      { title: "DCF", to: "/cases/sidetrade-valuation/dcf" },
-      { title: "Trading comps", to: "/cases/sidetrade-valuation/trading-comps" },
-      { title: "Transaction comps", to: "/cases/sidetrade-valuation/transaction-comps" },
-      { title: "LBO", to: "/cases/sidetrade-valuation/lbo" },
+      { title: "DCF", hash: "dcf" },
+      { title: "Trading comps", hash: "trading" },
+      { title: "Transaction comps", hash: "transaction" },
+      { title: "LBO", hash: "lbo" },
     ],
   },
   {
     label: "Synthesis",
     items: [
-      { title: "Football field", to: "/cases/sidetrade-valuation/football-field" },
-      { title: "Equity bridge", to: "/cases/sidetrade-valuation/equity-bridge" },
-      { title: "Caveats", to: "/cases/sidetrade-valuation/caveats" },
-    ],
-  },
-  {
-    label: "Model",
-    items: [
-      { title: "Methodology", to: "/cases/sidetrade-valuation/methodology" },
-      { title: "Sources", to: "/cases/sidetrade-valuation/sources" },
+      { title: "Football field", hash: "football" },
+      { title: "Caveats & limits", hash: "caveats" },
     ],
   },
   {
     label: "Documents",
-    items: [{ title: "Source files", to: "/cases/sidetrade-valuation/documents" }],
+    items: [
+      { title: "Methodology", to: "/cases/sidetrade-valuation/methodology", route: true },
+      { title: "Sources", to: "/cases/sidetrade-valuation/documents", route: true },
+    ],
   },
 ];
 
 const pageTitles = {
   summary: "Valuation Summary",
-  snapshot: "Company Snapshot",
-  market: "Market Reference",
-  dcf: "DCF",
-  "trading-comps": "Trading Comps",
-  "transaction-comps": "Transaction Comps",
-  lbo: "LBO",
-  "football-field": "Football Field",
-  "equity-bridge": "Equity Bridge",
-  caveats: "Caveats",
+  analysis: "Long-form Analysis",
   methodology: "Methodology",
-  sources: "Sources",
-  documents: "Source Files",
+  documents: "Sources",
 };
 
 const scenarioControls = [
@@ -66,8 +55,9 @@ const scenarioControls = [
 ];
 
 function getCurrentTitle(pathname) {
-  const leaf = pathname.split("/").filter(Boolean).at(-1);
-  return pageTitles[leaf] || "Valuation Summary";
+  const segments = pathname.split("/").filter(Boolean);
+  const leaf = segments[segments.length - 1];
+  return pageTitles[leaf] || "Long-form Analysis";
 }
 
 function getLastSaved() {
@@ -78,38 +68,104 @@ function getLastSaved() {
   }).format(new Date());
 }
 
+function scrollToSection(hash) {
+  const el = document.getElementById(hash);
+  if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+}
+
 export default function CaseShell() {
   const location = useLocation();
   const { activeScenario, setActiveScenario } = useSidetradeScenario();
+  const [activeAnchor, setActiveAnchor] = useState("");
+  const isAnalysis = location.pathname.endsWith("/analysis");
   const title = getCurrentTitle(location.pathname);
   const lastSaved = getLastSaved();
+
+  const anchorIds = useMemo(
+    () => sidebarGroups.flatMap((group) => group.items.map((item) => item.hash).filter(Boolean)),
+    []
+  );
+
+  useEffect(() => {
+    if (!isAnalysis) {
+      setActiveAnchor("");
+      return undefined;
+    }
+
+    if (location.hash) {
+      window.requestAnimationFrame(() => scrollToSection(location.hash.slice(1)));
+    }
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const visible = entries
+          .filter((entry) => entry.isIntersecting)
+          .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
+        if (visible?.target?.id) setActiveAnchor(visible.target.id);
+      },
+      { rootMargin: "-12% 0px -82% 0px", threshold: 0 }
+    );
+
+    anchorIds.forEach((id) => {
+      const el = document.getElementById(id);
+      if (el) observer.observe(el);
+    });
+
+    return () => observer.disconnect();
+  }, [anchorIds, isAnalysis, location.hash]);
+
+  function handleAnchorClick(event, hash) {
+    if (!isAnalysis) return;
+    event.preventDefault();
+    history.replaceState(null, "", `${analysisBase}#${hash}`);
+    scrollToSection(hash);
+    setActiveAnchor(hash);
+  }
 
   return (
     <div className="case-shell">
       <aside className="case-sidebar">
         <Link className="workspace" to="/">Workspace</Link>
         <div className="sidebar-brand">
-          <span>Project Alpha</span>
-          <small>Valuation Summary</small>
+          <span>Sidetrade · Valuation</span>
+          <small>ALBFR.PA</small>
         </div>
         <nav className="sidebar-nav" aria-label="Case navigation">
           {sidebarGroups.map((group, index) => (
-            <div className="sidebar-group" key={group.label || "summary"}>
-              {group.label ? <div className="sidebar-group-title">{group.label}</div> : null}
-              {group.items.map((item) => (
-                <NavLink
-                  className={({ isActive }) => [
-                    "sidebar-entry",
-                    item.strong ? "sidebar-entry-strong" : "",
-                    isActive ? "active" : "",
-                  ].filter(Boolean).join(" ")}
-                  end
-                  key={item.to}
-                  to={item.to}
-                >
-                  {item.title}
-                </NavLink>
-              ))}
+            <div className="sidebar-group" key={group.label}>
+              <div className="sidebar-group-title">{group.label}</div>
+              {group.items.map((item) => {
+                if (item.route) {
+                  return (
+                    <NavLink
+                      className={({ isActive }) => [
+                        "sidebar-entry",
+                        item.strong ? "sidebar-entry-strong" : "",
+                        isActive ? "active" : "",
+                      ].filter(Boolean).join(" ")}
+                      end
+                      key={item.to}
+                      to={item.to}
+                    >
+                      {item.title}
+                    </NavLink>
+                  );
+                }
+
+                return (
+                  <a
+                    className={[
+                      "sidebar-entry",
+                      isAnalysis && activeAnchor === item.hash ? "active" : "",
+                    ].filter(Boolean).join(" ")}
+                    href={`${analysisBase}#${item.hash}`}
+                    key={item.hash}
+                    onClick={(event) => handleAnchorClick(event, item.hash)}
+                  >
+                    {item.title}
+                  </a>
+                );
+              })}
               {index < sidebarGroups.length - 1 ? <div className="sidebar-rule" /> : null}
             </div>
           ))}
@@ -122,7 +178,7 @@ export default function CaseShell() {
       <main className="case-main">
         <header className="case-control-bar">
           <div className="control-title">
-            <span>Project Alpha</span>
+            <span>Sidetrade · Valuation</span>
             <i />
             <span>{title}</span>
           </div>
@@ -140,12 +196,13 @@ export default function CaseShell() {
                 </button>
               ))}
             </div>
-            <button className="control-button" type="button">EUR ▾</button>
+            <button className="control-button" type="button">€ ▾</button>
             <span className="control-date">09 May 2025</span>
             <button className="control-menu" type="button" aria-label="More options">...</button>
           </div>
         </header>
         <Outlet />
+        <p className="view-rounding-note">Figures may not sum due to rounding.</p>
       </main>
     </div>
   );

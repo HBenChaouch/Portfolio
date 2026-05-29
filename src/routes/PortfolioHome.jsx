@@ -1,8 +1,10 @@
-import { Link } from "react-router-dom";
-import { motion } from "framer-motion";
+﻿import { Link } from "react-router-dom";
+import { motion, useReducedMotion } from "framer-motion";
 import { portfolioCases } from "../data/portfolioCases.js";
 
 export default function PortfolioHome() {
+  const reduceMotion = useReducedMotion();
+
   return (
     <main className="portfolio-home">
       <section className="home-hero">
@@ -21,7 +23,7 @@ export default function PortfolioHome() {
               animate={{ opacity: 1, y: 0 }}
               className="case-card"
               initial={{ opacity: 0, y: 16 }}
-              transition={{ delay: index * 0.08, duration: 0.35 }}
+              transition={{ delay: reduceMotion ? 0 : index * 0.05, duration: reduceMotion ? 0 : 0.24, ease: "easeOut" }}
             >
               <div>
                 <span className="case-status">{item.status}</span>

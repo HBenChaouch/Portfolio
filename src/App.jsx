@@ -2,18 +2,9 @@ import { Navigate, Route, Routes } from "react-router-dom";
 import CaseShell from "./components/CaseShell.jsx";
 import { SidetradeScenarioProvider } from "./context/SidetradeScenarioContext.jsx";
 import {
-  CaveatsPage,
-  CompanySnapshotPage,
-  DcfPage,
+  AnalysisView,
   DocumentsPage,
-  EquityBridgePage,
-  FootballFieldPage,
-  LboPage,
-  MarketReferencePage,
   MethodologyPage,
-  SourcesPage,
-  TradingCompsPage,
-  TransactionCompsPage,
 } from "./routes/CaseSubPages.jsx";
 import PortfolioHome from "./routes/PortfolioHome.jsx";
 import SummaryView from "./routes/SummaryView.jsx";
@@ -32,18 +23,19 @@ export default function App() {
       >
         <Route index element={<Navigate to="summary" replace />} />
         <Route path="summary" element={<SummaryView />} />
-        <Route path="snapshot" element={<CompanySnapshotPage />} />
-        <Route path="market" element={<MarketReferencePage />} />
-        <Route path="dcf" element={<DcfPage />} />
-        <Route path="trading-comps" element={<TradingCompsPage />} />
-        <Route path="transaction-comps" element={<TransactionCompsPage />} />
-        <Route path="lbo" element={<LboPage />} />
-        <Route path="football-field" element={<FootballFieldPage />} />
-        <Route path="equity-bridge" element={<EquityBridgePage />} />
-        <Route path="caveats" element={<CaveatsPage />} />
+        <Route path="analysis" element={<AnalysisView />} />
         <Route path="methodology" element={<MethodologyPage />} />
-        <Route path="sources" element={<SourcesPage />} />
         <Route path="documents" element={<DocumentsPage />} />
+        <Route path="sources" element={<Navigate to="documents" replace />} />
+        <Route path="snapshot" element={<Navigate to="../analysis#snapshot" replace />} />
+        <Route path="market" element={<Navigate to="../analysis#market" replace />} />
+        <Route path="dcf" element={<Navigate to="../analysis#dcf" replace />} />
+        <Route path="trading-comps" element={<Navigate to="../analysis#trading" replace />} />
+        <Route path="transaction-comps" element={<Navigate to="../analysis#transaction" replace />} />
+        <Route path="lbo" element={<Navigate to="../analysis#lbo" replace />} />
+        <Route path="football-field" element={<Navigate to="../analysis#football" replace />} />
+        <Route path="equity-bridge" element={<Navigate to="../analysis#football" replace />} />
+        <Route path="caveats" element={<Navigate to="../analysis#caveats" replace />} />
       </Route>
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>

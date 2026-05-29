@@ -1,4 +1,4 @@
-import { motion } from "framer-motion";
+﻿import { motion, useReducedMotion } from "framer-motion";
 import { useSidetradeScenario } from "../context/SidetradeScenarioContext.jsx";
 import {
   FY25,
@@ -53,7 +53,7 @@ function MiniEvTrajectory({ scenarioId }) {
   ];
   points[points.length - 1] = {
     year: 2030,
-    value: points.at(-1).value + pvTerminal,
+    value: points[points.length - 1].value + pvTerminal,
   };
 
   const width = 420;
@@ -90,8 +90,8 @@ function MiniEvTrajectory({ scenarioId }) {
             </text>
           </g>
         ))}
-        <text className="summary-end-label" x={x(points.length - 1) + 8} y={y(points.at(-1).value) + 4}>
-          {money(points.at(-1).value, 0)}
+        <text className="summary-end-label" x={x(points.length - 1) + 8} y={y(points[points.length - 1].value) + 4}>
+          {money(points[points.length - 1].value, 0)}
         </text>
       </svg>
     </div>
@@ -137,7 +137,7 @@ function MiniSensitivity({ scenarioId }) {
   );
 }
 
-function CompactFootballField({ scenarioId }) {
+function CompactFootballField({ reduceMotion, scenarioId }) {
   const fairValue = enterpriseValue("base");
   const ranges = [
     { label: "DCF", low: enterpriseValue("bear"), base: enterpriseValue(scenarioId), high: enterpriseValue("bull") },
@@ -163,12 +163,12 @@ function CompactFootballField({ scenarioId }) {
               <motion.div
                 animate={{ left: `${pctX(range.low)}%`, width: `${pctX(range.high) - pctX(range.low)}%` }}
                 className={range.label === "DCF" ? "summary-ff-bar dcf" : "summary-ff-bar"}
-                transition={{ duration: 0.35, ease: "easeOut" }}
+                transition={{ duration: reduceMotion ? 0 : 0.24, ease: "easeOut" }}
               />
               <motion.i
                 animate={{ left: `${pctX(range.base)}%` }}
                 className="summary-ff-tick"
-                transition={{ duration: 0.35, ease: "easeOut" }}
+                transition={{ duration: reduceMotion ? 0 : 0.24, ease: "easeOut" }}
               />
             </div>
             <strong>{money(range.base, 0)}</strong>
@@ -199,6 +199,7 @@ function MiniFinancialKpi({ label, value, yoy }) {
 }
 
 export default function SummaryView() {
+  const reduceMotion = useReducedMotion();
   const { activeScenario, scenario } = useSidetradeScenario();
   const bridge = equityBridge(activeScenario);
   const current = SCENARIOS[activeScenario];
@@ -208,6 +209,19 @@ export default function SummaryView() {
 
   return (
     <section className="summary-view" aria-label="Valuation summary">
+      <div className="summary-case-hero">
+        <p className="summary-case-tag">Sidetrade · Valuation · ALBFR.PA</p>
+        <h1>Sidetrade fair value converges around <em>~€295m EV</em> stand-alone, ~€410m EV in a control case</h1>
+        <p>
+          A four-method triangulation — DCF, trading comps, transaction comps and LBO affordability — applied to <strong>Sidetrade</strong> (Euronext Growth: ALBFR), a profitable AI-native Order-to-Cash SaaS. Toggle Bear / Base / Bull to recompose the DCF and watch the football field react.
+        </p>
+        <div className="summary-case-kpis">
+          <KpiTile label="Revenue FY25" value={money(FY25.revenue, 1)} />
+          <KpiTile label="Subscriptions" value={money(VALUATION_CONTEXT.subscriptionRevenue, 1)} />
+          <KpiTile label="EBITDA margin" value={pct(FY25.ebitdaMargin, 1)} />
+          <KpiTile label="Net cash position" value={`(${money(FY25.netDebt, 1)})`} />
+        </div>
+      </div>
       <div className="summary-grid">
         <div className="summary-hero">
           <p className="summary-section-label">Indicative enterprise value</p>
@@ -229,7 +243,7 @@ export default function SummaryView() {
           </div>
         </div>
 
-        <CompactFootballField scenarioId={activeScenario} />
+        <CompactFootballField reduceMotion={reduceMotion} scenarioId={activeScenario} />
 
         <div className="summary-bottom-grid">
           <BottomPanel title="FY25 Financial Highlights">

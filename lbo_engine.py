@@ -5,20 +5,28 @@ Purpose: (1) solve affordability EVs by bisection (Excel Goal Seek equivalent),
 (2) compute sensitivity matrices, (3) provide expected values for the
 self-check block in LBO_full (engine vs live formulas).
 
-Conventions (per Build Spec v3):
+Conventions (per Build Spec v3, tax fixed 15-Jul-2026):
 - Interest on OPENING debt (non-circular variant, documented deviation §3.4)
 - Mandatory amort 1% of initial TLB; cash sweep 75% of excess over min cash
 - ATAD cap MAX(3, 30% x EBITDA); statutory tax 25% IS + 3.3% contribution
-  over EUR 0.763m, CIR EUR 3.5m offset, cash tax floored at 0
+  over EUR 0.763m, cash tax floored at 0
+- CIR single-count convention: the DCF EBITDA/EBIT already include the CIR
+  (EUR 3.5m flat, booked as operating subsidy). The CIR is therefore
+  (i) EXCLUDED from taxable income (non-taxable per CGI) and
+  (ii) NOT deducted a second time from cash tax.
+  Previous version double-counted it (in EBITDA and again in the tax line) —
+  fixed per portfolio audit note of 15-Jul-2026, section 4.6.
 - Earn-outs + ezyCollect deferred settled at close (Uses)
 - Rollover: Novasque 35% stake x 35% rolled = 12.25% of equity purchase
 """
+import os
 from openpyxl import load_workbook
 
-WB = r"C:\Users\h2amb\Desktop\Hamza\Portefolio\Sidetrade\Sidetrade_Valuation_2026_v2.xlsx"
-# Cached values are read from the untouched original (openpyxl wipes cached
-# values on save; DCF projections are identical in both files).
-WB_DATA = r"C:\Users\h2amb\Downloads\Sidetrade_Valuation_2026.xlsx"
+_DIR = os.path.dirname(os.path.abspath(__file__))
+WB = os.path.join(_DIR, "Sidetrade_Valuation_2026_v2.xlsx")
+# Cached DCF values are read from the same workbook (data_only): run a full
+# Excel/LibreOffice recalculation after any openpyxl save, which wipes them.
+WB_DATA = WB
 
 # ---- Deal parameters (Cat A/B/C/D per spec v3) -------------------------
 EURIBOR_3M   = 0.02373   # 09-Jun-2026, euribor-rates.eu (verified)
@@ -84,10 +92,10 @@ def run_lbo(ev, sc_data, lev_mult=LEV_MULT, exit_mult=EXIT_MULT):
         cap = max(3.0, 0.30 * sc_data["ebitda"][t])
         deduct = min(fin, cap)
         carry += fin - deduct
-        taxable = sc_data["ebit"][t] - deduct
+        taxable = sc_data["ebit"][t] - CIR - deduct   # CIR non-taxable (single count)
         theo_is = max(0.0, IS_RATE * taxable)
         contrib = CONTRIB * max(0.0, theo_is - CONTRIB_THR)
-        cash_tax = max(0.0, theo_is + contrib - CIR)
+        cash_tax = max(0.0, theo_is + contrib)        # no second CIR deduction
         ni = sc_data["ebit"][t] - fin - cash_tax
         mand = min(MAND_RATE * tlb, opening)
         cbs = cash + ni + sc_data["da"][t] + sc_data["capex"][t] + sc_data["dwc"][t] - mand

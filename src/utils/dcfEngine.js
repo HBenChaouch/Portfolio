@@ -58,13 +58,13 @@ const EXIT_MULTIPLE = 15;
 export const VALUATION_CONTEXT = {
   subscriptionRevenue: 53.594,
   controlEv: 410,
-  sharePriceRef: 166,
+  sharePriceRef: 174, // cours ALBFR du 15/07/2026
   controlPremium: 0.20,
   liquidityDiscount: -0.05,
   interestCoverage: 7.1,
-  tradingRange: { low: 185, base: 295, high: 425 },
-  transactionRange: { low: 290, base: 410, high: 545 },
-  lboRange: { low: 135, base: 283, high: 455 },
+  tradingRange: { low: 171, base: 202, high: 264 }, // 15/07/2026 - derive de la table peers (workbook v2, Trading_comps)
+  transactionRange: { low: 289, base: 411, high: 547 },
+  lboRange: { low: 222.5, base: 241.9, high: 283.5 }, // LBO_full v2: 4.0x, 7.16% all-in, sweep 75%, exit 15x
   lboIrr: { low: 0.25, base: 0.225, high: 0.18 },
 };
 

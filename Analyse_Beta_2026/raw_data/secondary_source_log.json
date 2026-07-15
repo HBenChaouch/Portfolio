@@ -1,0 +1,65 @@
+{
+  "retrieved_at_utc": "2026-07-15T20:00:24.573Z",
+  "controls": [
+    {
+      "ticker": "BL",
+      "provider": "Nasdaq",
+      "url": "https://api.nasdaq.com/api/quote/BL/historical?assetclass=stocks&fromdate=2026-07-01&todate=2026-07-15&limit=50",
+      "http_status": 200,
+      "observations": 9
+    },
+    {
+      "ticker": "BL",
+      "provider": "Stooq",
+      "url": "https://stooq.com/q/d/l/?s=bl.us&d1=20260701&d2=20260715&i=d",
+      "http_status": 200,
+      "observations": 0,
+      "status": "blocked_by_browser_verification"
+    },
+    {
+      "ticker": "BILL",
+      "provider": "Nasdaq",
+      "url": "https://api.nasdaq.com/api/quote/BILL/historical?assetclass=stocks&fromdate=2026-07-01&todate=2026-07-15&limit=50",
+      "http_status": 200,
+      "observations": 9
+    },
+    {
+      "ticker": "BILL",
+      "provider": "Stooq",
+      "url": "https://stooq.com/q/d/l/?s=bill.us&d1=20260701&d2=20260715&i=d",
+      "http_status": 200,
+      "observations": 0,
+      "status": "blocked_by_browser_verification"
+    },
+    {
+      "ticker": "NCNO",
+      "provider": "Nasdaq",
+      "url": "https://api.nasdaq.com/api/quote/NCNO/historical?assetclass=stocks&fromdate=2026-07-01&todate=2026-07-15&limit=50",
+      "http_status": 200,
+      "observations": 9
+    },
+    {
+      "ticker": "NCNO",
+      "provider": "Stooq",
+      "url": "https://stooq.com/q/d/l/?s=ncno.us&d1=20260701&d2=20260715&i=d",
+      "http_status": 200,
+      "observations": 0,
+      "status": "blocked_by_browser_verification"
+    },
+    {
+      "ticker": "WK",
+      "provider": "Nasdaq",
+      "url": "https://api.nasdaq.com/api/quote/WK/historical?assetclass=stocks&fromdate=2026-07-01&todate=2026-07-15&limit=50",
+      "http_status": 200,
+      "observations": 9
+    },
+    {
+      "ticker": "WK",
+      "provider": "Stooq",
+      "url": "https://stooq.com/q/d/l/?s=wk.us&d1=20260701&d2=20260715&i=d",
+      "http_status": 200,
+      "observations": 0,
+      "status": "blocked_by_browser_verification"
+    }
+  ]
+}

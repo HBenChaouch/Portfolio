@@ -1,0 +1,115 @@
+{
+  "retrieved_at_utc": "2026-07-15T20:00:24.328Z",
+  "requested_start": "2024-07-08",
+  "requested_end_exclusive": "2026-07-16",
+  "instruments": [
+    {
+      "name": "Sidetrade",
+      "ticker": "ALBFR.PA",
+      "currency": "EUR",
+      "market": "France",
+      "provider": "Yahoo Finance chart API via yfinance-compatible endpoint",
+      "url": "https://query1.finance.yahoo.com/v8/finance/chart/ALBFR.PA?period1=1720396800&period2=1784160000&interval=1d&events=div%2Csplits&includeAdjustedClose=true",
+      "first_date": "2024-07-08",
+      "last_date": "2026-07-15",
+      "observations": 516,
+      "filename": "yahoo_ALBFR_PA_daily.csv"
+    },
+    {
+      "name": "BlackLine",
+      "ticker": "BL",
+      "currency": "USD",
+      "market": "US",
+      "provider": "Yahoo Finance chart API via yfinance-compatible endpoint",
+      "url": "https://query1.finance.yahoo.com/v8/finance/chart/BL?period1=1720396800&period2=1784160000&interval=1d&events=div%2Csplits&includeAdjustedClose=true",
+      "first_date": "2024-07-08",
+      "last_date": "2026-07-15",
+      "observations": 507,
+      "filename": "yahoo_BL_daily.csv"
+    },
+    {
+      "name": "BILL",
+      "ticker": "BILL",
+      "currency": "USD",
+      "market": "US",
+      "provider": "Yahoo Finance chart API via yfinance-compatible endpoint",
+      "url": "https://query1.finance.yahoo.com/v8/finance/chart/BILL?period1=1720396800&period2=1784160000&interval=1d&events=div%2Csplits&includeAdjustedClose=true",
+      "first_date": "2024-07-08",
+      "last_date": "2026-07-15",
+      "observations": 507,
+      "filename": "yahoo_BILL_daily.csv"
+    },
+    {
+      "name": "nCino",
+      "ticker": "NCNO",
+      "currency": "USD",
+      "market": "US",
+      "provider": "Yahoo Finance chart API via yfinance-compatible endpoint",
+      "url": "https://query1.finance.yahoo.com/v8/finance/chart/NCNO?period1=1720396800&period2=1784160000&interval=1d&events=div%2Csplits&includeAdjustedClose=true",
+      "first_date": "2024-07-08",
+      "last_date": "2026-07-15",
+      "observations": 507,
+      "filename": "yahoo_NCNO_daily.csv"
+    },
+    {
+      "name": "Workiva",
+      "ticker": "WK",
+      "currency": "USD",
+      "market": "US",
+      "provider": "Yahoo Finance chart API via yfinance-compatible endpoint",
+      "url": "https://query1.finance.yahoo.com/v8/finance/chart/WK?period1=1720396800&period2=1784160000&interval=1d&events=div%2Csplits&includeAdjustedClose=true",
+      "first_date": "2024-07-08",
+      "last_date": "2026-07-15",
+      "observations": 507,
+      "filename": "yahoo_WK_daily.csv"
+    },
+    {
+      "name": "CAC 40",
+      "ticker": "^FCHI",
+      "currency": "EUR",
+      "market": "France",
+      "provider": "Yahoo Finance chart API via yfinance-compatible endpoint",
+      "url": "https://query1.finance.yahoo.com/v8/finance/chart/%5EFCHI?period1=1720396800&period2=1784160000&interval=1d&events=div%2Csplits&includeAdjustedClose=true",
+      "first_date": "2024-07-08",
+      "last_date": "2026-07-15",
+      "observations": 516,
+      "filename": "yahoo_IDX_FCHI_daily.csv"
+    },
+    {
+      "name": "S&P 500",
+      "ticker": "^GSPC",
+      "currency": "USD",
+      "market": "US",
+      "provider": "Yahoo Finance chart API via yfinance-compatible endpoint",
+      "url": "https://query1.finance.yahoo.com/v8/finance/chart/%5EGSPC?period1=1720396800&period2=1784160000&interval=1d&events=div%2Csplits&includeAdjustedClose=true",
+      "first_date": "2024-07-08",
+      "last_date": "2026-07-15",
+      "observations": 507,
+      "filename": "yahoo_IDX_GSPC_daily.csv"
+    },
+    {
+      "name": "Nasdaq Composite",
+      "ticker": "^IXIC",
+      "currency": "USD",
+      "market": "US",
+      "provider": "Yahoo Finance chart API via yfinance-compatible endpoint",
+      "url": "https://query1.finance.yahoo.com/v8/finance/chart/%5EIXIC?period1=1720396800&period2=1784160000&interval=1d&events=div%2Csplits&includeAdjustedClose=true",
+      "first_date": "2024-07-08",
+      "last_date": "2026-07-15",
+      "observations": 507,
+      "filename": "yahoo_IDX_IXIC_daily.csv"
+    },
+    {
+      "name": "STOXX Europe 600",
+      "ticker": "^STOXX",
+      "currency": "EUR",
+      "market": "Europe",
+      "provider": "Yahoo Finance chart API via yfinance-compatible endpoint",
+      "url": "https://query1.finance.yahoo.com/v8/finance/chart/%5ESTOXX?period1=1720396800&period2=1784160000&interval=1d&events=div%2Csplits&includeAdjustedClose=true",
+      "first_date": "2024-07-08",
+      "last_date": "2026-07-15",
+      "observations": 504,
+      "filename": "yahoo_IDX_STOXX_daily.csv"
+    }
+  ]
+}

@@ -1,0 +1,2947 @@
+{
+  "BL": {
+    "entity": "BlackLine, Inc.",
+    "shares": [
+      {
+        "tag": "EntityCommonStockSharesOutstanding",
+        "label": "Entity Common Stock, Shares Outstanding",
+        "latest_shares": {
+          "end": "2026-04-30",
+          "val": 58660917,
+          "accn": "0001628280-26-032255",
+          "fy": 2026,
+          "fp": "Q1",
+          "form": "10-Q",
+          "filed": "2026-05-07",
+          "frame": "CY2026Q1I"
+        }
+      }
+    ],
+    "share_candidates_all_taxonomies": [
+      {
+        "taxonomy": "dei",
+        "tag": "EntityCommonStockSharesOutstanding",
+        "label": "Entity Common Stock, Shares Outstanding",
+        "latest_shares": {
+          "end": "2026-04-30",
+          "val": 58660917,
+          "accn": "0001628280-26-032255",
+          "fy": 2026,
+          "fp": "Q1",
+          "form": "10-Q",
+          "filed": "2026-05-07",
+          "frame": "CY2026Q1I"
+        }
+      },
+      {
+        "taxonomy": "us-gaap",
+        "tag": "CommonStockSharesOutstanding",
+        "label": "Common Stock, Shares, Outstanding",
+        "latest_shares": {
+          "end": "2026-03-31",
+          "val": 59171590,
+          "accn": "0001628280-26-032255",
+          "fy": 2026,
+          "fp": "Q1",
+          "form": "10-Q",
+          "filed": "2026-05-07",
+          "frame": "CY2026Q1I"
+        }
+      },
+      {
+        "taxonomy": "us-gaap",
+        "tag": "PreferredStockSharesOutstanding",
+        "label": "Preferred Stock, Shares Outstanding",
+        "latest_shares": {
+          "end": "2019-12-31",
+          "val": 0,
+          "accn": "0001564590-20-007371",
+          "fy": 2019,
+          "fp": "FY",
+          "form": "10-K",
+          "filed": "2020-02-27",
+          "frame": "CY2019Q4I"
+        }
+      },
+      {
+        "taxonomy": "us-gaap",
+        "tag": "WeightedAverageNumberOfDilutedSharesOutstanding",
+        "label": "Weighted Average Number of Shares Outstanding, Diluted",
+        "latest_shares": {
+          "start": "2026-01-01",
+          "end": "2026-03-31",
+          "val": 69835000,
+          "accn": "0001628280-26-032255",
+          "fy": 2026,
+          "fp": "Q1",
+          "form": "10-Q",
+          "filed": "2026-05-07",
+          "frame": "CY2026Q1"
+        }
+      },
+      {
+        "taxonomy": "us-gaap",
+        "tag": "WeightedAverageNumberOfSharesOutstandingBasic",
+        "label": "Weighted Average Number of Shares Outstanding, Basic",
+        "latest_shares": {
+          "start": "2026-01-01",
+          "end": "2026-03-31",
+          "val": 59439000,
+          "accn": "0001628280-26-032255",
+          "fy": 2026,
+          "fp": "Q1",
+          "form": "10-Q",
+          "filed": "2026-05-07",
+          "frame": "CY2026Q1"
+        }
+      },
+      {
+        "taxonomy": "us-gaap",
+        "tag": "WeightedAverageNumberOfSharesIssuedBasic",
+        "label": "Weighted Average Number of Shares Issued, Basic",
+        "latest_shares": {
+          "start": "2026-01-01",
+          "end": "2026-03-31",
+          "val": 59439000,
+          "accn": "0001628280-26-032255",
+          "fy": 2026,
+          "fp": "Q1",
+          "form": "10-Q",
+          "filed": "2026-05-07",
+          "frame": "CY2026Q1"
+        }
+      }
+    ],
+    "debt_candidates": [
+      {
+        "tag": "AdjustmentsToAdditionalPaidInCapitalEquityComponentOfConvertibleDebt",
+        "label": "Adjustments to Additional Paid in Capital, Equity Component of Convertible Debt",
+        "latest_USD": {
+          "start": "2021-01-01",
+          "end": "2021-12-31",
+          "val": 268803000,
+          "accn": "0001666134-22-000003",
+          "fy": 2021,
+          "fp": "FY",
+          "form": "10-K",
+          "filed": "2022-02-25"
+        }
+      },
+      {
+        "tag": "AdjustmentsToAdditionalPaidInCapitalEquityComponentOfConvertibleDebtSubsequentAdjustments",
+        "label": "Adjustments to Additional Paid in Capital, Equity Component of Convertible Debt, Subsequent Adjustments",
+        "latest_USD": {
+          "start": "2021-01-01",
+          "end": "2021-12-31",
+          "val": 219284000,
+          "accn": "0001666134-22-000003",
+          "fy": 2021,
+          "fp": "FY",
+          "form": "10-K",
+          "filed": "2022-02-25"
+        }
+      },
+      {
+        "tag": "AvailableForSaleDebtSecuritiesAccumulatedGrossUnrealizedGainBeforeTax",
+        "label": "Debt Securities, Available-for-sale, Accumulated Gross Unrealized Gain, before Tax",
+        "latest_USD": {
+          "end": "2026-03-31",
+          "val": 29000,
+          "accn": "0001628280-26-032255",
+          "fy": 2026,
+          "fp": "Q1",
+          "form": "10-Q",
+          "filed": "2026-05-07",
+          "frame": "CY2026Q1I"
+        }
+      },
+      {
+        "tag": "AvailableForSaleDebtSecuritiesAccumulatedGrossUnrealizedLossBeforeTax",
+        "label": "Debt Securities, Available-for-sale, Accumulated Gross Unrealized Loss, before Tax",
+        "latest_USD": {
+          "end": "2026-03-31",
+          "val": 89000,
+          "accn": "0001628280-26-032255",
+          "fy": 2026,
+          "fp": "Q1",
+          "form": "10-Q",
+          "filed": "2026-05-07",
+          "frame": "CY2026Q1I"
+        }
+      },
+      {
+        "tag": "AvailableForSaleDebtSecuritiesAmortizedCostBasis",
+        "label": "Debt Securities, Available-for-sale, Amortized Cost",
+        "latest_USD": {
+          "end": "2026-03-31",
+          "val": 283090000,
+          "accn": "0001628280-26-032255",
+          "fy": 2026,
+          "fp": "Q1",
+          "form": "10-Q",
+          "filed": "2026-05-07",
+          "frame": "CY2026Q1I"
+        }
+      },
+      {
+        "tag": "AvailableForSaleSecuritiesDebtMaturitiesSingleMaturityDate",
+        "label": "Debt Securities, Available-for-sale, Maturity, Allocated and Single Maturity Date, Fair Value",
+        "latest_USD": {
+          "end": "2024-09-30",
+          "val": 121017000,
+          "accn": "0001666134-24-000019",
+          "fy": 2024,
+          "fp": "Q3",
+          "form": "10-Q",
+          "filed": "2024-11-08",
+          "frame": "CY2024Q3I"
+        }
+      },
+      {
+        "tag": "AvailableForSaleSecuritiesDebtMaturitiesSingleMaturityDateAmortizedCostBasis",
+        "label": "Debt Securities, Available-for-sale, Maturity, Allocated and Single Maturity Date, Amortized Cost",
+        "latest_USD": {
+          "end": "2024-09-30",
+          "val": 120973000,
+          "accn": "0001666134-24-000019",
+          "fy": 2024,
+          "fp": "Q3",
+          "form": "10-Q",
+          "filed": "2024-11-08",
+          "frame": "CY2024Q3I"
+        }
+      },
+      {
+        "tag": "AvailableForSaleSecuritiesDebtMaturitiesWithinOneYearAmortizedCost",
+        "label": "Debt Securities, Available-for-Sale, Amortized Cost, Maturity, Allocated and Single Maturity Date, Year One",
+        "latest_USD": {
+          "end": "2024-09-30",
+          "val": 120973000,
+          "accn": "0001666134-24-000019",
+          "fy": 2024,
+          "fp": "Q3",
+          "form": "10-Q",
+          "filed": "2024-11-08",
+          "frame": "CY2024Q3I"
+        }
+      },
+      {
+        "tag": "AvailableForSaleSecuritiesDebtMaturitiesWithinOneYearFairValue",
+        "label": "Debt Securities, Available-for-Sale, Fair Value, Maturity, Allocated and Single Maturity Date, Year One",
+        "latest_USD": {
+          "end": "2024-09-30",
+          "val": 121017000,
+          "accn": "0001666134-24-000019",
+          "fy": 2024,
+          "fp": "Q3",
+          "form": "10-Q",
+          "filed": "2024-11-08",
+          "frame": "CY2024Q3I"
+        }
+      },
+      {
+        "tag": "AvailableForSaleSecuritiesDebtSecurities",
+        "label": "Debt Securities, Available-for-sale",
+        "latest_USD": {
+          "end": "2020-06-30",
+          "val": 154876000,
+          "accn": "0001564590-20-038360",
+          "fy": 2020,
+          "fp": "Q2",
+          "form": "10-Q",
+          "filed": "2020-08-07",
+          "frame": "CY2020Q2I"
+        }
+      },
+      {
+        "tag": "AvailableForSaleSecuritiesDebtSecuritiesCurrent",
+        "label": "Debt Securities, Available-for-sale, Current",
+        "latest_USD": {
+          "end": "2026-03-31",
+          "val": 283030000,
+          "accn": "0001628280-26-032255",
+          "fy": 2026,
+          "fp": "Q1",
+          "form": "10-Q",
+          "filed": "2026-05-07",
+          "frame": "CY2026Q1I"
+        }
+      },
+      {
+        "tag": "ConvertibleDebtCurrent",
+        "label": "Convertible Debt, Current",
+        "latest_USD": {
+          "end": "2026-03-31",
+          "val": 0,
+          "accn": "0001628280-26-032255",
+          "fy": 2026,
+          "fp": "Q1",
+          "form": "10-Q",
+          "filed": "2026-05-07",
+          "frame": "CY2026Q1I"
+        }
+      },
+      {
+        "tag": "ConvertibleDebtNoncurrent",
+        "label": "Convertible Debt, Noncurrent",
+        "latest_USD": {
+          "end": "2026-03-31",
+          "val": 666678000,
+          "accn": "0001628280-26-032255",
+          "fy": 2026,
+          "fp": "Q1",
+          "form": "10-Q",
+          "filed": "2026-05-07",
+          "frame": "CY2026Q1I"
+        }
+      },
+      {
+        "tag": "DebtInstrumentCarryingAmount",
+        "label": "Long-term Debt, Gross",
+        "latest_USD": {
+          "end": "2016-09-30",
+          "val": 66418000,
+          "accn": "0001564590-16-030119",
+          "fy": 2016,
+          "fp": "Q3",
+          "form": "10-Q",
+          "filed": "2016-12-12",
+          "frame": "CY2016Q3I"
+        }
+      },
+      {
+        "tag": "DebtInstrumentUnamortizedDiscountPremiumAndDebtIssuanceCostsNet",
+        "label": "Debt Instrument, Unamortized Discount (Premium) and Debt Issuance Costs, Net",
+        "latest_USD": {
+          "end": "2016-09-30",
+          "val": 1035000,
+          "accn": "0001564590-16-030119",
+          "fy": 2016,
+          "fp": "Q3",
+          "form": "10-Q",
+          "filed": "2016-12-12",
+          "frame": "CY2016Q3I"
+        }
+      },
+      {
+        "tag": "DebtIssuanceCostsIncurredDuringNoncashOrPartialNoncashTransaction",
+        "label": "Debt Issuance Costs Incurred During Noncash or Partial Noncash Transaction",
+        "latest_USD": {
+          "start": "2025-01-01",
+          "end": "2025-06-30",
+          "val": 0,
+          "accn": "0001666134-25-000031",
+          "fy": 2025,
+          "fp": "Q2",
+          "form": "10-Q",
+          "filed": "2025-08-06"
+        }
+      },
+      {
+        "tag": "DebtSecuritiesAvailableForSaleAllowanceForCreditLoss",
+        "label": "Debt Securities, Available-for-sale, Allowance for Credit Loss",
+        "latest_USD": {
+          "end": "2026-03-31",
+          "val": 0,
+          "accn": "0001628280-26-032255",
+          "fy": 2026,
+          "fp": "Q1",
+          "form": "10-Q",
+          "filed": "2026-05-07",
+          "frame": "CY2026Q1I"
+        }
+      },
+      {
+        "tag": "DebtSecuritiesAvailableForSaleAllowanceForCreditLossNotPreviouslyRecorded",
+        "label": "Debt Securities, Available-for-sale, Allowance for Credit Loss, Not Previously Recorded",
+        "latest_USD": {
+          "start": "2025-01-01",
+          "end": "2025-12-31",
+          "val": 0,
+          "accn": "0001628280-26-011915",
+          "fy": 2025,
+          "fp": "FY",
+          "form": "10-K",
+          "filed": "2026-02-26",
+          "frame": "CY2025"
+        }
+      },
+      {
+        "tag": "DebtSecuritiesAvailableForSaleAllowanceForCreditLossWriteoff",
+        "label": "Debt Securities, Available-for-sale, Allowance for Credit Loss, Writeoff",
+        "latest_USD": {
+          "start": "2020-07-01",
+          "end": "2020-09-30",
+          "val": 0,
+          "accn": "0001666134-20-000012",
+          "fy": 2020,
+          "fp": "Q3",
+          "form": "10-Q",
+          "filed": "2020-11-09",
+          "frame": "CY2020Q3"
+        }
+      },
+      {
+        "tag": "DebtSecuritiesAvailableForSaleContinuousUnrealizedLossPosition12MonthsOrLongerNumberOfPositions",
+        "label": "Debt Securities, Available-for-sale, Continuous Unrealized Loss Position, 12 Months or Longer, Number of Positions",
+        "latest_USD": {
+          "end": "2021-12-31",
+          "val": 0,
+          "accn": "0001666134-22-000003",
+          "fy": 2021,
+          "fp": "FY",
+          "form": "10-K",
+          "filed": "2022-02-25"
+        }
+      },
+      {
+        "tag": "DebtSecuritiesAvailableForSaleContinuousUnrealizedLossPositionLessThan12Months",
+        "label": "Debt Securities, Available-for-sale, Continuous Unrealized Loss Position, Less than 12 Months",
+        "latest_USD": {
+          "end": "2026-03-31",
+          "val": 97100000,
+          "accn": "0001628280-26-032255",
+          "fy": 2026,
+          "fp": "Q1",
+          "form": "10-Q",
+          "filed": "2026-05-07",
+          "frame": "CY2026Q1I"
+        }
+      },
+      {
+        "tag": "DebtSecuritiesAvailableForSaleContinuousUnrealizedLossPositionLessThan12MonthsAccumulatedLoss",
+        "label": "Debt Securities, Available-for-sale, Continuous Unrealized Loss Position, Less than 12 Months, Accumulated Loss",
+        "latest_USD": {
+          "end": "2026-03-31",
+          "val": 100000,
+          "accn": "0001628280-26-032255",
+          "fy": 2026,
+          "fp": "Q1",
+          "form": "10-Q",
+          "filed": "2026-05-07",
+          "frame": "CY2026Q1I"
+        }
+      },
+      {
+        "tag": "DebtSecuritiesAvailableForSaleRealizedGainLoss",
+        "label": "Debt Securities, Available-for-sale, Realized Gain (Loss)",
+        "latest_USD": {
+          "start": "2026-01-01",
+          "end": "2026-03-31",
+          "val": 0,
+          "accn": "0001628280-26-032255",
+          "fy": 2026,
+          "fp": "Q1",
+          "form": "10-Q",
+          "filed": "2026-05-07",
+          "frame": "CY2026Q1"
+        }
+      },
+      {
+        "tag": "DebtSecuritiesUnrealizedGainLoss",
+        "label": "Debt Securities, Unrealized Gain (Loss)",
+        "latest_USD": {
+          "start": "2021-01-01",
+          "end": "2021-09-30",
+          "val": -100000,
+          "accn": "0001666134-21-000016",
+          "fy": 2021,
+          "fp": "Q3",
+          "form": "10-Q",
+          "filed": "2021-11-05"
+        }
+      },
+      {
+        "tag": "ExtinguishmentOfDebtGainLossNetOfTax",
+        "label": "Extinguishment of Debt, Gain (Loss), Net of Tax",
+        "latest_USD": {
+          "start": "2025-01-01",
+          "end": "2025-12-31",
+          "val": 0,
+          "accn": "0001628280-26-011915",
+          "fy": 2025,
+          "fp": "FY",
+          "form": "10-K",
+          "filed": "2026-02-26",
+          "frame": "CY2025"
+        }
+      },
+      {
+        "tag": "FinanceLeaseInterestExpense",
+        "label": "Finance Lease, Interest Expense",
+        "latest_USD": {
+          "start": "2025-01-01",
+          "end": "2025-12-31",
+          "val": 3000,
+          "accn": "0001628280-26-011915",
+          "fy": 2025,
+          "fp": "FY",
+          "form": "10-K",
+          "filed": "2026-02-26",
+          "frame": "CY2025"
+        }
+      },
+      {
+        "tag": "FinanceLeaseLiability",
+        "label": "Finance Lease, Liability",
+        "latest_USD": {
+          "end": "2025-12-31",
+          "val": 52000,
+          "accn": "0001628280-26-011915",
+          "fy": 2025,
+          "fp": "FY",
+          "form": "10-K",
+          "filed": "2026-02-26",
+          "frame": "CY2025Q4I"
+        }
+      },
+      {
+        "tag": "FinanceLeaseLiabilityCurrent",
+        "label": "Finance Lease, Liability, Current",
+        "latest_USD": {
+          "end": "2026-03-31",
+          "val": 13000,
+          "accn": "0001628280-26-032255",
+          "fy": 2026,
+          "fp": "Q1",
+          "form": "10-Q",
+          "filed": "2026-05-07",
+          "frame": "CY2026Q1I"
+        }
+      },
+      {
+        "tag": "FinanceLeaseLiabilityNoncurrent",
+        "label": "Finance Lease, Liability, Noncurrent",
+        "latest_USD": {
+          "end": "2026-03-31",
+          "val": 37000,
+          "accn": "0001628280-26-032255",
+          "fy": 2026,
+          "fp": "Q1",
+          "form": "10-Q",
+          "filed": "2026-05-07",
+          "frame": "CY2026Q1I"
+        }
+      },
+      {
+        "tag": "FinanceLeaseLiabilityPaymentsDue",
+        "label": "Finance Lease, Liability, Payment, Due",
+        "latest_USD": {
+          "end": "2025-12-31",
+          "val": 60000,
+          "accn": "0001628280-26-011915",
+          "fy": 2025,
+          "fp": "FY",
+          "form": "10-K",
+          "filed": "2026-02-26",
+          "frame": "CY2025Q4I"
+        }
+      },
+      {
+        "tag": "FinanceLeaseLiabilityPaymentsDueAfterYearFive",
+        "label": "Finance Lease, Liability, to be Paid, after Year Five",
+        "latest_USD": {
+          "end": "2025-12-31",
+          "val": 0,
+          "accn": "0001628280-26-011915",
+          "fy": 2025,
+          "fp": "FY",
+          "form": "10-K",
+          "filed": "2026-02-26",
+          "frame": "CY2025Q4I"
+        }
+      },
+      {
+        "tag": "FinanceLeaseLiabilityPaymentsDueNextTwelveMonths",
+        "label": "Finance Lease, Liability, to be Paid, Year One",
+        "latest_USD": {
+          "end": "2025-12-31",
+          "val": 16000,
+          "accn": "0001628280-26-011915",
+          "fy": 2025,
+          "fp": "FY",
+          "form": "10-K",
+          "filed": "2026-02-26",
+          "frame": "CY2025Q4I"
+        }
+      },
+      {
+        "tag": "FinanceLeaseLiabilityPaymentsDueYearFive",
+        "label": "Finance Lease, Liability, to be Paid, Year Five",
+        "latest_USD": {
+          "end": "2025-12-31",
+          "val": 0,
+          "accn": "0001628280-26-011915",
+          "fy": 2025,
+          "fp": "FY",
+          "form": "10-K",
+          "filed": "2026-02-26",
+          "frame": "CY2025Q4I"
+        }
+      },
+      {
+        "tag": "FinanceLeaseLiabilityPaymentsDueYearFour",
+        "label": "Finance Lease, Liability, to be Paid, Year Four",
+        "latest_USD": {
+          "end": "2025-12-31",
+          "val": 12000,
+          "accn": "0001628280-26-011915",
+          "fy": 2025,
+          "fp": "FY",
+          "form": "10-K",
+          "filed": "2026-02-26",
+          "frame": "CY2025Q4I"
+        }
+      },
+      {
+        "tag": "FinanceLeaseLiabilityPaymentsDueYearThree",
+        "label": "Finance Lease, Liability, to be Paid, Year Three",
+        "latest_USD": {
+          "end": "2025-12-31",
+          "val": 16000,
+          "accn": "0001628280-26-011915",
+          "fy": 2025,
+          "fp": "FY",
+          "form": "10-K",
+          "filed": "2026-02-26",
+          "frame": "CY2025Q4I"
+        }
+      },
+      {
+        "tag": "FinanceLeaseLiabilityPaymentsDueYearTwo",
+        "label": "Finance Lease, Liability, to be Paid, Year Two",
+        "latest_USD": {
+          "end": "2025-12-31",
+          "val": 16000,
+          "accn": "0001628280-26-011915",
+          "fy": 2025,
+          "fp": "FY",
+          "form": "10-K",
+          "filed": "2026-02-26",
+          "frame": "CY2025Q4I"
+        }
+      },
+      {
+        "tag": "FinanceLeaseLiabilityUndiscountedExcessAmount",
+        "label": "Finance Lease, Liability, Undiscounted Excess Amount",
+        "latest_USD": {
+          "end": "2025-12-31",
+          "val": 8000,
+          "accn": "0001628280-26-011915",
+          "fy": 2025,
+          "fp": "FY",
+          "form": "10-K",
+          "filed": "2026-02-26",
+          "frame": "CY2025Q4I"
+        }
+      },
+      {
+        "tag": "FinanceLeasePrincipalPayments",
+        "label": "Finance Lease, Principal Payments",
+        "latest_USD": {
+          "start": "2023-01-01",
+          "end": "2023-12-31",
+          "val": 990000,
+          "accn": "0001666134-24-000003",
+          "fy": 2023,
+          "fp": "FY",
+          "form": "10-K",
+          "filed": "2024-02-23",
+          "frame": "CY2023"
+        }
+      },
+      {
+        "tag": "FinanceLeaseRightOfUseAsset",
+        "label": "Finance Lease, Right-of-Use Asset, after Accumulated Amortization",
+        "latest_USD": {
+          "end": "2021-12-31",
+          "val": 1185000,
+          "accn": "0001666134-22-000003",
+          "fy": 2021,
+          "fp": "FY",
+          "form": "10-K",
+          "filed": "2022-02-25"
+        }
+      },
+      {
+        "tag": "FinanceLeaseRightOfUseAssetAccumulatedAmortization",
+        "label": "Finance Lease, Right-of-Use Asset, Accumulated Amortization",
+        "latest_USD": {
+          "end": "2021-12-31",
+          "val": 46000,
+          "accn": "0001666134-22-000003",
+          "fy": 2021,
+          "fp": "FY",
+          "form": "10-K",
+          "filed": "2022-02-25"
+        }
+      },
+      {
+        "tag": "FinanceLeaseRightOfUseAssetAmortization",
+        "label": "Finance Lease, Right-of-Use Asset, Amortization",
+        "latest_USD": {
+          "start": "2025-01-01",
+          "end": "2025-12-31",
+          "val": 66000,
+          "accn": "0001628280-26-011915",
+          "fy": 2025,
+          "fp": "FY",
+          "form": "10-K",
+          "filed": "2026-02-26",
+          "frame": "CY2025"
+        }
+      },
+      {
+        "tag": "GainsLossesOnExtinguishmentOfDebt",
+        "label": "Gain (Loss) on Extinguishment of Debt",
+        "latest_USD": {
+          "start": "2025-01-01",
+          "end": "2025-12-31",
+          "val": 0,
+          "accn": "0001628280-26-011915",
+          "fy": 2025,
+          "fp": "FY",
+          "form": "10-K",
+          "filed": "2026-02-26",
+          "frame": "CY2025"
+        }
+      },
+      {
+        "tag": "InterestOnConvertibleDebtNetOfTax",
+        "label": "Interest on Convertible Debt, Net of Tax",
+        "latest_USD": {
+          "start": "2026-01-01",
+          "end": "2026-03-31",
+          "val": 1041000,
+          "accn": "0001628280-26-032255",
+          "fy": 2026,
+          "fp": "Q1",
+          "form": "10-Q",
+          "filed": "2026-05-07",
+          "frame": "CY2026Q1"
+        }
+      },
+      {
+        "tag": "LineOfCredit",
+        "label": "Long-term Line of Credit",
+        "latest_USD": {
+          "end": "2016-09-30",
+          "val": 64836000,
+          "accn": "0001564590-16-030119",
+          "fy": 2016,
+          "fp": "Q3",
+          "form": "10-Q",
+          "filed": "2016-12-12",
+          "frame": "CY2016Q3I"
+        }
+      },
+      {
+        "tag": "LongTermLineOfCredit",
+        "label": "Long-term Line of Credit, Noncurrent",
+        "latest_USD": {
+          "end": "2016-09-30",
+          "val": 64836000,
+          "accn": "0001564590-16-030119",
+          "fy": 2016,
+          "fp": "Q3",
+          "form": "10-Q",
+          "filed": "2016-12-12",
+          "frame": "CY2016Q3I"
+        }
+      },
+      {
+        "tag": "PaymentsOfDebtExtinguishmentCosts",
+        "label": "Payment for Debt Extinguishment or Debt Prepayment Cost",
+        "latest_USD": {
+          "start": "2016-11-01",
+          "end": "2016-11-30",
+          "val": 700000,
+          "accn": "0001564590-18-004923",
+          "fy": 2017,
+          "fp": "FY",
+          "form": "10-K",
+          "filed": "2018-03-08",
+          "frame": "CY2016Q4I"
+        }
+      },
+      {
+        "tag": "PaymentsToAcquireAvailableForSaleSecuritiesDebt",
+        "label": "Payments to Acquire Debt Securities, Available-for-sale",
+        "latest_USD": {
+          "start": "2026-01-01",
+          "end": "2026-03-31",
+          "val": 68490000,
+          "accn": "0001628280-26-032255",
+          "fy": 2026,
+          "fp": "Q1",
+          "form": "10-Q",
+          "filed": "2026-05-07",
+          "frame": "CY2026Q1"
+        }
+      },
+      {
+        "tag": "ProceedsFromConvertibleDebt",
+        "label": "Proceeds from Convertible Debt",
+        "latest_USD": {
+          "start": "2025-01-01",
+          "end": "2025-12-31",
+          "val": 0,
+          "accn": "0001628280-26-011915",
+          "fy": 2025,
+          "fp": "FY",
+          "form": "10-K",
+          "filed": "2026-02-26",
+          "frame": "CY2025"
+        }
+      },
+      {
+        "tag": "ProceedsFromIssuanceOfLongTermDebt",
+        "label": "Proceeds from Issuance of Long-term Debt",
+        "latest_USD": {
+          "start": "2016-01-01",
+          "end": "2016-12-31",
+          "val": 34300000,
+          "accn": "0001564590-19-005462",
+          "fy": 2018,
+          "fp": "FY",
+          "form": "10-K",
+          "filed": "2019-02-28",
+          "frame": "CY2016"
+        }
+      },
+      {
+        "tag": "ProceedsFromSaleOfAvailableForSaleSecuritiesDebt",
+        "label": "Proceeds from Sale of Debt Securities, Available-for-sale",
+        "latest_USD": {
+          "start": "2026-01-01",
+          "end": "2026-03-31",
+          "val": 1626000,
+          "accn": "0001628280-26-032255",
+          "fy": 2026,
+          "fp": "Q1",
+          "form": "10-Q",
+          "filed": "2026-05-07",
+          "frame": "CY2026Q1"
+        }
+      },
+      {
+        "tag": "PropertyPlantAndEquipmentAndFinanceLeaseRightOfUseAssetAccumulatedDepreciationAndAmortization",
+        "label": "Property, Plant, and Equipment and Finance Lease Right-of-Use Asset, Accumulated Depreciation and Amortization",
+        "latest_USD": {
+          "end": "2025-12-31",
+          "val": 52295000,
+          "accn": "0001628280-26-011915",
+          "fy": 2025,
+          "fp": "FY",
+          "form": "10-K",
+          "filed": "2026-02-26",
+          "frame": "CY2025Q4I"
+        }
+      },
+      {
+        "tag": "PropertyPlantAndEquipmentAndFinanceLeaseRightOfUseAssetAfterAccumulatedDepreciationAndAmortization",
+        "label": "Property, Plant, and Equipment and Finance Lease Right-of-Use Asset, after Accumulated Depreciation and Amortization",
+        "latest_USD": {
+          "end": "2026-03-31",
+          "val": 12957000,
+          "accn": "0001628280-26-032255",
+          "fy": 2026,
+          "fp": "Q1",
+          "form": "10-Q",
+          "filed": "2026-05-07",
+          "frame": "CY2026Q1I"
+        }
+      },
+      {
+        "tag": "PropertyPlantAndEquipmentAndFinanceLeaseRightOfUseAssetBeforeAccumulatedDepreciationAndAmortization",
+        "label": "Property, Plant, and Equipment and Finance Lease Right-of-Use Asset, before Accumulated Depreciation and Amortization",
+        "latest_USD": {
+          "end": "2025-12-31",
+          "val": 65550000,
+          "accn": "0001628280-26-011915",
+          "fy": 2025,
+          "fp": "FY",
+          "form": "10-K",
+          "filed": "2026-02-26",
+          "frame": "CY2025Q4I"
+        }
+      },
+      {
+        "tag": "RepaymentsOfConvertibleDebt",
+        "label": "Repayments of Convertible Debt",
+        "latest_USD": {
+          "start": "2026-01-01",
+          "end": "2026-03-31",
+          "val": 230196000,
+          "accn": "0001628280-26-032255",
+          "fy": 2026,
+          "fp": "Q1",
+          "form": "10-Q",
+          "filed": "2026-05-07",
+          "frame": "CY2026Q1"
+        }
+      },
+      {
+        "tag": "RepaymentsOfDebt",
+        "label": "Repayments of Debt",
+        "latest_USD": {
+          "start": "2016-11-01",
+          "end": "2016-11-30",
+          "val": 67700000,
+          "accn": "0001564590-19-005462",
+          "fy": 2018,
+          "fp": "FY",
+          "form": "10-K",
+          "filed": "2019-02-28",
+          "frame": "CY2016Q4I"
+        }
+      },
+      {
+        "tag": "RepaymentsOfSeniorDebt",
+        "label": "Repayments of Senior Debt",
+        "latest_USD": {
+          "start": "2025-01-01",
+          "end": "2025-12-31",
+          "val": 0,
+          "accn": "0001628280-26-011915",
+          "fy": 2025,
+          "fp": "FY",
+          "form": "10-K",
+          "filed": "2026-02-26",
+          "frame": "CY2025"
+        }
+      },
+      {
+        "tag": "RightOfUseAssetObtainedInExchangeForFinanceLeaseLiability",
+        "label": "Right-of-Use Asset Obtained in Exchange for Finance Lease Liability",
+        "latest_USD": {
+          "start": "2025-01-01",
+          "end": "2025-12-31",
+          "val": 0,
+          "accn": "0001628280-26-011915",
+          "fy": 2025,
+          "fp": "FY",
+          "form": "10-K",
+          "filed": "2026-02-26",
+          "frame": "CY2025"
+        }
+      },
+      {
+        "tag": "StockIssuedDuringPeriodValueConversionOfConvertibleSecurities",
+        "label": "Stock Issued During Period, Value, Conversion of Convertible Securities",
+        "latest_USD": {
+          "start": "2019-01-01",
+          "end": "2019-12-31",
+          "val": 111230000,
+          "accn": "0001564590-20-007371",
+          "fy": 2019,
+          "fp": "FY",
+          "form": "10-K",
+          "filed": "2020-02-27",
+          "frame": "CY2019"
+        }
+      }
+    ]
+  },
+  "BILL": {
+    "entity": "BILL HOLDINGS, INC.",
+    "shares": [
+      {
+        "tag": "EntityCommonStockSharesOutstanding",
+        "label": "Entity Common Stock, Shares Outstanding",
+        "latest_shares": {
+          "end": "2026-04-30",
+          "val": 99596727,
+          "accn": "0001628280-26-032387",
+          "fy": 2026,
+          "fp": "Q3",
+          "form": "10-Q",
+          "filed": "2026-05-08",
+          "frame": "CY2026Q1I"
+        }
+      }
+    ],
+    "share_candidates_all_taxonomies": [
+      {
+        "taxonomy": "dei",
+        "tag": "EntityCommonStockSharesOutstanding",
+        "label": "Entity Common Stock, Shares Outstanding",
+        "latest_shares": {
+          "end": "2026-04-30",
+          "val": 99596727,
+          "accn": "0001628280-26-032387",
+          "fy": 2026,
+          "fp": "Q3",
+          "form": "10-Q",
+          "filed": "2026-05-08",
+          "frame": "CY2026Q1I"
+        }
+      },
+      {
+        "taxonomy": "us-gaap",
+        "tag": "CommonStockSharesOutstanding",
+        "label": "Common Stock, Shares, Outstanding",
+        "latest_shares": {
+          "end": "2025-06-30",
+          "val": 103012000,
+          "accn": "0001786352-25-000037",
+          "fy": 2025,
+          "fp": "FY",
+          "form": "10-K",
+          "filed": "2025-08-28",
+          "frame": "CY2025Q2I"
+        }
+      },
+      {
+        "taxonomy": "us-gaap",
+        "tag": "PreferredStockSharesOutstanding",
+        "label": "Preferred Stock, Shares Outstanding",
+        "latest_shares": {
+          "end": "2025-06-30",
+          "val": 0,
+          "accn": "0001786352-25-000037",
+          "fy": 2025,
+          "fp": "FY",
+          "form": "10-K",
+          "filed": "2025-08-28",
+          "frame": "CY2025Q2I"
+        }
+      },
+      {
+        "taxonomy": "us-gaap",
+        "tag": "TemporaryEquitySharesOutstanding",
+        "label": "Temporary Equity, Shares Outstanding",
+        "latest_shares": {
+          "end": "2020-06-30",
+          "val": 0,
+          "accn": "0001564590-20-041865",
+          "fy": 2020,
+          "fp": "FY",
+          "form": "10-K",
+          "filed": "2020-08-31",
+          "frame": "CY2020Q2I"
+        }
+      },
+      {
+        "taxonomy": "us-gaap",
+        "tag": "WeightedAverageNumberOfDilutedSharesOutstanding",
+        "label": "Weighted Average Number of Shares Outstanding, Diluted",
+        "latest_shares": {
+          "start": "2026-01-01",
+          "end": "2026-03-31",
+          "val": 112677000,
+          "accn": "0001628280-26-032387",
+          "fy": 2026,
+          "fp": "Q3",
+          "form": "10-Q",
+          "filed": "2026-05-08",
+          "frame": "CY2026Q1"
+        }
+      },
+      {
+        "taxonomy": "us-gaap",
+        "tag": "WeightedAverageNumberOfSharesOutstandingBasic",
+        "label": "Weighted Average Number of Shares Outstanding, Basic",
+        "latest_shares": {
+          "start": "2026-01-01",
+          "end": "2026-03-31",
+          "val": 99285000,
+          "accn": "0001628280-26-032387",
+          "fy": 2026,
+          "fp": "Q3",
+          "form": "10-Q",
+          "filed": "2026-05-08",
+          "frame": "CY2026Q1"
+        }
+      }
+    ],
+    "debt_candidates": [
+      {
+        "tag": "AdjustmentsToAdditionalPaidInCapitalConvertibleDebtWithConversionFeature",
+        "label": "Adjustments to Additional Paid in Capital, Convertible Debt with Conversion Feature",
+        "latest_USD": {
+          "start": "2020-10-01",
+          "end": "2020-12-31",
+          "val": 245066000,
+          "accn": "0000950170-22-008131",
+          "fy": 2022,
+          "fp": "Q3",
+          "form": "10-Q",
+          "filed": "2022-05-06",
+          "frame": "CY2020Q4"
+        }
+      },
+      {
+        "tag": "AdjustmentsToAdditionalPaidInCapitalEquityComponentOfConvertibleDebt",
+        "label": "Adjustments to Additional Paid in Capital, Equity Component of Convertible Debt",
+        "latest_USD": {
+          "start": "2020-07-01",
+          "end": "2021-06-30",
+          "val": 245066000,
+          "accn": "0001786352-23-000054",
+          "fy": 2023,
+          "fp": "FY",
+          "form": "10-K",
+          "filed": "2023-08-29",
+          "frame": "CY2021"
+        }
+      },
+      {
+        "tag": "AvailableForSaleDebtSecuritiesAccumulatedGrossUnrealizedGainBeforeTax",
+        "label": "Debt Securities, Available-for-sale, Accumulated Gross Unrealized Gain, before Tax",
+        "latest_USD": {
+          "end": "2026-03-31",
+          "val": 1758000,
+          "accn": "0001628280-26-032387",
+          "fy": 2026,
+          "fp": "Q3",
+          "form": "10-Q",
+          "filed": "2026-05-08",
+          "frame": "CY2026Q1I"
+        }
+      },
+      {
+        "tag": "AvailableForSaleDebtSecuritiesAccumulatedGrossUnrealizedLossBeforeTax",
+        "label": "Debt Securities, Available-for-sale, Accumulated Gross Unrealized Loss, before Tax",
+        "latest_USD": {
+          "end": "2026-03-31",
+          "val": 1537000,
+          "accn": "0001628280-26-032387",
+          "fy": 2026,
+          "fp": "Q3",
+          "form": "10-Q",
+          "filed": "2026-05-08",
+          "frame": "CY2026Q1I"
+        }
+      },
+      {
+        "tag": "AvailableForSaleDebtSecuritiesAmortizedCostBasis",
+        "label": "Debt Securities, Available-for-sale, Amortized Cost",
+        "latest_USD": {
+          "end": "2026-03-31",
+          "val": 1178452000,
+          "accn": "0001628280-26-032387",
+          "fy": 2026,
+          "fp": "Q3",
+          "form": "10-Q",
+          "filed": "2026-05-08",
+          "frame": "CY2026Q1I"
+        }
+      },
+      {
+        "tag": "AvailableForSaleSecuritiesDebtMaturitiesAfterFiveThroughTenYearsFairValue",
+        "label": "Debt Securities, Available-for-Sale, Fair Value, Maturity, Allocated and Single Maturity Date, after Year 5 Through 10",
+        "latest_USD": {
+          "end": "2026-03-31",
+          "val": 317000,
+          "accn": "0001628280-26-032387",
+          "fy": 2026,
+          "fp": "Q3",
+          "form": "10-Q",
+          "filed": "2026-05-08",
+          "frame": "CY2026Q1I"
+        }
+      },
+      {
+        "tag": "AvailableForSaleSecuritiesDebtMaturitiesAfterOneThroughFiveYearsFairValue",
+        "label": "Debt Securities, Available-for-Sale, Fair Value, Maturity, Allocated and Single Maturity Date, after Year One Through Five",
+        "latest_USD": {
+          "end": "2026-03-31",
+          "val": 1526104000,
+          "accn": "0001628280-26-032387",
+          "fy": 2026,
+          "fp": "Q3",
+          "form": "10-Q",
+          "filed": "2026-05-08",
+          "frame": "CY2026Q1I"
+        }
+      },
+      {
+        "tag": "AvailableForSaleSecuritiesDebtMaturitiesSingleMaturityDate",
+        "label": "Debt Securities, Available-for-sale, Maturity, Allocated and Single Maturity Date, Fair Value",
+        "latest_USD": {
+          "end": "2026-03-31",
+          "val": 2907061000,
+          "accn": "0001628280-26-032387",
+          "fy": 2026,
+          "fp": "Q3",
+          "form": "10-Q",
+          "filed": "2026-05-08",
+          "frame": "CY2026Q1I"
+        }
+      },
+      {
+        "tag": "AvailableForSaleSecuritiesDebtMaturitiesWithinOneYearFairValue",
+        "label": "Debt Securities, Available-for-Sale, Fair Value, Maturity, Allocated and Single Maturity Date, Year One",
+        "latest_USD": {
+          "end": "2026-03-31",
+          "val": 1380640000,
+          "accn": "0001628280-26-032387",
+          "fy": 2026,
+          "fp": "Q3",
+          "form": "10-Q",
+          "filed": "2026-05-08",
+          "frame": "CY2026Q1I"
+        }
+      },
+      {
+        "tag": "AvailableForSaleSecuritiesDebtSecuritiesCurrent",
+        "label": "Debt Securities, Available-for-sale, Current",
+        "latest_USD": {
+          "end": "2026-03-31",
+          "val": 1178673000,
+          "accn": "0001628280-26-032387",
+          "fy": 2026,
+          "fp": "Q3",
+          "form": "10-Q",
+          "filed": "2026-05-08",
+          "frame": "CY2026Q1I"
+        }
+      },
+      {
+        "tag": "ConvertibleDebtCurrent",
+        "label": "Convertible Debt, Current",
+        "latest_USD": {
+          "end": "2026-03-31",
+          "val": 0,
+          "accn": "0001628280-26-032387",
+          "fy": 2026,
+          "fp": "Q3",
+          "form": "10-Q",
+          "filed": "2026-05-08",
+          "frame": "CY2026Q1I"
+        }
+      },
+      {
+        "tag": "ConvertibleDebtNoncurrent",
+        "label": "Convertible Debt, Noncurrent",
+        "latest_USD": {
+          "end": "2026-03-31",
+          "val": 1504854000,
+          "accn": "0001628280-26-032387",
+          "fy": 2026,
+          "fp": "Q3",
+          "form": "10-Q",
+          "filed": "2026-05-08",
+          "frame": "CY2026Q1I"
+        }
+      },
+      {
+        "tag": "DebtInstrumentCarryingAmount",
+        "label": "Long-term Debt, Gross",
+        "latest_USD": {
+          "end": "2022-09-30",
+          "val": 1800000000,
+          "accn": "0001786352-22-000025",
+          "fy": 2023,
+          "fp": "Q1",
+          "form": "10-Q",
+          "filed": "2022-11-04",
+          "frame": "CY2022Q3I"
+        }
+      },
+      {
+        "tag": "DebtInstrumentSinkingFundPayment",
+        "label": "Debt Instrument, Sinking Fund Payment",
+        "latest_USD": {
+          "start": "2023-07-01",
+          "end": "2024-06-30",
+          "val": 0,
+          "accn": "0001786352-24-000035",
+          "fy": 2024,
+          "fp": "FY",
+          "form": "10-K",
+          "filed": "2024-08-23",
+          "frame": "CY2024"
+        }
+      },
+      {
+        "tag": "DebtInstrumentUnamortizedDiscountPremiumAndDebtIssuanceCostsNet",
+        "label": "Debt Instrument, Unamortized Discount (Premium) and Debt Issuance Costs, Net",
+        "latest_USD": {
+          "end": "2023-06-30",
+          "val": 20218000,
+          "accn": "0001786352-23-000054",
+          "fy": 2023,
+          "fp": "FY",
+          "form": "10-K",
+          "filed": "2023-08-29",
+          "frame": "CY2023Q2I"
+        }
+      },
+      {
+        "tag": "DebtSecuritiesAvailableForSaleAccruedInterestAfterAllowanceForCreditLoss",
+        "label": "Debt Securities, Available-for-Sale, Accrued Interest, after Allowance for Credit Loss",
+        "latest_USD": {
+          "end": "2026-03-31",
+          "val": 8100000,
+          "accn": "0001628280-26-032387",
+          "fy": 2026,
+          "fp": "Q3",
+          "form": "10-Q",
+          "filed": "2026-05-08",
+          "frame": "CY2026Q1I"
+        }
+      },
+      {
+        "tag": "DebtSecuritiesAvailableForSaleContinuousUnrealizedLossPosition12MonthsOrLonger",
+        "label": "Debt Securities, Available-for-sale, Continuous Unrealized Loss Position, 12 Months or Longer",
+        "latest_USD": {
+          "end": "2026-03-31",
+          "val": 340000,
+          "accn": "0001628280-26-032387",
+          "fy": 2026,
+          "fp": "Q3",
+          "form": "10-Q",
+          "filed": "2026-05-08",
+          "frame": "CY2026Q1I"
+        }
+      },
+      {
+        "tag": "DebtSecuritiesAvailableForSaleContinuousUnrealizedLossPosition12MonthsOrLongerAccumulatedLoss",
+        "label": "Debt Securities, Available-for-sale, Continuous Unrealized Loss Position, 12 Months or Longer, Accumulated Loss",
+        "latest_USD": {
+          "end": "2026-03-31",
+          "val": 5000,
+          "accn": "0001628280-26-032387",
+          "fy": 2026,
+          "fp": "Q3",
+          "form": "10-Q",
+          "filed": "2026-05-08",
+          "frame": "CY2026Q1I"
+        }
+      },
+      {
+        "tag": "DebtSecuritiesAvailableForSaleContinuousUnrealizedLossPositionLessThan12Months",
+        "label": "Debt Securities, Available-for-sale, Continuous Unrealized Loss Position, Less than 12 Months",
+        "latest_USD": {
+          "end": "2026-03-31",
+          "val": 459201000,
+          "accn": "0001628280-26-032387",
+          "fy": 2026,
+          "fp": "Q3",
+          "form": "10-Q",
+          "filed": "2026-05-08",
+          "frame": "CY2026Q1I"
+        }
+      },
+      {
+        "tag": "DebtSecuritiesAvailableForSaleContinuousUnrealizedLossPositionLessThan12MonthsAccumulatedLoss",
+        "label": "Debt Securities, Available-for-sale, Continuous Unrealized Loss Position, Less than 12 Months, Accumulated Loss",
+        "latest_USD": {
+          "end": "2026-03-31",
+          "val": 1532000,
+          "accn": "0001628280-26-032387",
+          "fy": 2026,
+          "fp": "Q3",
+          "form": "10-Q",
+          "filed": "2026-05-08",
+          "frame": "CY2026Q1I"
+        }
+      },
+      {
+        "tag": "DebtSecuritiesAvailableForSaleRealizedGainLoss",
+        "label": "Debt Securities, Available-for-sale, Realized Gain (Loss)",
+        "latest_USD": {
+          "start": "2026-01-01",
+          "end": "2026-03-31",
+          "val": 0,
+          "accn": "0001628280-26-032387",
+          "fy": 2026,
+          "fp": "Q3",
+          "form": "10-Q",
+          "filed": "2026-05-08",
+          "frame": "CY2026Q1"
+        }
+      },
+      {
+        "tag": "DebtSecuritiesAvailableForSaleUnrealizedLossPosition",
+        "label": "Debt Securities, Available-for-sale, Unrealized Loss Position",
+        "latest_USD": {
+          "end": "2026-03-31",
+          "val": 459541000,
+          "accn": "0001628280-26-032387",
+          "fy": 2026,
+          "fp": "Q3",
+          "form": "10-Q",
+          "filed": "2026-05-08",
+          "frame": "CY2026Q1I"
+        }
+      },
+      {
+        "tag": "DebtSecuritiesAvailableForSaleUnrealizedLossPositionAccumulatedLoss",
+        "label": "Debt Securities, Available-for-sale, Unrealized Loss Position, Accumulated Loss",
+        "latest_USD": {
+          "end": "2026-03-31",
+          "val": 1537000,
+          "accn": "0001628280-26-032387",
+          "fy": 2026,
+          "fp": "Q3",
+          "form": "10-Q",
+          "filed": "2026-05-08",
+          "frame": "CY2026Q1I"
+        }
+      },
+      {
+        "tag": "GainsLossesOnExtinguishmentOfDebt",
+        "label": "Gain (Loss) on Extinguishment of Debt",
+        "latest_USD": {
+          "start": "2026-01-01",
+          "end": "2026-03-31",
+          "val": 0,
+          "accn": "0001628280-26-032387",
+          "fy": 2026,
+          "fp": "Q3",
+          "form": "10-Q",
+          "filed": "2026-05-08",
+          "frame": "CY2026Q1"
+        }
+      },
+      {
+        "tag": "LineOfCreditFacilityRemainingBorrowingCapacity",
+        "label": "Line of Credit Facility, Remaining Borrowing Capacity",
+        "latest_USD": {
+          "end": "2026-03-31",
+          "val": 4000000000,
+          "accn": "0001628280-26-032387",
+          "fy": 2026,
+          "fp": "Q3",
+          "form": "10-Q",
+          "filed": "2026-05-08",
+          "frame": "CY2026Q1I"
+        }
+      },
+      {
+        "tag": "LongTermDebt",
+        "label": "Long-term Debt",
+        "latest_USD": {
+          "end": "2026-03-31",
+          "val": 1834854000,
+          "accn": "0001628280-26-032387",
+          "fy": 2026,
+          "fp": "Q3",
+          "form": "10-Q",
+          "filed": "2026-05-08",
+          "frame": "CY2026Q1I"
+        }
+      },
+      {
+        "tag": "LongTermLineOfCredit",
+        "label": "Long-term Line of Credit, Noncurrent",
+        "latest_USD": {
+          "end": "2026-03-31",
+          "val": 330000000,
+          "accn": "0001628280-26-032387",
+          "fy": 2026,
+          "fp": "Q3",
+          "form": "10-Q",
+          "filed": "2026-05-08",
+          "frame": "CY2026Q1I"
+        }
+      },
+      {
+        "tag": "OtherThanTemporaryImpairmentLossDebtSecuritiesAvailableForSale",
+        "label": "Other-than-temporary Impairment Loss, Debt Securities, Available-for-sale",
+        "latest_USD": {
+          "start": "2022-07-01",
+          "end": "2023-06-30",
+          "val": 0,
+          "accn": "0001786352-23-000054",
+          "fy": 2023,
+          "fp": "FY",
+          "form": "10-K",
+          "filed": "2023-08-29",
+          "frame": "CY2023"
+        }
+      },
+      {
+        "tag": "PaymentsOfDebtIssuanceCosts",
+        "label": "Payments of Debt Issuance Costs",
+        "latest_USD": {
+          "start": "2025-07-01",
+          "end": "2026-03-31",
+          "val": 0,
+          "accn": "0001628280-26-032387",
+          "fy": 2026,
+          "fp": "Q3",
+          "form": "10-Q",
+          "filed": "2026-05-08"
+        }
+      },
+      {
+        "tag": "ProceedsFromConvertibleDebt",
+        "label": "Proceeds from Convertible Debt",
+        "latest_USD": {
+          "start": "2024-07-01",
+          "end": "2025-03-31",
+          "val": 1400000000,
+          "accn": "0001786352-25-000021",
+          "fy": 2025,
+          "fp": "Q3",
+          "form": "10-Q",
+          "filed": "2025-05-09"
+        }
+      },
+      {
+        "tag": "ProceedsFromIssuanceOfRedeemableConvertiblePreferredStock",
+        "label": "Proceeds from Issuance of Redeemable Convertible Preferred Stock",
+        "latest_USD": {
+          "start": "2018-07-01",
+          "end": "2019-06-30",
+          "val": 85160000,
+          "accn": "0001564590-21-046383",
+          "fy": 2021,
+          "fp": "FY",
+          "form": "10-K",
+          "filed": "2021-08-30",
+          "frame": "CY2019"
+        }
+      },
+      {
+        "tag": "ProceedsFromIssuanceOfSeniorLongTermDebt",
+        "label": "Proceeds from Issuance of Senior Long-term Debt",
+        "latest_USD": {
+          "start": "2025-07-01",
+          "end": "2026-03-31",
+          "val": 0,
+          "accn": "0001628280-26-032387",
+          "fy": 2026,
+          "fp": "Q3",
+          "form": "10-Q",
+          "filed": "2026-05-08"
+        }
+      },
+      {
+        "tag": "RepaymentsOfBankDebt",
+        "label": "Repayments of Bank Debt",
+        "latest_USD": {
+          "start": "2018-07-01",
+          "end": "2019-06-30",
+          "val": 9500000,
+          "accn": "0001564590-20-041865",
+          "fy": 2020,
+          "fp": "FY",
+          "form": "10-K",
+          "filed": "2020-08-31",
+          "frame": "CY2019"
+        }
+      },
+      {
+        "tag": "RepaymentsOfConvertibleDebt",
+        "label": "Repayments of Convertible Debt",
+        "latest_USD": {
+          "start": "2025-07-01",
+          "end": "2026-03-31",
+          "val": 33463000,
+          "accn": "0001628280-26-032387",
+          "fy": 2026,
+          "fp": "Q3",
+          "form": "10-Q",
+          "filed": "2026-05-08"
+        }
+      },
+      {
+        "tag": "StockIssuedDuringPeriodValueConversionOfConvertibleSecurities",
+        "label": "Stock Issued During Period, Value, Conversion of Convertible Securities",
+        "latest_USD": {
+          "start": "2019-07-01",
+          "end": "2020-06-30",
+          "val": 276307000,
+          "accn": "0001786352-22-000017",
+          "fy": 2022,
+          "fp": "FY",
+          "form": "10-K",
+          "filed": "2022-08-22"
+        }
+      }
+    ]
+  },
+  "NCNO": {
+    "entity": "nCino, Inc.",
+    "shares": [
+      {
+        "tag": "EntityCommonStockSharesOutstanding",
+        "label": "Entity Common Stock, Shares Outstanding",
+        "latest_shares": {
+          "end": "2026-05-22",
+          "val": 109552950,
+          "accn": "0001902733-26-000066",
+          "fy": 2027,
+          "fp": "Q1",
+          "form": "10-Q",
+          "filed": "2026-05-27",
+          "frame": "CY2026Q2I"
+        }
+      }
+    ],
+    "share_candidates_all_taxonomies": [
+      {
+        "taxonomy": "dei",
+        "tag": "EntityCommonStockSharesOutstanding",
+        "label": "Entity Common Stock, Shares Outstanding",
+        "latest_shares": {
+          "end": "2026-05-22",
+          "val": 109552950,
+          "accn": "0001902733-26-000066",
+          "fy": 2027,
+          "fp": "Q1",
+          "form": "10-Q",
+          "filed": "2026-05-27",
+          "frame": "CY2026Q2I"
+        }
+      },
+      {
+        "taxonomy": "us-gaap",
+        "tag": "CommonStockSharesOutstanding",
+        "label": "Common Stock, Shares, Outstanding",
+        "latest_shares": {
+          "end": "2026-04-30",
+          "val": 108794598,
+          "accn": "0001902733-26-000066",
+          "fy": 2027,
+          "fp": "Q1",
+          "form": "10-Q",
+          "filed": "2026-05-27",
+          "frame": "CY2026Q1I"
+        }
+      },
+      {
+        "taxonomy": "us-gaap",
+        "tag": "PreferredStockSharesOutstanding",
+        "label": "Preferred Stock, Shares Outstanding",
+        "latest_shares": {
+          "end": "2026-04-30",
+          "val": 0,
+          "accn": "0001902733-26-000066",
+          "fy": 2027,
+          "fp": "Q1",
+          "form": "10-Q",
+          "filed": "2026-05-27",
+          "frame": "CY2026Q1I"
+        }
+      },
+      {
+        "taxonomy": "us-gaap",
+        "tag": "WeightedAverageNumberOfDilutedSharesOutstanding",
+        "label": "Weighted Average Number of Shares Outstanding, Diluted",
+        "latest_shares": {
+          "start": "2026-02-01",
+          "end": "2026-04-30",
+          "val": 109458472,
+          "accn": "0001902733-26-000066",
+          "fy": 2027,
+          "fp": "Q1",
+          "form": "10-Q",
+          "filed": "2026-05-27",
+          "frame": "CY2026Q1"
+        }
+      },
+      {
+        "taxonomy": "us-gaap",
+        "tag": "WeightedAverageNumberOfSharesOutstandingBasic",
+        "label": "Weighted Average Number of Shares Outstanding, Basic",
+        "latest_shares": {
+          "start": "2026-02-01",
+          "end": "2026-04-30",
+          "val": 108502547,
+          "accn": "0001902733-26-000066",
+          "fy": 2027,
+          "fp": "Q1",
+          "form": "10-Q",
+          "filed": "2026-05-27",
+          "frame": "CY2026Q1"
+        }
+      },
+      {
+        "taxonomy": "us-gaap",
+        "tag": "WeightedAverageNumberDilutedSharesOutstandingAdjustment",
+        "label": "Weighted Average Number Diluted Shares Outstanding Adjustment",
+        "latest_shares": {
+          "start": "2026-02-01",
+          "end": "2026-04-30",
+          "val": 955925,
+          "accn": "0001902733-26-000066",
+          "fy": 2027,
+          "fp": "Q1",
+          "form": "10-Q",
+          "filed": "2026-05-27",
+          "frame": "CY2026Q1"
+        }
+      }
+    ],
+    "debt_candidates": [
+      {
+        "tag": "DebtInstrumentCarryingAmount",
+        "label": "Long-term Debt, Gross",
+        "latest_USD": {
+          "end": "2026-04-30",
+          "val": 263500000,
+          "accn": "0001902733-26-000066",
+          "fy": 2027,
+          "fp": "Q1",
+          "form": "10-Q",
+          "filed": "2026-05-27",
+          "frame": "CY2026Q1I"
+        }
+      },
+      {
+        "tag": "FinanceLeaseLiability",
+        "label": "Finance Lease, Liability",
+        "latest_USD": {
+          "end": "2026-04-30",
+          "val": 50897000,
+          "accn": "0001902733-26-000066",
+          "fy": 2027,
+          "fp": "Q1",
+          "form": "10-Q",
+          "filed": "2026-05-27",
+          "frame": "CY2026Q1I"
+        }
+      },
+      {
+        "tag": "FinanceLeaseLiabilityCurrent",
+        "label": "Finance Lease, Liability, Current",
+        "latest_USD": {
+          "end": "2026-04-30",
+          "val": 607000,
+          "accn": "0001902733-26-000066",
+          "fy": 2027,
+          "fp": "Q1",
+          "form": "10-Q",
+          "filed": "2026-05-27",
+          "frame": "CY2026Q1I"
+        }
+      },
+      {
+        "tag": "FinanceLeaseLiabilityNoncurrent",
+        "label": "Finance Lease, Liability, Noncurrent",
+        "latest_USD": {
+          "end": "2026-04-30",
+          "val": 50290000,
+          "accn": "0001902733-26-000066",
+          "fy": 2027,
+          "fp": "Q1",
+          "form": "10-Q",
+          "filed": "2026-05-27",
+          "frame": "CY2026Q1I"
+        }
+      },
+      {
+        "tag": "FinanceLeaseLiabilityPaymentsDue",
+        "label": "Finance Lease, Liability, Payment, Due",
+        "latest_USD": {
+          "end": "2026-04-30",
+          "val": 11569000,
+          "accn": "0001902733-26-000066",
+          "fy": 2027,
+          "fp": "Q1",
+          "form": "10-Q",
+          "filed": "2026-05-27",
+          "frame": "CY2026Q1I"
+        }
+      },
+      {
+        "tag": "FinanceLeaseLiabilityPaymentsDueAfterYearFive",
+        "label": "Finance Lease, Liability, to be Paid, after Year Five",
+        "latest_USD": {
+          "end": "2026-01-31",
+          "val": 0,
+          "accn": "0001902733-26-000022",
+          "fy": 2026,
+          "fp": "FY",
+          "form": "10-K",
+          "filed": "2026-03-31",
+          "frame": "CY2025Q4I"
+        }
+      },
+      {
+        "tag": "FinanceLeaseLiabilityPaymentsDueNextTwelveMonths",
+        "label": "Finance Lease, Liability, to be Paid, Year One",
+        "latest_USD": {
+          "end": "2026-04-30",
+          "val": 4363000,
+          "accn": "0001902733-26-000066",
+          "fy": 2027,
+          "fp": "Q1",
+          "form": "10-Q",
+          "filed": "2026-05-27",
+          "frame": "CY2026Q1I"
+        }
+      },
+      {
+        "tag": "FinanceLeaseLiabilityPaymentsDueYearFive",
+        "label": "Finance Lease, Liability, to be Paid, Year Five",
+        "latest_USD": {
+          "end": "2026-01-31",
+          "val": 0,
+          "accn": "0001902733-26-000022",
+          "fy": 2026,
+          "fp": "FY",
+          "form": "10-K",
+          "filed": "2026-03-31",
+          "frame": "CY2025Q4I"
+        }
+      },
+      {
+        "tag": "FinanceLeaseLiabilityPaymentsDueYearFour",
+        "label": "Finance Lease, Liability, to be Paid, Year Four",
+        "latest_USD": {
+          "end": "2026-04-30",
+          "val": 0,
+          "accn": "0001902733-26-000066",
+          "fy": 2027,
+          "fp": "Q1",
+          "form": "10-Q",
+          "filed": "2026-05-27",
+          "frame": "CY2026Q1I"
+        }
+      },
+      {
+        "tag": "FinanceLeaseLiabilityPaymentsDueYearThree",
+        "label": "Finance Lease, Liability, to be Paid, Year Three",
+        "latest_USD": {
+          "end": "2026-04-30",
+          "val": 0,
+          "accn": "0001902733-26-000066",
+          "fy": 2027,
+          "fp": "Q1",
+          "form": "10-Q",
+          "filed": "2026-05-27",
+          "frame": "CY2026Q1I"
+        }
+      },
+      {
+        "tag": "FinanceLeaseLiabilityPaymentsDueYearTwo",
+        "label": "Finance Lease, Liability, to be Paid, Year Two",
+        "latest_USD": {
+          "end": "2026-04-30",
+          "val": 4136000,
+          "accn": "0001902733-26-000066",
+          "fy": 2027,
+          "fp": "Q1",
+          "form": "10-Q",
+          "filed": "2026-05-27",
+          "frame": "CY2026Q1I"
+        }
+      },
+      {
+        "tag": "FinanceLeaseLiabilityPaymentsRemainderOfFiscalYear",
+        "label": "Finance Lease, Liability, to be Paid, Remainder of Fiscal Year",
+        "latest_USD": {
+          "end": "2026-04-30",
+          "val": 3070000,
+          "accn": "0001902733-26-000066",
+          "fy": 2027,
+          "fp": "Q1",
+          "form": "10-Q",
+          "filed": "2026-05-27",
+          "frame": "CY2026Q1I"
+        }
+      },
+      {
+        "tag": "FinanceLeaseLiabilityUndiscountedExcessAmount",
+        "label": "Finance Lease, Liability, Undiscounted Excess Amount",
+        "latest_USD": {
+          "end": "2026-04-30",
+          "val": 8725000,
+          "accn": "0001902733-26-000066",
+          "fy": 2027,
+          "fp": "Q1",
+          "form": "10-Q",
+          "filed": "2026-05-27",
+          "frame": "CY2026Q1I"
+        }
+      },
+      {
+        "tag": "FinanceLeasePrincipalPayments",
+        "label": "Finance Lease, Principal Payments",
+        "latest_USD": {
+          "start": "2026-02-01",
+          "end": "2026-04-30",
+          "val": 321000,
+          "accn": "0001902733-26-000066",
+          "fy": 2027,
+          "fp": "Q1",
+          "form": "10-Q",
+          "filed": "2026-05-27",
+          "frame": "CY2026Q1"
+        }
+      },
+      {
+        "tag": "FinanceLeaseRightOfUseAssetBeforeAccumulatedAmortization",
+        "label": "Finance Lease, Right-of-Use Asset, before Accumulated Amortization",
+        "latest_USD": {
+          "end": "2020-11-30",
+          "val": 16300000,
+          "accn": "0001902733-25-000026",
+          "fy": 2025,
+          "fp": "FY",
+          "form": "10-K",
+          "filed": "2025-04-01",
+          "frame": "CY2020Q4I"
+        }
+      },
+      {
+        "tag": "LineOfCreditFacilityCurrentBorrowingCapacity",
+        "label": "Line of Credit Facility, Current Borrowing Capacity",
+        "latest_USD": {
+          "end": "2022-04-30",
+          "val": 50000000,
+          "accn": "0001902733-22-000021",
+          "fy": 2023,
+          "fp": "Q1",
+          "form": "10-Q",
+          "filed": "2022-06-01",
+          "frame": "CY2022Q1I"
+        }
+      },
+      {
+        "tag": "LongTermDebt",
+        "label": "Long-term Debt",
+        "latest_USD": {
+          "end": "2026-04-30",
+          "val": 262810000,
+          "accn": "0001902733-26-000066",
+          "fy": 2027,
+          "fp": "Q1",
+          "form": "10-Q",
+          "filed": "2026-05-27",
+          "frame": "CY2026Q1I"
+        }
+      },
+      {
+        "tag": "LongTermDebtCurrent",
+        "label": "Long-term Debt, Current Maturities",
+        "latest_USD": {
+          "end": "2026-04-30",
+          "val": 9803000,
+          "accn": "0001902733-26-000066",
+          "fy": 2027,
+          "fp": "Q1",
+          "form": "10-Q",
+          "filed": "2026-05-27",
+          "frame": "CY2026Q1I"
+        }
+      },
+      {
+        "tag": "LongTermDebtMaturitiesRepaymentsOfPrincipalInNextTwelveMonths",
+        "label": "Long-Term Debt, Maturity, Year One",
+        "latest_USD": {
+          "end": "2026-04-30",
+          "val": 10000000,
+          "accn": "0001902733-26-000066",
+          "fy": 2027,
+          "fp": "Q1",
+          "form": "10-Q",
+          "filed": "2026-05-27",
+          "frame": "CY2026Q1I"
+        }
+      },
+      {
+        "tag": "LongTermDebtMaturitiesRepaymentsOfPrincipalInYearThree",
+        "label": "Long-Term Debt, Maturity, Year Three",
+        "latest_USD": {
+          "end": "2026-04-30",
+          "val": 236000000,
+          "accn": "0001902733-26-000066",
+          "fy": 2027,
+          "fp": "Q1",
+          "form": "10-Q",
+          "filed": "2026-05-27",
+          "frame": "CY2026Q1I"
+        }
+      },
+      {
+        "tag": "LongTermDebtMaturitiesRepaymentsOfPrincipalInYearTwo",
+        "label": "Long-Term Debt, Maturity, Year Two",
+        "latest_USD": {
+          "end": "2026-04-30",
+          "val": 10000000,
+          "accn": "0001902733-26-000066",
+          "fy": 2027,
+          "fp": "Q1",
+          "form": "10-Q",
+          "filed": "2026-05-27",
+          "frame": "CY2026Q1I"
+        }
+      },
+      {
+        "tag": "LongTermDebtMaturitiesRepaymentsOfPrincipalRemainderOfFiscalYear",
+        "label": "Long-Term Debt, Maturity, Remainder of Fiscal Year",
+        "latest_USD": {
+          "end": "2026-04-30",
+          "val": 7500000,
+          "accn": "0001902733-26-000066",
+          "fy": 2027,
+          "fp": "Q1",
+          "form": "10-Q",
+          "filed": "2026-05-27",
+          "frame": "CY2026Q1I"
+        }
+      },
+      {
+        "tag": "LongTermDebtNoncurrent",
+        "label": "Long-term Debt, Excluding Current Maturities",
+        "latest_USD": {
+          "end": "2026-04-30",
+          "val": 253007000,
+          "accn": "0001902733-26-000066",
+          "fy": 2027,
+          "fp": "Q1",
+          "form": "10-Q",
+          "filed": "2026-05-27",
+          "frame": "CY2026Q1I"
+        }
+      },
+      {
+        "tag": "LongTermLineOfCredit",
+        "label": "Long-term Line of Credit, Noncurrent",
+        "latest_USD": {
+          "end": "2026-01-31",
+          "val": 213500000,
+          "accn": "0001902733-26-000022",
+          "fy": 2026,
+          "fp": "FY",
+          "form": "10-K",
+          "filed": "2026-03-31",
+          "frame": "CY2025Q4I"
+        }
+      },
+      {
+        "tag": "PaymentsOfDebtIssuanceCosts",
+        "label": "Payments of Debt Issuance Costs",
+        "latest_USD": {
+          "start": "2025-02-01",
+          "end": "2026-01-31",
+          "val": 0,
+          "accn": "0001902733-26-000022",
+          "fy": 2026,
+          "fp": "FY",
+          "form": "10-K",
+          "filed": "2026-03-31",
+          "frame": "CY2025"
+        }
+      },
+      {
+        "tag": "ProceedsFromOtherDebt",
+        "label": "Proceeds from Other Debt",
+        "latest_USD": {
+          "start": "2026-02-01",
+          "end": "2026-04-30",
+          "val": 199346000,
+          "accn": "0001902733-26-000066",
+          "fy": 2027,
+          "fp": "Q1",
+          "form": "10-Q",
+          "filed": "2026-05-27",
+          "frame": "CY2026Q1"
+        }
+      },
+      {
+        "tag": "UnamortizedDebtIssuanceExpense",
+        "label": "Unamortized Debt Issuance Expense",
+        "latest_USD": {
+          "end": "2026-04-30",
+          "val": 1000000,
+          "accn": "0001902733-26-000066",
+          "fy": 2027,
+          "fp": "Q1",
+          "form": "10-Q",
+          "filed": "2026-05-27",
+          "frame": "CY2026Q1I"
+        }
+      }
+    ]
+  },
+  "WK": {
+    "entity": "WORKIVA INC",
+    "shares": [],
+    "share_candidates_all_taxonomies": [
+      {
+        "taxonomy": "us-gaap",
+        "tag": "PreferredStockSharesOutstanding",
+        "label": "Preferred Stock, Shares Outstanding",
+        "latest_shares": {
+          "end": "2026-03-31",
+          "val": 0,
+          "accn": "0001445305-26-000045",
+          "fy": 2026,
+          "fp": "Q1",
+          "form": "10-Q",
+          "filed": "2026-05-05",
+          "frame": "CY2026Q1I"
+        }
+      },
+      {
+        "taxonomy": "us-gaap",
+        "tag": "WeightedAverageNumberOfDilutedSharesOutstanding",
+        "label": "Weighted Average Number of Shares Outstanding, Diluted",
+        "latest_shares": {
+          "start": "2026-01-01",
+          "end": "2026-03-31",
+          "val": 58441679,
+          "accn": "0001445305-26-000045",
+          "fy": 2026,
+          "fp": "Q1",
+          "form": "10-Q",
+          "filed": "2026-05-05",
+          "frame": "CY2026Q1"
+        }
+      },
+      {
+        "taxonomy": "us-gaap",
+        "tag": "WeightedAverageNumberOfSharesOutstandingBasic",
+        "label": "Weighted Average Number of Shares Outstanding, Basic",
+        "latest_shares": {
+          "start": "2026-01-01",
+          "end": "2026-03-31",
+          "val": 56885568,
+          "accn": "0001445305-26-000045",
+          "fy": 2026,
+          "fp": "Q1",
+          "form": "10-Q",
+          "filed": "2026-05-05",
+          "frame": "CY2026Q1"
+        }
+      }
+    ],
+    "debt_candidates": [
+      {
+        "tag": "AdjustmentsToAdditionalPaidInCapitalEquityComponentOfConvertibleDebt",
+        "label": "Adjustments to Additional Paid in Capital, Equity Component of Convertible Debt",
+        "latest_USD": {
+          "start": "2019-01-01",
+          "end": "2019-12-31",
+          "val": 58560000,
+          "accn": "0001445305-22-000041",
+          "fy": 2021,
+          "fp": "FY",
+          "form": "10-K",
+          "filed": "2022-02-22",
+          "frame": "CY2019"
+        }
+      },
+      {
+        "tag": "AmortizationOfDebtDiscountPremium",
+        "label": "Amortization of Debt Discount (Premium)",
+        "latest_USD": {
+          "start": "2023-01-01",
+          "end": "2023-12-31",
+          "val": 0,
+          "accn": "0001445305-24-000021",
+          "fy": 2023,
+          "fp": "FY",
+          "form": "10-K",
+          "filed": "2024-02-20",
+          "frame": "CY2023"
+        }
+      },
+      {
+        "tag": "AvailableForSaleDebtSecuritiesAccumulatedGrossUnrealizedGainBeforeTax",
+        "label": "Debt Securities, Available-for-sale, Accumulated Gross Unrealized Gain, before Tax",
+        "latest_USD": {
+          "end": "2026-03-31",
+          "val": 351000,
+          "accn": "0001445305-26-000045",
+          "fy": 2026,
+          "fp": "Q1",
+          "form": "10-Q",
+          "filed": "2026-05-05",
+          "frame": "CY2026Q1I"
+        }
+      },
+      {
+        "tag": "AvailableForSaleDebtSecuritiesAccumulatedGrossUnrealizedLossBeforeTax",
+        "label": "Debt Securities, Available-for-sale, Accumulated Gross Unrealized Loss, before Tax",
+        "latest_USD": {
+          "end": "2026-03-31",
+          "val": 874000,
+          "accn": "0001445305-26-000045",
+          "fy": 2026,
+          "fp": "Q1",
+          "form": "10-Q",
+          "filed": "2026-05-05",
+          "frame": "CY2026Q1I"
+        }
+      },
+      {
+        "tag": "AvailableForSaleDebtSecuritiesAmortizedCostBasis",
+        "label": "Debt Securities, Available-for-sale, Amortized Cost",
+        "latest_USD": {
+          "end": "2026-03-31",
+          "val": 529639000,
+          "accn": "0001445305-26-000045",
+          "fy": 2026,
+          "fp": "Q1",
+          "form": "10-Q",
+          "filed": "2026-05-05",
+          "frame": "CY2026Q1I"
+        }
+      },
+      {
+        "tag": "AvailableForSaleSecuritiesDebtMaturitiesWithinOneYearFairValue",
+        "label": "Debt Securities, Available-for-Sale, Fair Value, Maturity, Allocated and Single Maturity Date, Year One",
+        "latest_USD": {
+          "end": "2026-03-31",
+          "val": 304425000,
+          "accn": "0001445305-26-000045",
+          "fy": 2026,
+          "fp": "Q1",
+          "form": "10-Q",
+          "filed": "2026-05-05",
+          "frame": "CY2026Q1I"
+        }
+      },
+      {
+        "tag": "AvailableForSaleSecuritiesDebtSecurities",
+        "label": "Debt Securities, Available-for-sale",
+        "latest_USD": {
+          "end": "2026-03-31",
+          "val": 529116000,
+          "accn": "0001445305-26-000045",
+          "fy": 2026,
+          "fp": "Q1",
+          "form": "10-Q",
+          "filed": "2026-05-05",
+          "frame": "CY2026Q1I"
+        }
+      },
+      {
+        "tag": "AvailableForSaleSecuritiesDebtSecuritiesCurrent",
+        "label": "Debt Securities, Available-for-sale, Current",
+        "latest_USD": {
+          "end": "2026-03-31",
+          "val": 529116000,
+          "accn": "0001445305-26-000045",
+          "fy": 2026,
+          "fp": "Q1",
+          "form": "10-Q",
+          "filed": "2026-05-05",
+          "frame": "CY2026Q1I"
+        }
+      },
+      {
+        "tag": "AvailableForSaleSecuritiesDebtSecuritiesNoncurrent",
+        "label": "Debt Securities, Available-for-sale, Noncurrent",
+        "latest_USD": {
+          "end": "2014-12-31",
+          "val": 0,
+          "accn": "0001445305-15-000028",
+          "fy": 2014,
+          "fp": "FY",
+          "form": "10-K",
+          "filed": "2015-03-11",
+          "frame": "CY2014Q4I"
+        }
+      },
+      {
+        "tag": "ConvertibleDebtCurrent",
+        "label": "Convertible Debt, Current",
+        "latest_USD": {
+          "end": "2026-03-31",
+          "val": 71140000,
+          "accn": "0001445305-26-000045",
+          "fy": 2026,
+          "fp": "Q1",
+          "form": "10-Q",
+          "filed": "2026-05-05",
+          "frame": "CY2026Q1I"
+        }
+      },
+      {
+        "tag": "ConvertibleDebtNoncurrent",
+        "label": "Convertible Debt, Noncurrent",
+        "latest_USD": {
+          "end": "2026-03-31",
+          "val": 696807000,
+          "accn": "0001445305-26-000045",
+          "fy": 2026,
+          "fp": "Q1",
+          "form": "10-Q",
+          "filed": "2026-05-05",
+          "frame": "CY2026Q1I"
+        }
+      },
+      {
+        "tag": "DebtConversionConvertedInstrumentAmount1",
+        "label": "Debt Conversion, Converted Instrument, Amount",
+        "latest_USD": {
+          "start": "2016-01-01",
+          "end": "2016-12-31",
+          "val": 0,
+          "accn": "0001445305-17-000008",
+          "fy": 2016,
+          "fp": "FY",
+          "form": "10-K",
+          "filed": "2017-02-23",
+          "frame": "CY2016"
+        }
+      },
+      {
+        "tag": "DebtInstrumentFaceAmount",
+        "label": "Debt Instrument, Face Amount",
+        "latest_USD": {
+          "end": "2014-12-31",
+          "val": 650000,
+          "accn": "0001445305-15-000028",
+          "fy": 2014,
+          "fp": "FY",
+          "form": "10-K",
+          "filed": "2015-03-11",
+          "frame": "CY2014Q4I"
+        }
+      },
+      {
+        "tag": "DebtSecuritiesAvailableForSaleAllowanceForCreditLossNotPreviouslyRecorded",
+        "label": "Debt Securities, Available-for-sale, Allowance for Credit Loss, Not Previously Recorded",
+        "latest_USD": {
+          "start": "2025-01-01",
+          "end": "2025-12-31",
+          "val": 0,
+          "accn": "0001445305-26-000016",
+          "fy": 2025,
+          "fp": "FY",
+          "form": "10-K",
+          "filed": "2026-02-19",
+          "frame": "CY2025"
+        }
+      },
+      {
+        "tag": "DebtSecuritiesAvailableForSaleChangeInPresentValueExpenseReversal",
+        "label": "Debt Securities, Available-for-sale, Change in Present Value, Expense (Reversal)",
+        "latest_USD": {
+          "start": "2021-01-01",
+          "end": "2021-12-31",
+          "val": 0,
+          "accn": "0001445305-22-000041",
+          "fy": 2021,
+          "fp": "FY",
+          "form": "10-K",
+          "filed": "2022-02-22",
+          "frame": "CY2021"
+        }
+      },
+      {
+        "tag": "DebtSecuritiesAvailableForSaleContinuousUnrealizedLossPosition12MonthsOrLonger",
+        "label": "Debt Securities, Available-for-sale, Continuous Unrealized Loss Position, 12 Months or Longer",
+        "latest_USD": {
+          "end": "2026-03-31",
+          "val": 1000000,
+          "accn": "0001445305-26-000045",
+          "fy": 2026,
+          "fp": "Q1",
+          "form": "10-Q",
+          "filed": "2026-05-05",
+          "frame": "CY2026Q1I"
+        }
+      },
+      {
+        "tag": "DebtSecuritiesAvailableForSaleContinuousUnrealizedLossPosition12MonthsOrLongerAccumulatedLoss",
+        "label": "Debt Securities, Available-for-sale, Continuous Unrealized Loss Position, 12 Months or Longer, Accumulated Loss",
+        "latest_USD": {
+          "end": "2026-03-31",
+          "val": 1000,
+          "accn": "0001445305-26-000045",
+          "fy": 2026,
+          "fp": "Q1",
+          "form": "10-Q",
+          "filed": "2026-05-05",
+          "frame": "CY2026Q1I"
+        }
+      },
+      {
+        "tag": "DebtSecuritiesAvailableForSaleContinuousUnrealizedLossPositionLessThan12Months",
+        "label": "Debt Securities, Available-for-sale, Continuous Unrealized Loss Position, Less than 12 Months",
+        "latest_USD": {
+          "end": "2026-03-31",
+          "val": 310099000,
+          "accn": "0001445305-26-000045",
+          "fy": 2026,
+          "fp": "Q1",
+          "form": "10-Q",
+          "filed": "2026-05-05",
+          "frame": "CY2026Q1I"
+        }
+      },
+      {
+        "tag": "DebtSecuritiesAvailableForSaleContinuousUnrealizedLossPositionLessThan12MonthsAccumulatedLoss",
+        "label": "Debt Securities, Available-for-sale, Continuous Unrealized Loss Position, Less than 12 Months, Accumulated Loss",
+        "latest_USD": {
+          "end": "2026-03-31",
+          "val": 873000,
+          "accn": "0001445305-26-000045",
+          "fy": 2026,
+          "fp": "Q1",
+          "form": "10-Q",
+          "filed": "2026-05-05",
+          "frame": "CY2026Q1I"
+        }
+      },
+      {
+        "tag": "DebtSecuritiesAvailableForSaleRealizedGain",
+        "label": "Debt Securities, Available-for-sale, Realized Gain",
+        "latest_USD": {
+          "start": "2018-01-01",
+          "end": "2018-12-31",
+          "val": 0,
+          "accn": "0001445305-19-000032",
+          "fy": 2018,
+          "fp": "FY",
+          "form": "10-K",
+          "filed": "2019-02-20",
+          "frame": "CY2018"
+        }
+      },
+      {
+        "tag": "DebtSecuritiesAvailableForSaleRealizedGainLoss",
+        "label": "Debt Securities, Available-for-sale, Realized Gain (Loss)",
+        "latest_USD": {
+          "start": "2025-01-01",
+          "end": "2025-12-31",
+          "val": 0,
+          "accn": "0001445305-26-000016",
+          "fy": 2025,
+          "fp": "FY",
+          "form": "10-K",
+          "filed": "2026-02-19",
+          "frame": "CY2025"
+        }
+      },
+      {
+        "tag": "FinanceLeaseInterestExpense",
+        "label": "Finance Lease, Interest Expense",
+        "latest_USD": {
+          "start": "2025-01-01",
+          "end": "2025-12-31",
+          "val": 754000,
+          "accn": "0001445305-26-000016",
+          "fy": 2025,
+          "fp": "FY",
+          "form": "10-K",
+          "filed": "2026-02-19",
+          "frame": "CY2025"
+        }
+      },
+      {
+        "tag": "FinanceLeaseLiability",
+        "label": "Finance Lease, Liability",
+        "latest_USD": {
+          "end": "2025-12-31",
+          "val": 13837000,
+          "accn": "0001445305-26-000016",
+          "fy": 2025,
+          "fp": "FY",
+          "form": "10-K",
+          "filed": "2026-02-19",
+          "frame": "CY2025Q4I"
+        }
+      },
+      {
+        "tag": "FinanceLeaseLiabilityCurrent",
+        "label": "Finance Lease, Liability, Current",
+        "latest_USD": {
+          "end": "2026-03-31",
+          "val": 623000,
+          "accn": "0001445305-26-000045",
+          "fy": 2026,
+          "fp": "Q1",
+          "form": "10-Q",
+          "filed": "2026-05-05",
+          "frame": "CY2026Q1I"
+        }
+      },
+      {
+        "tag": "FinanceLeaseLiabilityNoncurrent",
+        "label": "Finance Lease, Liability, Noncurrent",
+        "latest_USD": {
+          "end": "2026-03-31",
+          "val": 13064000,
+          "accn": "0001445305-26-000045",
+          "fy": 2026,
+          "fp": "Q1",
+          "form": "10-Q",
+          "filed": "2026-05-05",
+          "frame": "CY2026Q1I"
+        }
+      },
+      {
+        "tag": "FinanceLeaseLiabilityPaymentsDue",
+        "label": "Finance Lease, Liability, Payment, Due",
+        "latest_USD": {
+          "end": "2025-12-31",
+          "val": 20457000,
+          "accn": "0001445305-26-000016",
+          "fy": 2025,
+          "fp": "FY",
+          "form": "10-K",
+          "filed": "2026-02-19",
+          "frame": "CY2025Q4I"
+        }
+      },
+      {
+        "tag": "FinanceLeaseLiabilityPaymentsDueAfterYearFive",
+        "label": "Finance Lease, Liability, to be Paid, after Year Five",
+        "latest_USD": {
+          "end": "2025-12-31",
+          "val": 13689000,
+          "accn": "0001445305-26-000016",
+          "fy": 2025,
+          "fp": "FY",
+          "form": "10-K",
+          "filed": "2026-02-19",
+          "frame": "CY2025Q4I"
+        }
+      },
+      {
+        "tag": "FinanceLeaseLiabilityPaymentsDueNextTwelveMonths",
+        "label": "Finance Lease, Liability, to be Paid, Year One",
+        "latest_USD": {
+          "end": "2025-12-31",
+          "val": 1353000,
+          "accn": "0001445305-26-000016",
+          "fy": 2025,
+          "fp": "FY",
+          "form": "10-K",
+          "filed": "2026-02-19",
+          "frame": "CY2025Q4I"
+        }
+      },
+      {
+        "tag": "FinanceLeaseLiabilityPaymentsDueYearFive",
+        "label": "Finance Lease, Liability, to be Paid, Year Five",
+        "latest_USD": {
+          "end": "2025-12-31",
+          "val": 1354000,
+          "accn": "0001445305-26-000016",
+          "fy": 2025,
+          "fp": "FY",
+          "form": "10-K",
+          "filed": "2026-02-19",
+          "frame": "CY2025Q4I"
+        }
+      },
+      {
+        "tag": "FinanceLeaseLiabilityPaymentsDueYearFour",
+        "label": "Finance Lease, Liability, to be Paid, Year Four",
+        "latest_USD": {
+          "end": "2025-12-31",
+          "val": 1354000,
+          "accn": "0001445305-26-000016",
+          "fy": 2025,
+          "fp": "FY",
+          "form": "10-K",
+          "filed": "2026-02-19",
+          "frame": "CY2025Q4I"
+        }
+      },
+      {
+        "tag": "FinanceLeaseLiabilityPaymentsDueYearThree",
+        "label": "Finance Lease, Liability, to be Paid, Year Three",
+        "latest_USD": {
+          "end": "2025-12-31",
+          "val": 1354000,
+          "accn": "0001445305-26-000016",
+          "fy": 2025,
+          "fp": "FY",
+          "form": "10-K",
+          "filed": "2026-02-19",
+          "frame": "CY2025Q4I"
+        }
+      },
+      {
+        "tag": "FinanceLeaseLiabilityPaymentsDueYearTwo",
+        "label": "Finance Lease, Liability, to be Paid, Year Two",
+        "latest_USD": {
+          "end": "2025-12-31",
+          "val": 1353000,
+          "accn": "0001445305-26-000016",
+          "fy": 2025,
+          "fp": "FY",
+          "form": "10-K",
+          "filed": "2026-02-19",
+          "frame": "CY2025Q4I"
+        }
+      },
+      {
+        "tag": "FinanceLeaseLiabilityUndiscountedExcessAmount",
+        "label": "Finance Lease, Liability, Undiscounted Excess Amount",
+        "latest_USD": {
+          "end": "2025-12-31",
+          "val": 6620000,
+          "accn": "0001445305-26-000016",
+          "fy": 2025,
+          "fp": "FY",
+          "form": "10-K",
+          "filed": "2026-02-19",
+          "frame": "CY2025Q4I"
+        }
+      },
+      {
+        "tag": "FinanceLeasePrincipalPayments",
+        "label": "Finance Lease, Principal Payments",
+        "latest_USD": {
+          "start": "2026-01-01",
+          "end": "2026-03-31",
+          "val": 150000,
+          "accn": "0001445305-26-000045",
+          "fy": 2026,
+          "fp": "Q1",
+          "form": "10-Q",
+          "filed": "2026-05-05",
+          "frame": "CY2026Q1"
+        }
+      },
+      {
+        "tag": "FinanceLeaseRightOfUseAsset",
+        "label": "Finance Lease, Right-of-Use Asset, after Accumulated Amortization",
+        "latest_USD": {
+          "end": "2019-12-31",
+          "val": 29127000,
+          "accn": "0001445305-20-000037",
+          "fy": 2019,
+          "fp": "FY",
+          "form": "10-K",
+          "filed": "2020-02-20",
+          "frame": "CY2019Q4I"
+        }
+      },
+      {
+        "tag": "FinanceLeaseRightOfUseAssetAccumulatedAmortization",
+        "label": "Finance Lease, Right-of-Use Asset, Accumulated Amortization",
+        "latest_USD": {
+          "end": "2025-12-31",
+          "val": 6200000,
+          "accn": "0001445305-26-000016",
+          "fy": 2025,
+          "fp": "FY",
+          "form": "10-K",
+          "filed": "2026-02-19",
+          "frame": "CY2025Q4I"
+        }
+      },
+      {
+        "tag": "FinanceLeaseRightOfUseAssetAmortization",
+        "label": "Finance Lease, Right-of-Use Asset, Amortization",
+        "latest_USD": {
+          "start": "2025-01-01",
+          "end": "2025-12-31",
+          "val": 882000,
+          "accn": "0001445305-26-000016",
+          "fy": 2025,
+          "fp": "FY",
+          "form": "10-K",
+          "filed": "2026-02-19",
+          "frame": "CY2025"
+        }
+      },
+      {
+        "tag": "FinanceLeaseRightOfUseAssetBeforeAccumulatedAmortization",
+        "label": "Finance Lease, Right-of-Use Asset, before Accumulated Amortization",
+        "latest_USD": {
+          "end": "2025-12-31",
+          "val": 21921000,
+          "accn": "0001445305-26-000016",
+          "fy": 2025,
+          "fp": "FY",
+          "form": "10-K",
+          "filed": "2026-02-19",
+          "frame": "CY2025Q4I"
+        }
+      },
+      {
+        "tag": "GainsLossesOnExtinguishmentOfDebt",
+        "label": "Gain (Loss) on Extinguishment of Debt",
+        "latest_USD": {
+          "start": "2016-01-01",
+          "end": "2016-12-31",
+          "val": 0,
+          "accn": "0001445305-17-000008",
+          "fy": 2016,
+          "fp": "FY",
+          "form": "10-K",
+          "filed": "2017-02-23",
+          "frame": "CY2016"
+        }
+      },
+      {
+        "tag": "InducedConversionOfConvertibleDebtExpense",
+        "label": "Induced Conversion of Convertible Debt Expense",
+        "latest_USD": {
+          "start": "2025-01-01",
+          "end": "2025-12-31",
+          "val": 0,
+          "accn": "0001445305-26-000016",
+          "fy": 2025,
+          "fp": "FY",
+          "form": "10-K",
+          "filed": "2026-02-19",
+          "frame": "CY2025"
+        }
+      },
+      {
+        "tag": "InterestExpenseDebt",
+        "label": "Interest Expense, Debt",
+        "latest_USD": {
+          "start": "2026-01-01",
+          "end": "2026-03-31",
+          "val": 3006000,
+          "accn": "0001445305-26-000045",
+          "fy": 2026,
+          "fp": "Q1",
+          "form": "10-Q",
+          "filed": "2026-05-05",
+          "frame": "CY2026Q1"
+        }
+      },
+      {
+        "tag": "InterestExpenseDebtExcludingAmortization",
+        "label": "Interest Expense, Debt, Excluding Amortization",
+        "latest_USD": {
+          "start": "2026-01-01",
+          "end": "2026-03-31",
+          "val": 2394000,
+          "accn": "0001445305-26-000045",
+          "fy": 2026,
+          "fp": "Q1",
+          "form": "10-Q",
+          "filed": "2026-05-05",
+          "frame": "CY2026Q1"
+        }
+      },
+      {
+        "tag": "LongTermDebt",
+        "label": "Long-term Debt",
+        "latest_USD": {
+          "end": "2014-12-31",
+          "val": 175000,
+          "accn": "0001445305-15-000028",
+          "fy": 2014,
+          "fp": "FY",
+          "form": "10-K",
+          "filed": "2015-03-11",
+          "frame": "CY2014Q4I"
+        }
+      },
+      {
+        "tag": "LongTermDebtCurrent",
+        "label": "Long-term Debt, Current Maturities",
+        "latest_USD": {
+          "end": "2017-12-31",
+          "val": 0,
+          "accn": "0001445305-18-000054",
+          "fy": 2017,
+          "fp": "FY",
+          "form": "10-K",
+          "filed": "2018-02-22",
+          "frame": "CY2017Q4I"
+        }
+      },
+      {
+        "tag": "LongTermDebtNoncurrent",
+        "label": "Long-term Debt, Excluding Current Maturities",
+        "latest_USD": {
+          "end": "2017-12-31",
+          "val": 0,
+          "accn": "0001445305-18-000054",
+          "fy": 2017,
+          "fp": "FY",
+          "form": "10-K",
+          "filed": "2018-02-22",
+          "frame": "CY2017Q4I"
+        }
+      },
+      {
+        "tag": "OtherThanTemporaryImpairmentLossDebtSecuritiesAvailableForSale",
+        "label": "Other-than-temporary Impairment Loss, Debt Securities, Available-for-sale",
+        "latest_USD": {
+          "start": "2019-01-01",
+          "end": "2019-12-31",
+          "val": 0,
+          "accn": "0001445305-22-000041",
+          "fy": 2021,
+          "fp": "FY",
+          "form": "10-K",
+          "filed": "2022-02-22",
+          "frame": "CY2019"
+        }
+      },
+      {
+        "tag": "PaymentsOfDebtIssuanceCosts",
+        "label": "Payments of Debt Issuance Costs",
+        "latest_USD": {
+          "start": "2019-01-01",
+          "end": "2019-12-31",
+          "val": 0,
+          "accn": "0001445305-20-000037",
+          "fy": 2019,
+          "fp": "FY",
+          "form": "10-K",
+          "filed": "2020-02-20",
+          "frame": "CY2019"
+        }
+      },
+      {
+        "tag": "PaymentsToAcquireAvailableForSaleSecuritiesDebt",
+        "label": "Payments to Acquire Debt Securities, Available-for-sale",
+        "latest_USD": {
+          "start": "2026-01-01",
+          "end": "2026-03-31",
+          "val": 91501000,
+          "accn": "0001445305-26-000045",
+          "fy": 2026,
+          "fp": "Q1",
+          "form": "10-Q",
+          "filed": "2026-05-05",
+          "frame": "CY2026Q1"
+        }
+      },
+      {
+        "tag": "ProceedsFromConvertibleDebt",
+        "label": "Proceeds from Convertible Debt",
+        "latest_USD": {
+          "start": "2025-01-01",
+          "end": "2025-12-31",
+          "val": 0,
+          "accn": "0001445305-26-000016",
+          "fy": 2025,
+          "fp": "FY",
+          "form": "10-K",
+          "filed": "2026-02-19",
+          "frame": "CY2025"
+        }
+      },
+      {
+        "tag": "ProceedsFromSaleOfAvailableForSaleSecuritiesDebt",
+        "label": "Proceeds from Sale of Debt Securities, Available-for-sale",
+        "latest_USD": {
+          "start": "2025-01-01",
+          "end": "2025-12-31",
+          "val": 2533000,
+          "accn": "0001445305-26-000016",
+          "fy": 2025,
+          "fp": "FY",
+          "form": "10-K",
+          "filed": "2026-02-19",
+          "frame": "CY2025"
+        }
+      },
+      {
+        "tag": "PropertyPlantAndEquipmentAndFinanceLeaseRightOfUseAssetAccumulatedDepreciationAndAmortization",
+        "label": "Property, Plant, and Equipment and Finance Lease Right-of-Use Asset, Accumulated Depreciation and Amortization",
+        "latest_USD": {
+          "end": "2025-12-31",
+          "val": 29771000,
+          "accn": "0001445305-26-000016",
+          "fy": 2025,
+          "fp": "FY",
+          "form": "10-K",
+          "filed": "2026-02-19",
+          "frame": "CY2025Q4I"
+        }
+      },
+      {
+        "tag": "PropertyPlantAndEquipmentAndFinanceLeaseRightOfUseAssetAfterAccumulatedDepreciationAndAmortization",
+        "label": "Property, Plant, and Equipment and Finance Lease Right-of-Use Asset, after Accumulated Depreciation and Amortization",
+        "latest_USD": {
+          "end": "2026-03-31",
+          "val": 19832000,
+          "accn": "0001445305-26-000045",
+          "fy": 2026,
+          "fp": "Q1",
+          "form": "10-Q",
+          "filed": "2026-05-05",
+          "frame": "CY2026Q1I"
+        }
+      },
+      {
+        "tag": "PropertyPlantAndEquipmentAndFinanceLeaseRightOfUseAssetBeforeAccumulatedDepreciationAndAmortization",
+        "label": "Property, Plant, and Equipment and Finance Lease Right-of-Use Asset, before Accumulated Depreciation and Amortization",
+        "latest_USD": {
+          "end": "2025-12-31",
+          "val": 50317000,
+          "accn": "0001445305-26-000016",
+          "fy": 2025,
+          "fp": "FY",
+          "form": "10-K",
+          "filed": "2026-02-19",
+          "frame": "CY2025Q4I"
+        }
+      },
+      {
+        "tag": "RepaymentsOfConvertibleDebt",
+        "label": "Repayments of Convertible Debt",
+        "latest_USD": {
+          "start": "2025-01-01",
+          "end": "2025-12-31",
+          "val": 0,
+          "accn": "0001445305-26-000016",
+          "fy": 2025,
+          "fp": "FY",
+          "form": "10-K",
+          "filed": "2026-02-19",
+          "frame": "CY2025"
+        }
+      },
+      {
+        "tag": "RepaymentsOfOtherLongTermDebt",
+        "label": "Repayments of Other Long-term Debt",
+        "latest_USD": {
+          "start": "2019-01-01",
+          "end": "2019-12-31",
+          "val": 0,
+          "accn": "0001445305-20-000037",
+          "fy": 2019,
+          "fp": "FY",
+          "form": "10-K",
+          "filed": "2020-02-20",
+          "frame": "CY2019"
+        }
+      },
+      {
+        "tag": "RepaymentsOfRelatedPartyDebt",
+        "label": "Repayments of Related Party Debt",
+        "latest_USD": {
+          "start": "2014-01-01",
+          "end": "2014-12-31",
+          "val": 0,
+          "accn": "0001445305-15-000028",
+          "fy": 2014,
+          "fp": "FY",
+          "form": "10-K",
+          "filed": "2015-03-11",
+          "frame": "CY2014"
+        }
+      },
+      {
+        "tag": "RightOfUseAssetObtainedInExchangeForFinanceLeaseLiability",
+        "label": "Right-of-Use Asset Obtained in Exchange for Finance Lease Liability",
+        "latest_USD": {
+          "start": "2025-01-01",
+          "end": "2025-12-31",
+          "val": 347000,
+          "accn": "0001445305-26-000016",
+          "fy": 2025,
+          "fp": "FY",
+          "form": "10-K",
+          "filed": "2026-02-19",
+          "frame": "CY2025"
+        }
+      },
+      {
+        "tag": "StockIssuedDuringPeriodValueConversionOfConvertibleSecurities",
+        "label": "Stock Issued During Period, Value, Conversion of Convertible Securities",
+        "latest_USD": {
+          "start": "2014-12-11",
+          "end": "2014-12-31",
+          "val": 5704000,
+          "accn": "0001445305-17-000008",
+          "fy": 2016,
+          "fp": "FY",
+          "form": "10-K",
+          "filed": "2017-02-23",
+          "frame": "CY2014Q4I"
+        }
+      }
+    ]
+  }
+}

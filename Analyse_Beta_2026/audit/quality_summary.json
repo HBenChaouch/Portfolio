@@ -1,0 +1,11 @@
+{
+  "weekly_price_observations": 105,
+  "weekly_return_observations": 104,
+  "expected_weekly_prices": 105,
+  "expected_weekly_returns": 104,
+  "missing_weekly_prices": 0,
+  "official_spotchecks": 46,
+  "official_spotchecks_passed": 46,
+  "official_spotchecks_failed": 0,
+  "target_beta": 1.058281583799669
+}

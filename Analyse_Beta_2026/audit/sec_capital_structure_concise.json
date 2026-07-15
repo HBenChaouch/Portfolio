@@ -1,0 +1,670 @@
+{
+  "BL": {
+    "entity": "BlackLine, Inc.",
+    "shares": [
+      {
+        "tag": "EntityCommonStockSharesOutstanding",
+        "label": "Entity Common Stock, Shares Outstanding",
+        "latest_shares": {
+          "end": "2026-04-30",
+          "val": 58660917,
+          "accn": "0001628280-26-032255",
+          "fy": 2026,
+          "fp": "Q1",
+          "form": "10-Q",
+          "filed": "2026-05-07",
+          "frame": "CY2026Q1I"
+        }
+      }
+    ],
+    "share_candidates_all_taxonomies": [
+      {
+        "taxonomy": "dei",
+        "tag": "EntityCommonStockSharesOutstanding",
+        "label": "Entity Common Stock, Shares Outstanding",
+        "latest_shares": {
+          "end": "2026-04-30",
+          "val": 58660917,
+          "accn": "0001628280-26-032255",
+          "fy": 2026,
+          "fp": "Q1",
+          "form": "10-Q",
+          "filed": "2026-05-07",
+          "frame": "CY2026Q1I"
+        }
+      },
+      {
+        "taxonomy": "us-gaap",
+        "tag": "CommonStockSharesOutstanding",
+        "label": "Common Stock, Shares, Outstanding",
+        "latest_shares": {
+          "end": "2026-03-31",
+          "val": 59171590,
+          "accn": "0001628280-26-032255",
+          "fy": 2026,
+          "fp": "Q1",
+          "form": "10-Q",
+          "filed": "2026-05-07",
+          "frame": "CY2026Q1I"
+        }
+      },
+      {
+        "taxonomy": "us-gaap",
+        "tag": "PreferredStockSharesOutstanding",
+        "label": "Preferred Stock, Shares Outstanding",
+        "latest_shares": {
+          "end": "2019-12-31",
+          "val": 0,
+          "accn": "0001564590-20-007371",
+          "fy": 2019,
+          "fp": "FY",
+          "form": "10-K",
+          "filed": "2020-02-27",
+          "frame": "CY2019Q4I"
+        }
+      },
+      {
+        "taxonomy": "us-gaap",
+        "tag": "WeightedAverageNumberOfDilutedSharesOutstanding",
+        "label": "Weighted Average Number of Shares Outstanding, Diluted",
+        "latest_shares": {
+          "start": "2026-01-01",
+          "end": "2026-03-31",
+          "val": 69835000,
+          "accn": "0001628280-26-032255",
+          "fy": 2026,
+          "fp": "Q1",
+          "form": "10-Q",
+          "filed": "2026-05-07",
+          "frame": "CY2026Q1"
+        }
+      },
+      {
+        "taxonomy": "us-gaap",
+        "tag": "WeightedAverageNumberOfSharesOutstandingBasic",
+        "label": "Weighted Average Number of Shares Outstanding, Basic",
+        "latest_shares": {
+          "start": "2026-01-01",
+          "end": "2026-03-31",
+          "val": 59439000,
+          "accn": "0001628280-26-032255",
+          "fy": 2026,
+          "fp": "Q1",
+          "form": "10-Q",
+          "filed": "2026-05-07",
+          "frame": "CY2026Q1"
+        }
+      },
+      {
+        "taxonomy": "us-gaap",
+        "tag": "WeightedAverageNumberOfSharesIssuedBasic",
+        "label": "Weighted Average Number of Shares Issued, Basic",
+        "latest_shares": {
+          "start": "2026-01-01",
+          "end": "2026-03-31",
+          "val": 59439000,
+          "accn": "0001628280-26-032255",
+          "fy": 2026,
+          "fp": "Q1",
+          "form": "10-Q",
+          "filed": "2026-05-07",
+          "frame": "CY2026Q1"
+        }
+      }
+    ],
+    "debt_candidates": [
+      {
+        "tag": "ConvertibleDebtCurrent",
+        "label": "Convertible Debt, Current",
+        "latest_USD": {
+          "end": "2026-03-31",
+          "val": 0,
+          "accn": "0001628280-26-032255",
+          "fy": 2026,
+          "fp": "Q1",
+          "form": "10-Q",
+          "filed": "2026-05-07",
+          "frame": "CY2026Q1I"
+        }
+      },
+      {
+        "tag": "ConvertibleDebtNoncurrent",
+        "label": "Convertible Debt, Noncurrent",
+        "latest_USD": {
+          "end": "2026-03-31",
+          "val": 666678000,
+          "accn": "0001628280-26-032255",
+          "fy": 2026,
+          "fp": "Q1",
+          "form": "10-Q",
+          "filed": "2026-05-07",
+          "frame": "CY2026Q1I"
+        }
+      },
+      {
+        "tag": "FinanceLeaseLiability",
+        "label": "Finance Lease, Liability",
+        "latest_USD": {
+          "end": "2025-12-31",
+          "val": 52000,
+          "accn": "0001628280-26-011915",
+          "fy": 2025,
+          "fp": "FY",
+          "form": "10-K",
+          "filed": "2026-02-26",
+          "frame": "CY2025Q4I"
+        }
+      },
+      {
+        "tag": "FinanceLeaseLiabilityCurrent",
+        "label": "Finance Lease, Liability, Current",
+        "latest_USD": {
+          "end": "2026-03-31",
+          "val": 13000,
+          "accn": "0001628280-26-032255",
+          "fy": 2026,
+          "fp": "Q1",
+          "form": "10-Q",
+          "filed": "2026-05-07",
+          "frame": "CY2026Q1I"
+        }
+      },
+      {
+        "tag": "FinanceLeaseLiabilityNoncurrent",
+        "label": "Finance Lease, Liability, Noncurrent",
+        "latest_USD": {
+          "end": "2026-03-31",
+          "val": 37000,
+          "accn": "0001628280-26-032255",
+          "fy": 2026,
+          "fp": "Q1",
+          "form": "10-Q",
+          "filed": "2026-05-07",
+          "frame": "CY2026Q1I"
+        }
+      }
+    ]
+  },
+  "BILL": {
+    "entity": "BILL HOLDINGS, INC.",
+    "shares": [
+      {
+        "tag": "EntityCommonStockSharesOutstanding",
+        "label": "Entity Common Stock, Shares Outstanding",
+        "latest_shares": {
+          "end": "2026-04-30",
+          "val": 99596727,
+          "accn": "0001628280-26-032387",
+          "fy": 2026,
+          "fp": "Q3",
+          "form": "10-Q",
+          "filed": "2026-05-08",
+          "frame": "CY2026Q1I"
+        }
+      }
+    ],
+    "share_candidates_all_taxonomies": [
+      {
+        "taxonomy": "dei",
+        "tag": "EntityCommonStockSharesOutstanding",
+        "label": "Entity Common Stock, Shares Outstanding",
+        "latest_shares": {
+          "end": "2026-04-30",
+          "val": 99596727,
+          "accn": "0001628280-26-032387",
+          "fy": 2026,
+          "fp": "Q3",
+          "form": "10-Q",
+          "filed": "2026-05-08",
+          "frame": "CY2026Q1I"
+        }
+      },
+      {
+        "taxonomy": "us-gaap",
+        "tag": "CommonStockSharesOutstanding",
+        "label": "Common Stock, Shares, Outstanding",
+        "latest_shares": {
+          "end": "2025-06-30",
+          "val": 103012000,
+          "accn": "0001786352-25-000037",
+          "fy": 2025,
+          "fp": "FY",
+          "form": "10-K",
+          "filed": "2025-08-28",
+          "frame": "CY2025Q2I"
+        }
+      },
+      {
+        "taxonomy": "us-gaap",
+        "tag": "PreferredStockSharesOutstanding",
+        "label": "Preferred Stock, Shares Outstanding",
+        "latest_shares": {
+          "end": "2025-06-30",
+          "val": 0,
+          "accn": "0001786352-25-000037",
+          "fy": 2025,
+          "fp": "FY",
+          "form": "10-K",
+          "filed": "2025-08-28",
+          "frame": "CY2025Q2I"
+        }
+      },
+      {
+        "taxonomy": "us-gaap",
+        "tag": "TemporaryEquitySharesOutstanding",
+        "label": "Temporary Equity, Shares Outstanding",
+        "latest_shares": {
+          "end": "2020-06-30",
+          "val": 0,
+          "accn": "0001564590-20-041865",
+          "fy": 2020,
+          "fp": "FY",
+          "form": "10-K",
+          "filed": "2020-08-31",
+          "frame": "CY2020Q2I"
+        }
+      },
+      {
+        "taxonomy": "us-gaap",
+        "tag": "WeightedAverageNumberOfDilutedSharesOutstanding",
+        "label": "Weighted Average Number of Shares Outstanding, Diluted",
+        "latest_shares": {
+          "start": "2026-01-01",
+          "end": "2026-03-31",
+          "val": 112677000,
+          "accn": "0001628280-26-032387",
+          "fy": 2026,
+          "fp": "Q3",
+          "form": "10-Q",
+          "filed": "2026-05-08",
+          "frame": "CY2026Q1"
+        }
+      },
+      {
+        "taxonomy": "us-gaap",
+        "tag": "WeightedAverageNumberOfSharesOutstandingBasic",
+        "label": "Weighted Average Number of Shares Outstanding, Basic",
+        "latest_shares": {
+          "start": "2026-01-01",
+          "end": "2026-03-31",
+          "val": 99285000,
+          "accn": "0001628280-26-032387",
+          "fy": 2026,
+          "fp": "Q3",
+          "form": "10-Q",
+          "filed": "2026-05-08",
+          "frame": "CY2026Q1"
+        }
+      }
+    ],
+    "debt_candidates": [
+      {
+        "tag": "ConvertibleDebtCurrent",
+        "label": "Convertible Debt, Current",
+        "latest_USD": {
+          "end": "2026-03-31",
+          "val": 0,
+          "accn": "0001628280-26-032387",
+          "fy": 2026,
+          "fp": "Q3",
+          "form": "10-Q",
+          "filed": "2026-05-08",
+          "frame": "CY2026Q1I"
+        }
+      },
+      {
+        "tag": "ConvertibleDebtNoncurrent",
+        "label": "Convertible Debt, Noncurrent",
+        "latest_USD": {
+          "end": "2026-03-31",
+          "val": 1504854000,
+          "accn": "0001628280-26-032387",
+          "fy": 2026,
+          "fp": "Q3",
+          "form": "10-Q",
+          "filed": "2026-05-08",
+          "frame": "CY2026Q1I"
+        }
+      },
+      {
+        "tag": "LongTermDebt",
+        "label": "Long-term Debt",
+        "latest_USD": {
+          "end": "2026-03-31",
+          "val": 1834854000,
+          "accn": "0001628280-26-032387",
+          "fy": 2026,
+          "fp": "Q3",
+          "form": "10-Q",
+          "filed": "2026-05-08",
+          "frame": "CY2026Q1I"
+        }
+      }
+    ]
+  },
+  "NCNO": {
+    "entity": "nCino, Inc.",
+    "shares": [
+      {
+        "tag": "EntityCommonStockSharesOutstanding",
+        "label": "Entity Common Stock, Shares Outstanding",
+        "latest_shares": {
+          "end": "2026-05-22",
+          "val": 109552950,
+          "accn": "0001902733-26-000066",
+          "fy": 2027,
+          "fp": "Q1",
+          "form": "10-Q",
+          "filed": "2026-05-27",
+          "frame": "CY2026Q2I"
+        }
+      }
+    ],
+    "share_candidates_all_taxonomies": [
+      {
+        "taxonomy": "dei",
+        "tag": "EntityCommonStockSharesOutstanding",
+        "label": "Entity Common Stock, Shares Outstanding",
+        "latest_shares": {
+          "end": "2026-05-22",
+          "val": 109552950,
+          "accn": "0001902733-26-000066",
+          "fy": 2027,
+          "fp": "Q1",
+          "form": "10-Q",
+          "filed": "2026-05-27",
+          "frame": "CY2026Q2I"
+        }
+      },
+      {
+        "taxonomy": "us-gaap",
+        "tag": "CommonStockSharesOutstanding",
+        "label": "Common Stock, Shares, Outstanding",
+        "latest_shares": {
+          "end": "2026-04-30",
+          "val": 108794598,
+          "accn": "0001902733-26-000066",
+          "fy": 2027,
+          "fp": "Q1",
+          "form": "10-Q",
+          "filed": "2026-05-27",
+          "frame": "CY2026Q1I"
+        }
+      },
+      {
+        "taxonomy": "us-gaap",
+        "tag": "PreferredStockSharesOutstanding",
+        "label": "Preferred Stock, Shares Outstanding",
+        "latest_shares": {
+          "end": "2026-04-30",
+          "val": 0,
+          "accn": "0001902733-26-000066",
+          "fy": 2027,
+          "fp": "Q1",
+          "form": "10-Q",
+          "filed": "2026-05-27",
+          "frame": "CY2026Q1I"
+        }
+      },
+      {
+        "taxonomy": "us-gaap",
+        "tag": "WeightedAverageNumberOfDilutedSharesOutstanding",
+        "label": "Weighted Average Number of Shares Outstanding, Diluted",
+        "latest_shares": {
+          "start": "2026-02-01",
+          "end": "2026-04-30",
+          "val": 109458472,
+          "accn": "0001902733-26-000066",
+          "fy": 2027,
+          "fp": "Q1",
+          "form": "10-Q",
+          "filed": "2026-05-27",
+          "frame": "CY2026Q1"
+        }
+      },
+      {
+        "taxonomy": "us-gaap",
+        "tag": "WeightedAverageNumberOfSharesOutstandingBasic",
+        "label": "Weighted Average Number of Shares Outstanding, Basic",
+        "latest_shares": {
+          "start": "2026-02-01",
+          "end": "2026-04-30",
+          "val": 108502547,
+          "accn": "0001902733-26-000066",
+          "fy": 2027,
+          "fp": "Q1",
+          "form": "10-Q",
+          "filed": "2026-05-27",
+          "frame": "CY2026Q1"
+        }
+      },
+      {
+        "taxonomy": "us-gaap",
+        "tag": "WeightedAverageNumberDilutedSharesOutstandingAdjustment",
+        "label": "Weighted Average Number Diluted Shares Outstanding Adjustment",
+        "latest_shares": {
+          "start": "2026-02-01",
+          "end": "2026-04-30",
+          "val": 955925,
+          "accn": "0001902733-26-000066",
+          "fy": 2027,
+          "fp": "Q1",
+          "form": "10-Q",
+          "filed": "2026-05-27",
+          "frame": "CY2026Q1"
+        }
+      }
+    ],
+    "debt_candidates": [
+      {
+        "tag": "FinanceLeaseLiability",
+        "label": "Finance Lease, Liability",
+        "latest_USD": {
+          "end": "2026-04-30",
+          "val": 50897000,
+          "accn": "0001902733-26-000066",
+          "fy": 2027,
+          "fp": "Q1",
+          "form": "10-Q",
+          "filed": "2026-05-27",
+          "frame": "CY2026Q1I"
+        }
+      },
+      {
+        "tag": "FinanceLeaseLiabilityCurrent",
+        "label": "Finance Lease, Liability, Current",
+        "latest_USD": {
+          "end": "2026-04-30",
+          "val": 607000,
+          "accn": "0001902733-26-000066",
+          "fy": 2027,
+          "fp": "Q1",
+          "form": "10-Q",
+          "filed": "2026-05-27",
+          "frame": "CY2026Q1I"
+        }
+      },
+      {
+        "tag": "FinanceLeaseLiabilityNoncurrent",
+        "label": "Finance Lease, Liability, Noncurrent",
+        "latest_USD": {
+          "end": "2026-04-30",
+          "val": 50290000,
+          "accn": "0001902733-26-000066",
+          "fy": 2027,
+          "fp": "Q1",
+          "form": "10-Q",
+          "filed": "2026-05-27",
+          "frame": "CY2026Q1I"
+        }
+      },
+      {
+        "tag": "LongTermDebt",
+        "label": "Long-term Debt",
+        "latest_USD": {
+          "end": "2026-04-30",
+          "val": 262810000,
+          "accn": "0001902733-26-000066",
+          "fy": 2027,
+          "fp": "Q1",
+          "form": "10-Q",
+          "filed": "2026-05-27",
+          "frame": "CY2026Q1I"
+        }
+      },
+      {
+        "tag": "LongTermDebtCurrent",
+        "label": "Long-term Debt, Current Maturities",
+        "latest_USD": {
+          "end": "2026-04-30",
+          "val": 9803000,
+          "accn": "0001902733-26-000066",
+          "fy": 2027,
+          "fp": "Q1",
+          "form": "10-Q",
+          "filed": "2026-05-27",
+          "frame": "CY2026Q1I"
+        }
+      },
+      {
+        "tag": "LongTermDebtNoncurrent",
+        "label": "Long-term Debt, Excluding Current Maturities",
+        "latest_USD": {
+          "end": "2026-04-30",
+          "val": 253007000,
+          "accn": "0001902733-26-000066",
+          "fy": 2027,
+          "fp": "Q1",
+          "form": "10-Q",
+          "filed": "2026-05-27",
+          "frame": "CY2026Q1I"
+        }
+      }
+    ]
+  },
+  "WK": {
+    "entity": "WORKIVA INC",
+    "shares": [],
+    "share_candidates_all_taxonomies": [
+      {
+        "taxonomy": "us-gaap",
+        "tag": "PreferredStockSharesOutstanding",
+        "label": "Preferred Stock, Shares Outstanding",
+        "latest_shares": {
+          "end": "2026-03-31",
+          "val": 0,
+          "accn": "0001445305-26-000045",
+          "fy": 2026,
+          "fp": "Q1",
+          "form": "10-Q",
+          "filed": "2026-05-05",
+          "frame": "CY2026Q1I"
+        }
+      },
+      {
+        "taxonomy": "us-gaap",
+        "tag": "WeightedAverageNumberOfDilutedSharesOutstanding",
+        "label": "Weighted Average Number of Shares Outstanding, Diluted",
+        "latest_shares": {
+          "start": "2026-01-01",
+          "end": "2026-03-31",
+          "val": 58441679,
+          "accn": "0001445305-26-000045",
+          "fy": 2026,
+          "fp": "Q1",
+          "form": "10-Q",
+          "filed": "2026-05-05",
+          "frame": "CY2026Q1"
+        }
+      },
+      {
+        "taxonomy": "us-gaap",
+        "tag": "WeightedAverageNumberOfSharesOutstandingBasic",
+        "label": "Weighted Average Number of Shares Outstanding, Basic",
+        "latest_shares": {
+          "start": "2026-01-01",
+          "end": "2026-03-31",
+          "val": 56885568,
+          "accn": "0001445305-26-000045",
+          "fy": 2026,
+          "fp": "Q1",
+          "form": "10-Q",
+          "filed": "2026-05-05",
+          "frame": "CY2026Q1"
+        }
+      }
+    ],
+    "debt_candidates": [
+      {
+        "tag": "ConvertibleDebtCurrent",
+        "label": "Convertible Debt, Current",
+        "latest_USD": {
+          "end": "2026-03-31",
+          "val": 71140000,
+          "accn": "0001445305-26-000045",
+          "fy": 2026,
+          "fp": "Q1",
+          "form": "10-Q",
+          "filed": "2026-05-05",
+          "frame": "CY2026Q1I"
+        }
+      },
+      {
+        "tag": "ConvertibleDebtNoncurrent",
+        "label": "Convertible Debt, Noncurrent",
+        "latest_USD": {
+          "end": "2026-03-31",
+          "val": 696807000,
+          "accn": "0001445305-26-000045",
+          "fy": 2026,
+          "fp": "Q1",
+          "form": "10-Q",
+          "filed": "2026-05-05",
+          "frame": "CY2026Q1I"
+        }
+      },
+      {
+        "tag": "FinanceLeaseLiability",
+        "label": "Finance Lease, Liability",
+        "latest_USD": {
+          "end": "2025-12-31",
+          "val": 13837000,
+          "accn": "0001445305-26-000016",
+          "fy": 2025,
+          "fp": "FY",
+          "form": "10-K",
+          "filed": "2026-02-19",
+          "frame": "CY2025Q4I"
+        }
+      },
+      {
+        "tag": "FinanceLeaseLiabilityCurrent",
+        "label": "Finance Lease, Liability, Current",
+        "latest_USD": {
+          "end": "2026-03-31",
+          "val": 623000,
+          "accn": "0001445305-26-000045",
+          "fy": 2026,
+          "fp": "Q1",
+          "form": "10-Q",
+          "filed": "2026-05-05",
+          "frame": "CY2026Q1I"
+        }
+      },
+      {
+        "tag": "FinanceLeaseLiabilityNoncurrent",
+        "label": "Finance Lease, Liability, Noncurrent",
+        "latest_USD": {
+          "end": "2026-03-31",
+          "val": 13064000,
+          "accn": "0001445305-26-000045",
+          "fy": 2026,
+          "fp": "Q1",
+          "form": "10-Q",
+          "filed": "2026-05-05",
+          "frame": "CY2026Q1I"
+        }
+      }
+    ]
+  }
+}

@@ -1,0 +1,14 @@
+{"kind":"sheet","id":"ws/ebd1tw","name":"Cover","index":0,"range":"A1:E43","address":"A1:E43"}
+{"kind":"sheet","id":"ws/fx9l9d","name":"Inputs","index":1,"range":"A1:E56","address":"A1:E56"}
+{"kind":"sheet","id":"ws/i40b0c","name":"FY25_base","index":2,"range":"A1:D69","address":"A1:D69"}
+{"kind":"sheet","id":"ws/udszzv","name":"DCF","index":3,"range":"A1:S43","address":"A1:S43"}
+{"kind":"sheet","id":"ws/svbt8p","name":"Sensitivity","index":4,"range":"A1:G23","address":"A1:G23"}
+{"kind":"sheet","id":"ws/4c7y8z","name":"Margin_path","index":5,"range":"A1:E39","address":"A1:E39"}
+{"kind":"sheet","id":"ws/evp3lo","name":"Trading_comps","index":6,"range":"A1:I28","address":"A1:I28"}
+{"kind":"sheet","id":"ws/vjqonq","name":"Transaction_comps","index":7,"range":"A1:J29","address":"A1:J29"}
+{"kind":"sheet","id":"ws/gmyxxm","name":"LBO_old","index":8,"range":"A1:I35","address":"A1:I35"}
+{"kind":"sheet","id":"ws/ml1y9b","name":"LBO_full","index":9,"range":"A1:I253","address":"A1:I253"}
+{"kind":"sheet","id":"ws/krpcba","name":"Football_field","index":10,"range":"A1:G20","address":"A1:G20"}
+{"kind":"sheet","id":"ws/e89sxx","name":"Equity_bridge","index":11,"range":"A1:E32","address":"A1:E32"}
+{"kind":"sheet","id":"ws/hd1m5u","name":"Caveats","index":12,"range":"A1:D12","address":"A1:D12"}
+{"kind":"sheet","id":"ws/f3q24x","name":"Checks","index":13,"range":"A1:D20","address":"A1:D20"}

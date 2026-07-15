@@ -12,7 +12,7 @@ Le site (src/ + dist/) est aligné sur le workbook v2 et la valorisation au 15/0
 
 **Vérification** : page /cases/sidetrade-valuation/analysis servie et scannée en navigateur le 15/07/2026 — 0 valeur périmée sur 16 tokens surveillés, 20/20 nouvelles valeurs rendues, console sans erreur.
 
-**Caveat technique** : `dist/` a été patché en place (Node/npm absents de la machine → rebuild impossible). `src/` porte les mêmes corrections. À la prochaine installation de Node : `npm install && npm run build` pour régénérer proprement dist depuis src, puis re-vérifier. NB : servir le site avec un fallback SPA (les routes /cases/... nécessitent une réécriture vers index.html).
+**Rebuild propre effectué le 15/07/2026 au soir** (Node v24 installé) : `npm install && npm run build` → bundle régénéré depuis src (le patch en place du dist est donc remplacé par un build canonique). Re-vérifié en navigateur post-rebuild : 20/20 valeurs à jour, 0 périmée, console propre, page d'accueil incluse. NB : servir le site avec un fallback SPA (les routes /cases/... nécessitent une réécriture vers index.html).
 
 L'ancien standalone `Sidetrade Valuation (1).html` reste NON resynchronisé — ne pas présenter (archive).
 

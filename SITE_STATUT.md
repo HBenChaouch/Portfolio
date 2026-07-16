@@ -14,6 +14,6 @@ Le site (src/ + dist/) est aligné sur le workbook v2 et la valorisation au 15/0
 
 **Rebuild propre effectué le 15/07/2026 au soir** (Node v24 installé) : `npm install && npm run build` → bundle régénéré depuis src (le patch en place du dist est donc remplacé par un build canonique). Re-vérifié en navigateur post-rebuild : 20/20 valeurs à jour, 0 périmée, console propre, page d'accueil incluse. NB : servir le site avec un fallback SPA (les routes /cases/... nécessitent une réécriture vers index.html).
 
-L'ancien standalone `Sidetrade Valuation (1).html` reste NON resynchronisé — ne pas présenter (archive).
+L'ancien standalone `Sidetrade Valuation (1).html` est NON resynchronisé et a été déplacé dans `_archive/` (R8, 16/07/2026) — ne pas présenter.
 
 Historique : v1 archivée le 15/07/2026 au matin (ancien LBO simplifié 3,5x/6,5%/sweep 100%/exit 18x, fourchette 135-283-455, placeholders visibles — cf. NOTE_CONSOLIDEE_AUDITS_PORTFOLIO.md §5).

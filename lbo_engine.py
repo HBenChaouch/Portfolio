@@ -69,6 +69,18 @@ def load_scenarios():
             "capex":  [dcf[f"{c}19"].value for c in cols],  # negative
             "dwc":    [dcf[f"{c}20"].value for c in cols],  # negative
         }
+    # Garde-fou chaîne (audit 16/07 §P1.1) : openpyxl vide les caches de
+    # formules à chaque sauvegarde — si le classeur n'a pas été recalculé
+    # par Excel/LibreOffice depuis, les valeurs lues sont None et TOUT le
+    # modèle serait silencieusement faux. On échoue bruyamment à la place.
+    missing = [(sc, k) for sc, d in out.items() for k, vals in d.items()
+               for v in vals if v is None for _ in [0]][:5]
+    if missing:
+        raise RuntimeError(
+            "Caches de formules absents dans le workbook (exemples: "
+            f"{missing}). Ouvrir et recalculer le classeur dans Excel "
+            "(CalculateFullRebuild) puis relancer — ne jamais enchaîner "
+            "une sauvegarde openpyxl sans recalcul.")
     return out
 
 # ---- Core model ---------------------------------------------------------

@@ -609,7 +609,7 @@ FCF  = EBIT × (1 − tax) + D&A − Capex − ΔWC`}</pre><ol><li><strong>Econo
       </section>
 
       <footer className="site">
-        <div className="inner"><div><h4>Author</h4><div className="name">Hamza ——</div><p>ESSEC Grande École · Finance &amp; Analytics<br /><a href="#">LinkedIn</a></p></div><div><h4>Sources</h4><p>Sidetrade FY25 Annual Results (Mar 30, 2026) · Statutory Report FY25 (KPMG / Yuma Audit, Apr 21, 2026) · O2C Intelligence 2030 Strategic Plan (Apr 7, 2026) · Edison Group precedent transactions table · Damodaran European ERP &amp; sector betas.</p></div><div><h4>Market reference</h4><p>Market data as of <strong>15 July 2026</strong>.</p></div></div>
+        <div className="inner"><div><h4>Author</h4><div className="name">Hamza Ben Chaouch</div><p>ESSEC Grande École · Finance &amp; Analytics<br /><a href="mailto:hamza.benchaouch@essec.edu">hamza.benchaouch@essec.edu</a><br /><a href="tel:+33769913946">+33 7 69 91 39 46</a></p></div><div><h4>Sources</h4><p>Sidetrade FY25 Annual Results (Mar 30, 2026) · Statutory Report FY25 (KPMG / Yuma Audit, Apr 21, 2026) · O2C Intelligence 2030 Strategic Plan (Apr 7, 2026) · Edison Group precedent transactions table · Damodaran European ERP &amp; sector betas.</p></div><div><h4>Market reference</h4><p>Market data as of <strong>15 July 2026</strong>.</p></div></div>
         <div className="inner"><p className="disclaimer">Independent pedagogical model built from public data. Does not constitute an investment recommendation. All multiples and ranges are indicative and reflect a market window — refresh before any external distribution.</p></div>
       </footer>
     </article>

@@ -8,7 +8,7 @@
     "build": "vite build && node scripts/create-spa-fallback.mjs",
     "preview": "vite preview",
     "test:financial": "node scripts/check-financial-data.mjs",
-    "test:workbook": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/check-workbook.ps1",
+    "test:workbook": "node scripts/run-workbook-check.mjs",
     "test:audit": "npm run test:financial && npm run test:workbook",
     "test:web": "node scripts/check-web-quality.mjs",
     "test:quality": "npm run test:audit && npm run test:web"

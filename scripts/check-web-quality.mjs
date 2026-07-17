@@ -53,6 +53,7 @@ assert.match(styles, /\.analysis-view \.result-strip \.cell[\s\S]*?min-width: 0/
 
 const packageJson = JSON.parse(await text("package.json"));
 assert.equal(packageJson.dependencies["framer-motion"], undefined);
+assert.equal(packageJson.scripts["test:workbook"], "node scripts/run-workbook-check.mjs");
 
 console.log("Web quality registry: OK");
 console.log("Portfolio projects: Sidetrade / Opella / Real Estate");

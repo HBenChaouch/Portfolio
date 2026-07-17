@@ -47,6 +47,7 @@ const workflow = await text(".github/workflows/deploy-pages.yml");
 assert.match(workflow, /npm run test:quality/);
 assert.match(workflow, /public\/deployment\.json/);
 assert.match(workflow, /github\.sha/);
+assert.match(workflow, /enablement: true/);
 assert.match(workflow, /actions\/deploy-pages@v4/);
 const styles = await text("src/styles/global.css");
 assert.match(styles, /\.analysis-view \.result-strip \.cell[\s\S]*?min-width: 0/);

@@ -425,7 +425,7 @@ export default function AnalysisView() {
           <div className="cell"><div className="k">Revenue FY25</div><div className="v">€61.4m</div><div className="d up">+14% cc · +12% reported</div></div>
           <div className="cell"><div className="k">Subscriptions</div><div className="v">€53.5m</div><div className="d up">+20% cc · 87% of revenue</div></div>
           <div className="cell"><div className="k">EBITDA margin</div><div className="v">22%</div><div className="d">€13.4m · +22% YoY</div></div>
-          <div className="cell"><div className="k">Net cash position</div><div className="v">€14.7m</div><div className="d">Net debt strict · ~€1.5B coverage capacity</div></div>
+          <div className="cell"><div className="k">Net debt (strict)</div><div className="v">€14.7m</div><div className="d">Financial debt less cash &amp; marketable securities · ~€1.5B coverage capacity</div></div>
         </div>
         <nav className="desktop-chapter-index" aria-label="Sidetrade analysis chapters">
           <a href="#snapshot"><span>01</span>Investment case</a>
@@ -546,7 +546,7 @@ export default function AnalysisView() {
           <div><span>FCF normalised</span><strong>€7.163m</strong><p>Timing-normalised view used as the economic cash lens.</p></div>
         </div>
         <div className="qoe-flags"><strong>Underwrite before signing</strong><span>CIR eligibility and reimbursement timing</span><span>ezyCollect / SHS Viveon pro forma integration</span><span>Normalised tax and working-capital evidence</span></div>
-        <p className="qoe-source">Source: audited QoE note and canonical workbook. No new financial definition introduced in S3; “e” denotes an estimate to confirm.</p>
+        <p className="qoe-source">Source: internally reviewed QoE note and canonical workbook. No new financial definition introduced in S3; “e” denotes an estimate to confirm.</p>
       </section>
 
       <section className="block" id="market">

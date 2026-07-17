@@ -200,7 +200,7 @@ export default function CaseShell() {
                 </button>
               ))}
             </div>
-            <span className="control-date">09 May 2025</span>
+            <span className="control-date">Market ref. 15 Jul 2026</span>
           </div>
         </header>
         <Outlet />

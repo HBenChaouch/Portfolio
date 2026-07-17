@@ -505,7 +505,7 @@ export default function AnalysisView() {
             </table>
             <div className="narrative" data-s={fcfView === "stat" ? "bear" : "base"} style={{ marginTop: 0 }}>
               <h4>{fcfView === "stat" ? "Statutory view — CIR timing pressure" : "Normalised view — recurring cash capacity"}</h4>
-              <p>{fcfView === "stat" ? "Sidetrade’s 2025 transition to European mid-cap status triggered a 3-year deferral on the State’s CIR reimbursement. That creates a €2.9m working-capital consumption weighing on 2025 FCF — and after the loss of SME status, the 3-year deferral repeats by vintage, so it is a timing effect rather than a pure one-off. Management itself communicates an operating cash flow of €8.7m \"excluding the timing impact of the Research Tax Credit\"." : "This view neutralises the CIR timing decalage to reflect the model’s recurring cash capacity. It is the preferred lens for the DCF; note the deferral repeats by CIR vintage until reimbursement cycles stabilise (~2028) — the normalisation corrects timing, it does not erase a recurring lag."}</p>
+              <p>{fcfView === "stat" ? "Sidetrade’s loss of immediate SME reimbursement status created a 3-year lag on CIR cash collection. That generated €2.947m of working-capital consumption in FY25 — and the lag repeats by vintage, so it is a timing effect rather than a pure one-off. Management separately communicates operating cash flow of €8.7m \"excluding the timing impact of the Research Tax Credit\"; the public documents do not provide a complete bridge to that KPI." : "This view neutralises the identified FY25 CIR timing drag to show economic cash generation. It is the DCF starting lens; because the deferral repeats by CIR vintage, the normalisation corrects the FY25 timing distortion without claiming that the recurring cash lag disappears."}</p>
             </div>
           </div>
         </div>
@@ -545,8 +545,49 @@ export default function AnalysisView() {
           <div><span>FCF statutory</span><strong>€4.216m</strong><p>Cash conversion after reported CIR timing pressure.</p></div>
           <div><span>FCF normalised</span><strong>€7.163m</strong><p>Timing-normalised view used as the economic cash lens.</p></div>
         </div>
+        <div className="ts-workbench" id="cash-conversion">
+          <div className="ts-panel cash-conversion-panel">
+            <div className="section-kicker">Cash conversion · FY25</div>
+            <h3>Separate reported cash, timing normalisation and management’s KPI</h3>
+            <div className="cash-bridge" aria-label="FY25 statutory to normalised free cash flow bridge">
+              <div><span>Statutory OCF</span><strong>€5.240m</strong><small>Cash-flow statement</small></div>
+              <div className="cash-bridge-step"><span>− €1.024m</span><small>Capex</small></div>
+              <div><span>Statutory FCF</span><strong>€4.216m</strong><small>6.9% margin</small></div>
+              <div className="cash-bridge-step positive"><span>+ €2.947m</span><small>CIR timing normalisation</small></div>
+              <div className="cash-bridge-output"><span>Normalised FCF</span><strong>€7.163m</strong><small>11.7% margin</small></div>
+            </div>
+            <p className="ts-interpretation"><strong>Do not plug €8.7m into this bridge.</strong> Management’s OCF excluding the CIR timing impact is a separately communicated KPI. It supports the direction of travel, but the public documents do not provide a line-by-line reconciliation from statutory OCF to €8.7m.</p>
+          </div>
+          <div className="ts-panel cir-panel">
+            <div className="section-kicker">CIR · three distinct lenses</div>
+            <h3>One programme, three different transaction questions</h3>
+            <div className="cir-lenses">
+              <div><span>Accounting</span><strong>€3.482m FY25</strong><p>Reclassified into operating income under the statutory presentation and included in reported EBITDA.</p></div>
+              <div><span>Cash timing</span><strong>€2.947m FY25 drag</strong><p>Loss of immediate SME reimbursement creates a three-year lag. The lag repeats by vintage; normalising FY25 does not mean the cash-cycle drag disappears.</p></div>
+              <div><span>Underwriting</span><strong>€3.5m p.a. modelled</strong><p>Flat through 2030 in the audited model. Eligibility, eligible spend, audit exposure and reimbursement timing must be diligenced separately.</p></div>
+            </div>
+          </div>
+        </div>
+        <div className="debt-like-panel" id="debt-like">
+          <div className="sec-head compact"><div className="left"><div className="section-kicker">Equity cheque perimeter</div><h3>Strict net debt is the modelled bridge; debt-like remains an SPA question</h3></div><div className="right">No item below is added to modelled net debt in S5.</div></div>
+          <div className="debt-like-layout">
+            <div className="strict-debt-bridge">
+              <div><span>Gross financial debt</span><strong>€30.981m</strong></div>
+              <div><span>Less cash</span><strong>−€5.402m</strong></div>
+              <div><span>Less marketable securities</span><strong>−€10.925m</strong></div>
+              <div className="total"><span>Net debt · strict</span><strong>€14.654m</strong></div>
+            </div>
+            <div className="debt-like-register">
+              <div><span>Earn-outs disclosed</span><strong>~€0.5m</strong><p>Amalto and CreditPoint. Confirm settlement status and SPA classification.</p></div>
+              <div><span>ezyCollect acquisition balance</span><strong>~€1.5m</strong><p>Confirm deferred consideration, completion accounts and payment timetable.</p></div>
+              <div><span>Deferred revenue</span><strong>~€14m</strong><p>Not financial debt by default. Assess delivery obligations and interaction with the normal working-capital peg.</p></div>
+              <div><span>Operating leases</span><strong>Not modelled</strong><p>Not capitalised and described as immaterial in Note 25; verify completeness and change-of-control effects.</p></div>
+            </div>
+          </div>
+          <p className="ts-interpretation"><strong>Transaction convention.</strong> Enterprise value converts to equity value using €14.654m strict net debt only. Any adjustment for the excluded items requires evidence, non-duplication with working capital and explicit SPA treatment.</p>
+        </div>
         <div className="qoe-flags"><strong>Underwrite before signing</strong><span>CIR eligibility and reimbursement timing</span><span>ezyCollect / SHS Viveon pro forma integration</span><span>Normalised tax and working-capital evidence</span></div>
-        <p className="qoe-source">Source: internally reviewed QoE note and canonical workbook. No new financial definition introduced in S3; “e” denotes an estimate to confirm.</p>
+        <p className="qoe-source">Source: internally reviewed QoE note and canonical workbook. No new financial definition introduced in S5; “e” denotes an estimate to confirm. Figures shown in €m unless stated otherwise.</p>
       </section>
 
       <section className="block" id="market">
@@ -677,7 +718,12 @@ FCF  = EBIT × (1 − tax) + D&A − Capex − ΔWC`}</pre><ol><li><strong>Econo
       <section className="block" id="red-flags">
         <span className="anchor-alias" id="caveats" aria-hidden="true" />
         <div className="sec-head"><div className="left"><div className="num-tag">09 — Red flags &amp; limits</div><h2>What must be diligenced — and what this model is not</h2></div><div className="right">Independent v1.0 model built from public data only. Not a research recommendation.</div></div>
-        <div className="caveats"><div><h3>Methodological</h3><ul><li>Independent v0 model built from public data only (FY25 statutory + press release + O2C Intelligence 2030 plan + public market data).</li><li>Trading multiples are sensitive to market window — refresh before publication if market conditions shift.</li><li>CIR treated as recurring cash (statutory mechanism; subject to tax-audit and timing risk — not economically guaranteed). Statutory view available as alternative for transparency.</li><li>ezyCollect / SHS Viveon margins still converging through 2026–2028 — Base case assumes partial integration. Multi-acquisition execution risk acknowledged.</li><li>Transaction comps embed a ~40% control premium — not directly comparable to a stand-alone fair value.</li><li>LBO is an affordability test, not a fundamental fair value.</li><li>D&amp;A used (2.0% of revenue) is an economic proxy, distinct from French accounting D&amp;A which includes receivable and operating provisions.</li><li>Treasury shares (€20.6m market value) not included in the equity bridge — treated as optionality, value depends on spot price.</li></ul></div><div><h3>Accounting specifics</h3><ul><li><strong>Gross margin reconstruction.</strong> <em>Gross margin is taken from Sidetrade's FY25 investor communication. It cannot be perfectly reconstructed from the French statutory P&amp;L alone because expenses are presented by nature, not by function.</em> The 77% / 81% LFL / 92% subscription figures come from the press release, not the statutory ANC.</li><li><strong>ezyCollect PPA pending.</strong> <em>ezyCollect PPA still pending until 31 Dec 2026. Future allocation from goodwill to customer relationships could increase amortization and affect EBIT, while leaving EBITDA broadly unaffected.</em> Part of the €38m goodwill may be reclassified as 20-year-amortisable customer relations after the allocation due end-2026. EBIT-impacting, EBITDA-neutral.</li><li><strong>Headcount discrepancy.</strong> 406 employees per statutory accounts at 31 December 2025 vs ~450 per corporate communication. The gap can reflect contractors, recent joiners not yet booked, or a rounded comms figure. Noted without dramatising.</li></ul></div></div>
+        <div className="ts-deal-grid">
+          <div className="ts-panel"><div className="section-kicker">Transaction implications</div><h3>Where QoE changes the deal discussion</h3><ul className="ts-list"><li><strong>Price multiple.</strong> Keep published, ex-CIR and estimated adjusted EBITDA visibly distinct; do not present €10.7m or €14.2m as audited statutory measures.</li><li><strong>Working capital.</strong> Set the peg only after separating the CIR reimbursement cycle from ordinary receivables and contract liabilities.</li><li><strong>Equity cheque.</strong> Reconcile strict net debt to completion accounts and classify earn-outs, acquisition balances and restricted cash without double counting.</li><li><strong>Protections.</strong> Consider specific tax/CIR protection, leakage coverage and acquisition-liability treatment where evidence remains incomplete.</li></ul></div>
+          <div className="ts-panel" id="diligence"><div className="section-kicker">Priority diligence requests</div><h3>Evidence required before signing</h3><ol className="diligence-list"><li><strong>CIR file.</strong> Claims by vintage, eligible-cost bridge, tax opinions, audits, correspondence and reimbursement calendar.</li><li><strong>Cash conversion.</strong> Monthly OCF-to-FCF bridge, working-capital ageing, capex ledger and reconciliation of management’s €8.7m KPI.</li><li><strong>Debt and cash.</strong> Bank statements, facilities, accrued interest, covenants, guarantees, restricted cash and marketable-security liquidity.</li><li><strong>Acquisition liabilities.</strong> ezyCollect, Amalto and CreditPoint SPAs, earn-outs, deferred consideration and completion-account settlements.</li><li><strong>Revenue quality.</strong> ARR/NRR by cohort, churn, concessions, deferred revenue, top contracts and post-close delivery obligations.</li><li><strong>Integration.</strong> Stand-alone and pro-forma P&amp;Ls for ezyCollect/SHS Viveon, synergies, PPA status and one-off costs.</li></ol></div>
+          <div className="ts-panel" id="conventions"><div className="section-kicker">Conventions &amp; limits</div><h3>How to read the numbers</h3><dl className="convention-list"><div><dt>Published</dt><dd>Directly reported or reconstructed from statutory/public disclosures.</dd></div><div><dt>Adjusted / “e”</dt><dd>Internally reviewed estimate requiring data-room confirmation; not a statutory measure.</dd></div><div><dt>Normalised</dt><dd>Timing-adjusted analytical view; does not assert that the underlying cash cycle disappears.</dd></div><div><dt>Net debt · strict</dt><dd>Gross financial debt less cash and marketable securities only.</dd></div><div><dt>Debt-like</dt><dd>Open diligence perimeter, not an automatic purchase-price adjustment.</dd></div><div><dt>Units / dates</dt><dd>€m unless stated; FY25 actuals at 31 Dec 2025; market reference at 15 Jul 2026.</dd></div></dl></div>
+        </div>
+        <div className="caveats"><div><h3>Methodological</h3><ul><li>Independent v1.0 model built from public data only (FY25 statutory + press release + O2C Intelligence 2030 plan + public market data).</li><li>Trading multiples are sensitive to market window — refresh before publication if market conditions shift.</li><li>CIR is included in modelled EBITDA but remains subject to eligibility, tax-audit and reimbursement-timing risk. The statutory cash view remains the downside reference.</li><li>ezyCollect / SHS Viveon margins still converge through 2026–2028 — Base assumes partial integration. Multi-acquisition execution risk remains.</li><li>Transaction comps embed a ~40% control premium — not directly comparable to stand-alone fair value.</li><li>LBO is an affordability test, not a fundamental fair value.</li><li>D&amp;A at 2.0% of revenue is an economic proxy, distinct from French accounting D&amp;A and provisions.</li><li>Treasury shares are excluded from the equity bridge; treatment depends on legal ownership, intended use and spot value.</li></ul></div><div><h3>Accounting specifics</h3><ul><li><strong>Gross margin reconstruction.</strong> The 77% / 81% LFL / 92% subscription figures come from investor communication and cannot be perfectly reconstructed from an expenses-by-nature statutory P&amp;L.</li><li><strong>ezyCollect PPA pending.</strong> Allocation remains open until 31 Dec 2026. Reclassification from goodwill to customer relationships could increase amortisation and affect EBIT while remaining EBITDA-neutral.</li><li><strong>Headcount discrepancy.</strong> 406 employees per statutory accounts at 31 Dec 2025 versus ~450 in corporate communication; reconcile payroll, contractors, perimeter and cut-off.</li></ul></div></div>
       </section>
 
       <section className="block" id="sources">

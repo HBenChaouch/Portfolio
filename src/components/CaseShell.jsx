@@ -11,6 +11,8 @@ const sidebarGroups = [
       { title: "Executive view", hash: "executive" },
       { title: "Company & revenue", hash: "snapshot" },
       { title: "Quality of Earnings", hash: "qoe" },
+      { title: "Cash conversion & CIR", hash: "cash-conversion" },
+      { title: "Net debt & debt-like", hash: "debt-like" },
       { title: "Market reference", hash: "market" },
     ],
   },
@@ -35,6 +37,8 @@ const sidebarGroups = [
     label: "Audit trail",
     items: [
       { title: "Red flags & limits", hash: "red-flags" },
+      { title: "Diligence requests", hash: "diligence" },
+      { title: "Conventions", hash: "conventions" },
       { title: "Methodology", hash: "methodology" },
       { title: "Sources", hash: "sources" },
     ],

@@ -4011,6 +4011,356 @@ a {
   }
 }
 
+/* === S5 QOE & TRANSACTION SERVICES === */
+
+.analysis-view #cash-conversion,
+.analysis-view #debt-like,
+.analysis-view #diligence,
+.analysis-view #conventions {
+  scroll-margin-top: 118px;
+}
+
+.ts-workbench {
+  display: grid;
+  gap: var(--space-6);
+  margin-top: var(--space-7);
+}
+
+.ts-panel,
+.debt-like-panel {
+  border-bottom: 1px solid var(--line-strong);
+  border-top: 1px solid var(--line-strong);
+  min-width: 0;
+  padding: var(--space-6);
+}
+
+.ts-panel {
+  background: rgba(255, 255, 254, 0.48);
+}
+
+.ts-panel h3,
+.debt-like-panel h3 {
+  font-size: clamp(25px, 2.6vw, 36px);
+  margin-top: var(--space-2);
+  max-width: 850px;
+}
+
+.cash-bridge {
+  border-bottom: 1px solid var(--line);
+  border-top: 1px solid var(--line);
+  display: grid;
+  grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.68fr) minmax(0, 1fr) minmax(0, 0.82fr) minmax(0, 1.12fr);
+  margin-top: var(--space-5);
+}
+
+.cash-bridge > div {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-height: 138px;
+  min-width: 0;
+  padding: var(--space-4);
+}
+
+.cash-bridge > div + div {
+  border-left: 1px solid var(--line);
+}
+
+.cash-bridge span,
+.cir-lenses span,
+.strict-debt-bridge span,
+.debt-like-register span {
+  color: var(--ink-3);
+  font-family: var(--mono);
+  font-size: 9.5px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.cash-bridge strong,
+.strict-debt-bridge strong,
+.debt-like-register strong {
+  color: var(--ink);
+  display: block;
+  font-family: var(--serif);
+  font-size: clamp(24px, 2.2vw, 34px);
+  font-weight: 500;
+  line-height: 1;
+  margin: 10px 0 8px;
+}
+
+.cash-bridge small {
+  color: var(--ink-4);
+  font-size: 11px;
+}
+
+.cash-bridge-step {
+  background: var(--bg-alt);
+  text-align: center;
+}
+
+.cash-bridge-step > span {
+  color: var(--ink);
+  font-family: var(--serif);
+  font-size: 19px;
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+.cash-bridge-step.positive > span,
+.cash-bridge-output strong {
+  color: var(--bordeaux);
+}
+
+.cash-bridge-output {
+  background: var(--bordeaux-bg);
+}
+
+.ts-interpretation {
+  color: var(--ink-2);
+  font-size: 13px;
+  line-height: 1.65;
+  margin-top: var(--space-5);
+  max-width: 930px;
+}
+
+.cir-lenses {
+  border-top: 1px solid var(--line);
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  margin-top: var(--space-5);
+}
+
+.cir-lenses > div {
+  min-width: 0;
+  padding: var(--space-5) var(--space-5) 0 0;
+}
+
+.cir-lenses > div + div {
+  border-left: 1px solid var(--line);
+  padding-left: var(--space-5);
+}
+
+.cir-lenses strong {
+  color: var(--bordeaux);
+  display: block;
+  font-family: var(--serif);
+  font-size: 24px;
+  font-weight: 500;
+  margin: 8px 0;
+}
+
+.cir-lenses p,
+.debt-like-register p {
+  color: var(--ink-3);
+  font-size: 12.5px;
+  line-height: 1.55;
+}
+
+.debt-like-panel {
+  background: var(--bg-alt);
+  margin-top: var(--space-7);
+}
+
+.analysis-view .sec-head.compact {
+  margin-bottom: var(--space-5);
+}
+
+.debt-like-layout {
+  display: grid;
+  gap: var(--space-6);
+  grid-template-columns: minmax(260px, 0.72fr) minmax(0, 1.55fr);
+}
+
+.strict-debt-bridge {
+  border-top: 1px solid var(--line-strong);
+}
+
+.strict-debt-bridge > div {
+  align-items: baseline;
+  border-bottom: 1px solid var(--line);
+  display: flex;
+  gap: var(--space-3);
+  justify-content: space-between;
+  padding: var(--space-4) 0;
+}
+
+.strict-debt-bridge strong {
+  flex: 0 0 auto;
+  font-size: 24px;
+  margin: 0;
+}
+
+.strict-debt-bridge .total {
+  border-bottom-color: var(--bordeaux);
+  border-top: 2px solid var(--bordeaux);
+}
+
+.strict-debt-bridge .total span,
+.strict-debt-bridge .total strong {
+  color: var(--bordeaux);
+}
+
+.debt-like-register {
+  border-bottom: 1px solid var(--line-strong);
+  border-top: 1px solid var(--line-strong);
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.debt-like-register > div {
+  min-width: 0;
+  padding: var(--space-4);
+}
+
+.debt-like-register > div:nth-child(even) {
+  border-left: 1px solid var(--line);
+}
+
+.debt-like-register > div:nth-child(n + 3) {
+  border-top: 1px solid var(--line);
+}
+
+.debt-like-register strong {
+  font-size: 23px;
+}
+
+.ts-deal-grid {
+  display: grid;
+  gap: var(--space-5);
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  margin-bottom: var(--space-7);
+}
+
+.ts-deal-grid .ts-panel {
+  padding: var(--space-5);
+}
+
+.ts-deal-grid h3 {
+  font-size: clamp(23px, 2.2vw, 31px);
+}
+
+.ts-list,
+.diligence-list {
+  margin-top: var(--space-5);
+  padding: 0;
+}
+
+.ts-list li,
+.diligence-list li {
+  border-top: 1px solid var(--line);
+  color: var(--ink-2);
+  font-size: 12.5px;
+  line-height: 1.55;
+  list-style: none;
+  padding: var(--space-3) 0;
+}
+
+.diligence-list {
+  counter-reset: diligence;
+}
+
+.diligence-list li {
+  counter-increment: diligence;
+  padding-left: 30px;
+  position: relative;
+}
+
+.diligence-list li::before {
+  color: var(--bordeaux);
+  content: counter(diligence, decimal-leading-zero);
+  font-family: var(--mono);
+  font-size: 9px;
+  left: 0;
+  position: absolute;
+  top: 15px;
+}
+
+.convention-list {
+  margin-top: var(--space-5);
+}
+
+.convention-list > div {
+  border-top: 1px solid var(--line);
+  display: grid;
+  gap: var(--space-3);
+  grid-template-columns: 92px 1fr;
+  padding: var(--space-3) 0;
+}
+
+.convention-list dt {
+  color: var(--bordeaux);
+  font-family: var(--mono);
+  font-size: 9px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.convention-list dd {
+  color: var(--ink-2);
+  font-size: 12px;
+  line-height: 1.5;
+  margin: 0;
+}
+
+@media (max-width: 1100px) {
+  .ts-deal-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 900px) {
+  .ts-panel,
+  .debt-like-panel {
+    padding: var(--space-5);
+  }
+
+  .cash-bridge,
+  .cir-lenses,
+  .debt-like-layout,
+  .debt-like-register {
+    grid-template-columns: 1fr;
+  }
+
+  .cash-bridge > div {
+    min-height: 96px;
+  }
+
+  .cash-bridge > div + div,
+  .cir-lenses > div + div,
+  .debt-like-register > div:nth-child(even) {
+    border-left: 0;
+    border-top: 1px solid var(--line);
+  }
+
+  .cir-lenses > div,
+  .cir-lenses > div + div {
+    padding: var(--space-4) 0;
+  }
+
+  .debt-like-register > div:nth-child(n + 2) {
+    border-top: 1px solid var(--line);
+  }
+}
+
+@media (max-width: 520px) {
+  .ts-panel,
+  .debt-like-panel,
+  .ts-deal-grid .ts-panel {
+    padding-left: var(--space-4);
+    padding-right: var(--space-4);
+  }
+
+  .strict-debt-bridge > div {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .convention-list > div {
+    grid-template-columns: 1fr;
+  }
+}
+
 @media (max-width: 680px) {
   .case-control-bar {
     min-height: 60px;

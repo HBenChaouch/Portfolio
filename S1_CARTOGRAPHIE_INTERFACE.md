@@ -52,6 +52,15 @@ Il n’existe actuellement aucune route Opella ni Real Estate dans l’applicati
 
 La profondeur actuelle est conservée, mais regroupée en quatre chapitres lisibles.
 
+### Direction visuelle gelée — environ 70 % B / 30 % A
+
+L’option B demeure la direction dominante de la future interface, sur desktop comme sur mobile. Le dosage de référence est d’environ **70 % option B / 30 % option A** :
+
+- **Option B — structure dominante :** architecture web-native, lisibilité, navigation par scénarios, disclosures et accordéons, traitement responsive des contenus denses.
+- **Option A — influence éditoriale :** sobriété, espace, lignes fines, respiration, titres serif et limitation des icônes, cadres et cartes.
+
+Ce dosage ne s’inverse pas sur mobile : l’adaptation responsive conserve la structure et les interactions de B, tandis que A règle le ton visuel et la densité éditoriale. Il s’applique à toutes les sections, y compris la QoE, les méthodes de valorisation et l’audit trail.
+
 ### Chapitre A — Investment case et qualité financière
 
 1. **Executive view** — thèse, trois repères de valorisation maximum et avertissement de date de marché.
@@ -233,7 +242,7 @@ Les valeurs estimées doivent conserver un marqueur visuel « e » ou « à conf
 - En-tête compact sticky avec **« ← Portfolio »** et **« Choisir un projet »**.
 - Navigation locale sous forme de rail horizontal accessible ou de sommaire déroulant, sans masquer le contenu.
 - Une seule colonne de lecture.
-- La hiérarchie éditoriale de l’option A est conservée ; les scénarios, disclosures et accordéons suivent la logique web-native de l’option B.
+- L’option B reste la structure dominante sur mobile : hiérarchie web-native, scénarios, disclosures et accordéons ; l’option A apporte la sobriété, la respiration et le caractère éditorial, conformément au dosage gelé d’environ 70 % B / 30 % A.
 - Les accordéons réduisent la longueur perçue mais ne suppriment aucun contenu analytique.
 
 ### 8.2 Comportement des contenus denses

@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import { useSidetradeScenario } from "../context/SidetradeScenarioContext.jsx";
 import {
   enterpriseValue,
@@ -17,6 +17,7 @@ const FF_MAX = 600;
 const WACCS = [0.085, 0.09, 0.095, 0.1, 0.105];
 const GS = [0.035, 0.03, 0.025, 0.02, 0.015];
 const EXIT_MULTIPLES = [13, 14, 15, 16, 17];
+const SCENARIO_IDS = ["bear", "base", "bull"];
 
 const scenarioCopy = {
   bear: {
@@ -87,16 +88,49 @@ function Tip({ children, k, body, v }) {
 }
 
 function ScenarioCards({ activeScenario, setActiveScenario, scenarioResults }) {
+  const tabRefs = useRef({});
+
+  function selectScenario(id, moveFocus = false) {
+    setActiveScenario(id);
+    if (moveFocus) {
+      window.requestAnimationFrame(() => tabRefs.current[id]?.focus());
+    }
+  }
+
+  function handleScenarioKeyDown(event, currentId) {
+    const currentIndex = SCENARIO_IDS.indexOf(currentId);
+    let nextId;
+
+    if (event.key === "ArrowRight") {
+      nextId = SCENARIO_IDS[(currentIndex + 1) % SCENARIO_IDS.length];
+    } else if (event.key === "ArrowLeft") {
+      nextId = SCENARIO_IDS[(currentIndex - 1 + SCENARIO_IDS.length) % SCENARIO_IDS.length];
+    } else if (event.key === "Home") {
+      nextId = SCENARIO_IDS[0];
+    } else if (event.key === "End") {
+      nextId = SCENARIO_IDS[SCENARIO_IDS.length - 1];
+    } else {
+      return;
+    }
+
+    event.preventDefault();
+    selectScenario(nextId, true);
+  }
+
   return (
     <div className="scenario-cards" role="tablist" aria-label="DCF scenario">
-      {["bear", "base", "bull"].map((id) => (
+      {SCENARIO_IDS.map((id) => (
         <button
           aria-selected={activeScenario === id}
           className="sc-card"
           data-s={id}
           data-active={activeScenario === id ? "true" : "false"}
           key={id}
-          onClick={() => setActiveScenario(id)}
+          onClick={() => selectScenario(id)}
+          onKeyDown={(event) => handleScenarioKeyDown(event, id)}
+          ref={(node) => {
+            if (node) tabRefs.current[id] = node;
+          }}
           role="tab"
           tabIndex={activeScenario === id ? 0 : -1}
           type="button"

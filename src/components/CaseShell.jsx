@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link, NavLink, Outlet, useLocation } from "react-router-dom";
 import { useSidetradeScenario } from "../context/SidetradeScenarioContext.jsx";
+import { VALUATION_DATES } from "../data/sidetradeFinancials.js";
 
 const analysisBase = "/cases/sidetrade-valuation/analysis";
 
@@ -232,8 +233,8 @@ export default function CaseShell() {
               ))}
             </div>
             <span className="control-date">
-              <span className="control-date-full">Market ref. 15 Jul 2026</span>
-              <span className="control-date-short">Market · 15 Jul 26</span>
+              <span className="control-date-full">Market ref. {VALUATION_DATES.marketMedium}</span>
+              <span className="control-date-short">Market · {VALUATION_DATES.marketShort}</span>
             </span>
           </div>
         </header>

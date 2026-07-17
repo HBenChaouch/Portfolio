@@ -1,3 +1,5 @@
+import { VALUATION_CONTEXT } from "./sidetradeFinancials.js";
+
 export const portfolioCases = [
   {
     slug: "sidetrade-valuation",
@@ -7,7 +9,11 @@ export const portfolioCases = [
       "DCF, trading comps, precedent transactions and LBO affordability for a profitable Order-to-Cash SaaS.",
     status: "Migrated case",
     href: "/cases/sidetrade-valuation",
-    metrics: ["€301m EV (DCF)", "€410m control case", "Bear/Base/Bull DCF"],
+    metrics: [
+      `€${VALUATION_CONTEXT.fairValueEv.toFixed(0)}m EV (DCF)`,
+      `€${VALUATION_CONTEXT.controlEv.toFixed(0)}m control case`,
+      "Bear/Base/Bull DCF",
+    ],
   },
   {
     slug: "lbo-sponsor-case",

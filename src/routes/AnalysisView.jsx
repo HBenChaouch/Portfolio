@@ -10,6 +10,15 @@ import {
   SCENARIOS,
   VALUATION_CONTEXT,
 } from "../utils/dcfEngine.js";
+import {
+  CASH_CONVERSION,
+  DISPLAY_VALUES,
+  LBO_REFERENCE,
+  NET_DEBT,
+  QOE,
+  SOURCES,
+  VALUATION_DATES,
+} from "../data/sidetradeFinancials.js";
 
 const EURO = "€";
 const FF_MIN = 100;
@@ -49,6 +58,10 @@ function fmtM(value, decimals = 0) {
 
 function fmtPct(value, decimals = 1) {
   return `${(value * 100).toFixed(decimals)}%`;
+}
+
+function fmtNumber(value, decimals = 1) {
+  return value.toFixed(decimals);
 }
 
 function pctFromValue(value) {
@@ -326,16 +339,16 @@ function FootballField({ activeScenario, scenarioResults }) {
     <div aria-label={`Valuation football field with active DCF scenario ${activeScenario}`} className="ff" role="region" tabIndex="0">
       <div className="ff-canvas" id="ff-canvas">
         <div className="ff-rows">
-          <div className="ref fair" style={{ left: `calc(130px + 14px + ${pctFromValue(301)}% * (100% - 244px) / 100)` }} />
-          <div className="ref-label fair" style={{ left: `calc(130px + 14px + ${pctFromValue(301)}% * (100% - 244px) / 100)` }}>Fair value €301m</div>
-          <div className="ref control" style={{ left: `calc(130px + 14px + ${pctFromValue(410)}% * (100% - 244px) / 100)` }} />
-          <div className="ref-label control" style={{ left: `calc(130px + 14px + ${pctFromValue(410)}% * (100% - 244px) / 100)` }}>Control €410m</div>
-          <div className="ref market" style={{ left: `calc(130px + 14px + ${pctFromValue(282)}% * (100% - 244px) / 100)` }} />
-          <div className="ref-label market" style={{ left: `calc(130px + 14px + ${pctFromValue(282)}% * (100% - 244px) / 100)` }}>Market EV ~€282m (15 Jul 2026)</div>
+          <div className="ref fair" style={{ left: `calc(130px + 14px + ${pctFromValue(VALUATION_CONTEXT.fairValueEv)}% * (100% - 244px) / 100)` }} />
+          <div className="ref-label fair" style={{ left: `calc(130px + 14px + ${pctFromValue(VALUATION_CONTEXT.fairValueEv)}% * (100% - 244px) / 100)` }}>Fair value {fmtM(VALUATION_CONTEXT.fairValueEv)}</div>
+          <div className="ref control" style={{ left: `calc(130px + 14px + ${pctFromValue(VALUATION_CONTEXT.controlEv)}% * (100% - 244px) / 100)` }} />
+          <div className="ref-label control" style={{ left: `calc(130px + 14px + ${pctFromValue(VALUATION_CONTEXT.controlEv)}% * (100% - 244px) / 100)` }}>Control {fmtM(VALUATION_CONTEXT.controlEv)}</div>
+          <div className="ref market" style={{ left: `calc(130px + 14px + ${pctFromValue(VALUATION_CONTEXT.marketEv)}% * (100% - 244px) / 100)` }} />
+          <div className="ref-label market" style={{ left: `calc(130px + 14px + ${pctFromValue(VALUATION_CONTEXT.marketEv)}% * (100% - 244px) / 100)` }}>Market EV ~{fmtM(VALUATION_CONTEXT.marketEv)} ({VALUATION_DATES.marketMedium})</div>
           {row("dcf", "DCF", "Fundamental", `${scenarioResults[activeScenario].ev.toFixed(0)}m`)}
-          {row("trading", "Trading", "Stand-alone", "202m")}
-          {row("transaction", "Transaction", "Control", "411m")}
-          {row("lbo", "LBO", "Affordability", "242m")}
+          {row("trading", "Trading", "Stand-alone", `${VALUATION_CONTEXT.tradingRange.base.toFixed(0)}m`)}
+          {row("transaction", "Transaction", "Control", `${VALUATION_CONTEXT.transactionRange.base.toFixed(0)}m`)}
+          {row("lbo", "LBO", "Affordability", `${VALUATION_CONTEXT.lboRange.base.toFixed(0)}m`)}
         </div>
       </div>
       <div className="ff-row ff-axis-row" aria-hidden="true">
@@ -343,8 +356,8 @@ function FootballField({ activeScenario, scenarioResults }) {
         <div className="ff-axis-inner">
           <span className="tick" style={{ left: "0%" }}>€100m</span>
           <span className="tick" style={{ left: "20%" }}>€200m</span>
-          <span className="tick tick-accent fair" style={{ left: "40%" }}>€301m</span>
-          <span className="tick tick-accent control" style={{ left: "62%" }}>€410m</span>
+          <span className="tick tick-accent fair" style={{ left: "40%" }}>{fmtM(VALUATION_CONTEXT.fairValueEv)}</span>
+          <span className="tick tick-accent control" style={{ left: "62%" }}>{fmtM(VALUATION_CONTEXT.controlEv)}</span>
           <span className="tick" style={{ left: "80%" }}>€500m</span>
           <span className="tick" style={{ left: "100%" }}>€600m</span>
         </div>
@@ -382,14 +395,14 @@ function WaterfallBridge({ activeScenario }) {
         <text className="wf-label" x={bar2X + barW / 2} y={equityTop - 30} textAnchor="middle">Equity Value</text>
         <text className="wf-value accent" x={bar2X + barW / 2} y={equityTop - 10} textAnchor="middle">{fmtM(bridge.equity)}</text>
         <text className="wf-sub" x={bar1X + barW / 2} y={baseline + 20} textAnchor="middle">EV · DCF + comps central case</text>
-        <text className="wf-sub" x={bar2X + barW / 2} y={baseline + 20} textAnchor="middle">€30.8m debt − €16.3m cash = €14.7m net debt</text>
+        <text className="wf-sub" x={bar2X + barW / 2} y={baseline + 20} textAnchor="middle">{fmtM(NET_DEBT.grossFinancialDebt, 1)} debt − {fmtM(NET_DEBT.cash + NET_DEBT.marketableSecurities, 1)} cash = {fmtM(NET_DEBT.strict, 1)} net debt</text>
         <line x1="600" x2="600" y1="50" y2="240" stroke="var(--line)" strokeWidth="1" strokeDasharray="2 4" />
         <path className="wf-arrow" d="M 620 145 L 700 145" />
         <path className="wf-arrow" d="M 692 139 L 702 145 L 692 151" />
         <text className="wf-label" x="720" y="95">Implied share price</text>
         <text className="wf-final" x="720" y="158">{EURO}{bridge.sharePrice.toFixed(0)}</text>
         <text className="wf-sub" x="815" y="158">/ share</text>
-        <text className="wf-sub" x="720" y="188">{fmtM(bridge.equity)} equity ÷ 1,536,790 diluted shares</text>
+        <text className="wf-sub" x="720" y="188">{fmtM(bridge.equity)} equity ÷ {FY25.dilutedShares.toLocaleString("en-GB")} diluted shares</text>
         <text className="wf-sub" x="720" y="208">Stand-alone central case</text>
       </svg>
     </div>
@@ -415,17 +428,17 @@ export default function AnalysisView() {
           <span className="dot" />
           <span>Independent valuation model · v1.0</span>
           <span>·</span>
-          <span>Updated May 2026</span>
+          <span>Updated {VALUATION_DATES.modelUpdated}</span>
         </div>
-        <h1>Sidetrade stand-alone value centres on <span className="accent">~€301m EV (DCF)</span> — ~7% above the quoted market EV — with ~€410m EV in a control case.</h1>
+        <h1>Sidetrade stand-alone value centres on <span className="accent">~{fmtM(VALUATION_CONTEXT.fairValueEv)} EV (DCF)</span> — ~7% above the quoted market EV — with ~{fmtM(VALUATION_CONTEXT.controlEv)} EV in a control case.</h1>
         <p className="sub">
           A four-method triangulation — DCF, trading comps, transaction comps and LBO affordability — applied to <strong>Sidetrade</strong> (Euronext Growth: ALBFR), a profitable AI-native Order-to-Cash SaaS. Toggle Bear / Base / Bull to recompose the DCF and watch the football field react.
         </p>
         <div className="keystats">
-          <div className="cell"><div className="k">Revenue FY25</div><div className="v">€61.4m</div><div className="d up">+14% cc · +12% reported</div></div>
-          <div className="cell"><div className="k">Subscriptions</div><div className="v">€53.5m</div><div className="d up">+20% cc · 87% of revenue</div></div>
-          <div className="cell"><div className="k">EBITDA margin</div><div className="v">22%</div><div className="d">€13.4m · +22% YoY</div></div>
-          <div className="cell"><div className="k">Net debt (strict)</div><div className="v">€14.7m</div><div className="d">Financial debt less cash &amp; marketable securities · ~€1.5B coverage capacity</div></div>
+          <div className="cell"><div className="k">Revenue FY25</div><div className="v">{fmtM(FY25.revenue, 1)}</div><div className="d up">+14% cc · +12% reported</div></div>
+          <div className="cell"><div className="k">Subscriptions</div><div className="v">{fmtM(DISPLAY_VALUES.subscriptionRevenue, 1)}</div><div className="d up">+20% cc · 87% of revenue</div></div>
+          <div className="cell"><div className="k">EBITDA margin</div><div className="v">{fmtPct(FY25.ebitdaMargin, 0)}</div><div className="d">{fmtM(FY25.ebitda, 1)} · +22% YoY</div></div>
+          <div className="cell"><div className="k">Net debt (strict)</div><div className="v">{fmtM(NET_DEBT.strict, 1)}</div><div className="d">Financial debt less cash &amp; marketable securities · ~€1.5B coverage capacity</div></div>
         </div>
         <nav className="desktop-chapter-index" aria-label="Sidetrade analysis chapters">
           <a href="#snapshot"><span>01</span>Investment case</a>
@@ -449,17 +462,17 @@ export default function AnalysisView() {
             <table className="data" style={{ marginTop: 10 }}>
               <thead><tr><th>Metric</th><th className="num">€m</th><th className="num">% of revenue</th><th className="num">YoY</th></tr></thead>
               <tbody>
-                <tr><td className="label">Revenue</td><td className="num strong">61.4</td><td className="num">100%</td><td className="num">+14% cc</td></tr>
-                <tr><td className="label">– of which Subscriptions</td><td className="num">53.5</td><td className="num">87%</td><td className="num">+20% cc</td></tr>
+                <tr><td className="label">Revenue</td><td className="num strong">{fmtNumber(FY25.revenue)}</td><td className="num">100%</td><td className="num">+14% cc</td></tr>
+                <tr><td className="label">– of which Subscriptions</td><td className="num">{fmtNumber(DISPLAY_VALUES.subscriptionRevenue)}</td><td className="num">87%</td><td className="num">+20% cc</td></tr>
                 <tr><td className="label">Subscriptions organic LFL</td><td className="num">—</td><td className="num">—</td><td className="num">+10%</td></tr>
                 <tr><td className="label">Gross margin</td><td className="num strong">47.4</td><td className="num">77%</td><td className="num">+10%</td></tr>
                 <tr><td className="label">– GM on subscription only</td><td className="num">—</td><td className="num">92%</td><td className="num">—</td></tr>
-                <tr><td className="label">EBITDA (incl. CIR)</td><td className="num strong">13.4</td><td className="num">22%</td><td className="num">+22%</td></tr>
-                <tr><td className="label">EBIT (incl. CIR)</td><td className="num">10.3</td><td className="num">17%</td><td className="num">+23%</td></tr>
-                <tr className="total"><td>Net profit</td><td className="num">9.0</td><td className="num">15%</td><td className="num">+14%</td></tr>
+                <tr><td className="label">EBITDA (incl. CIR)</td><td className="num strong">{fmtNumber(FY25.ebitda)}</td><td className="num">22%</td><td className="num">+22%</td></tr>
+                <tr><td className="label">EBIT (incl. CIR)</td><td className="num">{fmtNumber(FY25.ebit)}</td><td className="num">17%</td><td className="num">+23%</td></tr>
+                <tr className="total"><td>Net profit</td><td className="num">{fmtNumber(FY25.netIncome)}</td><td className="num">15%</td><td className="num">+14%</td></tr>
               </tbody>
             </table>
-            <cite>Source: Sidetrade FY25 Annual Results · March 30, 2026.</cite>
+            <cite>Source: {SOURCES.annualResults.label} · {SOURCES.annualResults.date} · {SOURCES.annualResults.status}.</cite>
           </div>
           <div>
             <h3>Geographic mix</h3>
@@ -475,11 +488,11 @@ export default function AnalysisView() {
             <p style={{ fontSize: 12, color: "var(--ink-3)", marginTop: 10 }}><strong>69%</strong> of total revenue and <strong>71%</strong> of subscription revenue generated outside France. North America is now the leading region with <strong>+25% cc</strong> growth in 2025.</p>
             <h3 style={{ marginTop: 24 }}>Balance sheet</h3>
             <ul className="kpi-list" style={{ marginTop: 8 }}>
-              <li><span className="lbl">Cash + marketable sec.</span><span className="val">€16.3m</span></li>
-              <li><span className="lbl">Financial debt</span><span className="val">€30.8m</span></li>
-              <li style={{ background: "var(--bg-quiet)" }}><span className="lbl" style={{ fontWeight: 500, color: "var(--ink)" }}>Net debt strict</span><span className="val" style={{ color: "var(--bordeaux)" }}>€14.7m</span></li>
+              <li><span className="lbl">Cash + marketable sec.</span><span className="val">{fmtM(DISPLAY_VALUES.cashAndMarketableSecurities, 1)}</span></li>
+              <li><span className="lbl">Financial debt</span><span className="val">{fmtM(DISPLAY_VALUES.grossFinancialDebt, 1)}</span></li>
+              <li style={{ background: "var(--bg-quiet)" }}><span className="lbl" style={{ fontWeight: 500, color: "var(--ink)" }}>Net debt strict</span><span className="val" style={{ color: "var(--bordeaux)" }}>{fmtM(NET_DEBT.strict, 1)}</span></li>
               <li><span className="lbl">Treasury shares (85,300)</span><span className="val">€20.6m</span></li>
-              <li><span className="lbl">Diluted shares outstanding</span><span className="val">1,536,790</span></li>
+              <li><span className="lbl">Diluted shares outstanding</span><span className="val">{FY25.dilutedShares.toLocaleString("en-GB")}</span></li>
             </ul>
             <cite>Source: Statutory Report FY25 — Notes 6, 8, 10, 30.</cite>
           </div>
@@ -488,24 +501,24 @@ export default function AnalysisView() {
           <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: 12 }}>
             <h3>Free cash flow — two views</h3>
             <div className="toggle-row" role="group" aria-label="FCF view toggle">
-              <button aria-pressed={fcfView === "stat"} onClick={() => setFcfView("stat")} type="button">Statutory · €4.2m</button>
-              <button aria-pressed={fcfView === "norm"} onClick={() => setFcfView("norm")} type="button">Normalised · €7.2m</button>
+              <button aria-pressed={fcfView === "stat"} onClick={() => setFcfView("stat")} type="button">Statutory · {fmtM(CASH_CONVERSION.statutoryFcf, 1)}</button>
+              <button aria-pressed={fcfView === "norm"} onClick={() => setFcfView("norm")} type="button">Normalised · {fmtM(CASH_CONVERSION.normalisedFcf, 1)}</button>
             </div>
           </div>
           <div className="twoup">
             <table className="data">
               <thead><tr><th></th><th className="num">Statutory</th><th className="num">Normalised</th></tr></thead>
               <tbody>
-                <tr><td className="label">Net operational cash flow</td><td className="num">5.2</td><td className="num">5.2</td></tr>
-                <tr><td className="label">(−) Capex</td><td className="num">(1.0)</td><td className="num">(1.0)</td></tr>
-                <tr><td className="label">(+) CIR timing adjustment</td><td className="num">—</td><td className="num">2.9</td></tr>
-                <tr className="total"><td>FCF</td><td className="num" style={{ color: fcfView === "stat" ? "var(--bordeaux)" : undefined }}>4.2</td><td className="num" style={{ color: fcfView === "norm" ? "var(--bordeaux)" : undefined }}>7.2</td></tr>
-                <tr><td className="label">FCF margin</td><td className="num">6.9%</td><td className="num">11.7%</td></tr>
+                <tr><td className="label">Net operational cash flow</td><td className="num">{fmtNumber(CASH_CONVERSION.statutoryOcf)}</td><td className="num">{fmtNumber(CASH_CONVERSION.statutoryOcf)}</td></tr>
+                <tr><td className="label">(−) Capex</td><td className="num">({fmtNumber(CASH_CONVERSION.capex)})</td><td className="num">({fmtNumber(CASH_CONVERSION.capex)})</td></tr>
+                <tr><td className="label">(+) CIR timing adjustment</td><td className="num">—</td><td className="num">{fmtNumber(CASH_CONVERSION.cirTimingNormalisation)}</td></tr>
+                <tr className="total"><td>FCF</td><td className="num" style={{ color: fcfView === "stat" ? "var(--bordeaux)" : undefined }}>{fmtNumber(CASH_CONVERSION.statutoryFcf)}</td><td className="num" style={{ color: fcfView === "norm" ? "var(--bordeaux)" : undefined }}>{fmtNumber(CASH_CONVERSION.normalisedFcf)}</td></tr>
+                <tr><td className="label">FCF margin</td><td className="num">{fmtPct(CASH_CONVERSION.statutoryMargin)}</td><td className="num">{fmtPct(CASH_CONVERSION.normalisedMargin)}</td></tr>
               </tbody>
             </table>
             <div className="narrative" data-s={fcfView === "stat" ? "bear" : "base"} style={{ marginTop: 0 }}>
               <h4>{fcfView === "stat" ? "Statutory view — CIR timing pressure" : "Normalised view — recurring cash capacity"}</h4>
-              <p>{fcfView === "stat" ? "Sidetrade’s loss of immediate SME reimbursement status created a 3-year lag on CIR cash collection. That generated €2.947m of working-capital consumption in FY25 — and the lag repeats by vintage, so it is a timing effect rather than a pure one-off. Management separately communicates operating cash flow of €8.7m \"excluding the timing impact of the Research Tax Credit\"; the public documents do not provide a complete bridge to that KPI." : "This view neutralises the identified FY25 CIR timing drag to show economic cash generation. It is the DCF starting lens; because the deferral repeats by CIR vintage, the normalisation corrects the FY25 timing distortion without claiming that the recurring cash lag disappears."}</p>
+              <p>{fcfView === "stat" ? `Sidetrade’s loss of immediate SME reimbursement status created a 3-year lag on CIR cash collection. That generated ${fmtM(CASH_CONVERSION.cirTimingNormalisation, 3)} of working-capital consumption in FY25 — and the lag repeats by vintage, so it is a timing effect rather than a pure one-off. Management separately communicates operating cash flow of ${fmtM(CASH_CONVERSION.managementOcfExCirTiming, 1)} "excluding the timing impact of the Research Tax Credit"; the public documents do not provide a complete bridge to that KPI.` : "This view neutralises the identified FY25 CIR timing drag to show economic cash generation. It is the DCF starting lens; because the deferral repeats by CIR vintage, the normalisation corrects the FY25 timing distortion without claiming that the recurring cash lag disappears."}</p>
             </div>
           </div>
         </div>
@@ -526,45 +539,45 @@ export default function AnalysisView() {
         </div>
         <div className="qoe-layout">
           <div className="qoe-bridge" aria-label="EBITDA quality of earnings bridge">
-            <div className="qoe-node primary"><span>Published EBITDA</span><strong>€13.4m</strong><small>including CIR</small></div>
-            <div className="qoe-connector"><span>− €3.5m</span><small>CIR</small></div>
-            <div className="qoe-node"><span>Published ex-CIR</span><strong>≈€9.9m</strong><small>reported basis</small></div>
-            <div className="qoe-connector positive"><span>+ €0.8m e</span><small>QoE adjustments</small></div>
-            <div className="qoe-node adjusted"><span>Adjusted ex-CIR</span><strong>≈€10.7m</strong><small>estimated</small></div>
+            <div className="qoe-node primary"><span>Published EBITDA</span><strong>{fmtM(QOE.publishedEbitdaInclCir, 1)}</strong><small>including CIR</small></div>
+            <div className="qoe-connector"><span>− {fmtM(QOE.cirReported, 1)}</span><small>CIR</small></div>
+            <div className="qoe-node"><span>Published ex-CIR</span><strong>≈{fmtM(QOE.publishedEbitdaExCir, 1)}</strong><small>reported basis</small></div>
+            <div className="qoe-connector positive"><span>+ {fmtM(QOE.adjustmentsEstimate, 1)} e</span><small>QoE adjustments</small></div>
+            <div className="qoe-node adjusted"><span>Adjusted ex-CIR</span><strong>≈{fmtM(QOE.adjustedEbitdaExCir, 1)}</strong><small>estimated</small></div>
           </div>
           <aside className="qoe-readout">
             <p className="mono-k">Adjusted earnings reference</p>
-            <strong>≈€14.2m</strong>
+            <strong>≈{fmtM(QOE.adjustedEbitdaInclCir, 1)}</strong>
             <span>Adjusted EBITDA including CIR</span>
-            <p>Pro forma adjusted EBITDA including CIR is estimated at <strong>€13.7–14.7m</strong>, subject to integration evidence and data-room confirmation.</p>
+            <p>Pro forma adjusted EBITDA including CIR is estimated at <strong>€{fmtNumber(QOE.proFormaRange.low)}–{fmtNumber(QOE.proFormaRange.high)}m</strong>, subject to integration evidence and data-room confirmation.</p>
           </aside>
         </div>
         <div className="qoe-evidence-grid">
           <div><span>Revenue quality</span><strong>87%</strong><p>Subscription mix, with 92% subscription gross margin.</p></div>
-          <div><span>OCF communicated</span><strong>€8.7m</strong><p>Excluding the timing impact of the Research Tax Credit.</p></div>
-          <div><span>FCF statutory</span><strong>€4.216m</strong><p>Cash conversion after reported CIR timing pressure.</p></div>
-          <div><span>FCF normalised</span><strong>€7.163m</strong><p>Timing-normalised view used as the economic cash lens.</p></div>
+          <div><span>OCF communicated</span><strong>{fmtM(CASH_CONVERSION.managementOcfExCirTiming, 1)}</strong><p>Excluding the timing impact of the Research Tax Credit.</p></div>
+          <div><span>FCF statutory</span><strong>{fmtM(CASH_CONVERSION.statutoryFcf, 3)}</strong><p>Cash conversion after reported CIR timing pressure.</p></div>
+          <div><span>FCF normalised</span><strong>{fmtM(CASH_CONVERSION.normalisedFcf, 3)}</strong><p>Timing-normalised view used as the economic cash lens.</p></div>
         </div>
         <div className="ts-workbench" id="cash-conversion">
           <div className="ts-panel cash-conversion-panel">
             <div className="section-kicker">Cash conversion · FY25</div>
             <h3>Separate reported cash, timing normalisation and management’s KPI</h3>
             <div className="cash-bridge" aria-label="FY25 statutory to normalised free cash flow bridge">
-              <div><span>Statutory OCF</span><strong>€5.240m</strong><small>Cash-flow statement</small></div>
-              <div className="cash-bridge-step"><span>− €1.024m</span><small>Capex</small></div>
-              <div><span>Statutory FCF</span><strong>€4.216m</strong><small>6.9% margin</small></div>
-              <div className="cash-bridge-step positive"><span>+ €2.947m</span><small>CIR timing normalisation</small></div>
-              <div className="cash-bridge-output"><span>Normalised FCF</span><strong>€7.163m</strong><small>11.7% margin</small></div>
+              <div><span>Statutory OCF</span><strong>{fmtM(CASH_CONVERSION.statutoryOcf, 3)}</strong><small>Cash-flow statement</small></div>
+              <div className="cash-bridge-step"><span>− {fmtM(CASH_CONVERSION.capex, 3)}</span><small>Capex</small></div>
+              <div><span>Statutory FCF</span><strong>{fmtM(CASH_CONVERSION.statutoryFcf, 3)}</strong><small>{fmtPct(CASH_CONVERSION.statutoryMargin)} margin</small></div>
+              <div className="cash-bridge-step positive"><span>+ {fmtM(CASH_CONVERSION.cirTimingNormalisation, 3)}</span><small>CIR timing normalisation</small></div>
+              <div className="cash-bridge-output"><span>Normalised FCF</span><strong>{fmtM(CASH_CONVERSION.normalisedFcf, 3)}</strong><small>{fmtPct(CASH_CONVERSION.normalisedMargin)} margin</small></div>
             </div>
-            <p className="ts-interpretation"><strong>Do not plug €8.7m into this bridge.</strong> Management’s OCF excluding the CIR timing impact is a separately communicated KPI. It supports the direction of travel, but the public documents do not provide a line-by-line reconciliation from statutory OCF to €8.7m.</p>
+            <p className="ts-interpretation"><strong>Do not plug {fmtM(CASH_CONVERSION.managementOcfExCirTiming, 1)} into this bridge.</strong> Management’s OCF excluding the CIR timing impact is a separately communicated KPI. It supports the direction of travel, but the public documents do not provide a line-by-line reconciliation from statutory OCF to {fmtM(CASH_CONVERSION.managementOcfExCirTiming, 1)}.</p>
           </div>
           <div className="ts-panel cir-panel">
             <div className="section-kicker">CIR · three distinct lenses</div>
             <h3>One programme, three different transaction questions</h3>
             <div className="cir-lenses">
-              <div><span>Accounting</span><strong>€3.482m FY25</strong><p>Reclassified into operating income under the statutory presentation and included in reported EBITDA.</p></div>
-              <div><span>Cash timing</span><strong>€2.947m FY25 drag</strong><p>Loss of immediate SME reimbursement creates a three-year lag. The lag repeats by vintage; normalising FY25 does not mean the cash-cycle drag disappears.</p></div>
-              <div><span>Underwriting</span><strong>€3.5m p.a. modelled</strong><p>Flat through 2030 in the audited model. Eligibility, eligible spend, audit exposure and reimbursement timing must be diligenced separately.</p></div>
+              <div><span>Accounting</span><strong>{fmtM(QOE.cirReported, 3)} FY25</strong><p>Reclassified into operating income under the statutory presentation and included in reported EBITDA.</p></div>
+              <div><span>Cash timing</span><strong>{fmtM(CASH_CONVERSION.cirTimingNormalisation, 3)} FY25 drag</strong><p>Loss of immediate SME reimbursement creates a three-year lag. The lag repeats by vintage; normalising FY25 does not mean the cash-cycle drag disappears.</p></div>
+              <div><span>Underwriting</span><strong>{fmtM(FY25.cir, 1)} p.a. modelled</strong><p>Flat through 2030 in the audited model. Eligibility, eligible spend, audit exposure and reimbursement timing must be diligenced separately.</p></div>
             </div>
           </div>
         </div>
@@ -572,36 +585,36 @@ export default function AnalysisView() {
           <div className="sec-head compact"><div className="left"><div className="section-kicker">Equity cheque perimeter</div><h3>Strict net debt is the modelled bridge; debt-like remains an SPA question</h3></div><div className="right">No item below is added to modelled net debt in S5.</div></div>
           <div className="debt-like-layout">
             <div className="strict-debt-bridge">
-              <div><span>Gross financial debt</span><strong>€30.981m</strong></div>
-              <div><span>Less cash</span><strong>−€5.402m</strong></div>
-              <div><span>Less marketable securities</span><strong>−€10.925m</strong></div>
-              <div className="total"><span>Net debt · strict</span><strong>€14.654m</strong></div>
+              <div><span>Gross financial debt</span><strong>{fmtM(NET_DEBT.grossFinancialDebt, 3)}</strong></div>
+              <div><span>Less cash</span><strong>−{fmtM(NET_DEBT.cash, 3)}</strong></div>
+              <div><span>Less marketable securities</span><strong>−{fmtM(NET_DEBT.marketableSecurities, 3)}</strong></div>
+              <div className="total"><span>Net debt · strict</span><strong>{fmtM(NET_DEBT.strict, 3)}</strong></div>
             </div>
             <div className="debt-like-register">
-              <div><span>Earn-outs disclosed</span><strong>~€0.5m</strong><p>Amalto and CreditPoint. Confirm settlement status and SPA classification.</p></div>
-              <div><span>ezyCollect acquisition balance</span><strong>~€1.5m</strong><p>Confirm deferred consideration, completion accounts and payment timetable.</p></div>
-              <div><span>Deferred revenue</span><strong>~€14m</strong><p>Not financial debt by default. Assess delivery obligations and interaction with the normal working-capital peg.</p></div>
+              <div><span>Earn-outs disclosed</span><strong>~{fmtM(NET_DEBT.earnOuts, 1)}</strong><p>Amalto and CreditPoint. Confirm settlement status and SPA classification.</p></div>
+              <div><span>ezyCollect acquisition balance</span><strong>~{fmtM(NET_DEBT.ezyCollectBalance, 1)}</strong><p>Confirm deferred consideration, completion accounts and payment timetable.</p></div>
+              <div><span>Deferred revenue</span><strong>~{fmtM(NET_DEBT.deferredRevenueApprox, 0)}</strong><p>Not financial debt by default. Assess delivery obligations and interaction with the normal working-capital peg.</p></div>
               <div><span>Operating leases</span><strong>Not modelled</strong><p>Not capitalised and described as immaterial in Note 25; verify completeness and change-of-control effects.</p></div>
             </div>
           </div>
-          <p className="ts-interpretation"><strong>Transaction convention.</strong> Enterprise value converts to equity value using €14.654m strict net debt only. Any adjustment for the excluded items requires evidence, non-duplication with working capital and explicit SPA treatment.</p>
+          <p className="ts-interpretation"><strong>Transaction convention.</strong> Enterprise value converts to equity value using {fmtM(NET_DEBT.strict, 3)} strict net debt only. Any adjustment for the excluded items requires evidence, non-duplication with working capital and explicit SPA treatment.</p>
         </div>
         <div className="qoe-flags"><strong>Underwrite before signing</strong><span>CIR eligibility and reimbursement timing</span><span>ezyCollect / SHS Viveon pro forma integration</span><span>Normalised tax and working-capital evidence</span></div>
-        <p className="qoe-source">Source: internally reviewed QoE note and canonical workbook. No new financial definition introduced in S5; “e” denotes an estimate to confirm. Figures shown in €m unless stated otherwise.</p>
+        <p className="qoe-source">Source: {QOE.source.label} ({QOE.source.status}) and {SOURCES.workbook.label} ({SOURCES.workbook.status}). No new financial definition introduced; “e” denotes an estimate to confirm. Figures shown in €m unless stated otherwise.</p>
       </section>
 
       <section className="block" id="market">
         <div className="sec-head"><div className="left"><div className="num-tag">03 — Market sanity check</div><h2>Theoretical valuation vs current listed price</h2></div><div className="right">The only data point on this page that decays fast. To be refreshed immediately before any external distribution.</div></div>
         <div className="market-card">
-          <div className="meta-row"><span className="placeholder-flag">As of 15 Jul 2026</span><span>Market data as of <strong>15 July 2026</strong></span></div>
+          <div className="meta-row"><span className="placeholder-flag">As of {VALUATION_DATES.marketMedium}</span><span>Market data as of <strong>{VALUATION_DATES.marketLong}</strong> · {SOURCES.market.status}</span></div>
           <div className="grid">
-            <div className="cell"><div className="k">Current share price</div><div className="v">€174.00</div></div>
-            <div className="cell"><div className="k">Market cap</div><div className="v">€267m</div></div>
-            <div className="cell"><div className="k">Implied EV</div><div className="v">€282m</div></div>
-            <div className="cell"><div className="k">Upside to fair value (€301m EV, DCF)</div><div className="v upside">+7%</div></div>
-            <div className="cell"><div className="k">Upside to control case (€410m EV)</div><div className="v upside">+48%</div></div>
+            <div className="cell"><div className="k">Current share price</div><div className="v">€{VALUATION_CONTEXT.sharePriceRef.toFixed(2)}</div></div>
+            <div className="cell"><div className="k">Market cap</div><div className="v">{fmtM(VALUATION_CONTEXT.marketCap)}</div></div>
+            <div className="cell"><div className="k">Implied EV</div><div className="v">{fmtM(VALUATION_CONTEXT.marketEv)}</div></div>
+            <div className="cell"><div className="k">Upside to fair value ({fmtM(VALUATION_CONTEXT.fairValueEv)} EV, DCF)</div><div className="v upside">+{((VALUATION_CONTEXT.fairValueEv / VALUATION_CONTEXT.marketEv - 1) * 100).toFixed(0)}%</div></div>
+            <div className="cell"><div className="k">Upside to control case ({fmtM(VALUATION_CONTEXT.controlEv)} EV)</div><div className="v upside">+{((VALUATION_CONTEXT.controlEv / VALUATION_CONTEXT.marketEv - 1) * 100).toFixed(0)}%</div></div>
           </div>
-          <p className="note">The dotted vertical line on the football field below mirrors the current market reference. Market reference filled as of 15 Jul 2026: €174.00/share × 1.537m diluted shares + €14.7m strict net debt ≈ €282m EV.</p>
+          <p className="note">The dotted vertical line on the football field below mirrors the current market reference. Market reference filled as of {VALUATION_DATES.marketMedium}: €{VALUATION_CONTEXT.sharePriceRef.toFixed(2)}/share × {(FY25.dilutedShares / 1_000_000).toFixed(3)}m diluted shares + {fmtM(NET_DEBT.strict, 1)} strict net debt ≈ {fmtM(VALUATION_CONTEXT.marketEv)} EV.</p>
         </div>
       </section>
 
@@ -649,7 +662,7 @@ export default function AnalysisView() {
           </div>
         </div>
         <SensitivityHeatmap activeScenario={activeScenario} />
-        <details className="method" id="methodology"><summary>How we built it · methodology</summary><div className="body"><p><strong>Starting point.</strong> EBITDA 2025 incl. CIR = €13.4m. We anchor here because (i) Sidetrade communicates in EBITDA incl. CIR, (ii) the CIR is a recurring cash item under a long-standing statutory mechanism (CGI art. 244 quater B) — but eligibility, amount and timing remain subject to tax audit: recurrence is an assumption, not a guarantee.</p><p><strong>Core formula.</strong></p><pre>{`EBIT = EBITDA − D&A
+        <details className="method" id="methodology"><summary>How we built it · methodology</summary><div className="body"><p><strong>Starting point.</strong> EBITDA 2025 incl. CIR = {fmtM(FY25.ebitda, 1)}. We anchor here because (i) Sidetrade communicates in EBITDA incl. CIR, (ii) the CIR is a recurring cash item under a long-standing statutory mechanism (CGI art. 244 quater B) — but eligibility, amount and timing remain subject to tax audit: recurrence is an assumption, not a guarantee.</p><p><strong>Core formula.</strong></p><pre>{`EBIT = EBITDA − D&A
 FCF  = EBIT × (1 − tax) + D&A − Capex − ΔWC`}</pre><ol><li><strong>Economic vs accounting D&amp;A.</strong> Statutory shows ~€3.6m "amortization, depreciation and provisions" but that includes receivables provisions and operational provisions. Pure economic D&amp;A is ~€1.1m (intangibles €285k + tangibles €540k + goodwill/customer relations €296k). We use 2% of revenue as an economic proxy — not the 5.9% accounting figure.</li><li><strong>Normalised tax rate.</strong> 2025 P&amp;L shows +€2.15m net tax credit thanks to CIR. Theoretical reconcilable rate is ~17%. We spread by scenario: 25% Bear (progressive CIR erosion), 22% Base (stable regime), 20% Bull (international optimisation).</li><li><strong>WACC.</strong> Risk-free OAT 10Y ~3.2% + ERP Europe ~5.5% + small-cap SaaS relevered beta ~1.25 + size premium. Yields 8.5%–11.0% across scenarios.</li><li><strong>Terminal growth.</strong> 2.0%–3.0%, capped at 3% in Bull (above long-run European nominal GDP).</li><li><strong>Q1 2026 actuals.</strong> Already published at +17% reported / +21% cc total, +27% cc subscriptions — directly supports the Base case 17% 2026 growth assumption.</li></ol></div></details>
       </section>
 
@@ -659,18 +672,18 @@ FCF  = EBIT × (1 − tax) + D&A − Capex − ΔWC`}</pre><ol><li><strong>Econo
           <thead><tr><th>Peer</th><th>Why comparable</th><th className="num">EV / Sales (indicative)</th><th>Geo</th></tr></thead>
           <tbody>
             <tr><td><Tip k="Central benchmark" body="French listed O2C/P2P SaaS, exact same sector and geography. Pre-Bridgepoint take-private trading multiple. Best read-through to Sidetrade's standalone listed multiple." v="FY+1 EV/Sales ~5.5–6.0x"><strong>Esker</strong> <span className="star">★</span></Tip></td><td>O2C/P2P · French SaaS · pre-buyout reference</td><td className="num">~5.5–6.0x</td><td>FR</td></tr>
-            <tr><td><Tip k="Finance automation" body="Closer to accounting workflow than O2C, but directly Office-of-CFO. Used as a mid-range anchor for SaaS premium multiples on a mature profile." v="FY+1 EV/Sales ~2.4x (15 Jul 2026)"><strong>BlackLine</strong></Tip></td><td>Finance automation · accounting workflow</td><td className="num">~2.4x</td><td>US</td></tr>
-            <tr><td><Tip k="AP/AR + payments" body="Adjacent O2C in the SME US market — useful low-end anchor for AR automation multiples." v="FY+1 EV/Sales ~2.4x, ~2.6x core (15 Jul 2026)"><strong>BILL</strong></Tip></td><td>AP/AR automation + payments</td><td className="num">~2.4x</td><td>US</td></tr>
-            <tr><td><Tip k="Vertical SaaS" body="Vertical banking SaaS — profitable, sticky, multi-year contracts. Adds vertical-SaaS premium reference." v="FY+1 EV/Sales ~3.2x (15 Jul 2026)"><strong>nCino</strong></Tip></td><td>Vertical SaaS banking</td><td className="num">~3.2x</td><td>US</td></tr>
+            <tr><td><Tip k="Finance automation" body="Closer to accounting workflow than O2C, but directly Office-of-CFO. Used as a mid-range anchor for SaaS premium multiples on a mature profile." v={`FY+1 EV/Sales ~2.4x (${VALUATION_DATES.marketMedium})`}><strong>BlackLine</strong></Tip></td><td>Finance automation · accounting workflow</td><td className="num">~2.4x</td><td>US</td></tr>
+            <tr><td><Tip k="AP/AR + payments" body="Adjacent O2C in the SME US market — useful low-end anchor for AR automation multiples." v={`FY+1 EV/Sales ~2.4x, ~2.6x core (${VALUATION_DATES.marketMedium})`}><strong>BILL</strong></Tip></td><td>AP/AR automation + payments</td><td className="num">~2.4x</td><td>US</td></tr>
+            <tr><td><Tip k="Vertical SaaS" body="Vertical banking SaaS — profitable, sticky, multi-year contracts. Adds vertical-SaaS premium reference." v={`FY+1 EV/Sales ~3.2x (${VALUATION_DATES.marketMedium})`}><strong>nCino</strong></Tip></td><td>Vertical SaaS banking</td><td className="num">~3.2x</td><td>US</td></tr>
             <tr><td><Tip k="B2B finance SaaS" body="Digital banking SaaS — comparable subscription mix and growth band." v="FY+1 EV/Sales ~3.0–3.5x"><strong>Q2 Holdings</strong></Tip></td><td>Digital banking SaaS</td><td className="num">~3.0–3.5x</td><td>US</td></tr>
             <tr><td><Tip k="Profitable B2B network" body='Network SaaS, vertical-led, profitable. Useful for the "profitable SaaS at scale" multiple anchor.' v="FY+1 EV/Sales ~2.0–2.5x"><strong>SPS Commerce</strong></Tip></td><td>B2B network · profitable SaaS</td><td className="num">~2.0–2.5x</td><td>US</td></tr>
-            <tr><td><Tip k="CFO adjacency" body="Reporting / compliance SaaS — Office-of-CFO adjacency, not direct O2C." v="FY+1 EV/Sales ~2.8x (15 Jul 2026)"><strong>Workiva</strong></Tip></td><td>Reporting / compliance SaaS</td><td className="num">~2.8x</td><td>US</td></tr>
+            <tr><td><Tip k="CFO adjacency" body="Reporting / compliance SaaS — Office-of-CFO adjacency, not direct O2C." v={`FY+1 EV/Sales ~2.8x (${VALUATION_DATES.marketMedium})`}><strong>Workiva</strong></Tip></td><td>Reporting / compliance SaaS</td><td className="num">~2.8x</td><td>US</td></tr>
           </tbody>
         </table>
-        <cite>Ranges as of 15 July 2026 (prices 15/07/2026, May-2026 guidances, EUR/USD 1.1424). BlackLine / BILL / nCino / Workiva refreshed; Esker is the pre-buyout historical reference; Q2 Holdings and SPS Commerce indicative (H1-2025, not refreshed). Multiples are forward FY+1. EV/EBITDA tiers marked * use non-GAAP operating income as proxy (not a true EBITDA).</cite>
+        <cite>Ranges as of {VALUATION_DATES.marketLong} (prices {VALUATION_DATES.marketIso}, May-2026 guidances, EUR/USD 1.1424) · {SOURCES.market.status}. BlackLine / BILL / nCino / Workiva refreshed; Esker is the pre-buyout historical reference; Q2 Holdings and SPS Commerce indicative (H1-2025, not refreshed). Multiples are forward FY+1. EV/EBITDA tiers marked * use non-GAAP operating income as proxy (not a true EBITDA).</cite>
         <div className="twoup" style={{ marginTop: 32 }}>
           <div><h3>Retained multiples for Sidetrade</h3><table className="data" style={{ marginTop: 10 }}><thead><tr><th>Tier</th><th className="num">EV / Sales</th><th className="num">EV / EBITDA</th></tr></thead><tbody><tr><td className="label">Low — min of refreshed peers</td><td className="num">2.4x</td><td className="num">10.0x*</td></tr><tr><td className="label">Base — median of refreshed peers</td><td className="num strong">2.6x</td><td className="num strong">12.6x*</td></tr><tr><td className="label">High — max of refreshed peers</td><td className="num">3.2x</td><td className="num">17.2x*</td></tr></tbody></table></div>
-          <div><h3>Range implied — stand-alone</h3><div className="result-strip three" style={{ marginTop: 10 }}><div className="cell"><div className="k">Low</div><div className="v">€171m</div><div className="d">EV implicit</div></div><div className="cell"><div className="k">Base</div><div className="v accent">€202m</div><div className="d">EV implicit</div></div><div className="cell"><div className="k">High</div><div className="v">€264m</div><div className="d">EV implicit</div></div></div><p style={{ fontSize: 13, color: "var(--ink-3)", marginTop: 14 }}>The refreshed peer range sits below both the DCF (<strong style={{ color: "var(--bordeaux)" }}>~€301m EV</strong>) and Sidetrade’s own market EV (~€282m at €174/share, 15 Jul 2026): derated US peers act as a sentiment floor. The gap is an assumed premium debate — organic growth, profitability, FR small-cap scarcity — not a convergence.</p></div>
+          <div><h3>Range implied — stand-alone</h3><div className="result-strip three" style={{ marginTop: 10 }}><div className="cell"><div className="k">Low</div><div className="v">{fmtM(VALUATION_CONTEXT.tradingRange.low)}</div><div className="d">EV implicit</div></div><div className="cell"><div className="k">Base</div><div className="v accent">{fmtM(VALUATION_CONTEXT.tradingRange.base)}</div><div className="d">EV implicit</div></div><div className="cell"><div className="k">High</div><div className="v">{fmtM(VALUATION_CONTEXT.tradingRange.high)}</div><div className="d">EV implicit</div></div></div><p style={{ fontSize: 13, color: "var(--ink-3)", marginTop: 14 }}>The refreshed peer range sits below both the DCF (<strong style={{ color: "var(--bordeaux)" }}>~{fmtM(VALUATION_CONTEXT.fairValueEv)} EV</strong>) and Sidetrade’s own market EV (~{fmtM(VALUATION_CONTEXT.marketEv)} at €{VALUATION_CONTEXT.sharePriceRef.toFixed(0)}/share, {VALUATION_DATES.marketMedium}): derated US peers act as a sentiment floor. The gap is an assumed premium debate — organic growth, profitability, FR small-cap scarcity — not a convergence.</p></div>
         </div>
         <details className="method"><summary>How we built it · methodology</summary><div className="body"><p><strong>Logic.</strong> Value Sidetrade through comparison with listed European and North-American B2B SaaS that share its financial profile: dominant subscription mix, double-digit EBITDA margin, &gt;10% growth, Office-of-CFO or finance-productivity exposure.</p><p><strong>Limitations.</strong> Sidetrade is small-cap and not very liquid on Euronext Growth — a natural discount applies vs mid-caps listed on Euronext Paris or US markets. We retain forward (FY+1) multiples to neutralise 2025 one-offs. Multiples move daily; this range reflects a market window and should be refreshed before any external publication.</p></div></details>
       </section>
@@ -691,15 +704,18 @@ FCF  = EBIT × (1 − tax) + D&A − Capex − ΔWC`}</pre><ol><li><strong>Econo
           </tbody>
         </table>
         <cite>Source: Edison Group precedent transactions table (Esker offer, 2024/25), augmented.</cite>
-        <div className="twoup" style={{ marginTop: 24 }}><div><h3>Sidetrade's own M&amp;A — internal benchmarks</h3><p style={{ fontSize: 13.5 }}><strong>ezyCollect (Oct 2025) ·</strong> Total consideration €37.6m (€34.8m cash + €2.6m stock). Contributed €2.241m revenue since 1 Oct 2025, i.e. ~€9m annualised run-rate → implicit multiple ~4.2x revenue run-rate. Lower-mid anchor: smaller, APAC, SME, lower gross margin — not directly comparable to Sidetrade's core but useful as a floor.</p><p style={{ fontSize: 13.5 }}><strong>SHS Viveon (2024) ·</strong> Special situation (delisting tender at €3.00/share). €4.4m revenue since July 2024 i.e. ~€8.8m annualised. Implicit multiple is very low and reflects forced delisting context — use as qualitative floor only.</p></div><div><h3>Retained multiples — forward 2026E</h3><p style={{ fontSize: 12, color: "var(--ink-3)" }}>Base 2026E from model: Revenue €71.9m · EBITDA €17.1m. **EV/EBITDA control multiples n.m. — Esker EBITDA n.d., Coupa near-breakeven at deal (cf. workbook Transaction_comps).</p><table className="data" style={{ marginTop: 8 }}><thead><tr><th>Tier</th><th className="num">EV / Sales</th><th className="num">EV / EBITDA</th><th className="num">EV impl.</th></tr></thead><tbody><tr><td className="label">Low</td><td className="num">4.0x</td><td className="num">n.m.**</td><td className="num">€289m</td></tr><tr><td className="label">Base</td><td className="num strong">5.7x</td><td className="num strong">n.m.**</td><td className="num strong">€411m</td></tr><tr><td className="label">High</td><td className="num">7.6x</td><td className="num">n.m.**</td><td className="num">€547m</td></tr></tbody></table></div></div>
-        <div className="result-strip three" style={{ marginTop: 18 }}><div className="cell"><div className="k">Low</div><div className="v">€289m</div><div className="d">EV implicit</div></div><div className="cell"><div className="k">Base · control</div><div className="v accent">€411m</div><div className="d">EV implicit</div></div><div className="cell"><div className="k">High</div><div className="v">€547m</div><div className="d">EV implicit</div></div></div>
+        <div className="twoup" style={{ marginTop: 24 }}>
+          <div><h3>Sidetrade's own M&amp;A — internal benchmarks</h3><p style={{ fontSize: 13.5 }}><strong>ezyCollect (Oct 2025) ·</strong> Total consideration €37.6m (€34.8m cash + €2.6m stock). Contributed €2.241m revenue since 1 Oct 2025, i.e. ~€9m annualised run-rate → implicit multiple ~4.2x revenue run-rate. Lower-mid anchor: smaller, APAC, SME, lower gross margin — not directly comparable to Sidetrade's core but useful as a floor.</p><p style={{ fontSize: 13.5 }}><strong>SHS Viveon (2024) ·</strong> Special situation (delisting tender at €3.00/share). €4.4m revenue since July 2024 i.e. ~€8.8m annualised. Implicit multiple is very low and reflects forced delisting context — use as qualitative floor only.</p></div>
+          <div><h3>Retained multiples — forward 2026E</h3><p style={{ fontSize: 12, color: "var(--ink-3)" }}>Base 2026E from model: Revenue €71.9m · EBITDA €17.1m. **EV/EBITDA control multiples n.m. — Esker EBITDA n.d., Coupa near-breakeven at deal (cf. workbook Transaction_comps).</p><table className="data" style={{ marginTop: 8 }}><thead><tr><th>Tier</th><th className="num">EV / Sales</th><th className="num">EV / EBITDA</th><th className="num">EV impl.</th></tr></thead><tbody><tr><td className="label">Low</td><td className="num">4.0x</td><td className="num">n.m.**</td><td className="num">{fmtM(VALUATION_CONTEXT.transactionRange.low)}</td></tr><tr><td className="label">Base</td><td className="num strong">5.7x</td><td className="num strong">n.m.**</td><td className="num strong">{fmtM(VALUATION_CONTEXT.transactionRange.base)}</td></tr><tr><td className="label">High</td><td className="num">7.6x</td><td className="num">n.m.**</td><td className="num">{fmtM(VALUATION_CONTEXT.transactionRange.high)}</td></tr></tbody></table></div>
+        </div>
+        <div className="result-strip three" style={{ marginTop: 18 }}><div className="cell"><div className="k">Low</div><div className="v">{fmtM(VALUATION_CONTEXT.transactionRange.low)}</div><div className="d">EV implicit</div></div><div className="cell"><div className="k">Base · control</div><div className="v accent">{fmtM(VALUATION_CONTEXT.transactionRange.base)}</div><div className="d">EV implicit</div></div><div className="cell"><div className="k">High</div><div className="v">{fmtM(VALUATION_CONTEXT.transactionRange.high)}</div><div className="d">EV implicit</div></div></div>
         <p style={{ fontSize: 13, color: "var(--ink-3)", marginTop: 12 }}>Deliberately above trading comps — these embed control premium (~20–40%), strategic scarcity and synergy potential. Read as <strong>M&amp;A value</strong>, not stand-alone.</p>
         <details className="method"><summary>How we built it · methodology</summary><div className="body"><p><strong>Logic.</strong> Precedent transactions answer "what did a buyer pay to take control of a comparable", not "what does the market value a comparable". By construction, these embed: (i) control premium 20–40%, (ii) strategic / scarcity premium, (iii) potential synergies, (iv) the buyer's ability to accept a longer horizon.</p><p><strong>Source.</strong> Primary source is the Edison Group table compiled for the Esker take-private (2024/25), covering O2C / P2P / AP automation / finance workflow deals with forward FY1e / FY2e multiples. We augment with Sidetrade's own M&amp;A as internal benchmarks.</p></div></details>
       </section>
 
       <section className="block" id="lbo">
         <div className="sec-head"><div className="left"><div className="num-tag">07 — LBO</div><h2>Sponsor affordability · what a PE could pay for a 20–25% IRR</h2></div><div className="right">Not a fundamental fair value — an affordability test that frames the sponsor pricing logic.</div></div>
-        <div className="twoup"><div><h3>Base case assumptions</h3><table className="data" style={{ marginTop: 10 }}><tbody><tr><td className="label">Entry EV (Base affordability)</td><td className="num strong">€241.9m</td></tr><tr><td className="label">EBITDA 2025</td><td className="num">€13.4m</td></tr><tr><td className="label">Acquisition debt (4.0x EBITDA)</td><td className="num">~€53.5m</td></tr><tr><td className="label">Sponsor equity</td><td className="num">~€179m (after ~€28m founder rollover)</td></tr><tr><td className="label">Holding period</td><td className="num">5 years</td></tr><tr><td className="label">Interest rate</td><td className="num">~7.2% all-in (E3M + 479bps)</td></tr><tr><td className="label">Cash sweep</td><td className="num">75% of excess FCF + 1% mandatory amort.</td></tr><tr><td className="label">Exit EBITDA 2030 (Base)</td><td className="num">€36.2m</td></tr><tr><td className="label">Exit multiple (Base)</td><td className="num">15.0x EBITDA</td></tr><tr className="total"><td>Target IRR (Base)</td><td className="num">~22.5%</td></tr></tbody></table><p style={{ fontSize: 12.5, color: "var(--ink-3)", marginTop: 12 }}><strong>On leverage:</strong> the existing covenant (Net debt / EBITDA &lt; 2.5x on the BNP/LCL loans tied to ezyCollect) does not constrain a future LBO — in a PE take-control, existing debt is refinanced inside a new package. The 4.0x reflects sensible LBO capacity for a profitable SaaS, not the current balance sheet.</p></div><div><h3>Range</h3><div className="result-strip three" style={{ marginTop: 10 }}><div className="cell"><div className="k">Low</div><div className="v">€222.5m</div><div className="d">IRR target 25%</div></div><div className="cell"><div className="k">Base</div><div className="v accent">€241.9m</div><div className="d">IRR target 22.5%</div></div><div className="cell"><div className="k">High</div><div className="v">€283.5m</div><div className="d">IRR target 18%</div></div></div><p style={{ fontSize: 13, color: "var(--ink-3)", marginTop: 14 }}>Low/High swing driven by the sponsor IRR hurdle (25% Low → 18% High) at a fixed 15x exit. Base affordability (~€242m) sits ~20% below the DCF (€301m): at a 22.5% hurdle a sponsor cannot outbid intrinsic value — consistent with take-privates requiring a control premium. Engine-solved (lbo_engine.py, CIR single-count fixed 15 Jul 2026). Use as <strong>sponsor affordability test</strong>, not fundamental fair value.</p></div></div>
+        <div className="twoup"><div><h3>Base case assumptions</h3><table className="data" style={{ marginTop: 10 }}><tbody><tr><td className="label">Entry EV (Base affordability)</td><td className="num strong">{fmtM(LBO_REFERENCE.entryEv, 1)}</td></tr><tr><td className="label">EBITDA 2025</td><td className="num">{fmtM(FY25.ebitda, 1)}</td></tr><tr><td className="label">Acquisition debt (4.0x EBITDA)</td><td className="num">~{fmtM(LBO_REFERENCE.acquisitionDebt, 1)}</td></tr><tr><td className="label">Sponsor equity</td><td className="num">~{fmtM(LBO_REFERENCE.sponsorEquity, 0)} (after ~{fmtM(LBO_REFERENCE.founderRollover, 0)} founder rollover)</td></tr><tr><td className="label">Holding period</td><td className="num">{LBO_REFERENCE.holdingPeriodYears} years</td></tr><tr><td className="label">Interest rate</td><td className="num">~{fmtPct(LBO_REFERENCE.interestRate)} all-in (E3M + 479bps)</td></tr><tr><td className="label">Cash sweep</td><td className="num">{fmtPct(LBO_REFERENCE.cashSweep, 0)} of excess FCF + 1% mandatory amort.</td></tr><tr><td className="label">Exit EBITDA 2030 (Base)</td><td className="num">{fmtM(LBO_REFERENCE.exitEbitda2030, 1)}</td></tr><tr><td className="label">Exit multiple (Base)</td><td className="num">{LBO_REFERENCE.exitMultiple.toFixed(1)}x EBITDA</td></tr><tr className="total"><td>Target IRR (Base)</td><td className="num">~{fmtPct(LBO_REFERENCE.baseIrr)}</td></tr></tbody></table><p style={{ fontSize: 12.5, color: "var(--ink-3)", marginTop: 12 }}><strong>On leverage:</strong> the existing covenant (Net debt / EBITDA &lt; 2.5x on the BNP/LCL loans tied to ezyCollect) does not constrain a future LBO — in a PE take-control, existing debt is refinanced inside a new package. The 4.0x reflects sensible LBO capacity for a profitable SaaS, not the current balance sheet.</p></div><div><h3>Range</h3><div className="result-strip three" style={{ marginTop: 10 }}><div className="cell"><div className="k">Low</div><div className="v">{fmtM(VALUATION_CONTEXT.lboRange.low, 1)}</div><div className="d">IRR target {fmtPct(VALUATION_CONTEXT.lboIrr.low, 0)}</div></div><div className="cell"><div className="k">Base</div><div className="v accent">{fmtM(VALUATION_CONTEXT.lboRange.base, 1)}</div><div className="d">IRR target {fmtPct(VALUATION_CONTEXT.lboIrr.base)}</div></div><div className="cell"><div className="k">High</div><div className="v">{fmtM(VALUATION_CONTEXT.lboRange.high, 1)}</div><div className="d">IRR target {fmtPct(VALUATION_CONTEXT.lboIrr.high, 0)}</div></div></div><p style={{ fontSize: 13, color: "var(--ink-3)", marginTop: 14 }}>Low/High swing driven by the sponsor IRR hurdle ({fmtPct(VALUATION_CONTEXT.lboIrr.low, 0)} Low → {fmtPct(VALUATION_CONTEXT.lboIrr.high, 0)} High) at a fixed {LBO_REFERENCE.exitMultiple.toFixed(0)}x exit. Base affordability (~{fmtM(VALUATION_CONTEXT.lboRange.base)}) sits ~20% below the DCF ({fmtM(VALUATION_CONTEXT.fairValueEv)}): at a {fmtPct(LBO_REFERENCE.baseIrr)} hurdle a sponsor cannot outbid intrinsic value — consistent with take-privates requiring a control premium. Engine-solved (lbo_engine.py, CIR single-count fixed {VALUATION_DATES.marketMedium}). Use as <strong>sponsor affordability test</strong>, not fundamental fair value.</p></div></div>
         <details className="method"><summary>How we built it · methodology</summary><div className="body"><p>The LBO is solved for entry EV given target sponsor IRR, holding period, leverage, interest, exit EBITDA and exit multiple. Two levers drive most of the range: the IRR floor a sponsor will accept, and the exit multiple — which itself depends on the operating delivery of the holding period.</p><p className="src">Exit sensitivity range checked against WACC × exit multiple outputs: {fmtM(waccExit.flat()[0])} to {fmtM(waccExit.flat().at(-1))}.</p></div></details>
       </section>
 
@@ -707,21 +723,21 @@ FCF  = EBIT × (1 − tax) + D&A − Capex − ΔWC`}</pre><ol><li><strong>Econo
         <div className="sec-head"><div className="left"><div className="num-tag">08 — Football field</div><h2>Four methods, one view</h2></div><div className="right">Scroll back up to switch DCF scenario — the DCF bar below recomposes live.</div></div>
         <FootballField activeScenario={activeScenario} scenarioResults={scenarioResults} />
         <div className="grid-3" style={{ marginTop: 24 }}>
-          <div className="card" style={{ borderTop: "3px solid var(--bordeaux)" }}><div className="mono-k" style={{ color: "var(--bordeaux)" }}>Stand-alone fair value</div><div className="big-card-value">€301m EV</div><p style={{ fontSize: 13, color: "var(--ink-2)", margin: 0 }}>DCF Gordon Growth central value — ~7% above the quoted market EV (~€282m at €174/share, 15 Jul 2026). The reference number.</p></div>
-          <div className="card" style={{ borderTop: "3px solid var(--bull)" }}><div className="mono-k" style={{ color: "var(--bull)" }}>Control case</div><div className="big-card-value">€410m EV</div><p style={{ fontSize: 13, color: "var(--ink-2)", margin: 0 }}>Convergence with transaction precedents. ~40% control premium embedded.</p></div>
-          <div className="card" style={{ borderTop: "3px solid var(--market)" }}><div className="mono-k" style={{ color: "var(--market)" }}>Implied share price · Base</div><div className="big-card-value">~€186</div><p style={{ fontSize: 13, color: "var(--ink-2)", margin: 0 }}>(€301m − €14.7m net debt) / 1.537m diluted shares = ~€186 / share.</p></div>
+          <div className="card" style={{ borderTop: "3px solid var(--bordeaux)" }}><div className="mono-k" style={{ color: "var(--bordeaux)" }}>Stand-alone fair value</div><div className="big-card-value">{fmtM(VALUATION_CONTEXT.fairValueEv)} EV</div><p style={{ fontSize: 13, color: "var(--ink-2)", margin: 0 }}>DCF Gordon Growth central value — ~{((VALUATION_CONTEXT.fairValueEv / VALUATION_CONTEXT.marketEv - 1) * 100).toFixed(0)}% above the quoted market EV (~{fmtM(VALUATION_CONTEXT.marketEv)} at €{VALUATION_CONTEXT.sharePriceRef.toFixed(0)}/share, {VALUATION_DATES.marketMedium}). The reference number.</p></div>
+          <div className="card" style={{ borderTop: "3px solid var(--bull)" }}><div className="mono-k" style={{ color: "var(--bull)" }}>Control case</div><div className="big-card-value">{fmtM(VALUATION_CONTEXT.controlEv)} EV</div><p style={{ fontSize: 13, color: "var(--ink-2)", margin: 0 }}>Convergence with transaction precedents. ~40% control premium embedded.</p></div>
+          <div className="card" style={{ borderTop: "3px solid var(--market)" }}><div className="mono-k" style={{ color: "var(--market)" }}>Implied share price · Base</div><div className="big-card-value">~€{equityBridge("base").sharePrice.toFixed(0)}</div><p style={{ fontSize: 13, color: "var(--ink-2)", margin: 0 }}>({fmtM(VALUATION_CONTEXT.fairValueEv)} − {fmtM(NET_DEBT.strict, 1)} net debt) / {(FY25.dilutedShares / 1_000_000).toFixed(3)}m diluted shares = ~€{equityBridge("base").sharePrice.toFixed(0)} / share.</p></div>
         </div>
-        <div className="equity-bridge-section" id="equity-bridge"><div className="section-kicker">EV → Equity → Share price</div><h3>From enterprise value to the shareholder outcome</h3><WaterfallBridge activeScenario={activeScenario} /><p><strong>Stand-alone range:</strong> €171m – €497m EV → ~€102–€314 / share. <br /><strong>Extended range (incl. M&amp;A / LBO):</strong> €171m – €547m EV → ~€102–€346 / share.</p></div>
-        <div className="conclusion-panel" id="conclusions"><div className="mono-k">Investment committee conclusion</div><h3>Quality supports the stand-alone case; control value remains the strategic upside.</h3><div className="conclusion-grid"><p>Sidetrade combines a profitable O2C SaaS profile, 87% subscription mix, 92% subscription gross margin and a documented path toward 30–35% EBITDA margin.</p><p>Stand-alone value centres on <strong>~€301m EV</strong>, around <strong>€186 per share</strong>, while derated public peers and sponsor affordability frame the downside.</p><p>Transaction precedents support a control case near <strong>~€410m EV</strong>, subject to CIR diligence, integration delivery and a refreshed market reference.</p></div></div>
+        <div className="equity-bridge-section" id="equity-bridge"><div className="section-kicker">EV → Equity → Share price</div><h3>From enterprise value to the shareholder outcome</h3><WaterfallBridge activeScenario={activeScenario} /><p><strong>Stand-alone range:</strong> {fmtM(VALUATION_CONTEXT.tradingRange.low)} – {fmtM(scenarioResults.bull.ev)} EV → ~€{((VALUATION_CONTEXT.tradingRange.low - NET_DEBT.strict) * 1_000_000 / FY25.dilutedShares).toFixed(0)}–€{equityBridge("bull").sharePrice.toFixed(0)} / share. <br /><strong>Extended range (incl. M&amp;A / LBO):</strong> {fmtM(VALUATION_CONTEXT.tradingRange.low)} – {fmtM(VALUATION_CONTEXT.transactionRange.high)} EV → ~€{((VALUATION_CONTEXT.tradingRange.low - NET_DEBT.strict) * 1_000_000 / FY25.dilutedShares).toFixed(0)}–€{((VALUATION_CONTEXT.transactionRange.high - NET_DEBT.strict) * 1_000_000 / FY25.dilutedShares).toFixed(0)} / share.</p></div>
+        <div className="conclusion-panel" id="conclusions"><div className="mono-k">Investment committee conclusion</div><h3>Quality supports the stand-alone case; control value remains the strategic upside.</h3><div className="conclusion-grid"><p>Sidetrade combines a profitable O2C SaaS profile, 87% subscription mix, 92% subscription gross margin and a documented path toward 30–35% EBITDA margin.</p><p>Stand-alone value centres on <strong>~{fmtM(VALUATION_CONTEXT.fairValueEv)} EV</strong>, around <strong>€{equityBridge("base").sharePrice.toFixed(0)} per share</strong>, while derated public peers and sponsor affordability frame the downside.</p><p>Transaction precedents support a control case near <strong>~{fmtM(VALUATION_CONTEXT.controlEv)} EV</strong>, subject to CIR diligence, integration delivery and a refreshed market reference.</p></div></div>
       </section>
 
       <section className="block" id="red-flags">
         <span className="anchor-alias" id="caveats" aria-hidden="true" />
         <div className="sec-head"><div className="left"><div className="num-tag">09 — Red flags &amp; limits</div><h2>What must be diligenced — and what this model is not</h2></div><div className="right">Independent v1.0 model built from public data only. Not a research recommendation.</div></div>
         <div className="ts-deal-grid">
-          <div className="ts-panel"><div className="section-kicker">Transaction implications</div><h3>Where QoE changes the deal discussion</h3><ul className="ts-list"><li><strong>Price multiple.</strong> Keep published, ex-CIR and estimated adjusted EBITDA visibly distinct; do not present €10.7m or €14.2m as audited statutory measures.</li><li><strong>Working capital.</strong> Set the peg only after separating the CIR reimbursement cycle from ordinary receivables and contract liabilities.</li><li><strong>Equity cheque.</strong> Reconcile strict net debt to completion accounts and classify earn-outs, acquisition balances and restricted cash without double counting.</li><li><strong>Protections.</strong> Consider specific tax/CIR protection, leakage coverage and acquisition-liability treatment where evidence remains incomplete.</li></ul></div>
-          <div className="ts-panel" id="diligence"><div className="section-kicker">Priority diligence requests</div><h3>Evidence required before signing</h3><ol className="diligence-list"><li><strong>CIR file.</strong> Claims by vintage, eligible-cost bridge, tax opinions, audits, correspondence and reimbursement calendar.</li><li><strong>Cash conversion.</strong> Monthly OCF-to-FCF bridge, working-capital ageing, capex ledger and reconciliation of management’s €8.7m KPI.</li><li><strong>Debt and cash.</strong> Bank statements, facilities, accrued interest, covenants, guarantees, restricted cash and marketable-security liquidity.</li><li><strong>Acquisition liabilities.</strong> ezyCollect, Amalto and CreditPoint SPAs, earn-outs, deferred consideration and completion-account settlements.</li><li><strong>Revenue quality.</strong> ARR/NRR by cohort, churn, concessions, deferred revenue, top contracts and post-close delivery obligations.</li><li><strong>Integration.</strong> Stand-alone and pro-forma P&amp;Ls for ezyCollect/SHS Viveon, synergies, PPA status and one-off costs.</li></ol></div>
-          <div className="ts-panel" id="conventions"><div className="section-kicker">Conventions &amp; limits</div><h3>How to read the numbers</h3><dl className="convention-list"><div><dt>Published</dt><dd>Directly reported or reconstructed from statutory/public disclosures.</dd></div><div><dt>Adjusted / “e”</dt><dd>Internally reviewed estimate requiring data-room confirmation; not a statutory measure.</dd></div><div><dt>Normalised</dt><dd>Timing-adjusted analytical view; does not assert that the underlying cash cycle disappears.</dd></div><div><dt>Net debt · strict</dt><dd>Gross financial debt less cash and marketable securities only.</dd></div><div><dt>Debt-like</dt><dd>Open diligence perimeter, not an automatic purchase-price adjustment.</dd></div><div><dt>Units / dates</dt><dd>€m unless stated; FY25 actuals at 31 Dec 2025; market reference at 15 Jul 2026.</dd></div></dl></div>
+          <div className="ts-panel"><div className="section-kicker">Transaction implications</div><h3>Where QoE changes the deal discussion</h3><ul className="ts-list"><li><strong>Price multiple.</strong> Keep published, ex-CIR and estimated adjusted EBITDA visibly distinct; do not present {fmtM(QOE.adjustedEbitdaExCir, 1)} or {fmtM(QOE.adjustedEbitdaInclCir, 1)} as audited statutory measures.</li><li><strong>Working capital.</strong> Set the peg only after separating the CIR reimbursement cycle from ordinary receivables and contract liabilities.</li><li><strong>Equity cheque.</strong> Reconcile strict net debt to completion accounts and classify earn-outs, acquisition balances and restricted cash without double counting.</li><li><strong>Protections.</strong> Consider specific tax/CIR protection, leakage coverage and acquisition-liability treatment where evidence remains incomplete.</li></ul></div>
+          <div className="ts-panel" id="diligence"><div className="section-kicker">Priority diligence requests</div><h3>Evidence required before signing</h3><ol className="diligence-list"><li><strong>CIR file.</strong> Claims by vintage, eligible-cost bridge, tax opinions, audits, correspondence and reimbursement calendar.</li><li><strong>Cash conversion.</strong> Monthly OCF-to-FCF bridge, working-capital ageing, capex ledger and reconciliation of management’s {fmtM(CASH_CONVERSION.managementOcfExCirTiming, 1)} KPI.</li><li><strong>Debt and cash.</strong> Bank statements, facilities, accrued interest, covenants, guarantees, restricted cash and marketable-security liquidity.</li><li><strong>Acquisition liabilities.</strong> ezyCollect, Amalto and CreditPoint SPAs, earn-outs, deferred consideration and completion-account settlements.</li><li><strong>Revenue quality.</strong> ARR/NRR by cohort, churn, concessions, deferred revenue, top contracts and post-close delivery obligations.</li><li><strong>Integration.</strong> Stand-alone and pro-forma P&amp;Ls for ezyCollect/SHS Viveon, synergies, PPA status and one-off costs.</li></ol></div>
+          <div className="ts-panel" id="conventions"><div className="section-kicker">Conventions &amp; limits</div><h3>How to read the numbers</h3><dl className="convention-list"><div><dt>Published</dt><dd>Directly reported or reconstructed from statutory/public disclosures.</dd></div><div><dt>Adjusted / “e”</dt><dd>Internally reviewed estimate requiring data-room confirmation; not a statutory measure.</dd></div><div><dt>Normalised</dt><dd>Timing-adjusted analytical view; does not assert that the underlying cash cycle disappears.</dd></div><div><dt>Net debt · strict</dt><dd>Gross financial debt less cash and marketable securities only.</dd></div><div><dt>Debt-like</dt><dd>Open diligence perimeter, not an automatic purchase-price adjustment.</dd></div><div><dt>Units / dates</dt><dd>€m unless stated; FY25 actuals at {VALUATION_DATES.fy25Cutoff}; market reference at {VALUATION_DATES.marketMedium}.</dd></div></dl></div>
         </div>
         <div className="caveats"><div><h3>Methodological</h3><ul><li>Independent v1.0 model built from public data only (FY25 statutory + press release + O2C Intelligence 2030 plan + public market data).</li><li>Trading multiples are sensitive to market window — refresh before publication if market conditions shift.</li><li>CIR is included in modelled EBITDA but remains subject to eligibility, tax-audit and reimbursement-timing risk. The statutory cash view remains the downside reference.</li><li>ezyCollect / SHS Viveon margins still converge through 2026–2028 — Base assumes partial integration. Multi-acquisition execution risk remains.</li><li>Transaction comps embed a ~40% control premium — not directly comparable to stand-alone fair value.</li><li>LBO is an affordability test, not a fundamental fair value.</li><li>D&amp;A at 2.0% of revenue is an economic proxy, distinct from French accounting D&amp;A and provisions.</li><li>Treasury shares are excluded from the equity bridge; treatment depends on legal ownership, intended use and spot value.</li></ul></div><div><h3>Accounting specifics</h3><ul><li><strong>Gross margin reconstruction.</strong> The 77% / 81% LFL / 92% subscription figures come from investor communication and cannot be perfectly reconstructed from an expenses-by-nature statutory P&amp;L.</li><li><strong>ezyCollect PPA pending.</strong> Allocation remains open until 31 Dec 2026. Reclassification from goodwill to customer relationships could increase amortisation and affect EBIT while remaining EBITDA-neutral.</li><li><strong>Headcount discrepancy.</strong> 406 employees per statutory accounts at 31 Dec 2025 versus ~450 in corporate communication; reconcile payroll, contractors, perimeter and cut-off.</li></ul></div></div>
       </section>
@@ -729,14 +745,14 @@ FCF  = EBIT × (1 − tax) + D&A − Capex − ΔWC`}</pre><ol><li><strong>Econo
       <section className="block" id="sources">
         <div className="sec-head"><div className="left"><div className="num-tag">Reference</div><h2>Sources</h2></div><div className="right">Native links to the three PDFs stored in public/.</div></div>
         <div className="grid-3">
-          <a className="card source-card" href="/PR_2025_Results_EN.pdf" target="_blank" rel="noopener"><h3>Sidetrade FY25 Annual Results</h3><p>Press release · March 30, 2026</p></a>
-          <a className="card source-card" href="/Sidetrade-Group_FY25_Statutory-report-on-the-consolidated-financial-statements_ENG.pdf" target="_blank" rel="noopener"><h3>Statutory Report FY25</h3><p>KPMG / Yuma Audit · April 21, 2026</p></a>
-          <a className="card source-card" href="/260407_O2C_Intelligence_2030_PR_EN.pdf" target="_blank" rel="noopener"><h3>O2C Intelligence 2030</h3><p>Strategic Plan · April 7, 2026</p></a>
+          <a className="card source-card" href={SOURCES.annualResults.href} target="_blank" rel="noopener"><h3>{SOURCES.annualResults.label}</h3><p>Press release · {SOURCES.annualResults.date}<br />{SOURCES.annualResults.status}</p></a>
+          <a className="card source-card" href={SOURCES.statutoryReport.href} target="_blank" rel="noopener"><h3>{SOURCES.statutoryReport.label}</h3><p>KPMG / Yuma Audit · {SOURCES.statutoryReport.date}<br />{SOURCES.statutoryReport.status}</p></a>
+          <a className="card source-card" href={SOURCES.strategicPlan.href} target="_blank" rel="noopener"><h3>{SOURCES.strategicPlan.label}</h3><p>Strategic Plan · {SOURCES.strategicPlan.date}<br />{SOURCES.strategicPlan.status}</p></a>
         </div>
       </section>
 
       <footer className="site">
-        <div className="inner"><div><h4>Author</h4><div className="name">Hamza Ben Chaouch</div><p>ESSEC Grande École · Finance &amp; Analytics<br /><a href="mailto:hamza.benchaouch@essec.edu">hamza.benchaouch@essec.edu</a><br /><a href="tel:+33769913946">+33 7 69 91 39 46</a></p></div><div><h4>Sources</h4><p>Sidetrade FY25 Annual Results (Mar 30, 2026) · Statutory Report FY25 (KPMG / Yuma Audit, Apr 21, 2026) · O2C Intelligence 2030 Strategic Plan (Apr 7, 2026) · Edison Group precedent transactions table · Damodaran European ERP &amp; sector betas.</p></div><div><h4>Market reference</h4><p>Market data as of <strong>15 July 2026</strong>.</p></div></div>
+        <div className="inner"><div><h4>Author</h4><div className="name">Hamza Ben Chaouch</div><p>ESSEC Grande École · Finance &amp; Analytics<br /><a href="mailto:hamza.benchaouch@essec.edu">hamza.benchaouch@essec.edu</a><br /><a href="tel:+33769913946">+33 7 69 91 39 46</a></p></div><div><h4>Sources</h4><p>{SOURCES.annualResults.label} ({SOURCES.annualResults.shortDate}) · {SOURCES.statutoryReport.label} (KPMG / Yuma Audit, {SOURCES.statutoryReport.shortDate}) · {SOURCES.strategicPlan.label} ({SOURCES.strategicPlan.shortDate}) · Edison Group precedent transactions table · Damodaran European ERP &amp; sector betas.</p></div><div><h4>Market reference</h4><p>Market data as of <strong>{VALUATION_DATES.marketLong}</strong> · {SOURCES.market.status}.</p></div></div>
         <div className="inner"><p className="disclaimer">Independent pedagogical model built from public data. Does not constitute an investment recommendation. All multiples and ranges are indicative and reflect a market window — refresh before any external distribution.</p></div>
       </footer>
     </article>

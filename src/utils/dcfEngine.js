@@ -1,72 +1,9 @@
-export const FY25 = {
-  revenue: 61.4,
-  ebitda: 13.4,
-  ebitdaMargin: 0.218,
-  netDebt: 14.654,
-  dilutedShares: 1536790,
-  cir: 3.5,
-  ebit: 10.267,
-  netIncome: 9.024,
-  fcfNormalized: 7.163,
-  totalDebt: 30.981,
-  cash: 16.327,
-  yoy: {
-    revenue: 0.14,
-    ebitda: 0.22,
-    ebit: 0.23,
-    netIncome: 0.14,
-    fcf: 0.70,
-  },
-};
+import { FY25, SCENARIOS, VALUATION_CONTEXT } from "../data/sidetradeFinancials.js";
 
-export const SCENARIOS = {
-  bear: {
-    growth: [0.12, 0.10, 0.08, 0.07, 0.06],
-    ebitdaMargin2030: 0.26,
-    taxRate: 0.25,
-    daPct: 0.020,
-    capexPct: 0.030,
-    wcPct: 0.10,
-    wacc: 0.105,
-    g: 0.020,
-  },
-  base: {
-    growth: [0.17, 0.15, 0.13, 0.11, 0.09],
-    ebitdaMargin2030: 0.32,
-    taxRate: 0.22,
-    daPct: 0.020,
-    capexPct: 0.027,
-    wcPct: 0.07,
-    wacc: 0.095,
-    g: 0.025,
-  },
-  bull: {
-    growth: [0.21, 0.18, 0.16, 0.14, 0.12],
-    ebitdaMargin2030: 0.35,
-    taxRate: 0.20,
-    daPct: 0.020,
-    capexPct: 0.025,
-    wcPct: 0.05,
-    wacc: 0.085,
-    g: 0.030,
-  },
-};
+export { FY25, SCENARIOS, VALUATION_CONTEXT };
 
 const YEARS = [2025, 2026, 2027, 2028, 2029, 2030];
 const EXIT_MULTIPLE = 15;
-
-export const VALUATION_CONTEXT = {
-  subscriptionRevenue: 53.594,
-  controlEv: 410,
-  sharePriceRef: 174, // cours ALBFR du 15/07/2026
-  controlPremium: 0.20,
-  liquidityDiscount: -0.05,
-  interestCoverage: 7.1,
-  tradingRange: { low: 171, base: 202, high: 264 }, // 15/07/2026 - derive de la table peers (workbook v2, Trading_comps)
-  transactionRange: { low: 289, base: 411, high: 547 },
-  lboRange: { low: 222.5, base: 241.9, high: 283.5 }, // LBO_full v2: 4.0x, 7.16% all-in, sweep 75%, exit 15x
-  lboIrr: { low: 0.25, base: 0.225, high: 0.18 },
-};
 
 function getScenario(scenarioId) {
   const scenario = SCENARIOS[scenarioId];

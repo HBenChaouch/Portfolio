@@ -7,7 +7,11 @@ export default function FootballField({ ranges, activeScenario }) {
   const marketValue = (VALUATION_CONTEXT.sharePriceRef * FY25.dilutedShares) / 1000000 + FY25.netDebt;
 
   return (
-    <div className="football-field">
+    <div
+      aria-label={`Valuation football field. DCF scenario ${activeScenario}. Trading base €${fairValue.toFixed(0)} million, control reference €${controlValue.toFixed(0)} million, market reference €${marketValue.toFixed(0)} million.`}
+      className="football-field"
+      role="group"
+    >
       <div className="range-stack">
         <div className="reference fair" style={{ left: `${pctInRange(fairValue)}%` }}>
           <span>Fair €{fairValue.toFixed(0)}m</span>

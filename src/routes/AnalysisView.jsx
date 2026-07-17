@@ -91,12 +91,14 @@ function ScenarioCards({ activeScenario, setActiveScenario, scenarioResults }) {
     <div className="scenario-cards" role="tablist" aria-label="DCF scenario">
       {["bear", "base", "bull"].map((id) => (
         <button
+          aria-selected={activeScenario === id}
           className="sc-card"
           data-s={id}
           data-active={activeScenario === id ? "true" : "false"}
           key={id}
           onClick={() => setActiveScenario(id)}
           role="tab"
+          tabIndex={activeScenario === id ? 0 : -1}
           type="button"
         >
           <div className="sc-row">
@@ -131,7 +133,7 @@ function TrajectoryChart({ activeScenario }) {
   const area = `${path(rev)} L ${x(5).toFixed(2)} ${baseline.toFixed(2)} L ${x(0).toFixed(2)} ${baseline.toFixed(2)} Z`;
 
   return (
-    <div className="chart-wrap" style={{ position: "relative" }}>
+    <div aria-label="Revenue and EBITDA chart" className="chart-wrap" role="region" style={{ position: "relative" }} tabIndex="0">
       <div className="chart-head">
         <div className="left">
           <h3>Revenue &amp; EBITDA trajectory · 2025 → 2030</h3>
@@ -142,7 +144,9 @@ function TrajectoryChart({ activeScenario }) {
           <span><span className="swatch ebitda" />EBITDA</span>
         </div>
       </div>
-      <svg className="chart-svg" id="traj-chart" viewBox="0 0 800 300" preserveAspectRatio="none">
+      <svg aria-labelledby="trajectory-chart-title trajectory-chart-desc" className="chart-svg" id="traj-chart" role="img" viewBox="0 0 800 300" preserveAspectRatio="none">
+        <title id="trajectory-chart-title">Revenue and EBITDA trajectory from 2025 to 2030</title>
+        <desc id="trajectory-chart-desc">The chart updates with the selected DCF scenario. Revenue and EBITDA values are also provided as accessible text immediately after the chart.</desc>
         {[0, 35, 70, 105, 140].map((tick) => (
           <g key={tick}>
             <line className="grid-line" x1={mL} x2={w - mR} y1={y(tick)} y2={y(tick)} />
@@ -184,6 +188,9 @@ function TrajectoryChart({ activeScenario }) {
         <text className="end-label rev" x={x(5) + 8} y={y(rev[5]) + 3}>{EURO}{rev[5].toFixed(0)}m</text>
         <text className="end-label ebitda" x={x(5) + 8} y={y(ebitda[5]) + 3}>{EURO}{ebitda[5].toFixed(0)}m</text>
       </svg>
+      <p className="sr-only">
+        {trajectory.map((point) => `${point.year}: revenue ${fmtM(point.revenue, 1)}, EBITDA ${fmtM(point.ebitda, 1)}, EBITDA margin ${fmtPct(point.ebitdaMargin, 0)}.`).join(" ")}
+      </p>
       <div className={tip ? "chart-tip on" : "chart-tip"} id="chart-tip" style={tip ? { left: tip.left, top: tip.top } : undefined}>
         {tip ? (
           <>
@@ -221,18 +228,19 @@ function SensitivityHeatmap({ activeScenario }) {
         </div>
         <div className="right">FCF 2026–2030 · Base case</div>
       </div>
-      <div style={{ overflowX: "auto" }}>
+      <div aria-label="DCF sensitivity table" className="table-scroll" role="region" tabIndex="0">
         <table className="sensi" id="sensi-table">
+          <caption className="sr-only">Enterprise value sensitivity by WACC and terminal growth rate for the active DCF scenario.</caption>
           <thead>
             <tr>
-              <th className="corner">EV €m · WACC →</th>
-              {WACCS.map((wacc) => <th key={wacc}>{fmtPct(wacc)}</th>)}
+              <th className="corner" scope="col">EV €m · WACC →</th>
+              {WACCS.map((wacc) => <th key={wacc} scope="col">{fmtPct(wacc)}</th>)}
             </tr>
           </thead>
           <tbody>
             {GS.map((g, row) => (
               <tr key={g}>
-                <td className="row-h">g = {fmtPct(g)}</td>
+                <th className="row-h" scope="row">g = {fmtPct(g)}</th>
                 {WACCS.map((wacc, col) => {
                   const center = Math.abs(wacc - SCENARIOS[activeScenario].wacc) < 1e-6 && Math.abs(g - SCENARIOS[activeScenario].g) < 1e-6;
                   return (
@@ -281,7 +289,7 @@ function FootballField({ activeScenario, scenarioResults }) {
   }
 
   return (
-    <div className="ff">
+    <div aria-label={`Valuation football field with active DCF scenario ${activeScenario}`} className="ff" role="region" tabIndex="0">
       <div className="ff-canvas" id="ff-canvas">
         <div className="ff-rows">
           <div className="ref fair" style={{ left: `calc(130px + 14px + ${pctFromValue(301)}% * (100% - 244px) / 100)` }} />
@@ -325,8 +333,10 @@ function WaterfallBridge({ activeScenario }) {
   const equityTop = yFor(bridge.equity);
 
   return (
-    <div className="waterfall-wrap">
-      <svg className="waterfall-svg" id="waterfall-svg" viewBox="0 0 1000 280" preserveAspectRatio="xMidYMid meet">
+    <div aria-label="Enterprise value to share price bridge" className="waterfall-wrap" role="region" tabIndex="0">
+      <svg aria-labelledby="waterfall-title waterfall-desc" className="waterfall-svg" id="waterfall-svg" role="img" viewBox="0 0 1000 280" preserveAspectRatio="xMidYMid meet">
+        <title id="waterfall-title">Enterprise value to implied share price bridge</title>
+        <desc id="waterfall-desc">Enterprise value {fmtM(bridge.ev)}, less net debt {fmtM(bridge.netDebt, 1)}, equals equity value {fmtM(bridge.equity)} and an implied share price of {EURO}{bridge.sharePrice.toFixed(0)}.</desc>
         <rect className="wf-bar ev" x={bar1X} y={evTop} width={barW} height={baseline - evTop} />
         <rect className="wf-bar equity" x={bar2X} y={equityTop} width={barW} height={baseline - equityTop} />
         <line className="wf-deduct-line" x1={bar1X + barW} y1={evTop} x2={bar2X} y2={evTop} />

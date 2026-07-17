@@ -1,4 +1,4 @@
-export default function DataTable({ columns, rows, highlightColumn = 2 }) {
+export default function DataTable({ columns, rows, highlightColumn = 2, label = "Financial data table" }) {
   function cellClass(cell, index) {
     const classes = [];
     const value = typeof cell === "string" ? cell.trim() : "";
@@ -10,12 +10,12 @@ export default function DataTable({ columns, rows, highlightColumn = 2 }) {
   }
 
   return (
-    <div className="table-scroll">
-      <table className="data-table">
+    <div aria-label={label} className="table-scroll" role="region" tabIndex="0">
+      <table aria-label={label} className="data-table">
         <thead>
           <tr>
             {columns.map((column) => (
-              <th key={column}>{column}</th>
+              <th key={column} scope="col">{column}</th>
             ))}
           </tr>
         </thead>

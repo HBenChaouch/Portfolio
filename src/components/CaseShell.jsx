@@ -120,13 +120,15 @@ export default function CaseShell() {
 
   return (
     <div className="case-shell">
-      <aside className="case-sidebar">
-        <Link className="workspace" to="/">Workspace</Link>
+      <a className="skip-link" href="#main-content">Skip to analysis</a>
+      <aside className="case-sidebar" aria-label="Sidetrade project navigation">
+        <Link className="workspace" to="/">← Portfolio</Link>
+        <span className="project-switcher-label">Choisir un projet</span>
         <div className="sidebar-brand">
           <span>Sidetrade · Valuation</span>
           <small>ALBFR.PA</small>
         </div>
-        <nav className="sidebar-nav" aria-label="Case navigation">
+        <nav className="sidebar-nav" aria-label="Sidetrade sections">
           {sidebarGroups.map((group, index) => (
             <div className="sidebar-group" key={group.label}>
               <div className="sidebar-group-title">{group.label}</div>
@@ -150,6 +152,7 @@ export default function CaseShell() {
 
                 return (
                   <a
+                    aria-current={isAnalysis && activeAnchor === item.hash ? "location" : undefined}
                     className={[
                       "sidebar-entry",
                       isAnalysis && activeAnchor === item.hash ? "active" : "",
@@ -171,7 +174,7 @@ export default function CaseShell() {
           <span>Last saved {lastSaved}</span>
         </div>
       </aside>
-      <main className="case-main">
+      <main className="case-main" id="main-content" tabIndex="-1">
         <header className="case-control-bar">
           <div className="control-title">
             <span>Sidetrade · Valuation</span>
@@ -182,6 +185,7 @@ export default function CaseShell() {
             <div className="scenario-segment" role="group" aria-label="Scenario">
               {scenarioControls.map((scenario) => (
                 <button
+                  aria-pressed={activeScenario === scenario.id}
                   className={activeScenario === scenario.id ? "active" : ""}
                   key={scenario.id}
                   onClick={() => setActiveScenario(scenario.id)}
@@ -192,9 +196,7 @@ export default function CaseShell() {
                 </button>
               ))}
             </div>
-            <button className="control-button" type="button">€ ▾</button>
             <span className="control-date">09 May 2025</span>
-            <button className="control-menu" type="button" aria-label="More options">...</button>
           </div>
         </header>
         <Outlet />

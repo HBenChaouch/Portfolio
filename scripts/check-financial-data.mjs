@@ -77,15 +77,16 @@ assert.deepEqual(
   Object.fromEntries(Object.entries(SCENARIOS).map(([id, scenario]) => [id, {
     margin2030: scenario.ebitdaMargin2030,
     taxRate: scenario.taxRate,
+    daPct: scenario.daPct,
     capexPct: scenario.capexPct,
     wcPct: scenario.wcPct,
     wacc: scenario.wacc,
     g: scenario.g,
   }])),
   {
-    bear: { margin2030: 0.26, taxRate: 0.25, capexPct: 0.03, wcPct: 0.10, wacc: 0.105, g: 0.02 },
-    base: { margin2030: 0.32, taxRate: 0.22, capexPct: 0.027, wcPct: 0.07, wacc: 0.095, g: 0.025 },
-    bull: { margin2030: 0.35, taxRate: 0.20, capexPct: 0.025, wcPct: 0.05, wacc: 0.085, g: 0.03 },
+    bear: { margin2030: 0.26, taxRate: 0.25, daPct: 0.02, capexPct: 0.03, wcPct: 0.10, wacc: 0.105, g: 0.02 },
+    base: { margin2030: 0.32, taxRate: 0.22, daPct: 0.02, capexPct: 0.027, wcPct: 0.07, wacc: 0.095, g: 0.025 },
+    bull: { margin2030: 0.35, taxRate: 0.20, daPct: 0.02, capexPct: 0.025, wcPct: 0.05, wacc: 0.085, g: 0.03 },
   }
 );
 

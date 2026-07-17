@@ -7,7 +7,9 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "test:financial": "node scripts/check-financial-data.mjs"
+    "test:financial": "node scripts/check-financial-data.mjs",
+    "test:workbook": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/check-workbook.ps1",
+    "test:audit": "npm run test:financial && npm run test:workbook"
   },
   "dependencies": {
     "@vitejs/plugin-react": "^5.0.0",

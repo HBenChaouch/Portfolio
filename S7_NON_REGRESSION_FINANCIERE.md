@@ -57,15 +57,19 @@ La commande `npm.cmd run test:financial` couvre :
 - les principales sentinelles LBO ;
 - la tolérance de rapprochement DCF site / Excel.
 
-Le contrôle workbook en lecture seule couvre `Checks`, `Inputs`, `DCF`,
-`Sensitivity`, `Margin_path`, `Trading_comps`, `Transaction_comps`, `LBO_full`,
-`Football_field`, `Equity_bridge` et `FY25_base`, ainsi qu’une recherche des
-erreurs Excel usuelles.
+La commande `npm.cmd run test:workbook` ouvre directement le workbook en lecture
+seule, vérifie son SHA-256 canonique, les 14 statuts et le statut global, puis
+contrôle 26 cellules sentinelles dans `DCF`, `Sensitivity`, `Margin_path`,
+`Football_field`, `Equity_bridge` et `FY25_base`. La recherche des erreurs Excel
+usuelles parcourt toutes les feuilles. `npm.cmd run test:audit` enchaîne les deux
+contrôles depuis les seuls fichiers versionnés du dépôt.
 
 ## Commandes reproductibles
 
 ```powershell
 npm.cmd run test:financial
+npm.cmd run test:workbook
+npm.cmd run test:audit
 npm.cmd run build
 & 'C:\Users\Abbah\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\python.exe' 'lbo_engine.py'
 Get-FileHash -Algorithm SHA256 -LiteralPath 'Sidetrade_Valuation_2026_v2.xlsx'

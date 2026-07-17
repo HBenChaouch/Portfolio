@@ -395,7 +395,7 @@ function WaterfallBridge({ activeScenario }) {
         <text className="wf-label" x={bar2X + barW / 2} y={equityTop - 30} textAnchor="middle">Equity Value</text>
         <text className="wf-value accent" x={bar2X + barW / 2} y={equityTop - 10} textAnchor="middle">{fmtM(bridge.equity)}</text>
         <text className="wf-sub" x={bar1X + barW / 2} y={baseline + 20} textAnchor="middle">EV · DCF + comps central case</text>
-        <text className="wf-sub" x={bar2X + barW / 2} y={baseline + 20} textAnchor="middle">{fmtM(NET_DEBT.grossFinancialDebt, 1)} debt − {fmtM(NET_DEBT.cash + NET_DEBT.marketableSecurities, 1)} cash = {fmtM(NET_DEBT.strict, 1)} net debt</text>
+        <text className="wf-sub" x={bar2X + barW / 2} y={baseline + 20} textAnchor="middle">{fmtM(DISPLAY_VALUES.grossFinancialDebt, 1)} debt − {fmtM(DISPLAY_VALUES.cashAndMarketableSecurities, 1)} cash = {fmtM(NET_DEBT.strict, 1)} net debt</text>
         <line x1="600" x2="600" y1="50" y2="240" stroke="var(--line)" strokeWidth="1" strokeDasharray="2 4" />
         <path className="wf-arrow" d="M 620 145 L 700 145" />
         <path className="wf-arrow" d="M 692 139 L 702 145 L 692 151" />
@@ -611,15 +611,15 @@ export default function AnalysisView() {
             <div className="cell"><div className="k">Current share price</div><div className="v">€{VALUATION_CONTEXT.sharePriceRef.toFixed(2)}</div></div>
             <div className="cell"><div className="k">Market cap</div><div className="v">{fmtM(VALUATION_CONTEXT.marketCap)}</div></div>
             <div className="cell"><div className="k">Implied EV</div><div className="v">{fmtM(VALUATION_CONTEXT.marketEv)}</div></div>
-            <div className="cell"><div className="k">Upside to fair value ({fmtM(VALUATION_CONTEXT.fairValueEv)} EV, DCF)</div><div className="v upside">+{((VALUATION_CONTEXT.fairValueEv / VALUATION_CONTEXT.marketEv - 1) * 100).toFixed(0)}%</div></div>
-            <div className="cell"><div className="k">Upside to control case ({fmtM(VALUATION_CONTEXT.controlEv)} EV)</div><div className="v upside">+{((VALUATION_CONTEXT.controlEv / VALUATION_CONTEXT.marketEv - 1) * 100).toFixed(0)}%</div></div>
+            <div className="cell"><div className="k">Upside to fair value ({fmtM(VALUATION_CONTEXT.fairValueEv)} EV, DCF)</div><div className="v upside">+{(VALUATION_CONTEXT.fairValueEquityUpside * 100).toFixed(0)}%</div></div>
+            <div className="cell"><div className="k">Upside to control case ({fmtM(VALUATION_CONTEXT.controlEv)} EV)</div><div className="v upside">+{(VALUATION_CONTEXT.controlEquityUpside * 100).toFixed(0)}%</div></div>
           </div>
           <p className="note">The dotted vertical line on the football field below mirrors the current market reference. Market reference filled as of {VALUATION_DATES.marketMedium}: €{VALUATION_CONTEXT.sharePriceRef.toFixed(2)}/share × {(FY25.dilutedShares / 1_000_000).toFixed(3)}m diluted shares + {fmtM(NET_DEBT.strict, 1)} strict net debt ≈ {fmtM(VALUATION_CONTEXT.marketEv)} EV.</p>
         </div>
       </section>
 
       <section className="block" id="dcf">
-        <div className="sec-head"><div className="left"><div className="num-tag">04 — DCF · Bear / Base / Bull</div><h2>Switch the scenario to recompose the model live</h2></div><div className="right">Assumptions, end-state and narrative all update in step. The football field DCF bar follows.</div></div>
+        <div className="sec-head"><div className="left"><div className="num-tag">04 — DCF · Bear / Base / Bull</div><h2>Switch the scenario to recompose the model live</h2></div><div className="right">Assumptions, end-state and narrative all update in step. The football field DCF bar follows. <strong>{SOURCES.engine.status}</strong>.</div></div>
         <ScenarioCards activeScenario={activeScenario} scenarioResults={scenarioResults} setActiveScenario={setActiveScenario} />
         <TrajectoryChart activeScenario={activeScenario} />
         <div className="result-strip" style={{ marginTop: 24 }}>

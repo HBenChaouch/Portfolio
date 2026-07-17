@@ -51,6 +51,10 @@ export const SOURCES = Object.freeze({
     label: "Public-data QoE bridge",
     status: SOURCE_STATUS.INTERNAL_ESTIMATE,
   },
+  engine: {
+    label: "DCF and LBO outputs",
+    status: SOURCE_STATUS.ENGINE_DERIVED,
+  },
 });
 
 // DCF anchors deliberately retain the audited engine precision. Reported values
@@ -125,11 +129,17 @@ export const SCENARIOS = Object.freeze({
 const sharePriceRef = 174;
 const marketCap = (sharePriceRef * FY25.dilutedShares) / 1_000_000;
 const marketEv = marketCap + NET_DEBT.strict;
+const fairValueEv = 301;
+const controlEv = 410;
+const fairValueEquityUpside = (fairValueEv - NET_DEBT.strict) / marketCap - 1;
+const controlEquityUpside = (controlEv - NET_DEBT.strict) / marketCap - 1;
 
 export const VALUATION_CONTEXT = Object.freeze({
   subscriptionRevenue: FY25.subscriptionRevenue,
-  fairValueEv: 301,
-  controlEv: 410,
+  fairValueEv,
+  controlEv,
+  fairValueEquityUpside,
+  controlEquityUpside,
   sharePriceRef,
   marketCap,
   marketEv,

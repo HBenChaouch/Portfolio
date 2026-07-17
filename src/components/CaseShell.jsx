@@ -6,10 +6,12 @@ const analysisBase = "/cases/sidetrade-valuation/analysis";
 
 const sidebarGroups = [
   {
-    label: "Overview",
+    label: "Investment case",
     items: [
-      { title: "Company snapshot", hash: "snapshot" },
-      { title: "Market sanity check", hash: "market" },
+      { title: "Executive view", hash: "executive" },
+      { title: "Company & revenue", hash: "snapshot" },
+      { title: "Quality of Earnings", hash: "qoe" },
+      { title: "Market reference", hash: "market" },
     ],
   },
   {
@@ -25,16 +27,18 @@ const sidebarGroups = [
     label: "Synthesis",
     items: [
       { title: "Football field", hash: "football" },
-      { title: "Caveats & limits", hash: "caveats" },
+      { title: "EV → Equity → Share", hash: "equity-bridge" },
+      { title: "Conclusions", hash: "conclusions" },
     ],
   },
   {
-  label: "Reference",
-  items: [
-    { title: "Methodology", hash: "methodology" },
-    { title: "Sources", hash: "sources" },
-  ],
-},
+    label: "Audit trail",
+    items: [
+      { title: "Red flags & limits", hash: "red-flags" },
+      { title: "Methodology", hash: "methodology" },
+      { title: "Sources", hash: "sources" },
+    ],
+  },
 ];
 
 const pageTitles = {
@@ -99,7 +103,7 @@ export default function CaseShell() {
           .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
         if (visible?.target?.id) setActiveAnchor(visible.target.id);
       },
-      { rootMargin: "-12% 0px -82% 0px", threshold: 0 }
+      { rootMargin: "-12% 0px -68% 0px", threshold: 0 }
     );
 
     anchorIds.forEach((id) => {

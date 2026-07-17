@@ -410,7 +410,7 @@ export default function AnalysisView() {
 
   return (
     <article className="analysis-view">
-      <header className="hero">
+      <header className="hero" id="executive">
         <div className="meta">
           <span className="dot" />
           <span>Independent valuation model · v1.0</span>
@@ -427,6 +427,12 @@ export default function AnalysisView() {
           <div className="cell"><div className="k">EBITDA margin</div><div className="v">22%</div><div className="d">€13.4m · +22% YoY</div></div>
           <div className="cell"><div className="k">Net cash position</div><div className="v">€14.7m</div><div className="d">Net debt strict · ~€1.5B coverage capacity</div></div>
         </div>
+        <nav className="desktop-chapter-index" aria-label="Sidetrade analysis chapters">
+          <a href="#snapshot"><span>01</span>Investment case</a>
+          <a href="#dcf"><span>02</span>Valuation</a>
+          <a href="#football"><span>03</span>Synthesis</a>
+          <a href="#red-flags"><span>04</span>Audit trail</a>
+        </nav>
       </header>
 
       <section className="block tight" id="snapshot">
@@ -513,8 +519,38 @@ export default function AnalysisView() {
         </div>
       </section>
 
+      <section className="block qoe-block" id="qoe">
+        <div className="sec-head">
+          <div className="left"><div className="num-tag">02 — Quality of Earnings</div><h2>Good recurring revenue, with a material CIR dependency to underwrite</h2></div>
+          <div className="right">Public-data QoE bridge. Estimated adjustments remain explicitly marked and require confirmation in a data room.</div>
+        </div>
+        <div className="qoe-layout">
+          <div className="qoe-bridge" aria-label="EBITDA quality of earnings bridge">
+            <div className="qoe-node primary"><span>Published EBITDA</span><strong>€13.4m</strong><small>including CIR</small></div>
+            <div className="qoe-connector"><span>− €3.5m</span><small>CIR</small></div>
+            <div className="qoe-node"><span>Published ex-CIR</span><strong>≈€9.9m</strong><small>reported basis</small></div>
+            <div className="qoe-connector positive"><span>+ €0.8m e</span><small>QoE adjustments</small></div>
+            <div className="qoe-node adjusted"><span>Adjusted ex-CIR</span><strong>≈€10.7m</strong><small>estimated</small></div>
+          </div>
+          <aside className="qoe-readout">
+            <p className="mono-k">Adjusted earnings reference</p>
+            <strong>≈€14.2m</strong>
+            <span>Adjusted EBITDA including CIR</span>
+            <p>Pro forma adjusted EBITDA including CIR is estimated at <strong>€13.7–14.7m</strong>, subject to integration evidence and data-room confirmation.</p>
+          </aside>
+        </div>
+        <div className="qoe-evidence-grid">
+          <div><span>Revenue quality</span><strong>87%</strong><p>Subscription mix, with 92% subscription gross margin.</p></div>
+          <div><span>OCF communicated</span><strong>€8.7m</strong><p>Excluding the timing impact of the Research Tax Credit.</p></div>
+          <div><span>FCF statutory</span><strong>€4.216m</strong><p>Cash conversion after reported CIR timing pressure.</p></div>
+          <div><span>FCF normalised</span><strong>€7.163m</strong><p>Timing-normalised view used as the economic cash lens.</p></div>
+        </div>
+        <div className="qoe-flags"><strong>Underwrite before signing</strong><span>CIR eligibility and reimbursement timing</span><span>ezyCollect / SHS Viveon pro forma integration</span><span>Normalised tax and working-capital evidence</span></div>
+        <p className="qoe-source">Source: audited QoE note and canonical workbook. No new financial definition introduced in S3; “e” denotes an estimate to confirm.</p>
+      </section>
+
       <section className="block" id="market">
-        <div className="sec-head"><div className="left"><div className="num-tag">02 — Market sanity check</div><h2>Theoretical valuation vs current listed price</h2></div><div className="right">The only data point on this page that decays fast. To be refreshed immediately before any external distribution.</div></div>
+        <div className="sec-head"><div className="left"><div className="num-tag">03 — Market sanity check</div><h2>Theoretical valuation vs current listed price</h2></div><div className="right">The only data point on this page that decays fast. To be refreshed immediately before any external distribution.</div></div>
         <div className="market-card">
           <div className="meta-row"><span className="placeholder-flag">As of 15 Jul 2026</span><span>Market data as of <strong>15 July 2026</strong></span></div>
           <div className="grid">
@@ -529,7 +565,7 @@ export default function AnalysisView() {
       </section>
 
       <section className="block" id="dcf">
-        <div className="sec-head"><div className="left"><div className="num-tag">03 — DCF · Bear / Base / Bull</div><h2>Switch the scenario to recompose the model live</h2></div><div className="right">Assumptions, end-state and narrative all update in step. The football field DCF bar follows.</div></div>
+        <div className="sec-head"><div className="left"><div className="num-tag">04 — DCF · Bear / Base / Bull</div><h2>Switch the scenario to recompose the model live</h2></div><div className="right">Assumptions, end-state and narrative all update in step. The football field DCF bar follows.</div></div>
         <ScenarioCards activeScenario={activeScenario} scenarioResults={scenarioResults} setActiveScenario={setActiveScenario} />
         <TrajectoryChart activeScenario={activeScenario} />
         <div className="result-strip" style={{ marginTop: 24 }}>
@@ -577,7 +613,7 @@ FCF  = EBIT × (1 − tax) + D&A − Capex − ΔWC`}</pre><ol><li><strong>Econo
       </section>
 
       <section className="block" id="trading">
-        <div className="sec-head"><div className="left"><div className="num-tag">04 — Trading comps</div><h2>Market value, stand-alone</h2></div><div className="right">Listed B2B SaaS with comparable subscription mix, double-digit EBITDA margins, and CFO-office exposure. Hover any row for rationale.</div></div>
+        <div className="sec-head"><div className="left"><div className="num-tag">05 — Trading comps</div><h2>Market value, stand-alone</h2></div><div className="right">Listed B2B SaaS with comparable subscription mix, double-digit EBITDA margins, and CFO-office exposure. Hover any row for rationale.</div></div>
         <table className="data">
           <thead><tr><th>Peer</th><th>Why comparable</th><th className="num">EV / Sales (indicative)</th><th>Geo</th></tr></thead>
           <tbody>
@@ -599,7 +635,7 @@ FCF  = EBIT × (1 − tax) + D&A − Capex − ΔWC`}</pre><ol><li><strong>Econo
       </section>
 
       <section className="block" id="transaction">
-        <div className="sec-head"><div className="left"><div className="num-tag">05 — Transaction comps</div><h2>Control value · what a buyer has actually paid</h2></div><div className="right">Forward FY1e multiples on Office-of-CFO / O2C / finance automation precedents. Hover any row for context.</div></div>
+        <div className="sec-head"><div className="left"><div className="num-tag">06 — Transaction comps</div><h2>Control value · what a buyer has actually paid</h2></div><div className="right">Forward FY1e multiples on Office-of-CFO / O2C / finance automation precedents. Hover any row for context.</div></div>
         <table className="data">
           <thead><tr><th>Target</th><th>Buyer</th><th>Date</th><th className="num">EV / Sales FY1e</th><th className="num">EV / EBITDA FY1e</th></tr></thead>
           <tbody>
@@ -621,25 +657,26 @@ FCF  = EBIT × (1 − tax) + D&A − Capex − ΔWC`}</pre><ol><li><strong>Econo
       </section>
 
       <section className="block" id="lbo">
-        <div className="sec-head"><div className="left"><div className="num-tag">06 — LBO</div><h2>Sponsor affordability · what a PE could pay for a 20–25% IRR</h2></div><div className="right">Not a fundamental fair value — an affordability test that frames the sponsor pricing logic.</div></div>
+        <div className="sec-head"><div className="left"><div className="num-tag">07 — LBO</div><h2>Sponsor affordability · what a PE could pay for a 20–25% IRR</h2></div><div className="right">Not a fundamental fair value — an affordability test that frames the sponsor pricing logic.</div></div>
         <div className="twoup"><div><h3>Base case assumptions</h3><table className="data" style={{ marginTop: 10 }}><tbody><tr><td className="label">Entry EV (Base affordability)</td><td className="num strong">€241.9m</td></tr><tr><td className="label">EBITDA 2025</td><td className="num">€13.4m</td></tr><tr><td className="label">Acquisition debt (4.0x EBITDA)</td><td className="num">~€53.5m</td></tr><tr><td className="label">Sponsor equity</td><td className="num">~€179m (after ~€28m founder rollover)</td></tr><tr><td className="label">Holding period</td><td className="num">5 years</td></tr><tr><td className="label">Interest rate</td><td className="num">~7.2% all-in (E3M + 479bps)</td></tr><tr><td className="label">Cash sweep</td><td className="num">75% of excess FCF + 1% mandatory amort.</td></tr><tr><td className="label">Exit EBITDA 2030 (Base)</td><td className="num">€36.2m</td></tr><tr><td className="label">Exit multiple (Base)</td><td className="num">15.0x EBITDA</td></tr><tr className="total"><td>Target IRR (Base)</td><td className="num">~22.5%</td></tr></tbody></table><p style={{ fontSize: 12.5, color: "var(--ink-3)", marginTop: 12 }}><strong>On leverage:</strong> the existing covenant (Net debt / EBITDA &lt; 2.5x on the BNP/LCL loans tied to ezyCollect) does not constrain a future LBO — in a PE take-control, existing debt is refinanced inside a new package. The 4.0x reflects sensible LBO capacity for a profitable SaaS, not the current balance sheet.</p></div><div><h3>Range</h3><div className="result-strip three" style={{ marginTop: 10 }}><div className="cell"><div className="k">Low</div><div className="v">€222.5m</div><div className="d">IRR target 25%</div></div><div className="cell"><div className="k">Base</div><div className="v accent">€241.9m</div><div className="d">IRR target 22.5%</div></div><div className="cell"><div className="k">High</div><div className="v">€283.5m</div><div className="d">IRR target 18%</div></div></div><p style={{ fontSize: 13, color: "var(--ink-3)", marginTop: 14 }}>Low/High swing driven by the sponsor IRR hurdle (25% Low → 18% High) at a fixed 15x exit. Base affordability (~€242m) sits ~20% below the DCF (€301m): at a 22.5% hurdle a sponsor cannot outbid intrinsic value — consistent with take-privates requiring a control premium. Engine-solved (lbo_engine.py, CIR single-count fixed 15 Jul 2026). Use as <strong>sponsor affordability test</strong>, not fundamental fair value.</p></div></div>
         <details className="method"><summary>How we built it · methodology</summary><div className="body"><p>The LBO is solved for entry EV given target sponsor IRR, holding period, leverage, interest, exit EBITDA and exit multiple. Two levers drive most of the range: the IRR floor a sponsor will accept, and the exit multiple — which itself depends on the operating delivery of the holding period.</p><p className="src">Exit sensitivity range checked against WACC × exit multiple outputs: {fmtM(waccExit.flat()[0])} to {fmtM(waccExit.flat().at(-1))}.</p></div></details>
       </section>
 
       <section className="block" id="football">
-        <div className="sec-head"><div className="left"><div className="num-tag">07 — Football field</div><h2>Four methods, one view</h2></div><div className="right">Scroll back up to switch DCF scenario — the DCF bar below recomposes live.</div></div>
+        <div className="sec-head"><div className="left"><div className="num-tag">08 — Football field</div><h2>Four methods, one view</h2></div><div className="right">Scroll back up to switch DCF scenario — the DCF bar below recomposes live.</div></div>
         <FootballField activeScenario={activeScenario} scenarioResults={scenarioResults} />
         <div className="grid-3" style={{ marginTop: 24 }}>
           <div className="card" style={{ borderTop: "3px solid var(--bordeaux)" }}><div className="mono-k" style={{ color: "var(--bordeaux)" }}>Stand-alone fair value</div><div className="big-card-value">€301m EV</div><p style={{ fontSize: 13, color: "var(--ink-2)", margin: 0 }}>DCF Gordon Growth central value — ~7% above the quoted market EV (~€282m at €174/share, 15 Jul 2026). The reference number.</p></div>
           <div className="card" style={{ borderTop: "3px solid var(--bull)" }}><div className="mono-k" style={{ color: "var(--bull)" }}>Control case</div><div className="big-card-value">€410m EV</div><p style={{ fontSize: 13, color: "var(--ink-2)", margin: 0 }}>Convergence with transaction precedents. ~40% control premium embedded.</p></div>
           <div className="card" style={{ borderTop: "3px solid var(--market)" }}><div className="mono-k" style={{ color: "var(--market)" }}>Implied share price · Base</div><div className="big-card-value">~€186</div><p style={{ fontSize: 13, color: "var(--ink-2)", margin: 0 }}>(€301m − €14.7m net debt) / 1.537m diluted shares = ~€186 / share.</p></div>
         </div>
-        <div style={{ marginTop: 32 }}><h3>Bridge · EV → Equity → Share price</h3><WaterfallBridge activeScenario={activeScenario} /><p style={{ marginTop: 18, fontSize: 14, lineHeight: 1.6, color: "var(--ink-2)", maxWidth: 820 }}><strong>Stand-alone range:</strong> €171m – €497m EV → ~€102–€314 / share. <br /><strong>Extended range (incl. M&amp;A / LBO):</strong> €171m – €547m EV → ~€102–€346 / share.</p></div>
-        <div style={{ marginTop: 32, padding: "28px 32px", background: "var(--bg-card)", border: "1px solid var(--line)", borderLeft: "4px solid var(--bordeaux)" }}><div className="mono-k" style={{ color: "var(--bordeaux)", marginBottom: 10 }}>Strategic read</div><p style={{ fontSize: 15.5, lineHeight: 1.6, color: "var(--ink)", margin: 0 }}>Sidetrade shows a clean financial profile: profitable O2C SaaS, dominant subscription mix (87%), premium subscription gross margin (92%), solid 22% EBITDA already, with operating leverage still ramping. The O2C Intelligence 2030 plan (30–35% EBITDA target) supports the DCF Base case trajectory.</p><p style={{ fontSize: 15.5, lineHeight: 1.6, color: "var(--ink)", margin: "14px 0 0" }}>Stand-alone central value <strong style={{ color: "var(--bordeaux)" }}>~€301m EV (DCF)</strong> — ~7% above the quoted market EV (~€282m at €174/share, 15 Jul 2026) — places Sidetrade in a defensible zone around €185 / share. The control case <strong style={{ color: "var(--bull)" }}>~€410m EV</strong> reflects a real M&amp;A optionality — ideal target profile for a European strategic consolidator or a mid-market PE sponsor, in line with the Esker / Bridgepoint–General Atlantic precedent.</p><p style={{ fontSize: 13.5, lineHeight: 1.55, color: "var(--ink-3)", fontStyle: "italic", margin: "18px 0 0", maxWidth: 820 }}>Sidetrade's stand-alone value centres on ~€301m EV (DCF), ~7% above the quoted market EV; derated US trading comps (€171–264m) act as a sentiment floor and LBO affordability (~€242m at a 22.5% hurdle) frames sponsor capacity. Transaction precedents suggest a control valuation closer to ~€410m EV, reflecting strategic scarcity in Office-of-CFO / Order-to-Cash software.</p></div>
+        <div className="equity-bridge-section" id="equity-bridge"><div className="section-kicker">EV → Equity → Share price</div><h3>From enterprise value to the shareholder outcome</h3><WaterfallBridge activeScenario={activeScenario} /><p><strong>Stand-alone range:</strong> €171m – €497m EV → ~€102–€314 / share. <br /><strong>Extended range (incl. M&amp;A / LBO):</strong> €171m – €547m EV → ~€102–€346 / share.</p></div>
+        <div className="conclusion-panel" id="conclusions"><div className="mono-k">Investment committee conclusion</div><h3>Quality supports the stand-alone case; control value remains the strategic upside.</h3><div className="conclusion-grid"><p>Sidetrade combines a profitable O2C SaaS profile, 87% subscription mix, 92% subscription gross margin and a documented path toward 30–35% EBITDA margin.</p><p>Stand-alone value centres on <strong>~€301m EV</strong>, around <strong>€186 per share</strong>, while derated public peers and sponsor affordability frame the downside.</p><p>Transaction precedents support a control case near <strong>~€410m EV</strong>, subject to CIR diligence, integration delivery and a refreshed market reference.</p></div></div>
       </section>
 
-      <section className="block" id="caveats">
-        <div className="sec-head"><div className="left"><div className="num-tag">08 — Caveats &amp; limits</div><h2>What this model is not</h2></div><div className="right">Independent v1.0 model built from public data only. Not a research recommendation.</div></div>
+      <section className="block" id="red-flags">
+        <span className="anchor-alias" id="caveats" aria-hidden="true" />
+        <div className="sec-head"><div className="left"><div className="num-tag">09 — Red flags &amp; limits</div><h2>What must be diligenced — and what this model is not</h2></div><div className="right">Independent v1.0 model built from public data only. Not a research recommendation.</div></div>
         <div className="caveats"><div><h3>Methodological</h3><ul><li>Independent v0 model built from public data only (FY25 statutory + press release + O2C Intelligence 2030 plan + public market data).</li><li>Trading multiples are sensitive to market window — refresh before publication if market conditions shift.</li><li>CIR treated as recurring cash (statutory mechanism; subject to tax-audit and timing risk — not economically guaranteed). Statutory view available as alternative for transparency.</li><li>ezyCollect / SHS Viveon margins still converging through 2026–2028 — Base case assumes partial integration. Multi-acquisition execution risk acknowledged.</li><li>Transaction comps embed a ~40% control premium — not directly comparable to a stand-alone fair value.</li><li>LBO is an affordability test, not a fundamental fair value.</li><li>D&amp;A used (2.0% of revenue) is an economic proxy, distinct from French accounting D&amp;A which includes receivable and operating provisions.</li><li>Treasury shares (€20.6m market value) not included in the equity bridge — treated as optionality, value depends on spot price.</li></ul></div><div><h3>Accounting specifics</h3><ul><li><strong>Gross margin reconstruction.</strong> <em>Gross margin is taken from Sidetrade's FY25 investor communication. It cannot be perfectly reconstructed from the French statutory P&amp;L alone because expenses are presented by nature, not by function.</em> The 77% / 81% LFL / 92% subscription figures come from the press release, not the statutory ANC.</li><li><strong>ezyCollect PPA pending.</strong> <em>ezyCollect PPA still pending until 31 Dec 2026. Future allocation from goodwill to customer relationships could increase amortization and affect EBIT, while leaving EBITDA broadly unaffected.</em> Part of the €38m goodwill may be reclassified as 20-year-amortisable customer relations after the allocation due end-2026. EBIT-impacting, EBITDA-neutral.</li><li><strong>Headcount discrepancy.</strong> 406 employees per statutory accounts at 31 December 2025 vs ~450 per corporate communication. The gap can reflect contractors, recent joiners not yet booked, or a rounded comms figure. Noted without dramatising.</li></ul></div></div>
       </section>
 

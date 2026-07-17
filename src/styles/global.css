@@ -4122,3 +4122,336 @@ a {
     display: block;
   }
 }
+
+/* === S3 SIDETRADE DESKTOP === */
+
+.analysis-view #executive,
+.analysis-view .equity-bridge-section,
+.analysis-view .conclusion-panel,
+.analysis-view .anchor-alias {
+  scroll-margin-top: 104px;
+}
+
+.desktop-chapter-index {
+  border-bottom: 1px solid var(--line-strong);
+  border-top: 1px solid var(--line-strong);
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  margin-top: var(--space-7);
+}
+
+.desktop-chapter-index a {
+  align-items: center;
+  color: var(--ink-2);
+  display: flex;
+  font-family: var(--serif);
+  font-size: 16px;
+  gap: 12px;
+  min-height: 58px;
+  padding: 0 16px;
+}
+
+.desktop-chapter-index a + a {
+  border-left: 1px solid var(--line);
+}
+
+.desktop-chapter-index a:hover {
+  background: var(--bg-alt);
+  color: var(--bordeaux);
+}
+
+.desktop-chapter-index span,
+.section-kicker {
+  color: var(--bordeaux);
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.qoe-block {
+  position: relative;
+}
+
+.qoe-layout {
+  align-items: stretch;
+  display: grid;
+  gap: var(--space-6);
+  grid-template-columns: minmax(0, 1.8fr) minmax(240px, 0.7fr);
+}
+
+.qoe-bridge {
+  align-items: stretch;
+  border-bottom: 1px solid var(--line-strong);
+  border-top: 1px solid var(--line-strong);
+  display: grid;
+  grid-template-columns:
+    minmax(0, 1.1fr)
+    minmax(0, 0.66fr)
+    minmax(0, 1fr)
+    minmax(0, 0.72fr)
+    minmax(0, 1fr);
+}
+
+.qoe-node,
+.qoe-connector {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-height: 154px;
+  min-width: 0;
+  padding: var(--space-5);
+}
+
+.qoe-node + .qoe-connector,
+.qoe-connector + .qoe-node {
+  border-left: 1px solid var(--line);
+}
+
+.qoe-node span,
+.qoe-connector small,
+.qoe-evidence-grid span {
+  color: var(--ink-3);
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+}
+
+.qoe-node strong,
+.qoe-connector span,
+.qoe-readout > strong,
+.qoe-evidence-grid strong {
+  color: var(--ink);
+  display: block;
+  font-family: var(--serif);
+  font-size: clamp(27px, 2.4vw, 38px);
+  font-weight: 500;
+  line-height: 1;
+  margin: 10px 0 8px;
+}
+
+.qoe-node small {
+  color: var(--ink-4);
+  font-size: 11px;
+}
+
+.qoe-node.primary strong,
+.qoe-node.adjusted strong,
+.qoe-connector.positive span {
+  color: var(--bordeaux);
+}
+
+.qoe-connector {
+  background: var(--bg-alt);
+  text-align: center;
+}
+
+.qoe-connector span {
+  font-size: 19px;
+}
+
+.qoe-readout {
+  background: var(--ink);
+  color: var(--bg);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: var(--space-6);
+}
+
+.qoe-readout .mono-k,
+.qoe-readout > span {
+  color: rgba(250, 247, 242, 0.66);
+}
+
+.qoe-readout > strong {
+  color: var(--bg);
+  font-size: 48px;
+}
+
+.qoe-readout > p:last-child {
+  color: rgba(250, 247, 242, 0.82);
+  font-size: 12.5px;
+  line-height: 1.55;
+  margin-top: var(--space-5);
+}
+
+.qoe-readout > p:last-child strong {
+  color: var(--bg);
+}
+
+.qoe-evidence-grid {
+  border-bottom: 1px solid var(--line-strong);
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  margin-top: var(--space-6);
+}
+
+.qoe-evidence-grid > div {
+  min-width: 0;
+  padding: var(--space-5);
+}
+
+.qoe-evidence-grid > div + div {
+  border-left: 1px solid var(--line);
+}
+
+.qoe-evidence-grid strong {
+  font-size: 29px;
+}
+
+.qoe-evidence-grid p {
+  color: var(--ink-3);
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.qoe-flags {
+  align-items: center;
+  border-bottom: 1px solid var(--line);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 24px;
+  padding: var(--space-5) 0;
+}
+
+.qoe-flags strong {
+  color: var(--bordeaux);
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.qoe-flags span {
+  color: var(--ink-2);
+  font-size: 12.5px;
+}
+
+.qoe-flags span::before {
+  color: var(--bordeaux);
+  content: "—";
+  margin-right: 8px;
+}
+
+.qoe-source {
+  color: var(--ink-4);
+  font-size: 11.5px;
+  font-style: italic;
+  margin-top: var(--space-3);
+}
+
+.equity-bridge-section {
+  border-top: 1px solid var(--line-strong);
+  margin-top: var(--space-7);
+  padding-top: var(--space-6);
+}
+
+.equity-bridge-section h3,
+.conclusion-panel h3 {
+  font-size: clamp(27px, 3vw, 42px);
+  margin-top: var(--space-2);
+}
+
+.equity-bridge-section > p {
+  color: var(--ink-2);
+  font-size: 14px;
+  line-height: 1.6;
+  margin-top: var(--space-4);
+  max-width: 820px;
+}
+
+.conclusion-panel {
+  background: var(--bg-alt);
+  border-bottom: 1px solid var(--line-strong);
+  border-top: 4px solid var(--bordeaux);
+  margin-top: var(--space-7);
+  padding: var(--space-6);
+}
+
+.conclusion-panel > .mono-k {
+  color: var(--bordeaux);
+}
+
+.conclusion-grid {
+  border-top: 1px solid var(--line-strong);
+  display: grid;
+  gap: 0;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  margin-top: var(--space-5);
+  padding-top: var(--space-5);
+}
+
+.conclusion-grid p {
+  color: var(--ink-2);
+  font-size: 14px;
+  line-height: 1.65;
+  padding-right: var(--space-5);
+}
+
+.conclusion-grid p + p {
+  border-left: 1px solid var(--line-strong);
+  padding-left: var(--space-5);
+}
+
+.anchor-alias {
+  display: block;
+  height: 0;
+  position: relative;
+  top: -96px;
+}
+
+@media (min-width: 901px) {
+  .case-sidebar {
+    width: 264px;
+  }
+
+  .case-main {
+    margin-left: 264px;
+    padding-left: clamp(32px, 3.2vw, 52px);
+    padding-right: clamp(32px, 3.2vw, 52px);
+  }
+
+  .sidebar-entry {
+    min-height: 31px;
+  }
+
+  .analysis-view .hero {
+    min-height: calc(100vh - 76px);
+  }
+}
+
+@media (max-width: 900px) {
+  .desktop-chapter-index {
+    display: none;
+  }
+
+  .qoe-layout,
+  .qoe-evidence-grid,
+  .conclusion-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .qoe-bridge {
+    grid-template-columns: 1fr;
+  }
+
+  .qoe-node + .qoe-connector,
+  .qoe-connector + .qoe-node,
+  .qoe-evidence-grid > div + div,
+  .conclusion-grid p + p {
+    border-left: 0;
+    border-top: 1px solid var(--line);
+  }
+
+  .qoe-node,
+  .qoe-connector {
+    min-height: 112px;
+  }
+
+  .conclusion-grid p,
+  .conclusion-grid p + p {
+    padding: var(--space-4) 0;
+  }
+}

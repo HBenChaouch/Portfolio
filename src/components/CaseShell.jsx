@@ -77,6 +77,7 @@ export default function CaseShell() {
   const location = useLocation();
   const { activeScenario, setActiveScenario } = useSidetradeScenario();
   const [activeAnchor, setActiveAnchor] = useState("");
+  const [mobileNavOpen, setMobileNavOpen] = useState(false);
   const isAnalysis = location.pathname.endsWith("/analysis");
   const title = getCurrentTitle(location.pathname);
   const lastSaved = getLastSaved();
@@ -114,12 +115,24 @@ export default function CaseShell() {
     return () => observer.disconnect();
   }, [anchorIds, isAnalysis, location.hash]);
 
+  useEffect(() => {
+    if (!mobileNavOpen) return undefined;
+
+    function closeOnEscape(event) {
+      if (event.key === "Escape") setMobileNavOpen(false);
+    }
+
+    window.addEventListener("keydown", closeOnEscape);
+    return () => window.removeEventListener("keydown", closeOnEscape);
+  }, [mobileNavOpen]);
+
   function handleAnchorClick(event, hash) {
     if (!isAnalysis) return;
     event.preventDefault();
     history.replaceState(null, "", `${analysisBase}#${hash}`);
     scrollToSection(hash);
     setActiveAnchor(hash);
+    setMobileNavOpen(false);
   }
 
   return (
@@ -128,11 +141,25 @@ export default function CaseShell() {
       <aside className="case-sidebar" aria-label="Sidetrade project navigation">
         <Link className="workspace" to="/">← Portfolio</Link>
         <span className="project-switcher-label">Choisir un projet</span>
+        <button
+          aria-controls="sidetrade-section-navigation"
+          aria-expanded={mobileNavOpen}
+          className="mobile-nav-toggle"
+          onClick={() => setMobileNavOpen((open) => !open)}
+          type="button"
+        >
+          <span>Sommaire</span>
+          <span aria-hidden="true">{mobileNavOpen ? "×" : "+"}</span>
+        </button>
         <div className="sidebar-brand">
           <span>Sidetrade · Valuation</span>
           <small>ALBFR.PA</small>
         </div>
-        <nav className="sidebar-nav" aria-label="Sidetrade sections">
+        <nav
+          className={`sidebar-nav ${mobileNavOpen ? "mobile-open" : ""}`}
+          id="sidetrade-section-navigation"
+          aria-label="Sidetrade sections"
+        >
           {sidebarGroups.map((group, index) => (
             <div className="sidebar-group" key={group.label}>
               <div className="sidebar-group-title">{group.label}</div>
@@ -200,7 +227,10 @@ export default function CaseShell() {
                 </button>
               ))}
             </div>
-            <span className="control-date">Market ref. 15 Jul 2026</span>
+            <span className="control-date">
+              <span className="control-date-full">Market ref. 15 Jul 2026</span>
+              <span className="control-date-short">Market · 15 Jul 26</span>
+            </span>
           </div>
         </header>
         <Outlet />

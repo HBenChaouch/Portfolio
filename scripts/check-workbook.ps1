@@ -1,5 +1,5 @@
 param(
-  [string]$WorkbookPath = (Join-Path $PSScriptRoot '..\Sidetrade_Valuation_2026_v2.xlsx')
+  [string]$WorkbookPath = (Join-Path $PSScriptRoot '..\public\Sidetrade_Valuation_2026_v2.xlsx')
 )
 
 $ErrorActionPreference = 'Stop'

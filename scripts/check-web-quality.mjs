@@ -51,6 +51,9 @@ assert.match(workflow, /enablement: true/);
 assert.match(workflow, /actions\/deploy-pages@v4/);
 const styles = await text("src/styles/global.css");
 assert.match(styles, /\.analysis-view \.result-strip \.cell[\s\S]*?min-width: 0/);
+const fallbackScript = await text("scripts/create-spa-fallback.mjs");
+assert.match(fallbackScript, /cases\/sidetrade-valuation/);
+assert.match(fallbackScript, /cases\/sidetrade-valuation\/analysis/);
 
 const packageJson = JSON.parse(await text("package.json"));
 assert.equal(packageJson.dependencies["framer-motion"], undefined);

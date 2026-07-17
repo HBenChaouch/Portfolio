@@ -6,6 +6,8 @@ export const SOURCE_STATUS = Object.freeze({
   MARKET_MANUAL: "Manual market reference · refresh before distribution",
 });
 
+const publicAsset = (file) => `${import.meta.env?.BASE_URL ?? "/"}${file}`;
+
 export const VALUATION_DATES = Object.freeze({
   modelUpdated: "May 2026",
   fy25Cutoff: "31 Dec 2025",
@@ -19,27 +21,28 @@ export const SOURCES = Object.freeze({
   workbook: {
     label: "Sidetrade Valuation 2026 v2",
     file: "Sidetrade_Valuation_2026_v2.xlsx",
+    href: publicAsset("Sidetrade_Valuation_2026_v2.xlsx"),
     status: SOURCE_STATUS.CANONICAL_WORKBOOK,
   },
   annualResults: {
     label: "Sidetrade FY25 Annual Results",
     date: "30 March 2026",
     shortDate: "Mar 30, 2026",
-    href: "/PR_2025_Results_EN.pdf",
+    href: publicAsset("PR_2025_Results_EN.pdf"),
     status: SOURCE_STATUS.PUBLIC_DISCLOSURE,
   },
   statutoryReport: {
     label: "Statutory Report FY25",
     date: "21 April 2026",
     shortDate: "Apr 21, 2026",
-    href: "/Sidetrade-Group_FY25_Statutory-report-on-the-consolidated-financial-statements_ENG.pdf",
+    href: publicAsset("Sidetrade-Group_FY25_Statutory-report-on-the-consolidated-financial-statements_ENG.pdf"),
     status: SOURCE_STATUS.PUBLIC_DISCLOSURE,
   },
   strategicPlan: {
     label: "O2C Intelligence 2030",
     date: "7 April 2026",
     shortDate: "Apr 7, 2026",
-    href: "/260407_O2C_Intelligence_2030_PR_EN.pdf",
+    href: publicAsset("260407_O2C_Intelligence_2030_PR_EN.pdf"),
     status: SOURCE_STATUS.PUBLIC_DISCLOSURE,
   },
   market: {

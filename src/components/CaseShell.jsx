@@ -3,7 +3,8 @@ import { Link, NavLink, Outlet, useLocation } from "react-router-dom";
 import { useSidetradeScenario } from "../context/SidetradeScenarioContext.jsx";
 import { VALUATION_DATES } from "../data/sidetradeFinancials.js";
 
-const analysisBase = "/cases/sidetrade-valuation/analysis";
+const appBase = import.meta.env.BASE_URL.replace(/\/$/, "");
+const analysisBase = `${appBase}/cases/sidetrade-valuation/analysis`;
 
 const sidebarGroups = [
   {

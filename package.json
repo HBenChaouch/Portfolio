@@ -5,15 +5,16 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
+    "build": "vite build && node scripts/create-spa-fallback.mjs",
     "preview": "vite preview",
     "test:financial": "node scripts/check-financial-data.mjs",
     "test:workbook": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/check-workbook.ps1",
-    "test:audit": "npm run test:financial && npm run test:workbook"
+    "test:audit": "npm run test:financial && npm run test:workbook",
+    "test:web": "node scripts/check-web-quality.mjs",
+    "test:quality": "npm run test:audit && npm run test:web"
   },
   "dependencies": {
     "@vitejs/plugin-react": "^5.0.0",
-    "framer-motion": "^12.0.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-router-dom": "^7.0.0"

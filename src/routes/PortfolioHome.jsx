@@ -1,29 +1,24 @@
-﻿import { Link } from "react-router-dom";
-import { motion, useReducedMotion } from "framer-motion";
+import { Link } from "react-router-dom";
 import { portfolioCases } from "../data/portfolioCases.js";
 
 export default function PortfolioHome() {
-  const reduceMotion = useReducedMotion();
-
   return (
     <main className="portfolio-home">
       <section className="home-hero">
         <p className="eyebrow">Finance and analytics portfolio</p>
         <h1>Investment judgment, translated into usable analytical cases.</h1>
         <p>
-          A portfolio of valuation work, deal analysis, market mapping and operating models. Sidetrade is
-          the first migrated case in the new React/Vite architecture.
+          Three finance cases, each built for a different decision: public-company valuation, transaction
+          services and downside-oriented fund controlling.
         </p>
       </section>
 
       <section className="case-grid" aria-label="Portfolio cases">
         {portfolioCases.map((item, index) => {
           const content = (
-            <motion.article
-              animate={{ opacity: 1, y: 0 }}
-              className="case-card"
-              initial={{ opacity: 0, y: 16 }}
-              transition={{ delay: reduceMotion ? 0 : index * 0.05, duration: reduceMotion ? 0 : 0.24, ease: "easeOut" }}
+            <article
+              className={`case-card ${item.priority === "flagship" ? "case-card-flagship" : ""}`}
+              style={{ "--card-index": index }}
             >
               <div>
                 <span className="case-status">{item.status}</span>
@@ -36,13 +31,20 @@ export default function PortfolioHome() {
                   <span key={metric}>{metric}</span>
                 ))}
               </div>
-            </motion.article>
+              <span className="case-cta">{item.cta}<span aria-hidden="true"> →</span></span>
+            </article>
           );
 
-          return item.href === "#" ? (
-            <div className="disabled-link" key={item.slug}>
+          return item.external || item.download ? (
+            <a
+              download={item.download || undefined}
+              href={item.href}
+              key={item.slug}
+              rel={item.external ? "noopener noreferrer" : undefined}
+              target={item.external ? "_blank" : undefined}
+            >
               {content}
-            </div>
+            </a>
           ) : (
             <Link key={item.slug} to={item.href}>
               {content}

@@ -507,13 +507,13 @@ export default function AnalysisView() {
           </div>
           <div className="twoup">
             <table className="data">
-              <thead><tr><th></th><th className="num">Statutory</th><th className="num">Normalised</th></tr></thead>
+              <thead><tr><th scope="col">Metric</th><th className="num" scope="col">Statutory</th><th className="num" scope="col">Normalised</th></tr></thead>
               <tbody>
-                <tr><td className="label">Net operational cash flow</td><td className="num">{fmtNumber(CASH_CONVERSION.statutoryOcf)}</td><td className="num">{fmtNumber(CASH_CONVERSION.statutoryOcf)}</td></tr>
-                <tr><td className="label">(−) Capex</td><td className="num">({fmtNumber(CASH_CONVERSION.capex)})</td><td className="num">({fmtNumber(CASH_CONVERSION.capex)})</td></tr>
-                <tr><td className="label">(+) CIR timing adjustment</td><td className="num">—</td><td className="num">{fmtNumber(CASH_CONVERSION.cirTimingNormalisation)}</td></tr>
-                <tr className="total"><td>FCF</td><td className="num" style={{ color: fcfView === "stat" ? "var(--bordeaux)" : undefined }}>{fmtNumber(CASH_CONVERSION.statutoryFcf)}</td><td className="num" style={{ color: fcfView === "norm" ? "var(--bordeaux)" : undefined }}>{fmtNumber(CASH_CONVERSION.normalisedFcf)}</td></tr>
-                <tr><td className="label">FCF margin</td><td className="num">{fmtPct(CASH_CONVERSION.statutoryMargin)}</td><td className="num">{fmtPct(CASH_CONVERSION.normalisedMargin)}</td></tr>
+                <tr><th className="label" scope="row">Net operational cash flow</th><td className="num">{fmtNumber(CASH_CONVERSION.statutoryOcf)}</td><td className="num">{fmtNumber(CASH_CONVERSION.statutoryOcf)}</td></tr>
+                <tr><th className="label" scope="row">(−) Capex</th><td className="num">({fmtNumber(CASH_CONVERSION.capex)})</td><td className="num">({fmtNumber(CASH_CONVERSION.capex)})</td></tr>
+                <tr><th className="label" scope="row">(+) CIR timing adjustment</th><td className="num">—</td><td className="num">{fmtNumber(CASH_CONVERSION.cirTimingNormalisation)}</td></tr>
+                <tr className="total"><th scope="row">FCF</th><td className="num" style={{ color: fcfView === "stat" ? "var(--bordeaux)" : undefined }}>{fmtNumber(CASH_CONVERSION.statutoryFcf)}</td><td className="num" style={{ color: fcfView === "norm" ? "var(--bordeaux)" : undefined }}>{fmtNumber(CASH_CONVERSION.normalisedFcf)}</td></tr>
+                <tr><th className="label" scope="row">FCF margin</th><td className="num">{fmtPct(CASH_CONVERSION.statutoryMargin)}</td><td className="num">{fmtPct(CASH_CONVERSION.normalisedMargin)}</td></tr>
               </tbody>
             </table>
             <div className="narrative" data-s={fcfView === "stat" ? "bear" : "base"} style={{ marginTop: 0 }}>
@@ -650,13 +650,13 @@ export default function AnalysisView() {
             <div className="narrative" data-s={activeScenario}><h4><span className="tag">{scenarioCopy[activeScenario].tag}</span><span>{scenarioCopy[activeScenario].title}</span></h4><p>{scenarioCopy[activeScenario].narrative}</p></div>
             <h3 style={{ marginTop: 24 }}>DCF result · all scenarios</h3>
             <table className="data" style={{ marginTop: 10 }}>
-              <thead><tr><th></th><th className="num">Bear</th><th className="num">Base</th><th className="num">Bull</th></tr></thead>
+              <thead><tr><th scope="col">Metric</th><th className="num" scope="col">Bear</th><th className="num" scope="col">Base</th><th className="num" scope="col">Bull</th></tr></thead>
               <tbody>
-                <tr><td className="label">Revenue 2030</td><td className="num">{fmtM(scenarioResults.bear.rev, 1)}</td><td className="num strong">{fmtM(scenarioResults.base.rev, 1)}</td><td className="num">{fmtM(scenarioResults.bull.rev, 1)}</td></tr>
-                <tr><td className="label">EBITDA 2030</td><td className="num">{fmtM(scenarioResults.bear.ebitda, 1)}</td><td className="num strong">{fmtM(scenarioResults.base.ebitda, 1)}</td><td className="num">{fmtM(scenarioResults.bull.ebitda, 1)}</td></tr>
-                <tr><td className="label">FCF 2030</td><td className="num">{fmtM(scenarioResults.bear.fcf, 1)}</td><td className="num strong">{fmtM(scenarioResults.base.fcf, 1)}</td><td className="num">{fmtM(scenarioResults.bull.fcf, 1)}</td></tr>
-                <tr className="total"><td>EV implicit</td><td className="num">{fmtM(scenarioResults.bear.ev)}</td><td className="num">{fmtM(scenarioResults.base.ev)}</td><td className="num">{fmtM(scenarioResults.bull.ev)}</td></tr>
-                <tr><td className="label">EV / FY25 Sales</td><td className="num">{scenarioResults.bear.evSales.toFixed(1)}x</td><td className="num strong">{scenarioResults.base.evSales.toFixed(1)}x</td><td className="num">{scenarioResults.bull.evSales.toFixed(1)}x</td></tr>
+                <tr><th className="label" scope="row">Revenue 2030</th><td className="num">{fmtM(scenarioResults.bear.rev, 1)}</td><td className="num strong">{fmtM(scenarioResults.base.rev, 1)}</td><td className="num">{fmtM(scenarioResults.bull.rev, 1)}</td></tr>
+                <tr><th className="label" scope="row">EBITDA 2030</th><td className="num">{fmtM(scenarioResults.bear.ebitda, 1)}</td><td className="num strong">{fmtM(scenarioResults.base.ebitda, 1)}</td><td className="num">{fmtM(scenarioResults.bull.ebitda, 1)}</td></tr>
+                <tr><th className="label" scope="row">FCF 2030</th><td className="num">{fmtM(scenarioResults.bear.fcf, 1)}</td><td className="num strong">{fmtM(scenarioResults.base.fcf, 1)}</td><td className="num">{fmtM(scenarioResults.bull.fcf, 1)}</td></tr>
+                <tr className="total"><th scope="row">EV implicit</th><td className="num">{fmtM(scenarioResults.bear.ev)}</td><td className="num">{fmtM(scenarioResults.base.ev)}</td><td className="num">{fmtM(scenarioResults.bull.ev)}</td></tr>
+                <tr><th className="label" scope="row">EV / FY25 Sales</th><td className="num">{scenarioResults.bear.evSales.toFixed(1)}x</td><td className="num strong">{scenarioResults.base.evSales.toFixed(1)}x</td><td className="num">{scenarioResults.bull.evSales.toFixed(1)}x</td></tr>
               </tbody>
             </table>
           </div>
@@ -743,8 +743,9 @@ FCF  = EBIT × (1 − tax) + D&A − Capex − ΔWC`}</pre><ol><li><strong>Econo
       </section>
 
       <section className="block" id="sources">
-        <div className="sec-head"><div className="left"><div className="num-tag">Reference</div><h2>Sources</h2></div><div className="right">Native links to the three PDFs stored in public/.</div></div>
+        <div className="sec-head"><div className="left"><div className="num-tag">Reference</div><h2>Sources</h2></div><div className="right">Canonical workbook and native public-source downloads.</div></div>
         <div className="grid-3">
+          <a className="card source-card" download={SOURCES.workbook.file} href={SOURCES.workbook.href}><h3>{SOURCES.workbook.label}</h3><p>Canonical model · XLSX download<br />{SOURCES.workbook.status}</p></a>
           <a className="card source-card" href={SOURCES.annualResults.href} target="_blank" rel="noopener"><h3>{SOURCES.annualResults.label}</h3><p>Press release · {SOURCES.annualResults.date}<br />{SOURCES.annualResults.status}</p></a>
           <a className="card source-card" href={SOURCES.statutoryReport.href} target="_blank" rel="noopener"><h3>{SOURCES.statutoryReport.label}</h3><p>KPMG / Yuma Audit · {SOURCES.statutoryReport.date}<br />{SOURCES.statutoryReport.status}</p></a>
           <a className="card source-card" href={SOURCES.strategicPlan.href} target="_blank" rel="noopener"><h3>{SOURCES.strategicPlan.label}</h3><p>Strategic Plan · {SOURCES.strategicPlan.date}<br />{SOURCES.strategicPlan.status}</p></a>

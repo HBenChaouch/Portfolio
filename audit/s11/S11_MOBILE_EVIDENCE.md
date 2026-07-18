@@ -4,6 +4,14 @@
 
 Ce dossier documente exclusivement le rendu mobile de la home produite au commit source `bb6fd9c0446f9fc6bdf5a508da000c6087a60a2a`. Il ne modifie ni l'application, ni ses données, ni ses moteurs.
 
+## Traçabilité Git
+
+- baseline Sidetrade : `bb6fd9c0446f9fc6bdf5a508da000c6087a60a2a` ;
+- baseline parent : `c28ec594c7edee37ba2fa33444fc48e51b5461e9` ;
+- arbre de la baseline parent : `28aeb9c40e85770ae766f62e8c8f553e8a04ba8c`.
+
+L'arbre parent ci-dessus remplace la valeur erronée `28aeb9c40e85770ae766f62e8c8c8776255de86` qui figurait dans la passation initiale. La chaîne de commits n'est pas modifiée par cette correction documentaire.
+
 ## Artefact servi
 
 Le dossier `dist` préexistant a été servi sans reconstruction avec :
@@ -60,11 +68,23 @@ Dans les trois cas :
 
 ## Reproduction indépendante
 
-Depuis la racine Sidetrade au commit source indiqué :
+Le dossier `dist` n'est pas versionné. Depuis un checkout propre dans lequel le commit de preuve est disponible, reconstruire d'abord le bundle :
+
+```powershell
+git clone https://github.com/HBenChaouch/Portfolio.git Sidetrade-audit
+Set-Location Sidetrade-audit
+git checkout 5bf27f3e347262277e1bd77298d2aa59f8be9808
+npm ci
+npm.cmd run build
+```
+
+Contrôler ensuite que la reconstruction produit les empreintes documentées, puis servir le dossier généré :
 
 ```powershell
 Get-FileHash dist/index.html, dist/assets/index-BQM_EaRh.css, dist/assets/index-BTjUAFP9.js -Algorithm SHA256
 python -m http.server 4190 --bind 127.0.0.1 --directory dist
 ```
+
+Le commit `5bf27f3e347262277e1bd77298d2aa59f8be9808` ne diffère du commit source de la home que par les cinq artefacts de preuve sous `audit/s11/`. Si ce commit n'est pas encore disponible sur le remote, utiliser un checkout local propre de ce commit.
 
 Ouvrir ensuite `http://127.0.0.1:4190/`, fixer successivement les viewports à 360 × 800, 390 × 844 et 430 × 932, puis comparer les captures et mesures aux artefacts versionnés. Le port 4190 n'est pas une dépendance : tout port local libre convient.

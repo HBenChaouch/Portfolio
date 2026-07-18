@@ -3571,7 +3571,7 @@ ul {
   }
 }
 
-/* === S2 DESIGN SYSTEM === */
+/* === DESIGN SYSTEM === */
 
 html {
   background: var(--bg);
@@ -4054,7 +4054,7 @@ a {
   }
 }
 
-/* === S5 QOE & TRANSACTION SERVICES === */
+/* === QOE & TRANSACTION SERVICES === */
 
 .analysis-view #cash-conversion,
 .analysis-view #debt-like,
@@ -4590,7 +4590,7 @@ a {
   }
 }
 
-/* === S3 SIDETRADE DESKTOP === */
+/* === SIDETRADE DESKTOP === */
 
 .analysis-view #executive,
 .analysis-view .equity-bridge-section,
@@ -4644,7 +4644,7 @@ a {
   align-items: stretch;
   display: grid;
   gap: var(--space-6);
-  grid-template-columns: minmax(0, 1.8fr) minmax(240px, 0.7fr);
+  grid-template-columns: minmax(0, 1fr);
 }
 
 .qoe-bridge {
@@ -4657,6 +4657,8 @@ a {
     minmax(0, 0.66fr)
     minmax(0, 1fr)
     minmax(0, 0.72fr)
+    minmax(0, 1fr)
+    minmax(0, 0.66fr)
     minmax(0, 1fr);
 }
 
@@ -4703,6 +4705,10 @@ a {
   font-size: 11px;
 }
 
+.qoe-node strong {
+  font-size: clamp(24px, 2.1vw, 34px);
+}
+
 .qoe-node.primary strong,
 .qoe-node.adjusted strong,
 .qoe-connector.positive span {
@@ -4716,36 +4722,6 @@ a {
 
 .qoe-connector span {
   font-size: 19px;
-}
-
-.qoe-readout {
-  background: var(--ink);
-  color: var(--bg);
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  padding: var(--space-6);
-}
-
-.qoe-readout .mono-k,
-.qoe-readout > span {
-  color: rgba(250, 247, 242, 0.66);
-}
-
-.qoe-readout > strong {
-  color: var(--bg);
-  font-size: 48px;
-}
-
-.qoe-readout > p:last-child {
-  color: rgba(250, 247, 242, 0.82);
-  font-size: 12.5px;
-  line-height: 1.55;
-  margin-top: var(--space-5);
-}
-
-.qoe-readout > p:last-child strong {
-  color: var(--bg);
 }
 
 .qoe-evidence-grid {

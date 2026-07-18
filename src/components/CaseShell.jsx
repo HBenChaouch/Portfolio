@@ -66,14 +66,6 @@ function getCurrentTitle(pathname) {
   return pageTitles[leaf] || "Long-form Analysis";
 }
 
-function getLastSaved() {
-  return new Intl.DateTimeFormat("en-GB", {
-    hour: "2-digit",
-    minute: "2-digit",
-    hour12: false,
-  }).format(new Date());
-}
-
 function scrollToSection(hash) {
   const el = document.getElementById(hash);
   if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
@@ -86,7 +78,6 @@ export default function CaseShell() {
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
   const isAnalysis = location.pathname.endsWith("/analysis");
   const title = getCurrentTitle(location.pathname);
-  const lastSaved = getLastSaved();
 
   const anchorIds = useMemo(
     () => sidebarGroups.flatMap((group) => group.items.map((item) => item.hash).filter(Boolean)),
@@ -207,8 +198,8 @@ export default function CaseShell() {
           ))}
         </nav>
         <div className="sidebar-foot">
-          <span>Version 1.0</span>
-          <span>Last saved {lastSaved}</span>
+          <span>FY25 financials</span>
+          <span>{VALUATION_DATES.marketLong}</span>
         </div>
       </aside>
       <main className="case-main" id="main-content" tabIndex="-1">

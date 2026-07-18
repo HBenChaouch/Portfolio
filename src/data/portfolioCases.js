@@ -8,7 +8,7 @@ export const portfolioCases = [
     title: "Sidetrade — Full Valuation Case",
     category: "Flagship · Public SaaS valuation",
     description:
-      "A full, auditable investment case spanning QoE, cash conversion, DCF scenarios, comparables, LBO affordability and the EV-to-equity bridge.",
+      "A full investment case spanning QoE, cash conversion, DCF scenarios, comparables, LBO affordability and the EV-to-equity bridge.",
     status: "Flagship case",
     href: "/cases/sidetrade-valuation",
     cta: "Open the full case",
@@ -24,7 +24,7 @@ export const portfolioCases = [
     title: "Opella — Carve-out & TSA",
     category: "Transaction Services",
     description:
-      "A pedagogical carve-out case focused on the standalone perimeter, TSA unwind, stranded costs and separation mechanics.",
+      "A carve-out case focused on the standalone perimeter, TSA unwind, stranded costs and separation mechanics.",
     status: "Workbook case",
     href: publicAsset("Modele_Carveout_Opella.xlsx"),
     cta: "Download the workbook",

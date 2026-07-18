@@ -8,7 +8,9 @@ import {
   NET_DEBT,
   QOE,
   SCENARIOS,
+  SOURCE_STATUS,
   SOURCES,
+  TRANSACTION_COMPS,
   VALUATION_CONTEXT,
   VALUATION_DATES,
 } from "../src/data/sidetradeFinancials.js";
@@ -29,6 +31,8 @@ close(CASH_CONVERSION.statutoryOcf - CASH_CONVERSION.capex, CASH_CONVERSION.stat
 close(CASH_CONVERSION.statutoryFcf + CASH_CONVERSION.cirTimingNormalisation, CASH_CONVERSION.normalisedFcf);
 close(NET_DEBT.grossFinancialDebt - NET_DEBT.cash - NET_DEBT.marketableSecurities, NET_DEBT.strict);
 close(QOE.publishedEbitdaInclCir - QOE.cirReported, QOE.publishedEbitdaExCir);
+close(QOE.publishedEbitdaExCir + QOE.adjustmentsEstimate, QOE.adjustedEbitdaExCir);
+close(QOE.adjustedEbitdaExCir + QOE.cirReported, QOE.adjustedEbitdaInclCir);
 close(VALUATION_CONTEXT.marketCap, 267.40146, 1e-6);
 close(VALUATION_CONTEXT.marketEv, 282.05546, 1e-6);
 close(
@@ -36,6 +40,7 @@ close(
   (VALUATION_CONTEXT.controlEv - NET_DEBT.strict) / VALUATION_CONTEXT.marketCap - 1
 );
 assert.equal(Math.round(VALUATION_CONTEXT.controlEquityUpside * 100), 48);
+assert.equal(VALUATION_CONTEXT.controlEv, 411);
 assert.equal(DISPLAY_VALUES.grossFinancialDebt, 30.8);
 
 const sentinels = {
@@ -119,9 +124,17 @@ for (const scenario of Object.keys(sentinels)) {
 assert.equal(FY25.netDebt, NET_DEBT.strict);
 assert.equal(FY25.fcfNormalized, CASH_CONVERSION.normalisedFcf);
 assert.equal(VALUATION_DATES.marketIso, "2026-07-15");
-assert.match(SOURCES.market.status, /Manual market reference/);
-assert.match(SOURCES.qoe.status, /Internally reviewed estimate/);
-assert.equal(SOURCES.engine.status, "Audited engine · calculated");
+assert.deepEqual(Object.values(SOURCE_STATUS), [
+  "Published",
+  "Calculated",
+  "Illustrative assumption",
+  "Estimated",
+  "To be confirmed",
+  "Market data as of 15 July 2026",
+]);
+assert.equal(SOURCES.market.status, SOURCE_STATUS.MARKET_AS_OF);
+assert.equal(SOURCES.qoe.status, SOURCE_STATUS.ESTIMATED);
+assert.equal(SOURCES.engine.status, SOURCE_STATUS.CALCULATED);
 assert.equal(LBO_REFERENCE.acquisitionDebt, 53.536);
 assert.equal(LBO_REFERENCE.exitEbitda2030, 36.153);
 assert.equal(LBO_REFERENCE.entryEv, 241.93);
@@ -132,6 +145,8 @@ assert.equal(LBO_REFERENCE.baseIrr, 0.225);
 assert.equal(LBO_REFERENCE.dcfEntryIrr, 0.1636);
 assert.deepEqual(VALUATION_CONTEXT.tradingRange, { low: 171, base: 202, high: 264 });
 assert.deepEqual(VALUATION_CONTEXT.transactionRange, { low: 289, base: 411, high: 547 });
+assert.deepEqual(TRANSACTION_COMPS.selectedMultiples, { low: 4.7, base: 6.7, high: 8.9 });
+assert.equal(TRANSACTION_COMPS.selectedBasis, "FY25 revenue");
 assert.deepEqual(VALUATION_CONTEXT.lboRange, { low: 222.5, base: 241.9, high: 283.5 });
 
 const analysisSource = await readFile(

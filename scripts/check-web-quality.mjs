@@ -55,6 +55,34 @@ const fallbackScript = await text("scripts/create-spa-fallback.mjs");
 assert.match(fallbackScript, /cases\/sidetrade-valuation/);
 assert.match(fallbackScript, /cases\/sidetrade-valuation\/analysis/);
 
+const publicCopy = [
+  await text("src/components/CaseShell.jsx"),
+  await text("src/data/portfolioCases.js"),
+  await text("src/data/sidetradeFinancials.js"),
+  await text("src/routes/AnalysisView.jsx"),
+].join("\n");
+for (const forbidden of [
+  /refresh before distribution/i,
+  /pedagogical/i,
+  /independent model/i,
+  /independent valuation/i,
+  /audited engine/i,
+  /canonical workbook/i,
+  /Version 1\.0/i,
+  /Last saved/i,
+  /research recommendation/i,
+  /investment advice/i,
+  /\bwe\b/i,
+  /\bour\b/i,
+  /\*\*/,
+  /€1\.5B/i,
+  /modelled net debt in S\d+/i,
+]) {
+  assert.doesNotMatch(publicCopy, forbidden);
+}
+assert.match(publicCopy, /These items are excluded from modelled net debt unless confirmed through diligence\./);
+assert.match(publicCopy, /Market data as of 15 July 2026/);
+
 const packageJson = JSON.parse(await text("package.json"));
 assert.equal(packageJson.dependencies["framer-motion"], undefined);
 assert.equal(packageJson.scripts["test:workbook"], "node scripts/run-workbook-check.mjs");

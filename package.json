@@ -11,7 +11,8 @@
     "test:workbook": "node scripts/run-workbook-check.mjs",
     "test:audit": "npm run test:financial && npm run test:workbook",
     "test:web": "node scripts/check-web-quality.mjs",
-    "test:quality": "npm run test:audit && npm run test:web"
+    "test:i18n": "node scripts/check-i18n.mjs",
+    "test:quality": "npm run test:audit && npm run test:web && npm run test:i18n"
   },
   "dependencies": {
     "@vitejs/plugin-react": "^5.0.0",

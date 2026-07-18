@@ -4054,6 +4054,13 @@ a {
   }
 }
 
+@media (min-width: 901px) and (max-width: 1350px) {
+  .control-title span:first-child,
+  .control-title i {
+    display: none;
+  }
+}
+
 /* === QOE & TRANSACTION SERVICES === */
 
 .analysis-view #cash-conversion,
@@ -4896,5 +4903,68 @@ a {
   .conclusion-grid p,
   .conclusion-grid p + p {
     padding: var(--space-4) 0;
+  }
+}
+/* S10 — shareable bilingual controls */
+.home-toolbar {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 18px;
+}
+
+.language-toggle {
+  align-items: center;
+  border: 1px solid var(--line);
+  display: inline-flex;
+  flex: 0 0 auto;
+  gap: 2px;
+  padding: 2px;
+}
+
+.language-toggle button {
+  background: transparent;
+  border: 0;
+  color: var(--ink-3);
+  cursor: pointer;
+  font-family: var(--sans);
+  font-size: 12px;
+  font-weight: 700;
+  min-height: 40px;
+  min-width: 42px;
+}
+
+.language-toggle button[aria-pressed="true"] {
+  background: var(--bordeaux);
+  color: var(--bg);
+}
+
+.language-toggle button:focus-visible {
+  outline: 2px solid var(--bordeaux);
+  outline-offset: 2px;
+}
+
+.language-toggle > span {
+  color: var(--line-strong);
+  font-size: 11px;
+}
+
+.language-toggle.compact button {
+  min-height: 36px;
+  min-width: 38px;
+}
+
+@media (max-width: 900px) {
+  .home-toolbar {
+    margin-bottom: 10px;
+  }
+
+  .language-toggle button,
+  .language-toggle.compact button {
+    min-height: 44px;
+    min-width: 44px;
+  }
+
+  .control-actions {
+    gap: 8px;
   }
 }

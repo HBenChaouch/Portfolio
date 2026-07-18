@@ -1,4 +1,5 @@
 import { useMemo, useRef, useState } from "react";
+import Localized from "../components/Localized.jsx";
 import { useSidetradeScenario } from "../context/SidetradeScenarioContext.jsx";
 import {
   enterpriseValue,
@@ -91,14 +92,14 @@ function resultFor(id) {
 
 function Tip({ children, k, body, v }) {
   return (
-    <span className="tip">
+    <Localized><span className="tip">
       {children}
       <span className="tip-body">
         <span className="tip-k">{k}</span>
         {body}
         {v ? <span className="tip-v">{v}</span> : null}
       </span>
-    </span>
+    </span></Localized>
   );
 }
 
@@ -133,7 +134,7 @@ function ScenarioCards({ activeScenario, setActiveScenario, scenarioResults }) {
   }
 
   return (
-    <div className="scenario-cards" role="tablist" aria-label="DCF scenario">
+    <Localized><div className="scenario-cards" role="tablist" aria-label="DCF scenario">
       {SCENARIO_IDS.map((id) => (
         <button
           aria-selected={activeScenario === id}
@@ -157,7 +158,7 @@ function ScenarioCards({ activeScenario, setActiveScenario, scenarioResults }) {
           <div className="sc-ev">{fmtM(scenarioResults[id].ev)} EV</div>
         </button>
       ))}
-    </div>
+    </div></Localized>
   );
 }
 
@@ -182,7 +183,7 @@ function TrajectoryChart({ activeScenario }) {
   const area = `${path(rev)} L ${x(5).toFixed(2)} ${baseline.toFixed(2)} L ${x(0).toFixed(2)} ${baseline.toFixed(2)} Z`;
 
   return (
-    <div aria-label="Revenue and EBITDA chart" className="chart-wrap" role="region" style={{ position: "relative" }} tabIndex="0">
+    <Localized><div aria-label="Revenue and EBITDA chart" className="chart-wrap" role="region" style={{ position: "relative" }} tabIndex="0">
       <div className="chart-head">
         <div className="left">
           <h3>Revenue &amp; EBITDA trajectory · 2025 → 2030</h3>
@@ -250,7 +251,7 @@ function TrajectoryChart({ activeScenario }) {
           </>
         ) : null}
       </div>
-    </div>
+    </div></Localized>
   );
 }
 
@@ -269,7 +270,7 @@ function SensitivityHeatmap({ activeScenario }) {
   }
 
   return (
-    <div className="sensi-wrap">
+    <Localized><div className="sensi-wrap">
       <div className="sensi-head">
         <div className="left">
           <h3>Sensitivity · WACC × Terminal growth</h3>
@@ -306,7 +307,7 @@ function SensitivityHeatmap({ activeScenario }) {
       <p style={{ fontSize: 11.5, color: "var(--ink-4)", fontStyle: "italic", marginTop: 10 }}>
         Cells shaded by intensity (darker = higher EV). The Base case at WACC 9.5% / g 2.5% is highlighted bordeaux and reconciles with the live DCF output.
       </p>
-    </div>
+    </div></Localized>
   );
 }
 
@@ -338,7 +339,7 @@ function FootballField({ activeScenario, scenarioResults }) {
   }
 
   return (
-    <div aria-label={`Valuation football field with active DCF scenario ${activeScenario}`} className="ff" role="region" tabIndex="0">
+    <Localized><div aria-label={`Valuation football field with active DCF scenario ${activeScenario}`} className="ff" role="region" tabIndex="0">
       <div className="ff-canvas" id="ff-canvas">
         <div className="ff-rows">
           <div className="ref fair" style={{ left: `calc(130px + 14px + ${pctFromValue(VALUATION_CONTEXT.fairValueEv)}% * (100% - 244px) / 100)` }} />
@@ -365,7 +366,7 @@ function FootballField({ activeScenario, scenarioResults }) {
         </div>
         <div className="base-val">&nbsp;</div>
       </div>
-    </div>
+    </div></Localized>
   );
 }
 
@@ -382,7 +383,7 @@ function WaterfallBridge({ activeScenario }) {
   const equityTop = yFor(bridge.equity);
 
   return (
-    <div aria-label="Enterprise value to share price bridge" className="waterfall-wrap" role="region" tabIndex="0">
+    <Localized><div aria-label="Enterprise value to share price bridge" className="waterfall-wrap" role="region" tabIndex="0">
       <svg aria-labelledby="waterfall-title waterfall-desc" className="waterfall-svg" id="waterfall-svg" role="img" viewBox="0 0 1000 280" preserveAspectRatio="xMidYMid meet">
         <title id="waterfall-title">Enterprise value to implied share price bridge</title>
         <desc id="waterfall-desc">Enterprise value {fmtM(bridge.ev)}, less net debt {fmtM(bridge.netDebt, 1)}, equals equity value {fmtM(bridge.equity)} and an implied share price of {EURO}{bridge.sharePrice.toFixed(0)}.</desc>
@@ -407,7 +408,7 @@ function WaterfallBridge({ activeScenario }) {
         <text className="wf-sub" x="720" y="188">{fmtM(bridge.equity)} equity ÷ {FY25.dilutedShares.toLocaleString("en-GB")} diluted shares</text>
         <text className="wf-sub" x="720" y="208">Stand-alone central case</text>
       </svg>
-    </div>
+    </div></Localized>
   );
 }
 
@@ -424,7 +425,7 @@ export default function AnalysisView() {
   const waccExit = sensitivityWaccExit(activeScenario, WACCS, EXIT_MULTIPLES);
 
   return (
-    <article className="analysis-view">
+    <Localized><article className="analysis-view">
       <header className="hero" id="executive">
         <div className="meta">
           <span className="dot" />
@@ -763,6 +764,6 @@ FCF  = EBIT × (1 − tax) + D&A − Capex − ΔWC`}</pre>
       <footer className="site">
         <div className="inner"><div><h4>Author</h4><div className="name">Hamza Ben Chaouch</div><p>ESSEC Grande École · Finance &amp; Analytics<br /><a href="mailto:hamza.benchaouch@essec.edu">hamza.benchaouch@essec.edu</a><br /><a href="tel:+33769913946">+33 7 69 91 39 46</a></p></div><div><h4>Sources</h4><p>{SOURCES.annualResults.label} ({SOURCES.annualResults.shortDate}) · {SOURCES.statutoryReport.label} (KPMG / Yuma Audit, {SOURCES.statutoryReport.shortDate}) · {SOURCES.strategicPlan.label} ({SOURCES.strategicPlan.shortDate}) · {SOURCES.workbook.label}.</p></div><div><h4>Market reference</h4><p>{SOURCES.market.status}</p></div></div>
       </footer>
-    </article>
+    </article></Localized>
   );
 }

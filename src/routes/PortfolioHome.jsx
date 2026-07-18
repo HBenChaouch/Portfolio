@@ -1,9 +1,15 @@
 import { Link } from "react-router-dom";
+import LanguageToggle from "../components/LanguageToggle.jsx";
+import Localized from "../components/Localized.jsx";
+import { useLanguage } from "../context/LanguageContext.jsx";
 import { portfolioCases } from "../data/portfolioCases.js";
 
 export default function PortfolioHome() {
+  const { language, t } = useLanguage();
+
   return (
-    <main className="portfolio-home">
+    <Localized><main className="portfolio-home">
+      <div className="home-toolbar"><LanguageToggle /></div>
       <section className="home-hero">
         <p className="eyebrow">Finance and analytics portfolio</p>
         <h1>Investment judgment, translated into usable analytical cases.</h1>
@@ -21,17 +27,17 @@ export default function PortfolioHome() {
               style={{ "--card-index": index }}
             >
               <div>
-                <span className="case-status">{item.status}</span>
-                <p className="eyebrow">{item.category}</p>
-                <h2>{item.title}</h2>
-                <p>{item.description}</p>
+                <span className="case-status">{t(item.status)}</span>
+                <p className="eyebrow">{t(item.category)}</p>
+                <h2>{t(item.title)}</h2>
+                <p>{t(item.description)}</p>
               </div>
               <div className="case-metrics">
                 {item.metrics.map((metric) => (
-                  <span key={metric}>{metric}</span>
+                  <span key={metric}>{t(metric)}</span>
                 ))}
               </div>
-              <span className="case-cta">{item.cta}<span aria-hidden="true"> →</span></span>
+              <span className="case-cta">{t(item.cta)}<span aria-hidden="true"> →</span></span>
             </article>
           );
 
@@ -46,12 +52,12 @@ export default function PortfolioHome() {
               {content}
             </a>
           ) : (
-            <Link key={item.slug} to={item.href}>
+            <Link key={item.slug} to={language === "en" ? `${item.href}?lang=en` : item.href}>
               {content}
             </Link>
           );
         })}
       </section>
-    </main>
+    </main></Localized>
   );
 }

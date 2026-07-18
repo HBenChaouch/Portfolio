@@ -1,7 +1,10 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link, NavLink, Outlet, useLocation } from "react-router-dom";
 import { useSidetradeScenario } from "../context/SidetradeScenarioContext.jsx";
+import { useLanguage } from "../context/LanguageContext.jsx";
 import { VALUATION_DATES } from "../data/sidetradeFinancials.js";
+import LanguageToggle from "./LanguageToggle.jsx";
+import Localized from "./Localized.jsx";
 
 const appBase = import.meta.env.BASE_URL.replace(/\/$/, "");
 const analysisBase = `${appBase}/cases/sidetrade-valuation/analysis`;
@@ -73,11 +76,13 @@ function scrollToSection(hash) {
 
 export default function CaseShell() {
   const location = useLocation();
+  const { language, t } = useLanguage();
   const { activeScenario, setActiveScenario } = useSidetradeScenario();
   const [activeAnchor, setActiveAnchor] = useState("");
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
   const isAnalysis = location.pathname.endsWith("/analysis");
-  const title = getCurrentTitle(location.pathname);
+  const title = t(getCurrentTitle(location.pathname));
+  const analysisHref = `${analysisBase}${language === "en" ? "?lang=en" : ""}`;
 
   const anchorIds = useMemo(
     () => sidebarGroups.flatMap((group) => group.items.map((item) => item.hash).filter(Boolean)),
@@ -126,18 +131,18 @@ export default function CaseShell() {
   function handleAnchorClick(event, hash) {
     if (!isAnalysis) return;
     event.preventDefault();
-    history.replaceState(null, "", `${analysisBase}#${hash}`);
+    history.replaceState(null, "", `${analysisHref}#${hash}`);
     scrollToSection(hash);
     setActiveAnchor(hash);
     setMobileNavOpen(false);
   }
 
   return (
-    <div className="case-shell">
+    <Localized><div className="case-shell">
       <a className="skip-link" href="#main-content">Skip to analysis</a>
       <aside className="case-sidebar" aria-label="Sidetrade project navigation">
-        <Link className="workspace" to="/">← Portfolio</Link>
-        <span className="project-switcher-label">Choisir un projet</span>
+        <Link className="workspace" to={language === "en" ? "/?lang=en" : "/"}>← Portfolio</Link>
+        <span className="project-switcher-label">Choose a project</span>
         <button
           aria-controls="sidetrade-section-navigation"
           aria-expanded={mobileNavOpen}
@@ -145,7 +150,7 @@ export default function CaseShell() {
           onClick={() => setMobileNavOpen((open) => !open)}
           type="button"
         >
-          <span>Sommaire</span>
+          <span>Contents</span>
           <span aria-hidden="true">{mobileNavOpen ? "×" : "+"}</span>
         </button>
         <div className="sidebar-brand">
@@ -185,7 +190,7 @@ export default function CaseShell() {
                       "sidebar-entry",
                       isAnalysis && activeAnchor === item.hash ? "active" : "",
                     ].filter(Boolean).join(" ")}
-                    href={`${analysisBase}#${item.hash}`}
+                    href={`${analysisHref}#${item.hash}`}
                     key={item.hash}
                     onClick={(event) => handleAnchorClick(event, item.hash)}
                   >
@@ -210,6 +215,7 @@ export default function CaseShell() {
             <span>{title}</span>
           </div>
           <div className="control-actions">
+            <LanguageToggle compact />
             <div className="scenario-segment" role="group" aria-label="Scenario">
               {scenarioControls.map((scenario) => (
                 <button
@@ -233,6 +239,6 @@ export default function CaseShell() {
         <Outlet />
         <p className="view-rounding-note">Figures may not sum due to rounding.</p>
       </main>
-    </div>
+    </div></Localized>
   );
 }

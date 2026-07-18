@@ -551,7 +551,7 @@ export default function AnalysisView() {
             <div className="qoe-node adjusted"><span>Adjusted EBITDA</span><strong>≈{fmtM(QOE.adjustedEbitdaInclCir, 1)}</strong><small>including CIR · estimated</small></div>
           </div>
         </div>
-        <p className="qoe-source">The estimated {fmtM(QOE.adjustmentsEstimate, 1)} adjustment bridges published ex-CIR EBITDA to the adjusted ex-CIR reference. Its components require supporting evidence; adding back FY25 CIR then reconciles to the {fmtM(QOE.adjustedEbitdaInclCir, 1)} adjusted EBITDA reference. Pro forma adjusted EBITDA including CIR is estimated at €{fmtNumber(QOE.proFormaRange.low)}–{fmtNumber(QOE.proFormaRange.high)}m, subject to integration evidence and data-room confirmation.</p>
+        <p className="qoe-source">The estimated {fmtM(QOE.adjustmentsEstimate, 1)} adjustment bridges published ex-CIR EBITDA to the adjusted ex-CIR reference. Its components require supporting evidence; adding back FY25 CIR then reconciles to the {fmtM(QOE.adjustedEbitdaInclCir, 1)} adjusted EBITDA reference. Pro forma adjusted EBITDA including CIR is estimated between {fmtM(QOE.proFormaRange.low)} and {fmtM(QOE.proFormaRange.high)}, subject to integration evidence and data-room confirmation.</p>
         <div className="qoe-evidence-grid">
           <div><span>Revenue quality</span><strong>87%</strong><p>Subscription mix, with 92% subscription gross margin.</p></div>
           <div><span>OCF communicated</span><strong>{fmtM(CASH_CONVERSION.managementOcfExCirTiming, 1)}</strong><p>Excluding the timing impact of the Research Tax Credit.</p></div>

@@ -1,5 +1,9 @@
 import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
+import { createElement } from "react";
+import { renderToStaticMarkup } from "react-dom/server";
+import { MemoryRouter } from "react-router-dom";
+import { createServer } from "vite";
 import { dictionaries, languages, translateText } from "../src/data/translations.js";
 
 const root = new URL("../", import.meta.url);
@@ -14,6 +18,48 @@ assert.equal(translateText("Quality of Earnings", "fr"), "Quality of Earnings");
 assert.equal(translateText("DCF", "fr"), "DCF");
 assert.equal(translateText("Choose a project", "fr"), "Choisir un projet");
 assert.equal(translateText("Choose a project", "en"), "Choose a project");
+const forbiddenFinancialLiteral = /[€$%]|\b\d+(?:[.,]\d+)?x\b/i;
+for (const [language, dictionary] of Object.entries(dictionaries)) {
+  for (const [key, value] of Object.entries(dictionary)) {
+    assert.doesNotMatch(key, forbiddenFinancialLiteral, `${language} dictionary key duplicates a financial literal: ${key}`);
+    assert.doesNotMatch(value, forbiddenFinancialLiteral, `${language} dictionary value duplicates a financial literal: ${key}`);
+  }
+}
+
+const frenchDomProbes = [
+  "O2C/P2P · French SaaS · pre-buyout reference",
+  "French listed O2C/P2P SaaS, exact same sector and geography. Pre-Bridgepoint take-private trading multiple. Best read-through to Sidetrade's standalone listed multiple.",
+  "AP/AR automation + payments",
+  "Vertical banking SaaS — profitable, sticky, multi-year contracts. Adds vertical-SaaS premium reference.",
+  "Vertical SaaS banking",
+  "Digital banking SaaS — comparable subscription mix and growth band.",
+  "B2B network · profitable SaaS",
+  "Reporting / compliance SaaS — Office-of-CFO adjacency, not direct O2C.",
+  "~€179m (after ~€28m founder rollover)",
+  "25% to 18%",
+];
+const forbiddenFrenchResidue = /\b(?:after|automation|banking|comparable subscription|exact same|founder rollover|geography|pre-buyout|profitable SaaS|reporting \/ compliance|to)\b/i;
+for (const probe of frenchDomProbes) {
+  const rendered = translateText(probe, "fr");
+  assert.notEqual(rendered, probe, `French rendered-text probe was not localized: ${probe}`);
+  assert.doesNotMatch(rendered, forbiddenFrenchResidue, `French rendered-text probe remains hybrid: ${rendered}`);
+}
+for (const accessibleName of [
+  "Sidetrade project navigation",
+  "Sidetrade sections",
+  "Sidetrade analysis chapters",
+  "Scenario",
+  "DCF scenario",
+  "Revenue and EBITDA chart",
+  "DCF sensitivity table",
+  "FCF view toggle",
+  "EBITDA quality of earnings bridge",
+  "FY25 statutory to normalised free cash flow bridge",
+]) {
+  const translatedName = translateText(accessibleName, "fr");
+  assert.notEqual(translatedName, accessibleName, `Accessible name was not localized: ${accessibleName}`);
+  assert.doesNotMatch(translatedName, /àggle|\b(?:chart|scenario)\b/i, `Accessible name remains hybrid: ${translatedName}`);
+}
 assert.equal(
   translateText("Enterprise value €301m, less net debt €14.7m, equals equity value €286m and an implied share price of €186.", "fr"),
   "Valeur d’entreprise €301m, diminuée de la dette nette €14.7m, donne une valeur des capitaux propres de €286m et un cours implicite de €186.",
@@ -40,5 +86,36 @@ assert.match(shell, /analysisHref/);
 assert.match(analysis, /<Localized><article/);
 assert.doesNotMatch(translations, /sidetradeFinancials|dcfEngine|lbo_engine/);
 assert.doesNotMatch(`${home}\n${shell}\n${analysis}`, /toggle[^\n]*(?:USD|dollar)|(?:USD|dollar)[^\n]*toggle/i);
+
+const vite = await createServer({ appType: "custom", logLevel: "silent", server: { middlewareMode: true } });
+try {
+  const [{ default: App }, { LanguageProvider }] = await Promise.all([
+    vite.ssrLoadModule("/src/App.jsx"),
+    vite.ssrLoadModule("/src/context/LanguageContext.jsx"),
+  ]);
+  const renderRoute = (entry) => renderToStaticMarkup(
+    createElement(MemoryRouter, { initialEntries: [entry] },
+      createElement(LanguageProvider, null, createElement(App))),
+  );
+  const frenchDom = renderRoute("/cases/sidetrade-valuation/analysis");
+  const englishDom = renderRoute("/cases/sidetrade-valuation/analysis?lang=en");
+  const forbiddenRenderedFrench = /exact same|pre-buyout reference|automation \+ payments|digital banking SaaS|profitable SaaS|reporting \/ compliance SaaS|after ~|founder rollover|subscription mix and growth band|sector et geography|Office-of-Adjacence|Vertical banking SaaS|Adds vertical-SaaS|stet-alone|àggle/i;
+  assert.doesNotMatch(frenchDom, forbiddenRenderedFrench, "Rendered French DOM contains English or hybrid residue");
+  for (const expectedFrench of [
+    "O2C/P2P · SaaS français · référence avant retrait de cote",
+    "Automatisation AP/AR + paiements",
+    "SaaS bancaire vertical",
+    "SaaS de banque digitale",
+    "Réseau B2B · SaaS rentable",
+    "SaaS de reporting et de conformité",
+    "Navigation du projet Sidetrade",
+  ]) assert.match(frenchDom, new RegExp(expectedFrench.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")));
+  for (const sentinel of ["€158m", "€301m", "€497m", "€411m"]) {
+    assert.ok(frenchDom.includes(sentinel), `French DOM missing ${sentinel}`);
+    assert.ok(englishDom.includes(sentinel), `English DOM missing ${sentinel}`);
+  }
+} finally {
+  await vite.close();
+}
 
 console.log(`i18n architecture: PASS (${Object.keys(dictionaries.fr).length} aligned FR/EN entries)`);

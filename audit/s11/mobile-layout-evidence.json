@@ -1,0 +1,63 @@
+{
+  "schema": "s11-mobile-layout-evidence/v1",
+  "generatedAt": "2026-07-18T18:39:44.0326406+02:00",
+  "sourceCommit": "bb6fd9c0446f9fc6bdf5a508da000c6087a60a2a",
+  "sourceTree": "df0830f2bd39de3727d6f682c4c8c8776255de86",
+  "servedArtifact": {
+    "url": "http://127.0.0.1:4190/",
+    "method": "python -m http.server 4190 --bind 127.0.0.1 --directory dist",
+    "indexSha256": "2322051DD29A55CF946ADAFE826A07712E12EB611EF15E1C328C3609B2D7ACCE",
+    "cssSha256": "399FD7A2B7F1D6EAB9E3515FC362CB4FF2848BBC65EA6195A6A0449E1F6549B8",
+    "jsSha256": "2C4CB9255EA643D8A4E9E2AE32D0EFEF9BEC76C2F0388EBBA709A318970BFBFD"
+  },
+  "measurements": [
+    {
+      "viewport": { "width": 360, "height": 800 },
+      "document": { "clientWidth": 360, "scrollWidth": 360, "scrollHeight": 800, "horizontalOverflow": 0 },
+      "title": { "text": "Des cas financiers, conçus pour décider.", "lineCount": 3, "x": 14, "y": 136, "width": 291.69, "height": 92.16 },
+      "selectionTop": 308.72,
+      "masthead": { "identityVisible": true, "emailVisible": true },
+      "cards": [
+        { "name": "Sidetrade", "status": "Cas principal", "wrapperTag": "A", "linked": true, "download": false, "x": 15, "y": 360.72, "width": 330, "height": 250.7, "bottom": 611.42, "fullyInViewport": true },
+        { "name": "Opella", "status": "En développement", "wrapperTag": "DIV", "linked": false, "download": false, "interactiveDescendants": 0, "x": 15, "y": 612.42, "width": 164.5, "height": 139.13, "bottom": 751.55, "fullyInViewport": true },
+        { "name": "Real Estate", "status": "Cockpit opérationnel", "wrapperTag": "A", "linked": true, "download": false, "x": 180.5, "y": 612.42, "width": 164.5, "height": 139.13, "bottom": 751.55, "fullyInViewport": true }
+      ],
+      "allCardsFullyInViewport": true,
+      "flagshipSurfaceSharePct": 64.38,
+      "duplicateIds": [],
+      "screenshot": { "file": "mobile-360x800.png", "width": 360, "height": 800, "bytes": 47750, "sha256": "7646883C65DDA2D1D4395E366836828C2D86009E3CBA2DC2F3262053C24F6293" }
+    },
+    {
+      "viewport": { "width": 390, "height": 844 },
+      "document": { "clientWidth": 390, "scrollWidth": 390, "scrollHeight": 844, "horizontalOverflow": 0 },
+      "title": { "text": "Des cas financiers, conçus pour décider.", "lineCount": 3, "x": 14, "y": 136, "width": 362, "height": 116.81 },
+      "selectionTop": 333.38,
+      "masthead": { "identityVisible": true, "emailVisible": true },
+      "cards": [
+        { "name": "Sidetrade", "status": "Cas principal", "wrapperTag": "A", "linked": true, "download": false, "x": 15, "y": 369.38, "width": 360, "height": 250.7, "bottom": 620.08, "fullyInViewport": true },
+        { "name": "Opella", "status": "En développement", "wrapperTag": "DIV", "linked": false, "download": false, "interactiveDescendants": 0, "x": 15, "y": 621.08, "width": 179.5, "height": 143.22, "bottom": 764.3, "fullyInViewport": true },
+        { "name": "Real Estate", "status": "Cockpit opérationnel", "wrapperTag": "A", "linked": true, "download": false, "x": 195.5, "y": 621.08, "width": 179.5, "height": 143.22, "bottom": 764.3, "fullyInViewport": true }
+      ],
+      "allCardsFullyInViewport": true,
+      "flagshipSurfaceSharePct": 63.71,
+      "duplicateIds": [],
+      "screenshot": { "file": "mobile-390x844.png", "width": 390, "height": 844, "bytes": 49095, "sha256": "58C56135F4904361A47C49A72FB2AE3C58C03DE5369714F5BE11F9E042724EDD" }
+    },
+    {
+      "viewport": { "width": 430, "height": 932 },
+      "document": { "clientWidth": 430, "scrollWidth": 430, "scrollHeight": 932, "horizontalOverflow": 0 },
+      "title": { "text": "Des cas financiers, conçus pour décider.", "lineCount": 3, "x": 14, "y": 136, "width": 391.95, "height": 123.8 },
+      "selectionTop": 340.36,
+      "masthead": { "identityVisible": true, "emailVisible": true },
+      "cards": [
+        { "name": "Sidetrade", "status": "Cas principal", "wrapperTag": "A", "linked": true, "download": false, "x": 15, "y": 376.36, "width": 400, "height": 250.7, "bottom": 627.06, "fullyInViewport": true },
+        { "name": "Opella", "status": "En développement", "wrapperTag": "DIV", "linked": false, "download": false, "interactiveDescendants": 0, "x": 15, "y": 628.06, "width": 199.5, "height": 132, "bottom": 760.06, "fullyInViewport": true },
+        { "name": "Real Estate", "status": "Cockpit opérationnel", "wrapperTag": "A", "linked": true, "download": false, "x": 215.5, "y": 628.06, "width": 199.5, "height": 132, "bottom": 760.06, "fullyInViewport": true }
+      ],
+      "allCardsFullyInViewport": true,
+      "flagshipSurfaceSharePct": 65.56,
+      "duplicateIds": [],
+      "screenshot": { "file": "mobile-430x932.png", "width": 430, "height": 932, "bytes": 53237, "sha256": "CB222FEF4E36457A01839F2768F1E6ACBD326A171F686B3657C90953473CD2E0" }
+    }
+  ]
+}

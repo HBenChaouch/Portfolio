@@ -23,6 +23,11 @@ for (const [language, dictionary] of Object.entries(dictionaries)) {
   for (const [key, value] of Object.entries(dictionary)) {
     assert.doesNotMatch(key, forbiddenFinancialLiteral, `${language} dictionary key duplicates a financial literal: ${key}`);
     assert.doesNotMatch(value, forbiddenFinancialLiteral, `${language} dictionary value duplicates a financial literal: ${key}`);
+    const keyDigits = key.replace(/\{\{\d+\}\}/g, "").replace(/\D/g, "");
+    const valueNumbers = value.replace(/\{\{\d+\}\}/g, "").match(/\d+/g) || [];
+    for (const number of valueNumbers) {
+      assert.ok(keyDigits.includes(number), `${language} dictionary introduces a numeric literal absent from its key: ${key} -> ${value}`);
+    }
   }
 }
 
@@ -99,7 +104,7 @@ try {
   );
   const frenchDom = renderRoute("/cases/sidetrade-valuation/analysis");
   const englishDom = renderRoute("/cases/sidetrade-valuation/analysis?lang=en");
-  const forbiddenRenderedFrench = /exact same|pre-buyout reference|automation \+ payments|digital banking SaaS|profitable SaaS|reporting \/ compliance SaaS|after ~|founder rollover|subscription mix and growth band|sector et geography|Office-of-Adjacence|Vertical banking SaaS|Adds vertical-SaaS|stet-alone|àggle/i;
+  const forbiddenRenderedFrench = /exact same|pre-buyout reference|automation \+ payments|digital banking SaaS|profitable SaaS|reporting \/ compliance SaaS|after ~|founder rollover|subscription mix and growth band|sector et geography|Office-of-Adjacence|Vertical banking SaaS|Adds vertical-SaaS|stet-alone|àggle|25%\s+to\s+18%|174\s*€174/i;
   assert.doesNotMatch(frenchDom, forbiddenRenderedFrench, "Rendered French DOM contains English or hybrid residue");
   for (const expectedFrench of [
     "O2C/P2P · SaaS français · référence avant retrait de cote",
@@ -114,6 +119,11 @@ try {
     assert.ok(frenchDom.includes(sentinel), `French DOM missing ${sentinel}`);
     assert.ok(englishDom.includes(sentinel), `English DOM missing ${sentinel}`);
   }
+  assert.ok(frenchDom.includes("entre €13.7m et €14.7m"), "French DOM must preserve the exact QoE range");
+  assert.ok(englishDom.includes("between €13.7m and €14.7m"), "English DOM must preserve the exact QoE range");
+  assert.ok(frenchDom.includes("25% à 18%"), "French DOM must localize the segmented LBO range");
+  assert.ok(englishDom.includes("25% down to 18%"), "English DOM must preserve the LBO range meaning");
+  assert.equal(translateText("Revenue at €174/share", "fr"), "Chiffre d’affaires à €174 par action");
 } finally {
   await vite.close();
 }

@@ -104,6 +104,8 @@ try {
   );
   const frenchDom = renderRoute("/cases/sidetrade-valuation/analysis");
   const englishDom = renderRoute("/cases/sidetrade-valuation/analysis?lang=en");
+  const frenchHome = renderRoute("/");
+  const englishHome = renderRoute("/?lang=en");
   const forbiddenRenderedFrench = /exact same|pre-buyout reference|automation \+ payments|digital banking SaaS|profitable SaaS|reporting \/ compliance SaaS|after ~|founder rollover|subscription mix and growth band|sector et geography|Office-of-Adjacence|Vertical banking SaaS|Adds vertical-SaaS|stet-alone|àggle|25%\s+to\s+18%|174\s*€174/i;
   assert.doesNotMatch(frenchDom, forbiddenRenderedFrench, "Rendered French DOM contains English or hybrid residue");
   for (const expectedFrench of [
@@ -124,6 +126,14 @@ try {
   assert.ok(frenchDom.includes("25% à 18%"), "French DOM must localize the segmented LBO range");
   assert.ok(englishDom.includes("25% down to 18%"), "English DOM must preserve the LBO range meaning");
   assert.equal(translateText("Revenue at €174/share", "fr"), "Chiffre d’affaires à €174 par action");
+  for (const label of ["Cas principal", "En développement", "Cockpit opérationnel"]) {
+    assert.ok(frenchHome.includes(label), `French home missing honest status: ${label}`);
+  }
+  for (const label of ["Flagship case", "In development", "Operational cockpit"]) {
+    assert.ok(englishHome.includes(label), `English home missing honest status: ${label}`);
+  }
+  assert.doesNotMatch(frenchHome, /Modele_Carveout_Opella\.xlsx|Télécharger le workbook/);
+  assert.doesNotMatch(englishHome, /Modele_Carveout_Opella\.xlsx|Download the workbook/);
 } finally {
   await vite.close();
 }

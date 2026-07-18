@@ -14,7 +14,12 @@ assert.deepEqual(portfolioCases.map(({ slug }) => slug), [
   "real-estate-downside",
 ]);
 assert.equal(portfolioCases[0].priority, "flagship");
-assert.equal(portfolioCases[1].download, "Modele_Carveout_Opella.xlsx");
+assert.equal(portfolioCases[0].status, "Flagship case");
+assert.equal(portfolioCases[1].status, "In development");
+assert.equal(portfolioCases[1].available, false);
+assert.equal(portfolioCases[1].href, undefined);
+assert.equal(portfolioCases[1].download, undefined);
+assert.equal(portfolioCases[2].status, "Operational cockpit");
 assert.equal(portfolioCases[2].href, "https://hbenchaouch.github.io/cockpit-fund-controlling/");
 
 assert.equal(
@@ -51,6 +56,8 @@ assert.match(workflow, /enablement: true/);
 assert.match(workflow, /actions\/deploy-pages@v4/);
 const styles = await text("src/styles/global.css");
 assert.match(styles, /\.analysis-view \.result-strip \.cell[\s\S]*?min-width: 0/);
+assert.match(styles, /\.case-grid-item:first-child[\s\S]*?grid-row: span 2/);
+assert.match(styles, /@media \(max-width: 760px\)[\s\S]*?\.case-grid-item:first-child[\s\S]*?grid-column: 1 \/ -1/);
 const fallbackScript = await text("scripts/create-spa-fallback.mjs");
 assert.match(fallbackScript, /cases\/sidetrade-valuation/);
 assert.match(fallbackScript, /cases\/sidetrade-valuation\/analysis/);

@@ -9,18 +9,31 @@ export default function PortfolioHome() {
 
   return (
     <Localized><main className="portfolio-home">
-      <div className="home-toolbar"><LanguageToggle /></div>
+      <header className="home-masthead">
+        <div className="home-identity">
+          <strong>Hamza Ben Chaouch</strong>
+          <span>ESSEC Grande École · Finance &amp; Analytics</span>
+        </div>
+        <div className="home-contact">
+          <a href="mailto:hamza.benchaouch@essec.edu">hamza.benchaouch@essec.edu</a>
+          <LanguageToggle />
+        </div>
+      </header>
       <section className="home-hero">
-        <p className="eyebrow">Finance and analytics portfolio</p>
-        <h1>Investment judgment, translated into usable analytical cases.</h1>
-        <p>
-          Three finance cases, each built for a different decision: public-company valuation, transaction
-          services and downside-oriented fund controlling.
-        </p>
+        <div>
+          <p className="eyebrow">Finance and analytics portfolio</p>
+          <h1>Finance cases, built for decisions.</h1>
+        </div>
+        <p>Three finance cases built for three decisions: public-company valuation, transaction services and downside-oriented fund controlling.</p>
       </section>
 
-      <section className="case-grid" aria-label="Portfolio cases">
-        {portfolioCases.map((item, index) => {
+      <section className="home-selection" aria-label="Portfolio cases">
+        <header className="home-selection-head">
+          <p className="eyebrow">Selected work</p>
+          <p>One flagship case, supported by two complementary finance projects.</p>
+        </header>
+        <div className="case-grid">
+          {portfolioCases.map((item, index) => {
           const content = (
             <article
               className={`case-card ${item.priority === "flagship" ? "case-card-flagship" : ""}`}
@@ -41,22 +54,27 @@ export default function PortfolioHome() {
             </article>
           );
 
-          return item.external || item.download ? (
+          if (item.available === false) {
+            return <div className="case-grid-item case-grid-item-unavailable" key={item.slug}>{content}</div>;
+          }
+
+          return item.external ? (
             <a
-              download={item.download || undefined}
+              className="case-grid-item"
               href={item.href}
               key={item.slug}
-              rel={item.external ? "noopener noreferrer" : undefined}
-              target={item.external ? "_blank" : undefined}
+              rel="noopener noreferrer"
+              target="_blank"
             >
               {content}
             </a>
           ) : (
-            <Link key={item.slug} to={language === "en" ? `${item.href}?lang=en` : item.href}>
+            <Link className="case-grid-item" key={item.slug} to={language === "en" ? `${item.href}?lang=en` : item.href}>
               {content}
             </Link>
           );
-        })}
+          })}
+        </div>
       </section>
     </main></Localized>
   );

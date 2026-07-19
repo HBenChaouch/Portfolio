@@ -7,7 +7,7 @@ import LanguageToggle from "./LanguageToggle.jsx";
 import Localized from "./Localized.jsx";
 
 const appBase = import.meta.env.BASE_URL.replace(/\/$/, "");
-const analysisBase = `${appBase}/cases/sidetrade-valuation/analysis`;
+const analysisBase = `${appBase}/cases/sidetrade-valuation/analysis/`;
 
 const sidebarGroups = [
   {
@@ -69,9 +69,9 @@ function getCurrentTitle(pathname) {
   return pageTitles[leaf] || "Long-form Analysis";
 }
 
-function scrollToSection(hash) {
+function scrollToSection(hash, behavior = "smooth") {
   const el = document.getElementById(hash);
-  if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+  if (el) el.scrollIntoView({ behavior, block: "start" });
 }
 
 export default function CaseShell() {
@@ -80,7 +80,7 @@ export default function CaseShell() {
   const { activeScenario, setActiveScenario } = useSidetradeScenario();
   const [activeAnchor, setActiveAnchor] = useState("");
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
-  const isAnalysis = location.pathname.endsWith("/analysis");
+  const isAnalysis = location.pathname.replace(/\/+$/, "").endsWith("/analysis");
   const title = t(getCurrentTitle(location.pathname));
   const analysisHref = `${analysisBase}${language === "en" ? "?lang=en" : ""}`;
 
@@ -96,25 +96,43 @@ export default function CaseShell() {
     }
 
     if (location.hash) {
-      window.requestAnimationFrame(() => scrollToSection(location.hash.slice(1)));
+      const directAnchor = location.hash.slice(1);
+      setActiveAnchor(directAnchor);
+      window.requestAnimationFrame(() => scrollToSection(directAnchor, "instant"));
     }
 
-    const observer = new IntersectionObserver(
-      (entries) => {
-        const visible = entries
-          .filter((entry) => entry.isIntersecting)
-          .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
-        if (visible?.target?.id) setActiveAnchor(visible.target.id);
-      },
-      { rootMargin: "-12% 0px -68% 0px", threshold: 0 }
-    );
+    let scrollFrame;
 
-    anchorIds.forEach((id) => {
-      const el = document.getElementById(id);
-      if (el) observer.observe(el);
-    });
+    function updateActiveAnchor() {
+      window.cancelAnimationFrame(scrollFrame);
+      scrollFrame = window.requestAnimationFrame(() => {
+        const activationLine = window.innerWidth <= 900 ? 140 : 120;
+        const sections = anchorIds
+          .map((id) => document.getElementById(id))
+          .filter(Boolean)
+          .map((section) => ({ section, top: section.getBoundingClientRect().top }))
+          .sort((a, b) => a.top - b.top);
+        const passed = sections.filter(({ top }) => top <= activationLine);
+        const currentTop = passed.at(-1)?.top;
+        const currentRow = passed.filter(({ top }) => Math.abs(top - currentTop) < 2);
+        setActiveAnchor((previous) => (
+          currentRow.find(({ section }) => section.id === previous)?.section.id
+          || currentRow[0]?.section.id
+          || sections[0]?.section.id
+          || ""
+        ));
+      });
+    }
 
-    return () => observer.disconnect();
+    updateActiveAnchor();
+    window.addEventListener("scroll", updateActiveAnchor, { passive: true });
+    window.addEventListener("resize", updateActiveAnchor);
+
+    return () => {
+      window.cancelAnimationFrame(scrollFrame);
+      window.removeEventListener("scroll", updateActiveAnchor);
+      window.removeEventListener("resize", updateActiveAnchor);
+    };
   }, [anchorIds, isAnalysis, location.hash]);
 
   useEffect(() => {
@@ -131,7 +149,7 @@ export default function CaseShell() {
   function handleAnchorClick(event, hash) {
     if (!isAnalysis) return;
     event.preventDefault();
-    history.replaceState(null, "", `${analysisHref}#${hash}`);
+    window.history.replaceState(null, "", `${analysisHref}#${hash}`);
     scrollToSection(hash);
     setActiveAnchor(hash);
     setMobileNavOpen(false);
@@ -143,6 +161,7 @@ export default function CaseShell() {
       <aside className="case-sidebar" aria-label="Sidetrade project navigation">
         <Link className="workspace" to={language === "en" ? "/?lang=en" : "/"}>← Portfolio</Link>
         <span className="project-switcher-label">Choose a project</span>
+        <span className="mobile-project-title">Sidetrade</span>
         <button
           aria-controls="sidetrade-section-navigation"
           aria-expanded={mobileNavOpen}

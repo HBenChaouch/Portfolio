@@ -1,6 +1,7 @@
 import { useMemo, useRef, useState } from "react";
 import Localized from "../components/Localized.jsx";
 import { useSidetradeScenario } from "../context/SidetradeScenarioContext.jsx";
+import { useLanguage } from "../context/LanguageContext.jsx";
 import {
   enterpriseValue,
   equityBridge,
@@ -30,6 +31,8 @@ const WACCS = [0.085, 0.09, 0.095, 0.1, 0.105];
 const GS = [0.035, 0.03, 0.025, 0.02, 0.015];
 const EXIT_MULTIPLES = [13, 14, 15, 16, 17];
 const SCENARIO_IDS = ["bear", "base", "bull"];
+const APP_BASE = import.meta.env.BASE_URL.replace(/\/$/, "");
+const ANALYSIS_BASE = `${APP_BASE}/cases/sidetrade-valuation/analysis/`;
 
 const scenarioCopy = {
   bear: {
@@ -414,6 +417,7 @@ function WaterfallBridge({ activeScenario }) {
 
 export default function AnalysisView() {
   const { activeScenario, setActiveScenario } = useSidetradeScenario();
+  const { language } = useLanguage();
   const [fcfView, setFcfView] = useState("norm");
   const scenarioResults = useMemo(() => ({
     bear: resultFor("bear"),
@@ -423,6 +427,13 @@ export default function AnalysisView() {
   const active = scenarioResults[activeScenario];
   const cagr = Math.pow(active.rev / FY25.revenue, 1 / 5) - 1;
   const waccExit = sensitivityWaccExit(activeScenario, WACCS, EXIT_MULTIPLES);
+  const analysisHref = `${ANALYSIS_BASE}${language === "en" ? "?lang=en" : ""}`;
+
+  function handleChapterClick(event, hash) {
+    event.preventDefault();
+    window.history.replaceState(null, "", `${analysisHref}#${hash}`);
+    document.getElementById(hash)?.scrollIntoView({ behavior: "smooth", block: "start" });
+  }
 
   return (
     <Localized><article className="analysis-view">
@@ -437,18 +448,18 @@ export default function AnalysisView() {
         <p className="sub">
           A four-method triangulation — DCF, trading comps, transaction comps and LBO affordability — applied to <strong>Sidetrade</strong> (Euronext Growth: ALBFR), a profitable AI-native Order-to-Cash SaaS. Toggle Bear / Base / Bull to recompose the DCF and watch the football field react.
         </p>
+        <nav className="desktop-chapter-index" aria-label="Sidetrade analysis chapters">
+          <a href={`${analysisHref}#snapshot`} onClick={(event) => handleChapterClick(event, "snapshot")}><span>01</span>Investment case</a>
+          <a href={`${analysisHref}#dcf`} onClick={(event) => handleChapterClick(event, "dcf")}><span>02</span>Valuation</a>
+          <a href={`${analysisHref}#football`} onClick={(event) => handleChapterClick(event, "football")}><span>03</span>Synthesis</a>
+          <a href={`${analysisHref}#red-flags`} onClick={(event) => handleChapterClick(event, "red-flags")}><span>04</span>Audit trail</a>
+        </nav>
         <div className="keystats">
           <div className="cell"><div className="k">Revenue FY25</div><div className="v">{fmtM(FY25.revenue, 1)}</div><div className="d up">+14% cc · +12% reported</div></div>
           <div className="cell"><div className="k">Subscriptions</div><div className="v">{fmtM(DISPLAY_VALUES.subscriptionRevenue, 1)}</div><div className="d up">+20% cc · 87% of revenue</div></div>
           <div className="cell"><div className="k">EBITDA margin</div><div className="v">{fmtPct(FY25.ebitdaMargin, 0)}</div><div className="d">{fmtM(FY25.ebitda, 1)} · +22% YoY</div></div>
           <div className="cell"><div className="k">Net debt (strict)</div><div className="v">{fmtM(NET_DEBT.strict, 1)}</div><div className="d">Financial debt less cash &amp; marketable securities</div></div>
         </div>
-        <nav className="desktop-chapter-index" aria-label="Sidetrade analysis chapters">
-          <a href="#snapshot"><span>01</span>Investment case</a>
-          <a href="#dcf"><span>02</span>Valuation</a>
-          <a href="#football"><span>03</span>Synthesis</a>
-          <a href="#red-flags"><span>04</span>Audit trail</a>
-        </nav>
       </header>
 
       <section className="block tight" id="snapshot">

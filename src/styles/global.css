@@ -3745,6 +3745,7 @@ a {
 }
 
 .mobile-nav-toggle,
+.mobile-project-title,
 .control-date-short {
   display: none;
 }
@@ -4006,7 +4007,7 @@ a {
 
   .case-sidebar {
     display: grid;
-    grid-template-columns: auto 1fr auto;
+    grid-template-columns: 1fr auto 1fr;
     height: 44px;
     left: auto;
     overflow: visible;
@@ -4018,13 +4019,24 @@ a {
   }
 
   .workspace {
+    justify-self: start;
     margin: 0;
     min-height: 44px;
   }
 
   .project-switcher-label {
+    display: none;
+  }
+
+  .mobile-project-title {
     align-self: center;
-    justify-self: end;
+    color: var(--bg);
+    display: block;
+    font-family: var(--serif);
+    font-size: 16px;
+    font-weight: 700;
+    justify-self: center;
+    line-height: 1;
     margin: 0;
   }
 
@@ -4037,9 +4049,10 @@ a {
     font-family: var(--mono);
     font-size: 10px;
     gap: 8px;
+    justify-self: end;
     letter-spacing: 0.1em;
     min-height: 44px;
-    padding: 0 0 0 12px;
+    padding: 0;
     text-transform: uppercase;
   }
 
@@ -4647,10 +4660,6 @@ a {
 }
 
 @media (max-width: 420px) {
-  .project-switcher-label {
-    font-size: 9px;
-  }
-
   .control-title span:last-child,
   .control-title i {
     display: none;
@@ -4701,10 +4710,25 @@ a {
 /* === SIDETRADE DESKTOP === */
 
 .analysis-view #executive,
+.analysis-view #snapshot,
+.analysis-view #qoe,
+.analysis-view #cash-conversion,
+.analysis-view #debt-like,
+.analysis-view #market,
+.analysis-view #dcf,
+.analysis-view #trading,
+.analysis-view #transaction,
+.analysis-view #lbo,
+.analysis-view #football,
 .analysis-view .equity-bridge-section,
 .analysis-view .conclusion-panel,
+.analysis-view #red-flags,
+.analysis-view #diligence,
+.analysis-view #conventions,
+.analysis-view #methodology,
+.analysis-view #sources,
 .analysis-view .anchor-alias {
-  scroll-margin-top: 104px;
+  scroll-margin-top: 8px;
 }
 
 .desktop-chapter-index {
@@ -4712,7 +4736,11 @@ a {
   border-top: 1px solid var(--line-strong);
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
-  margin-top: var(--space-7);
+  margin-top: var(--space-6);
+}
+
+.desktop-chapter-index + .keystats {
+  margin-top: var(--space-5);
 }
 
 .desktop-chapter-index a {
@@ -4968,9 +4996,6 @@ a {
     min-height: 31px;
   }
 
-  .analysis-view .hero {
-    min-height: calc(100vh - 76px);
-  }
 }
 
 @media (max-width: 900px) {

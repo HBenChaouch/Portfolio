@@ -62,6 +62,25 @@ const fallbackScript = await text("scripts/create-spa-fallback.mjs");
 assert.match(fallbackScript, /cases\/sidetrade-valuation/);
 assert.match(fallbackScript, /cases\/sidetrade-valuation\/analysis/);
 
+const caseShell = await text("src/components/CaseShell.jsx");
+assert.match(caseShell, /sidetrade-valuation\/analysis\//, "GitHub Pages anchor base must use the canonical trailing slash");
+assert.match(caseShell, /mobile-project-title">Sidetrade</, "Mobile header must identify the active case");
+assert.match(caseShell, /setMobileNavOpen\(false\)/, "Mobile contents must close after an anchor selection");
+assert.match(caseShell, /aria-current=.*activeAnchor/, "The current section must be exposed to assistive technology");
+
+const analysisView = await text("src/routes/AnalysisView.jsx");
+const chapterIndexPosition = analysisView.indexOf('className="desktop-chapter-index"');
+const keyStatsPosition = analysisView.indexOf('className="keystats"');
+assert.ok(
+  chapterIndexPosition > -1 && chapterIndexPosition < keyStatsPosition,
+  "Structural shortcuts must follow the introduction and precede key statistics",
+);
+assert.doesNotMatch(
+  styles,
+  /\.analysis-view \.hero\s*\{[^}]*min-height:\s*calc\(100vh - 76px\)/,
+  "The analysis hero must not be forced to viewport height",
+);
+
 const publicCopy = [
   await text("src/components/CaseShell.jsx"),
   await text("src/data/portfolioCases.js"),

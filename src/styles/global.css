@@ -4151,20 +4151,19 @@ a {
   .analysis-view .chart-wrap,
   .analysis-view .ff,
   .analysis-view .waterfall-wrap {
-    overflow-x: auto;
+    overflow-x: visible;
     padding: var(--space-5);
-    scrollbar-gutter: stable;
-    touch-action: pan-x pan-y;
+    touch-action: pan-y;
   }
 
   .analysis-view .chart-svg,
   .analysis-view .waterfall-svg {
-    min-width: 680px;
+    min-width: 0;
   }
 
   .analysis-view .ff-canvas,
   .analysis-view .ff-axis-row {
-    min-width: 680px;
+    min-width: 0;
   }
 }
 
@@ -4608,14 +4607,11 @@ a {
   }
 
   .analysis-view table.data {
-    display: block;
+    display: table;
     max-width: 100%;
-    overflow-x: auto;
-    overscroll-behavior-inline: contain;
-    scrollbar-color: var(--bordeaux-soft) var(--bg-alt);
-    scrollbar-width: thin;
-    touch-action: pan-x pan-y;
-    white-space: nowrap;
+    overflow: visible;
+    table-layout: fixed;
+    white-space: normal;
   }
 
   .analysis-view table.data th:first-child,
@@ -5288,5 +5284,508 @@ a {
 @media (max-width: 370px) {
   .home-hero h1 {
     font-size: 32px;
+  }
+}
+
+/* === S13 · responsive financial representations === */
+
+.analysis-view details.tip {
+  border: 0;
+  display: inline-block;
+  margin: 0;
+  position: relative;
+}
+
+.analysis-view details.tip > summary {
+  border-bottom: 1px dotted var(--line-strong);
+  cursor: pointer;
+  display: inline;
+  list-style: none;
+}
+
+.analysis-view details.tip > summary::-webkit-details-marker {
+  display: none;
+}
+
+.analysis-view details.tip[open] > .tip-body {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.analysis-view .chart-disclosures,
+.analysis-view .transaction-cards,
+.analysis-view .waterfall-mobile,
+.analysis-view .mobile-range {
+  display: none;
+}
+
+.analysis-view .ff-rows {
+  padding-top: 0;
+}
+
+.analysis-view .ff-reference-row {
+  display: grid;
+  gap: 14px;
+  grid-template-columns: 130px minmax(0, 1fr) 100px;
+}
+
+.analysis-view .ff-reference-scale {
+  height: 54px;
+  position: relative;
+}
+
+.analysis-view .ff-reference-scale .ref-label {
+  position: absolute;
+}
+
+.analysis-view .ff-reference-scale .ref-label.market {
+  top: 0;
+  transform: translateX(calc(-100% - 5px));
+}
+
+.analysis-view .ff-reference-scale .ref-label.fair {
+  top: 24px;
+}
+
+.analysis-view .ff-reference-scale .ref-label.control {
+  top: 0;
+}
+
+.analysis-view .ff-row .row-reference {
+  bottom: -10px;
+  pointer-events: none;
+  position: absolute;
+  top: -10px;
+  width: 1px;
+  z-index: 2;
+}
+
+.analysis-view .ff-row .row-reference.market {
+  border-left: 1px dashed var(--market);
+}
+
+.analysis-view .ff-row .row-reference.fair {
+  background: var(--bordeaux);
+}
+
+.analysis-view .ff-row .row-reference.control {
+  background: var(--bull);
+}
+
+@media (max-width: 760px) {
+  .analysis-view .chart-wrap,
+  .analysis-view .ff,
+  .analysis-view .waterfall-wrap {
+    overflow-x: visible;
+    padding: 18px 14px;
+    scrollbar-gutter: auto;
+    touch-action: pan-y;
+  }
+
+  .analysis-view .chart-svg,
+  .analysis-view .waterfall-svg,
+  .analysis-view .ff-canvas,
+  .analysis-view .ff-axis-row {
+    min-width: 0;
+  }
+
+  .analysis-view .chart-svg {
+    aspect-ratio: 8 / 3;
+    height: auto;
+    overflow: hidden;
+  }
+
+  .analysis-view .chart-tip {
+    display: none;
+  }
+
+  .analysis-view .chart-disclosures {
+    display: grid;
+    gap: 6px;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    margin-top: 12px;
+  }
+
+  .analysis-view .chart-disclosures details {
+    border: 1px solid var(--line);
+    min-width: 0;
+  }
+
+  .analysis-view .chart-disclosures summary {
+    cursor: pointer;
+    font-family: var(--mono);
+    font-size: 10px;
+    list-style-position: inside;
+    min-height: 44px;
+    padding: 14px 8px;
+  }
+
+  .analysis-view .chart-disclosures dl {
+    margin: 0;
+    padding: 0 8px 8px;
+  }
+
+  .analysis-view .chart-disclosures dl div {
+    display: flex;
+    font-size: 10px;
+    gap: 6px;
+    justify-content: space-between;
+    min-width: 0;
+  }
+
+  .analysis-view .chart-disclosures dt,
+  .analysis-view .chart-disclosures dd {
+    margin: 0;
+    min-width: 0;
+    overflow-wrap: anywhere;
+  }
+
+  .analysis-view table.data,
+  .analysis-view table.data.compact-mobile-table {
+    display: table;
+    font-size: 10.5px;
+    overflow: visible;
+    table-layout: fixed;
+    white-space: normal;
+    width: 100%;
+  }
+
+  .analysis-view table.data th,
+  .analysis-view table.data td {
+    overflow-wrap: anywhere;
+    padding: 8px 5px;
+  }
+
+  .analysis-view table.data th:first-child,
+  .analysis-view table.data td:first-child,
+  .analysis-view .sensi th:first-child,
+  .analysis-view .sensi td:first-child {
+    box-shadow: none;
+    left: auto;
+    position: static;
+  }
+
+  .analysis-view .dcf-assumptions-table th:first-child,
+  .analysis-view .dcf-assumptions-table td:first-child,
+  .analysis-view .dcf-results-table th:first-child,
+  .analysis-view .dcf-results-table td:first-child {
+    width: 40%;
+  }
+
+  .analysis-view .sensi-wrap .table-scroll {
+    overflow: visible;
+  }
+
+  .analysis-view .sensi {
+    font-size: 9px;
+    table-layout: fixed;
+    width: 100%;
+  }
+
+  .analysis-view .sensi th,
+  .analysis-view .sensi td {
+    letter-spacing: -0.02em;
+    padding: 8px 2px;
+  }
+
+  .analysis-view .sensi th.corner,
+  .analysis-view .sensi .row-h {
+    font-size: 8px;
+    width: 20%;
+  }
+
+  .analysis-view .peer-table thead {
+    display: none;
+  }
+
+  .analysis-view .peer-table,
+  .analysis-view .peer-table tbody {
+    display: block;
+  }
+
+  .analysis-view .peer-table tr {
+    border: 1px solid var(--line);
+    display: grid;
+    grid-template-columns: 1fr auto;
+    margin-bottom: 8px;
+    padding: 10px;
+  }
+
+  .analysis-view .peer-table td {
+    border: 0;
+    display: block;
+    padding: 3px 0;
+  }
+
+  .analysis-view .peer-table td:nth-child(1) {
+    grid-column: 1;
+    grid-row: 1;
+  }
+
+  .analysis-view .peer-table td:nth-child(2) {
+    color: var(--ink-3);
+    font-size: 10px;
+    grid-column: 1 / -1;
+    grid-row: 2;
+  }
+
+  .analysis-view .peer-table td:nth-child(3) {
+    color: var(--bordeaux);
+    font-weight: 600;
+    grid-column: 2;
+    grid-row: 1;
+  }
+
+  .analysis-view .peer-table td:nth-child(4) {
+    color: var(--ink-4);
+    font-family: var(--mono);
+    font-size: 9px;
+    grid-column: 2;
+    grid-row: 2;
+    text-align: right;
+  }
+
+  .analysis-view details.tip {
+    display: block;
+  }
+
+  .analysis-view details.tip > summary {
+    align-items: center;
+    display: flex;
+    min-height: 44px;
+  }
+
+  .analysis-view .tip > .tip-body {
+    background: var(--bg-alt);
+    border-left: 2px solid var(--bordeaux);
+    box-shadow: none;
+    color: var(--ink-2);
+    display: none;
+    max-width: none;
+    opacity: 1;
+    padding: 10px;
+    pointer-events: auto;
+    position: static;
+    width: auto;
+  }
+
+  .analysis-view details.tip[open] > .tip-body {
+    display: block;
+  }
+
+  .analysis-view .tip > .tip-body::after {
+    display: none;
+  }
+
+  .analysis-view .tip .tip-k,
+  .analysis-view .tip .tip-v {
+    color: var(--bordeaux);
+  }
+
+  .analysis-view .transaction-table {
+    display: none !important;
+  }
+
+  .analysis-view .transaction-cards {
+    display: grid;
+    gap: 8px;
+  }
+
+  .analysis-view .transaction-cards details {
+    border: 1px solid var(--line);
+  }
+
+  .analysis-view .transaction-cards summary {
+    align-items: center;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    min-height: 44px;
+    padding: 9px 12px;
+  }
+
+  .analysis-view .transaction-cards summary span,
+  .analysis-view .transaction-cards summary small {
+    display: block;
+  }
+
+  .analysis-view .transaction-cards summary small {
+    color: var(--ink-3);
+    font-size: 10px;
+  }
+
+  .analysis-view .transaction-cards summary b {
+    color: var(--bordeaux);
+    font-family: var(--mono);
+  }
+
+  .analysis-view .transaction-cards dl {
+    border-top: 1px solid var(--line);
+    margin: 0;
+    padding: 8px 12px 12px;
+  }
+
+  .analysis-view .transaction-cards dl div,
+  .analysis-view #lbo table.data tr {
+    display: flex;
+    gap: 12px;
+    justify-content: space-between;
+  }
+
+  .analysis-view .transaction-cards dt,
+  .analysis-view .transaction-cards dd {
+    font-size: 11px;
+    margin: 0;
+  }
+
+  .analysis-view #lbo table.data,
+  .analysis-view #lbo table.data tbody {
+    display: block;
+  }
+
+  .analysis-view #lbo table.data tr {
+    border-bottom: 1px solid var(--line);
+  }
+
+  .analysis-view #lbo table.data td {
+    border: 0;
+    flex: 1 1 50%;
+  }
+
+  .analysis-view #lbo table.data td:last-child {
+    text-align: right;
+  }
+
+  .analysis-view .ff-reference-row,
+  .analysis-view .ff-row {
+    gap: 8px;
+    grid-template-columns: 68px minmax(0, 1fr) 52px;
+  }
+
+  .analysis-view .ff-reference-scale {
+    height: 68px;
+  }
+
+  .analysis-view .ff-reference-scale .ref-label {
+    font-size: 7.5px;
+    letter-spacing: .02em;
+    padding: 2px 3px;
+  }
+
+  .analysis-view .ff-reference-scale .ref-label.market {
+    top: 0;
+  }
+
+  .analysis-view .ff-reference-scale .ref-label.fair {
+    top: 24px;
+    transform: translateX(-45%);
+  }
+
+  .analysis-view .ff-reference-scale .ref-label.control {
+    top: 48px;
+    transform: translateX(-50%);
+  }
+
+  .analysis-view .ff-row {
+    padding: 13px 0 22px;
+    position: relative;
+  }
+
+  .analysis-view .ff-row .label {
+    font-size: 8.5px;
+    letter-spacing: .04em;
+  }
+
+  .analysis-view .ff-row .label .sub {
+    font-size: 7.5px;
+  }
+
+  .analysis-view .ff-row .base-val {
+    font-size: 10px;
+  }
+
+  .analysis-view .ff-row .endpoint {
+    display: none;
+  }
+
+  .analysis-view .mobile-range {
+    bottom: 2px;
+    color: var(--ink-3);
+    display: flex;
+    font-family: var(--mono);
+    font-size: 8px;
+    grid-column: 2;
+    justify-content: space-between;
+    left: 0;
+    position: absolute;
+    right: 0;
+  }
+
+  .analysis-view .ff-axis-row .tick {
+    font-size: 8px;
+  }
+
+  .analysis-view .ff-axis-row .tick:first-child {
+    transform: none;
+  }
+
+  .analysis-view .ff-axis-row .tick:last-child {
+    transform: translateX(-100%);
+  }
+
+  .analysis-view .ff-axis-row .tick.fair,
+  .analysis-view .ff-axis-row .tick.control {
+    display: none;
+  }
+
+  .analysis-view .waterfall-svg {
+    display: none;
+  }
+
+  .analysis-view details.method .body pre {
+    overflow: visible;
+    white-space: pre-wrap;
+  }
+
+  .analysis-view .waterfall-mobile {
+    counter-reset: bridge;
+    display: grid;
+    gap: 0;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .analysis-view .waterfall-mobile li {
+    border-left: 2px solid var(--bordeaux);
+    display: grid;
+    gap: 2px 12px;
+    grid-template-columns: 1fr auto;
+    padding: 12px 14px;
+    position: relative;
+  }
+
+  .analysis-view .waterfall-mobile li + li {
+    border-top: 1px solid var(--line);
+  }
+
+  .analysis-view .waterfall-mobile li.deduction {
+    border-left-color: var(--bear);
+  }
+
+  .analysis-view .waterfall-mobile li.final {
+    background: var(--bg-alt);
+  }
+
+  .analysis-view .waterfall-mobile strong {
+    color: var(--bordeaux);
+    font-family: var(--serif);
+    font-size: 22px;
+  }
+
+  .analysis-view .waterfall-mobile small {
+    color: var(--ink-3);
+    font-size: 10px;
+    grid-column: 1 / -1;
   }
 }

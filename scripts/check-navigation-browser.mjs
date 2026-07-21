@@ -117,7 +117,10 @@ function command(method, params = {}) {
 
 async function evaluate(expression) {
   const result = await command("Runtime.evaluate", { expression, awaitPromise: true, returnByValue: true });
-  if (result.exceptionDetails) throw new Error(result.exceptionDetails.text);
+  if (result.exceptionDetails) {
+    const detail = result.exceptionDetails.exception?.description ?? result.exceptionDetails.text;
+    throw new Error(detail);
+  }
   return result.result.value;
 }
 
@@ -164,6 +167,55 @@ async function waitForStableAnchor(anchor) {
     return stableSamples >= 2;
   }, `stable #${anchor}`);
   return current;
+}
+
+async function responsiveState(width, height, mobile = true) {
+  await command("Emulation.setDeviceMetricsOverride", { width, height, deviceScaleFactor: 1, mobile });
+  await navigate(`${base}#snapshot`);
+  await waitForStableAnchor("snapshot");
+  return evaluate(`(() => {
+    const article = document.querySelector('.analysis-view');
+    const offenders = Array.from(article.querySelectorAll('*')).filter((element) => {
+      const style = getComputedStyle(element);
+      if (style.display === 'none' || style.visibility === 'hidden' || element.classList.contains('sr-only')) return false;
+      return element.scrollWidth - element.clientWidth > 1;
+    }).map((element) => ({
+      className: element.className?.baseVal ?? element.className ?? '',
+      clientWidth: element.clientWidth,
+      id: element.id,
+      scrollWidth: element.scrollWidth,
+      tag: element.tagName,
+      text: element.textContent?.trim().slice(0, 80),
+    }));
+    const scale = document.querySelector('.ff-reference-scale').getBoundingClientRect();
+    const labels = Array.from(document.querySelectorAll('.ff-reference-scale .ref-label')).map((element) => {
+      const rect = element.getBoundingClientRect();
+      return { className: element.className, bottom: rect.bottom, left: rect.left, right: rect.right, top: rect.top };
+    });
+    const overlap = labels.some((label, index) => labels.slice(index + 1).some((other) => (
+      label.left < other.right && label.right > other.left && label.top < other.bottom && label.bottom > other.top
+    )));
+    const references = ['market', 'fair', 'control'].map((kind) => {
+      const marker = document.querySelector('.ff-row .row-reference.' + kind).getBoundingClientRect();
+      const markerElement = document.querySelector('.ff-row .row-reference.' + kind);
+      const label = document.querySelector('.ff-reference-scale .ref-label.' + kind).getBoundingClientRect();
+      const expectedX = scale.left + parseFloat(markerElement.style.left) / 100 * scale.width;
+      return { alignmentError: Math.abs(marker.left - expectedX), kind, labelX: label.left + label.width / 2, markerX: marker.left, onScale: marker.left >= scale.left - 1 && marker.left <= scale.right + 1 };
+    });
+    const disclosureTargets = Array.from(document.querySelectorAll('.chart-disclosures summary, .transaction-cards summary, .peer-table .tip > summary'))
+      .filter((element) => getComputedStyle(element).display !== 'none')
+      .map((element) => element.getBoundingClientRect().height);
+    return {
+      documentOverflow: document.documentElement.scrollWidth - document.documentElement.clientWidth,
+      offenders: innerWidth <= 760 ? offenders : [],
+      labelsOverlap: overlap,
+      references,
+      minDisclosureTarget: Math.min(...disclosureTargets),
+      transactionCards: getComputedStyle(document.querySelector('.transaction-cards')).display,
+      verticalWaterfall: getComputedStyle(document.querySelector('.waterfall-mobile')).display,
+      viewport: { width: innerWidth, height: innerHeight },
+    };
+  })()`);
 }
 
 async function realPointerClick(elementExpression, label) {
@@ -284,6 +336,48 @@ try {
   const baseHas301 = await evaluate("document.body.innerText.includes('€301m')");
   assert(baseHas301, "Base scenario did not restore €301m");
 
+  const desktopLayouts = [];
+  for (const viewport of [[1280, 720], [1920, 1080]]) {
+    const state = await responsiveState(...viewport, false);
+    assert(state.documentOverflow === 0, `Desktop document overflow at ${viewport.join("x")}: ${JSON.stringify(state)}`);
+    assert(!state.labelsOverlap, `Desktop football labels overlap at ${viewport.join("x")}: ${JSON.stringify(state)}`);
+    assert(state.references.every((reference) => reference.onScale && reference.alignmentError < 1), `Desktop football scale mismatch at ${viewport.join("x")}: ${JSON.stringify(state.references)}`);
+    desktopLayouts.push(state);
+  }
+
+  const responsive = [];
+  for (const viewport of [[360, 800], [390, 844], [430, 932]]) {
+    const state = await responsiveState(...viewport);
+    assert(state.documentOverflow === 0, `Document overflow at ${viewport.join("x")}: ${JSON.stringify(state)}`);
+    assert(state.offenders.length === 0, `Horizontal narration overflow at ${viewport.join("x")}: ${JSON.stringify(state.offenders)}`);
+    assert(!state.labelsOverlap, `Football labels overlap at ${viewport.join("x")}: ${JSON.stringify(state)}`);
+    assert(state.references.every((reference) => reference.onScale && reference.alignmentError < 1), `Football reference outside common scale at ${viewport.join("x")}: ${JSON.stringify(state.references)}`);
+    assert(state.minDisclosureTarget >= 44, `Disclosure target below 44px at ${viewport.join("x")}: ${state.minDisclosureTarget}`);
+    assert(state.transactionCards === "grid" && state.verticalWaterfall === "grid", `Mobile representations missing at ${viewport.join("x")}: ${JSON.stringify(state)}`);
+    responsive.push(state);
+  }
+
+  await command("Emulation.setDeviceMetricsOverride", { width: 390, height: 844, deviceScaleFactor: 1, mobile: true });
+  await navigate(`${base}#trading`);
+  await waitForStableAnchor("trading");
+  const peerDisclosurePointer = await realPointerClick("document.querySelector('.peer-table details.tip > summary')", "peer rationale disclosure");
+  const peerDisclosureOpen = await evaluate("document.querySelector('.peer-table details.tip')?.open === true");
+  assert(peerDisclosureOpen, "Peer rationale did not open after a trusted pointer interaction");
+
+  await navigate(`${base}#transaction`);
+  await waitForStableAnchor("transaction");
+  const transactionDisclosurePointer = await realPointerClick("document.querySelector('.transaction-cards details > summary')", "transaction detail disclosure");
+  const transactionDisclosureOpen = await evaluate("document.querySelector('.transaction-cards details')?.open === true");
+  assert(transactionDisclosureOpen, "Transaction detail did not open after a trusted pointer interaction");
+
+  await navigate(`${base}#dcf`);
+  await waitForStableAnchor("dcf");
+  await evaluate("document.querySelector('.chart-disclosures details > summary')?.focus()");
+  await command("Input.dispatchKeyEvent", { key: " ", code: "Space", type: "keyDown", windowsVirtualKeyCode: 32 });
+  await command("Input.dispatchKeyEvent", { key: " ", code: "Space", type: "keyUp", windowsVirtualKeyCode: 32 });
+  const chartDisclosureOpen = await evaluate("document.querySelector('.chart-disclosures details')?.open === true");
+  assert(chartDisclosureOpen, "Trajectory detail did not open from the keyboard");
+
   assert(browserMessages.length === 0, `Browser warnings/errors: ${browserMessages.join(" | ")}`);
   console.log("Navigation browser behavior: PASS");
   console.log(JSON.stringify({
@@ -301,6 +395,13 @@ try {
     mobileEn1700,
     bullHas497,
     baseHas301,
+    desktopLayouts,
+    peerDisclosurePointer,
+    peerDisclosureOpen,
+    transactionDisclosurePointer,
+    transactionDisclosureOpen,
+    chartDisclosureOpen,
+    responsive,
     browserMessages,
   }, null, 2));
 } finally {

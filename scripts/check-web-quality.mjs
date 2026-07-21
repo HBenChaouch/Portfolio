@@ -92,6 +92,13 @@ assert.doesNotMatch(
   /\.analysis-view \.hero\s*\{[^}]*min-height:\s*calc\(100vh - 76px\)/,
   "The analysis hero must not be forced to viewport height",
 );
+assert.doesNotMatch(analysisView, /calc\([^)]*%\s*\*/, "Football references must not use invalid calc multiplication");
+assert.doesNotMatch(analysisView, /Hover any|Hover a|Survoler/, "Touch-accessible disclosures must replace hover-only instructions");
+assert.match(analysisView, /className="chart-disclosures"/, "Trajectory values need touch and keyboard disclosures");
+assert.match(analysisView, /className="transaction-cards"/, "Transaction comps need mobile disclosures");
+assert.match(analysisView, /className="waterfall-mobile"/, "The EV-to-equity bridge needs a vertical mobile representation");
+assert.match(styles, /\.analysis-view \.ff-reference-scale/, "Football references must share the range scale");
+assert.match(styles, /\.analysis-view \.transaction-table\s*\{\s*display: none !important;/, "The wide transaction table must yield to mobile disclosures");
 
 const publicCopy = [
   await text("src/components/CaseShell.jsx"),

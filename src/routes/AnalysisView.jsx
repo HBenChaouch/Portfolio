@@ -100,14 +100,14 @@ function resultFor(id) {
 
 function Tip({ children, k, body, v }) {
   return (
-    <Localized><span className="tip">
-      {children}
+    <Localized><details className="tip">
+      <summary>{children}</summary>
       <span className="tip-body">
         <span className="tip-k">{k}</span>
         {body}
         {v ? <span className="tip-v">{v}</span> : null}
       </span>
-    </span></Localized>
+    </details></Localized>
   );
 }
 
@@ -195,14 +195,14 @@ function TrajectoryChart({ activeScenario }) {
       <div className="chart-head">
         <div className="left">
           <h3>Revenue &amp; EBITDA trajectory · 2025 → 2030</h3>
-          <div className="sub">Recomposes live with the active scenario above. Hover any year for the bridge.</div>
+          <div className="sub">Recomposes live with the active scenario above. Open any year below for the bridge.</div>
         </div>
         <div className="chart-legend">
           <span><span className="swatch rev" />Revenue</span>
           <span><span className="swatch ebitda" />EBITDA</span>
         </div>
       </div>
-      <svg aria-labelledby="trajectory-chart-title trajectory-chart-desc" className="chart-svg" id="traj-chart" role="img" viewBox="0 0 800 300" preserveAspectRatio="none">
+      <svg aria-labelledby="trajectory-chart-title trajectory-chart-desc" className="chart-svg" id="traj-chart" role="img" viewBox="0 0 800 300" preserveAspectRatio="xMidYMid meet">
         <title id="trajectory-chart-title">Revenue and EBITDA trajectory from 2025 to 2030</title>
         <desc id="trajectory-chart-desc">The chart updates with the selected DCF scenario. Revenue and EBITDA values are also provided as accessible text immediately after the chart.</desc>
         {[0, 35, 70, 105, 140].map((tick) => (
@@ -258,6 +258,18 @@ function TrajectoryChart({ activeScenario }) {
             <div className="row"><span className="lbl">Margin</span><span>{fmtPct(tip.margin, 0)}</span></div>
           </>
         ) : null}
+      </div>
+      <div className="chart-disclosures" aria-label="Trajectory values by year">
+        {trajectory.map((point) => (
+          <details key={point.year}>
+            <summary>{point.year}</summary>
+            <dl>
+              <div><dt>Revenue</dt><dd>{fmtM(point.revenue, 1)}</dd></div>
+              <div><dt>EBITDA</dt><dd>{fmtM(point.ebitda, 1)}</dd></div>
+              <div><dt>Margin</dt><dd>{fmtPct(point.ebitdaMargin, 0)}</dd></div>
+            </dl>
+          </details>
+        ))}
       </div>
     </div></Localized>
   );
@@ -338,9 +350,17 @@ function FootballField({ activeScenario, scenarioResults }) {
         <div className="range-track" id={`ff-track-${method}`}>
           <div className="range-bar" style={{ left: `${low}%`, width: `${high - low}%` }} />
           <div className="base-tick" style={{ left: `calc(${base}% - 1px)` }} />
+          {[
+            ["market", VALUATION_CONTEXT.marketEv],
+            ["fair", VALUATION_CONTEXT.fairValueEv],
+            ["control", VALUATION_CONTEXT.controlEv],
+          ].map(([kind, value]) => (
+            <span aria-hidden="true" className={`row-reference ${kind}`} key={kind} style={{ left: `${pctFromValue(value)}%` }} />
+          ))}
           <div className="endpoint left" style={{ left: `${low}%` }}>{fmtM(range.low)}</div>
           <div className="endpoint right" style={{ left: `${high}%` }}>{fmtM(range.high)}</div>
         </div>
+        <div className="mobile-range"><span>{fmtM(range.low)}</span><span>{fmtM(range.high)}</span></div>
         <div className="base-val"><span className="euro">€</span>{method === "dcf" ? <span id="ff-dcf-base">{baseText}</span> : baseText}</div>
       </div>
     );
@@ -350,12 +370,15 @@ function FootballField({ activeScenario, scenarioResults }) {
     <Localized><div aria-label={`Valuation football field with active DCF scenario ${activeScenario}`} className="ff" role="region" tabIndex="0">
       <div className="ff-canvas" id="ff-canvas">
         <div className="ff-rows">
-          <div className="ref fair" style={{ left: `calc(130px + 14px + ${pctFromValue(VALUATION_CONTEXT.fairValueEv)}% * (100% - 244px) / 100)` }} />
-          <div className="ref-label fair" style={{ left: `calc(130px + 14px + ${pctFromValue(VALUATION_CONTEXT.fairValueEv)}% * (100% - 244px) / 100)` }}>Fair value {fmtM(VALUATION_CONTEXT.fairValueEv)}</div>
-          <div className="ref control" style={{ left: `calc(130px + 14px + ${pctFromValue(VALUATION_CONTEXT.controlEv)}% * (100% - 244px) / 100)` }} />
-          <div className="ref-label control" style={{ left: `calc(130px + 14px + ${pctFromValue(VALUATION_CONTEXT.controlEv)}% * (100% - 244px) / 100)` }}>Control {fmtM(VALUATION_CONTEXT.controlEv)}</div>
-          <div className="ref market" style={{ left: `calc(130px + 14px + ${pctFromValue(VALUATION_CONTEXT.marketEv)}% * (100% - 244px) / 100)` }} />
-          <div className="ref-label market" style={{ left: `calc(130px + 14px + ${pctFromValue(VALUATION_CONTEXT.marketEv)}% * (100% - 244px) / 100)` }}>Market EV ~{fmtM(VALUATION_CONTEXT.marketEv)} ({VALUATION_DATES.marketMedium})</div>
+          <div className="ff-reference-row" aria-label="Valuation references">
+            <span aria-hidden="true" />
+            <div className="ff-reference-scale">
+              <span className="ref-label market" style={{ left: `${pctFromValue(VALUATION_CONTEXT.marketEv)}%` }}>Market ~{fmtM(VALUATION_CONTEXT.marketEv)}</span>
+              <span className="ref-label fair" style={{ left: `${pctFromValue(VALUATION_CONTEXT.fairValueEv)}%` }}>Fair value {fmtM(VALUATION_CONTEXT.fairValueEv)}</span>
+              <span className="ref-label control" style={{ left: `${pctFromValue(VALUATION_CONTEXT.controlEv)}%` }}>Control {fmtM(VALUATION_CONTEXT.controlEv)}</span>
+            </div>
+            <span aria-hidden="true" />
+          </div>
           {row("dcf", "DCF", "Fundamental", `${scenarioResults[activeScenario].ev.toFixed(0)}m`)}
           {row("trading", "Trading", "Stand-alone", `${VALUATION_CONTEXT.tradingRange.base.toFixed(0)}m`)}
           {row("transaction", "Transaction", "Control", `${VALUATION_CONTEXT.transactionRange.base.toFixed(0)}m`)}
@@ -367,8 +390,8 @@ function FootballField({ activeScenario, scenarioResults }) {
         <div className="ff-axis-inner">
           <span className="tick" style={{ left: "0%" }}>€100m</span>
           <span className="tick" style={{ left: "20%" }}>€200m</span>
-          <span className="tick tick-accent fair" style={{ left: "40%" }}>{fmtM(VALUATION_CONTEXT.fairValueEv)}</span>
-          <span className="tick tick-accent control" style={{ left: "62%" }}>{fmtM(VALUATION_CONTEXT.controlEv)}</span>
+          <span className="tick tick-accent fair" style={{ left: `${pctFromValue(VALUATION_CONTEXT.fairValueEv)}%` }}>{fmtM(VALUATION_CONTEXT.fairValueEv)}</span>
+          <span className="tick tick-accent control" style={{ left: `${pctFromValue(VALUATION_CONTEXT.controlEv)}%` }}>{fmtM(VALUATION_CONTEXT.controlEv)}</span>
           <span className="tick" style={{ left: "80%" }}>€500m</span>
           <span className="tick" style={{ left: "100%" }}>€600m</span>
         </div>
@@ -416,6 +439,12 @@ function WaterfallBridge({ activeScenario }) {
         <text className="wf-sub" x="720" y="188">{fmtM(bridge.equity)} equity ÷ {FY25.dilutedShares.toLocaleString("en-GB")} diluted shares</text>
         <text className="wf-sub" x="720" y="208">Stand-alone central case</text>
       </svg>
+      <ol className="waterfall-mobile" aria-label="Enterprise value to share price bridge">
+        <li><span>Enterprise Value</span><strong>{fmtM(bridge.ev)}</strong><small>DCF + comps central case</small></li>
+        <li className="deduction"><span>(−) Net debt</span><strong>{fmtM(bridge.netDebt, 1)}</strong><small>{fmtM(DISPLAY_VALUES.grossFinancialDebt, 1)} debt − {fmtM(DISPLAY_VALUES.cashAndMarketableSecurities, 1)} cash</small></li>
+        <li><span>Equity Value</span><strong>{fmtM(bridge.equity)}</strong><small>After strict net debt</small></li>
+        <li className="final"><span>Implied share price</span><strong>{EURO}{bridge.sharePrice.toFixed(0)}</strong><small>{FY25.dilutedShares.toLocaleString("en-GB")} diluted shares</small></li>
+      </ol>
     </div></Localized>
   );
 }
@@ -481,7 +510,7 @@ export default function AnalysisView() {
         <div className="twoup" style={{ marginTop: 32 }}>
           <div>
             <h3>FY25 P&amp;L — reported</h3>
-            <table className="data" style={{ marginTop: 10 }}>
+            <table className="data compact-mobile-table" style={{ marginTop: 10 }}>
               <thead><tr><th>Metric</th><th className="num">€m</th><th className="num">% of revenue</th><th className="num">YoY</th></tr></thead>
               <tbody>
                 <tr><td className="label">Revenue</td><td className="num strong">{fmtNumber(FY25.revenue)}</td><td className="num">100%</td><td className="num">+14% cc</td></tr>
@@ -498,7 +527,7 @@ export default function AnalysisView() {
           </div>
           <div>
             <h3>Geographic mix</h3>
-            <table className="data" style={{ marginTop: 10 }}>
+            <table className="data compact-mobile-table" style={{ marginTop: 10 }}>
               <thead><tr><th>Region</th><th className="num">€m</th><th className="num">% rev.</th></tr></thead>
               <tbody>
                 <tr><td>France</td><td className="num">18.8</td><td className="num">31%</td></tr>
@@ -528,7 +557,7 @@ export default function AnalysisView() {
             </div>
           </div>
           <div className="twoup">
-            <table className="data">
+            <table className="data compact-mobile-table">
               <thead><tr><th scope="col">Metric</th><th className="num" scope="col">Statutory</th><th className="num" scope="col">Normalised</th></tr></thead>
               <tbody>
                 <tr><th className="label" scope="row">Net operational cash flow</th><td className="num">{fmtNumber(CASH_CONVERSION.statutoryOcf)}</td><td className="num">{fmtNumber(CASH_CONVERSION.statutoryOcf)}</td></tr>
@@ -650,7 +679,7 @@ export default function AnalysisView() {
         <div className="twoup" style={{ marginTop: 32 }}>
           <div>
             <h3>Key assumptions</h3>
-            <table className="data" style={{ marginTop: 10 }}>
+            <table className="data compact-mobile-table dcf-assumptions-table" style={{ marginTop: 10 }}>
               <thead><tr><th>Driver</th><th className="num">Bear</th><th className="num">Base</th><th className="num">Bull</th></tr></thead>
               <tbody>
                 {[0, 1, 2, 3, 4].map((i) => <tr key={i}><td className="label">Revenue growth {2026 + i}</td><td className="num">{fmtPct(SCENARIOS.bear.growth[i], 0)}</td><td className="num strong">{fmtPct(SCENARIOS.base.growth[i], 0)}</td><td className="num">{fmtPct(SCENARIOS.bull.growth[i], 0)}</td></tr>)}
@@ -668,7 +697,7 @@ export default function AnalysisView() {
             <h3>Narrative</h3>
             <div className="narrative" data-s={activeScenario}><h4><span className="tag">{scenarioCopy[activeScenario].tag}</span><span>{scenarioCopy[activeScenario].title}</span></h4><p>{scenarioCopy[activeScenario].narrative}</p></div>
             <h3 style={{ marginTop: 24 }}>DCF result · all scenarios</h3>
-            <table className="data" style={{ marginTop: 10 }}>
+            <table className="data compact-mobile-table dcf-results-table" style={{ marginTop: 10 }}>
               <thead><tr><th scope="col">Metric</th><th className="num" scope="col">Bear</th><th className="num" scope="col">Base</th><th className="num" scope="col">Bull</th></tr></thead>
               <tbody>
                 <tr><th className="label" scope="row">Revenue 2030</th><td className="num">{fmtM(scenarioResults.bear.rev, 1)}</td><td className="num strong">{fmtM(scenarioResults.base.rev, 1)}</td><td className="num">{fmtM(scenarioResults.bull.rev, 1)}</td></tr>
@@ -700,8 +729,8 @@ FCF  = EBIT × (1 − tax) + D&A − Capex − ΔWC`}</pre>
       </section>
 
       <section className="block" id="trading">
-        <div className="sec-head"><div className="left"><div className="num-tag">05 — Trading comps</div><h2>Market value, stand-alone</h2></div><div className="right">Listed B2B SaaS with comparable subscription mix, double-digit EBITDA margins, and CFO-office exposure. Hover any row for rationale.</div></div>
-        <table className="data">
+        <div className="sec-head"><div className="left"><div className="num-tag">05 — Trading comps</div><h2>Market value, stand-alone</h2></div><div className="right">Listed B2B SaaS with comparable subscription mix, double-digit EBITDA margins, and CFO-office exposure. Open a peer name for rationale.</div></div>
+        <table className="data peer-table">
           <thead><tr><th>Peer</th><th>Why comparable</th><th className="num">EV / Sales (indicative)</th><th>Geo</th></tr></thead>
           <tbody>
             <tr><td><Tip k="Central benchmark" body="French listed O2C/P2P SaaS, exact same sector and geography. Pre-Bridgepoint take-private trading multiple. Best read-through to Sidetrade's standalone listed multiple." v="FY+1 EV/Sales ~5.5–6.0x"><strong>Esker</strong> <span className="star">★</span></Tip></td><td>O2C/P2P · French SaaS · pre-buyout reference</td><td className="num">~5.5–6.0x</td><td>FR</td></tr>
@@ -723,7 +752,7 @@ FCF  = EBIT × (1 − tax) + D&A − Capex − ΔWC`}</pre>
 
       <section className="block" id="transaction">
         <div className="sec-head"><div className="left"><div className="num-tag">06 — Transaction comps</div><h2>Control value · what buyers paid</h2></div><div className="right">LTM multiples for the five Office-of-CFO / O2C precedents retained in the workbook.</div></div>
-        <table className="data">
+        <table className="data transaction-table">
           <thead><tr><th>Target</th><th>Buyer</th><th>Date</th><th className="num">EV / Sales LTM</th><th className="num">EV / EBITDA LTM</th></tr></thead>
           <tbody>
             {TRANSACTION_COMPS.rows.map((comp) => (
@@ -731,6 +760,14 @@ FCF  = EBIT × (1 − tax) + D&A − Capex − ΔWC`}</pre>
             ))}
           </tbody>
         </table>
+        <div className="transaction-cards" aria-label="Transaction comparables">
+          {TRANSACTION_COMPS.rows.map((comp) => (
+            <details key={comp.target}>
+              <summary><span><strong>{comp.target}</strong><small>{comp.buyer}</small></span><b>{comp.evSales.toFixed(1)}x</b></summary>
+              <dl><div><dt>Date</dt><dd>{comp.year}</dd></div><div><dt>EV / Sales LTM</dt><dd>{comp.evSales.toFixed(1)}x</dd></div><div><dt>EV / EBITDA LTM</dt><dd>{comp.evEbitda === null ? "n.m." : `${comp.evEbitda.toFixed(1)}x`}</dd></div></dl>
+            </details>
+          ))}
+        </div>
         <cite>Source: {SOURCES.workbook.label}, Transaction_comps · LTM financials · {SOURCES.workbook.status}.</cite>
         <div className="twoup" style={{ marginTop: 24 }}>
           <div><h3>Sidetrade's M&amp;A references</h3><p style={{ fontSize: 13.5 }}><strong>ezyCollect (Oct 2025) ·</strong> Total consideration €37.6m. Revenue contributed since 1 Oct 2025 implies an annualised run-rate near €9m and an indicative ~4.2x revenue multiple. The smaller APAC/SME perimeter limits direct comparability.</p><p style={{ fontSize: 13.5 }}><strong>SHS Viveon (2024) ·</strong> The delisting context and incomplete public valuation bridge make this a qualitative reference only.</p></div>

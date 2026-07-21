@@ -73,9 +73,12 @@ assert.match(caseShell, /hash:\s*nextHash/, "Manual scrolling must update the ro
 
 const languageContext = await text("src/context/LanguageContext.jsx");
 assert.match(languageContext, /buildLocalizedLocation\(location, nextLanguage\)/, "Language changes must preserve the router hash");
-assert.match(languageContext, /setLanguageTransition\(/, "Language changes must announce an anchor-preservation transition");
-assert.match(caseShell, /languageTransitionRef/, "The scroll spy must be locked during language reflow");
-assert.match(caseShell, /ResizeObserver\(restoreAnchor\)/, "The selected anchor must be restored across translated layout reflow");
+assert.match(caseShell, /userScrollIntentRef/, "The scroll spy must require explicit user scroll intent");
+assert.match(caseShell, /addEventListener\("wheel"/, "Wheel input must enable the scroll spy");
+assert.match(caseShell, /addEventListener\("scrollend"/, "Scroll intent must end on the browser scrollend event");
+assert.match(caseShell, /ResizeObserver\(geometryChanged\)/, "Anchors must reconverge after translated layout changes");
+assert.match(caseShell, /stableFrames < 2/, "Anchor restoration must use geometric stability instead of a timeout");
+assert.doesNotMatch(caseShell, /setTimeout/, "Anchor preservation must not depend on an arbitrary timeout");
 
 const analysisView = await text("src/routes/AnalysisView.jsx");
 const chapterIndexPosition = analysisView.indexOf('className="desktop-chapter-index"');

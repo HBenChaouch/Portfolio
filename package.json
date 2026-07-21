@@ -14,7 +14,7 @@
     "test:navigation": "node scripts/check-navigation-behavior.mjs",
     "test:navigation:browser": "node scripts/check-navigation-browser.mjs",
     "test:i18n": "node scripts/check-i18n.mjs",
-    "test:quality": "npm run test:audit && npm run test:web && npm run test:navigation && npm run test:i18n"
+    "test:quality": "npm run test:audit && npm run test:web && npm run test:navigation && npm run test:i18n && npm run build && npm run test:navigation:browser"
   },
   "dependencies": {
     "@vitejs/plugin-react": "^5.0.0",

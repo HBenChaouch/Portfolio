@@ -84,8 +84,6 @@ const [languageContext, navigation, main, app, home, shell, analysis, translatio
 
 assert.match(languageContext, /get\("lang"\) === "en" \? "en" : "fr"/);
 assert.match(languageContext, /buildLocalizedLocation\(location, nextLanguage\)/);
-assert.match(languageContext, /hash:\s*location\.hash/);
-assert.match(languageContext, /setLanguageTransition\(/);
 assert.match(navigation, /params\.delete\("lang"\)/);
 assert.match(navigation, /hash:\s*normaliseHash\(location\.hash\)/);
 assert.match(main, /<LanguageProvider>/);

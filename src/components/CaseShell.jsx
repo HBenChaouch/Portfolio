@@ -82,18 +82,14 @@ function scrollToSection(hash, behavior = "smooth") {
 export default function CaseShell() {
   const location = useLocation();
   const navigate = useNavigate();
-  const {
-    completeLanguageTransition,
-    language,
-    languageTransition,
-    t,
-  } = useLanguage();
+  const { language, t } = useLanguage();
   const { activeScenario, setActiveScenario } = useSidetradeScenario();
   const [activeAnchor, setActiveAnchor] = useState("");
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
   const activeAnchorRef = useRef("");
-  const languageTransitionRef = useRef(null);
-  const skipNextHashScrollRef = useRef(false);
+  const keptAnchorRef = useRef("");
+  const scrollSpyHashRef = useRef("");
+  const userScrollIntentRef = useRef(false);
   const isAnalysis = location.pathname.replace(/\/+$/, "").endsWith("/analysis");
   const title = t(getCurrentTitle(location.pathname));
   const analysisHref = `${analysisBase}${language === "en" ? "?lang=en" : ""}`;
@@ -104,58 +100,109 @@ export default function CaseShell() {
   );
 
   useLayoutEffect(() => {
-    if (!isAnalysis || !languageTransition?.hash) {
-      languageTransitionRef.current = null;
+    if (!isAnalysis || !location.hash) {
+      keptAnchorRef.current = "";
       return undefined;
     }
 
-    const anchor = languageTransition.hash.slice(1);
-    const transition = { anchor, id: languageTransition.id };
-    languageTransitionRef.current = transition;
-    let settleFrame;
-
-    function restoreAnchor() {
-      if (languageTransitionRef.current?.id !== transition.id) return;
-      scrollToSection(anchor, "instant");
-      activeAnchorRef.current = anchor;
-      setActiveAnchor(anchor);
-
-      if (window.location.hash !== `#${anchor}`) {
-        skipNextHashScrollRef.current = true;
-        navigate(buildSidetradeAnalysisLocation(language, anchor), {
-          preventScrollReset: true,
-          replace: true,
-        });
-      }
+    if (scrollSpyHashRef.current === location.hash) {
+      scrollSpyHashRef.current = "";
+      return undefined;
     }
 
-    restoreAnchor();
-    settleFrame = window.requestAnimationFrame(() => {
-      restoreAnchor();
-      settleFrame = window.requestAnimationFrame(restoreAnchor);
-    });
+    const anchor = location.hash.slice(1);
+    keptAnchorRef.current = anchor;
+    userScrollIntentRef.current = false;
+    activeAnchorRef.current = anchor;
+    setActiveAnchor(anchor);
+
+    let anchorFrame;
+    let lastDocumentHeight = -1;
+    let lastTargetTop = Number.NaN;
+    let stableFrames = 0;
+
+    function convergeOnAnchor() {
+      if (keptAnchorRef.current !== anchor) return;
+      const target = document.getElementById(anchor);
+      if (!target) {
+        anchorFrame = window.requestAnimationFrame(convergeOnAnchor);
+        return;
+      }
+
+      target.scrollIntoView({ behavior: "instant", block: "start" });
+      const targetTop = target.getBoundingClientRect().top;
+      const documentHeight = document.documentElement.scrollHeight;
+      const geometryIsStable = Math.abs(targetTop - lastTargetTop) < 0.5
+        && documentHeight === lastDocumentHeight;
+
+      stableFrames = geometryIsStable ? stableFrames + 1 : 0;
+      lastTargetTop = targetTop;
+      lastDocumentHeight = documentHeight;
+      if (stableFrames < 2) anchorFrame = window.requestAnimationFrame(convergeOnAnchor);
+    }
+
+    function geometryChanged() {
+      if (keptAnchorRef.current !== anchor) return;
+      stableFrames = 0;
+      window.cancelAnimationFrame(anchorFrame);
+      anchorFrame = window.requestAnimationFrame(convergeOnAnchor);
+    }
+
+    convergeOnAnchor();
 
     const observedLayout = document.getElementById("main-content");
     const layoutObserver = observedLayout && typeof ResizeObserver !== "undefined"
-      ? new ResizeObserver(restoreAnchor)
+      ? new ResizeObserver(geometryChanged)
       : null;
     if (layoutObserver) layoutObserver.observe(observedLayout);
 
-    const releaseTimer = window.setTimeout(() => {
-      restoreAnchor();
-      settleFrame = window.requestAnimationFrame(() => {
-        if (languageTransitionRef.current?.id !== transition.id) return;
-        languageTransitionRef.current = null;
-        completeLanguageTransition(transition.id);
-      });
-    }, 900);
-
     return () => {
-      window.cancelAnimationFrame(settleFrame);
-      window.clearTimeout(releaseTimer);
+      window.cancelAnimationFrame(anchorFrame);
       layoutObserver?.disconnect();
     };
-  }, [completeLanguageTransition, isAnalysis, language, languageTransition, navigate]);
+  }, [isAnalysis, location.hash, location.search]);
+
+  useEffect(() => {
+    if (!isAnalysis) return undefined;
+
+    function beginUserScrollIntent() {
+      keptAnchorRef.current = "";
+      userScrollIntentRef.current = true;
+    }
+
+    function handleScrollKey(event) {
+      if (![
+        "ArrowDown", "ArrowUp", "End", "Home", "PageDown", "PageUp", " ",
+      ].includes(event.key)) return;
+      if (event.target instanceof Element
+        && event.target.closest("button, input, select, textarea, [contenteditable='true']")) return;
+      beginUserScrollIntent();
+    }
+
+    function handleScrollbarPointer(event) {
+      if (event.button === 0 && event.clientX >= document.documentElement.clientWidth) {
+        beginUserScrollIntent();
+      }
+    }
+
+    function endUserScrollIntent() {
+      userScrollIntentRef.current = false;
+    }
+
+    window.addEventListener("wheel", beginUserScrollIntent, { passive: true });
+    window.addEventListener("touchmove", beginUserScrollIntent, { passive: true });
+    window.addEventListener("keydown", handleScrollKey);
+    window.addEventListener("pointerdown", handleScrollbarPointer);
+    window.addEventListener("scrollend", endUserScrollIntent, { capture: true });
+
+    return () => {
+      window.removeEventListener("wheel", beginUserScrollIntent);
+      window.removeEventListener("touchmove", beginUserScrollIntent);
+      window.removeEventListener("keydown", handleScrollKey);
+      window.removeEventListener("pointerdown", handleScrollbarPointer);
+      window.removeEventListener("scrollend", endUserScrollIntent, { capture: true });
+    };
+  }, [isAnalysis]);
 
   useEffect(() => {
     if (!isAnalysis) {
@@ -164,30 +211,12 @@ export default function CaseShell() {
       return undefined;
     }
 
-    const lockedAnchor = languageTransitionRef.current?.anchor;
-    if (lockedAnchor) {
-      activeAnchorRef.current = lockedAnchor;
-      setActiveAnchor(lockedAnchor);
-    } else if (location.hash) {
-      const directAnchor = location.hash.slice(1);
-      activeAnchorRef.current = directAnchor;
-      setActiveAnchor(directAnchor);
-      if (skipNextHashScrollRef.current) skipNextHashScrollRef.current = false;
-      else window.requestAnimationFrame(() => scrollToSection(directAnchor, "instant"));
-    }
-
     let scrollFrame;
 
     function updateActiveAnchor() {
+      if (!userScrollIntentRef.current) return;
       window.cancelAnimationFrame(scrollFrame);
       scrollFrame = window.requestAnimationFrame(() => {
-        const transitionAnchor = languageTransitionRef.current?.anchor;
-        if (transitionAnchor) {
-          activeAnchorRef.current = transitionAnchor;
-          setActiveAnchor(transitionAnchor);
-          return;
-        }
-
         const activationLine = window.innerWidth <= 900 ? 140 : 120;
         const positions = anchorIds
           .map((id) => document.getElementById(id))
@@ -201,7 +230,7 @@ export default function CaseShell() {
 
         const nextHash = `#${nextAnchor}`;
         if (window.location.hash !== nextHash) {
-          skipNextHashScrollRef.current = true;
+          scrollSpyHashRef.current = nextHash;
           navigate({
             pathname: location.pathname,
             search: location.search,
@@ -214,14 +243,11 @@ export default function CaseShell() {
       });
     }
 
-    updateActiveAnchor();
     window.addEventListener("scroll", updateActiveAnchor, { passive: true });
-    window.addEventListener("resize", updateActiveAnchor);
 
     return () => {
       window.cancelAnimationFrame(scrollFrame);
       window.removeEventListener("scroll", updateActiveAnchor);
-      window.removeEventListener("resize", updateActiveAnchor);
     };
   }, [anchorIds, isAnalysis, location.hash, location.pathname, location.search, navigate]);
 
@@ -240,9 +266,11 @@ export default function CaseShell() {
     if (!isAnalysis) return;
     event.preventDefault();
     scrollToSection(hash, "instant");
+    keptAnchorRef.current = hash;
+    scrollSpyHashRef.current = "";
+    userScrollIntentRef.current = false;
     activeAnchorRef.current = hash;
     setActiveAnchor(hash);
-    skipNextHashScrollRef.current = true;
     navigate(buildSidetradeAnalysisLocation(language, hash), {
       preventScrollReset: true,
       replace: true,

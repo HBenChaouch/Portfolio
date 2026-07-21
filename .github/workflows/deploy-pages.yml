@@ -19,6 +19,12 @@ jobs:
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v4
+      - name: Checkout pinned Real Estate cockpit
+        uses: actions/checkout@v4
+        with:
+          repository: HBenChaouch/cockpit-fund-controlling
+          ref: 8aa74b0a3a34f908f547c9be976160cb1755a0ee
+          path: .cockpit-source
       - uses: actions/setup-node@v4
         with:
           node-version: 24

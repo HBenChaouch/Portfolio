@@ -20,7 +20,9 @@ assert.equal(portfolioCases[1].available, false);
 assert.equal(portfolioCases[1].href, undefined);
 assert.equal(portfolioCases[1].download, undefined);
 assert.equal(portfolioCases[2].status, "Operational cockpit");
-assert.equal(portfolioCases[2].href, "https://hbenchaouch.github.io/cockpit-fund-controlling/");
+assert.equal(portfolioCases[2].href, "/cases/real-estate-downside/");
+assert.equal(portfolioCases[2].static, true);
+assert.equal(portfolioCases[2].external, undefined);
 
 assert.equal(
   await sha256("public/Sidetrade_Valuation_2026_v2.xlsx"),
@@ -54,6 +56,8 @@ assert.match(workflow, /public\/deployment\.json/);
 assert.match(workflow, /github\.sha/);
 assert.match(workflow, /enablement: true/);
 assert.match(workflow, /actions\/deploy-pages@v4/);
+assert.match(workflow, /repository: HBenChaouch\/cockpit-fund-controlling/);
+assert.match(workflow, /ref: 8aa74b0a3a34f908f547c9be976160cb1755a0ee/);
 const styles = await text("src/styles/global.css");
 assert.match(styles, /\.analysis-view \.result-strip \.cell[\s\S]*?min-width: 0/);
 assert.match(styles, /\.case-grid-item:first-child[\s\S]*?grid-row: span 2/);
@@ -61,6 +65,8 @@ assert.match(styles, /@media \(max-width: 760px\)[\s\S]*?\.case-grid-item:first-
 const fallbackScript = await text("scripts/create-spa-fallback.mjs");
 assert.match(fallbackScript, /cases\/sidetrade-valuation/);
 assert.match(fallbackScript, /cases\/sidetrade-valuation\/analysis/);
+const sitemap = await text("public/sitemap.xml");
+assert.match(sitemap, /Portfolio\/cases\/real-estate-downside\//);
 
 const caseShell = await text("src/components/CaseShell.jsx");
 const navigation = await text("src/utils/navigation.js");
@@ -81,6 +87,12 @@ assert.match(caseShell, /stableFrames < 2/, "Anchor restoration must use geometr
 assert.doesNotMatch(caseShell, /setTimeout/, "Anchor preservation must not depend on an arbitrary timeout");
 
 const analysisView = await text("src/routes/AnalysisView.jsx");
+const portfolioHome = await text("src/routes/PortfolioHome.jsx");
+const integrationScript = await text("scripts/integrate-real-estate-case.mjs");
+assert.match(portfolioHome, /item\.static/);
+assert.doesNotMatch(portfolioHome, /target="_blank"/);
+assert.match(integrationScript, /dist\/cases\/real-estate-downside/);
+assert.match(integrationScript, /8aa74b0a3a34f908f547c9be976160cb1755a0ee/);
 const chapterIndexPosition = analysisView.indexOf('className="desktop-chapter-index"');
 const keyStatsPosition = analysisView.indexOf('className="keystats"');
 assert.ok(

@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build && node scripts/create-spa-fallback.mjs",
+    "build": "vite build && node scripts/create-spa-fallback.mjs && node scripts/integrate-real-estate-case.mjs",
     "preview": "vite preview",
     "test:financial": "node scripts/check-financial-data.mjs",
     "test:workbook": "node scripts/run-workbook-check.mjs",
@@ -13,8 +13,9 @@
     "test:web": "node scripts/check-web-quality.mjs",
     "test:navigation": "node scripts/check-navigation-behavior.mjs",
     "test:navigation:browser": "node scripts/check-navigation-browser.mjs",
+    "test:real-estate": "node scripts/check-real-estate-integration.mjs",
     "test:i18n": "node scripts/check-i18n.mjs",
-    "test:quality": "npm run test:audit && npm run test:web && npm run test:navigation && npm run test:i18n && npm run build && npm run test:navigation:browser"
+    "test:quality": "npm run test:audit && npm run test:web && npm run test:navigation && npm run test:i18n && npm run build && npm run test:real-estate && npm run test:navigation:browser"
   },
   "dependencies": {
     "@vitejs/plugin-react": "^5.0.0",

@@ -47,6 +47,8 @@ function contentType(filename) {
   if (filename.endsWith(".js")) return "text/javascript; charset=utf-8";
   if (filename.endsWith(".json")) return "application/json; charset=utf-8";
   if (filename.endsWith(".svg")) return "image/svg+xml";
+  if (filename.endsWith(".pdf")) return "application/pdf";
+  if (filename.endsWith(".woff2")) return "font/woff2";
   if (filename.endsWith(".xlsx")) return "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
   return "text/html; charset=utf-8";
 }
@@ -59,7 +61,9 @@ const webServer = createServer(async (request, response) => {
     if (!filename.startsWith(distRoot)) throw new Error("Path outside dist");
 
     try {
-      if (!(await stat(filename)).isFile()) filename = path.join(distRoot, "index.html");
+      const entry = await stat(filename);
+      if (entry.isDirectory()) filename = path.join(filename, "index.html");
+      else if (!entry.isFile()) filename = path.join(distRoot, "index.html");
     } catch {
       filename = path.join(distRoot, "index.html");
     }
@@ -237,6 +241,7 @@ async function realPointerClick(elementExpression, label) {
         trusted: event.isTrusted,
         text: event.target.textContent?.trim(),
       };
+      sessionStorage.setItem('__s12PointerDown', JSON.stringify(window.__s12PointerDown));
     }, { capture: true, once: true });
     return { x, y };
   })()`);
@@ -245,7 +250,7 @@ async function realPointerClick(elementExpression, label) {
   await command("Input.dispatchMouseEvent", { type: "mouseMoved", x: point.x, y: point.y });
   await command("Input.dispatchMouseEvent", { button: "left", buttons: 1, clickCount: 1, type: "mousePressed", x: point.x, y: point.y });
   await command("Input.dispatchMouseEvent", { button: "left", buttons: 0, clickCount: 1, type: "mouseReleased", x: point.x, y: point.y });
-  const pointerEvent = await evaluate("window.__s12PointerDown");
+  const pointerEvent = await evaluate("window.__s12PointerDown ?? JSON.parse(sessionStorage.getItem('__s12PointerDown') || 'null')");
   assert(pointerEvent?.trusted, `${label} did not receive a trusted pointer event: ${JSON.stringify(pointerEvent)}`);
   return pointerEvent;
 }
@@ -378,6 +383,75 @@ try {
   const chartDisclosureOpen = await evaluate("document.querySelector('.chart-disclosures details')?.open === true");
   assert(chartDisclosureOpen, "Trajectory detail did not open from the keyboard");
 
+  await command("Emulation.setDeviceMetricsOverride", { width: 1280, height: 720, deviceScaleFactor: 1, mobile: false });
+  const cockpitUrl = `http://127.0.0.1:${webPort}/cases/real-estate-downside/`;
+  await navigate(cockpitUrl);
+  await waitFor(() => evaluate("Boolean(window.__COCKPIT__?.runSelfTests)"), "Real Estate cockpit initialization");
+  const cockpitInitial = await evaluate(`(() => {
+    const tests = window.__COCKPIT__.runSelfTests();
+    const back = document.querySelector('.portfolio-back');
+    return {
+      backHref: back?.href,
+      backTarget: back?.getAttribute('target'),
+      downloads: Array.from(document.querySelectorAll('.dl-card')).map((link) => ({
+        download: link.hasAttribute('download') || link.id === 'dl-csv',
+        href: link.getAttribute('href'),
+        target: link.getAttribute('target'),
+      })),
+      oldDomainPresent: document.documentElement.innerHTML.includes('hbenchaouch.github.io/cockpit-fund-controlling'),
+      overflow: document.documentElement.scrollWidth - document.documentElement.clientWidth,
+      passed: tests.passed,
+      total: tests.total,
+      title: document.title,
+    };
+  })()`);
+  assert(cockpitInitial.passed === 13 && cockpitInitial.total === 13, `Cockpit self-tests mismatch: ${JSON.stringify(cockpitInitial)}`);
+  assert(cockpitInitial.backHref === `http://127.0.0.1:${webPort}/` && cockpitInitial.backTarget === null, `Cockpit return mismatch: ${JSON.stringify(cockpitInitial)}`);
+  assert(cockpitInitial.downloads.length === 3 && cockpitInitial.downloads.every((link) => link.download && link.target === null), `Cockpit downloads mismatch: ${JSON.stringify(cockpitInitial.downloads)}`);
+  assert(!cockpitInitial.oldDomainPresent && cockpitInitial.overflow === 0, `Cockpit public integration mismatch: ${JSON.stringify(cockpitInitial)}`);
+
+  await command("Input.dispatchKeyEvent", { key: "b", code: "KeyB", type: "keyDown", windowsVirtualKeyCode: 66 });
+  await command("Input.dispatchKeyEvent", { key: "b", code: "KeyB", type: "keyUp", windowsVirtualKeyCode: 66 });
+  await waitFor(() => evaluate("window.__COCKPIT__.state?.globalStatus === 'red'"), "cockpit Bear interaction");
+  await command("Input.dispatchKeyEvent", { key: "r", code: "KeyR", type: "keyDown", windowsVirtualKeyCode: 82 });
+  await command("Input.dispatchKeyEvent", { key: "r", code: "KeyR", type: "keyUp", windowsVirtualKeyCode: 82 });
+  await waitFor(() => evaluate("window.__COCKPIT__.state?.globalStatus === 'green'"), "cockpit reset interaction");
+
+  await command("Page.reload", { ignoreCache: true });
+  await waitFor(() => evaluate("document.readyState === 'complete' && Boolean(window.__COCKPIT__?.runSelfTests)"), "cockpit direct refresh");
+  const cockpitAfterRefresh = await evaluate("(() => { const tests = window.__COCKPIT__.runSelfTests(); return { href: location.href, passed: tests.passed, total: tests.total }; })()");
+  assert(cockpitAfterRefresh.href === cockpitUrl && cockpitAfterRefresh.passed === 13 && cockpitAfterRefresh.total === 13, `Cockpit refresh mismatch: ${JSON.stringify(cockpitAfterRefresh)}`);
+
+  await command("Emulation.setDeviceMetricsOverride", { width: 390, height: 844, deviceScaleFactor: 1, mobile: true });
+  await command("Page.reload", { ignoreCache: true });
+  await waitFor(() => evaluate("document.readyState === 'complete' && Boolean(window.__COCKPIT__?.runSelfTests)"), "mobile cockpit refresh");
+  const cockpitMobile = await evaluate(`(() => {
+    const back = document.querySelector('.portfolio-back').getBoundingClientRect();
+    const tests = window.__COCKPIT__.runSelfTests();
+    return {
+      backHeight: back.height,
+      backVisible: back.top >= 0 && back.bottom <= innerHeight,
+      overflow: document.documentElement.scrollWidth - document.documentElement.clientWidth,
+      passed: tests.passed,
+      total: tests.total,
+    };
+  })()`);
+  assert(cockpitMobile.overflow === 0 && cockpitMobile.backVisible && cockpitMobile.backHeight >= 44 && cockpitMobile.passed === 13 && cockpitMobile.total === 13, `Mobile cockpit mismatch: ${JSON.stringify(cockpitMobile)}`);
+
+  const portfolioPointer = await realPointerClick("document.querySelector('.portfolio-back')", "cockpit Portfolio return");
+  await waitFor(() => evaluate(`location.pathname === '/'`), "Portfolio return navigation");
+  await waitFor(() => evaluate(`Boolean(document.querySelector('a[href$="/cases/real-estate-downside/"]'))`), "Portfolio home rendering");
+  const realEstateHomeLink = await evaluate(`(() => {
+    const link = document.querySelector('a[href$="/cases/real-estate-downside/"]');
+    return { href: link?.href, target: link?.getAttribute('target') };
+  })()`);
+  assert(realEstateHomeLink.href === cockpitUrl && realEstateHomeLink.target === null, `Portfolio Real Estate link mismatch: ${JSON.stringify(realEstateHomeLink)}`);
+
+  for (const resource of ["Note_synthese_cockpit.pdf", "pack/pack_comite_core_plus_france.xlsx", "deployment.json"]) {
+    const response = await fetch(`${cockpitUrl}${resource}`);
+    assert(response.ok, `Cockpit resource unavailable: ${resource} (${response.status})`);
+  }
+
   assert(browserMessages.length === 0, `Browser warnings/errors: ${browserMessages.join(" | ")}`);
   console.log("Navigation browser behavior: PASS");
   console.log(JSON.stringify({
@@ -401,6 +475,11 @@ try {
     transactionDisclosurePointer,
     transactionDisclosureOpen,
     chartDisclosureOpen,
+    cockpitInitial,
+    cockpitAfterRefresh,
+    cockpitMobile,
+    portfolioPointer,
+    realEstateHomeLink,
     responsive,
     browserMessages,
   }, null, 2));

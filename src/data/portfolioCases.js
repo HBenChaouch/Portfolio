@@ -35,9 +35,9 @@ export const portfolioCases = [
     description:
       "A decision cockpit for downside monitoring, covenant pressure, liquidity and asset-level portfolio risk.",
     status: "Operational cockpit",
-    href: "https://hbenchaouch.github.io/cockpit-fund-controlling/",
+    href: "/cases/real-estate-downside/",
     cta: "Open the cockpit",
-    external: true,
+    static: true,
     metrics: ["Downside", "Covenants", "Liquidity"],
   },
 ];

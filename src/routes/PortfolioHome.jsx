@@ -58,13 +58,11 @@ export default function PortfolioHome() {
             return <div className="case-grid-item case-grid-item-unavailable" key={item.slug}>{content}</div>;
           }
 
-          return item.external ? (
+          return item.static ? (
             <a
               className="case-grid-item"
-              href={item.href}
+              href={`${import.meta.env.BASE_URL.replace(/\/$/, "")}${item.href}`}
               key={item.slug}
-              rel="noopener noreferrer"
-              target="_blank"
             >
               {content}
             </a>

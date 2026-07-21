@@ -447,6 +447,25 @@ try {
   })()`);
   assert(realEstateHomeLink.href === cockpitUrl && realEstateHomeLink.target === null, `Portfolio Real Estate link mismatch: ${JSON.stringify(realEstateHomeLink)}`);
 
+  async function opellaState() {
+    return evaluate(`(() => {
+      const card = Array.from(document.querySelectorAll('.case-grid-item')).find((item) => item.textContent.includes('Opella'));
+      return {
+        href: card?.getAttribute('href'),
+        interactiveDescendants: card?.querySelectorAll('a, button, [role="link"], [tabindex]').length,
+        tag: card?.tagName,
+        text: card?.innerText,
+      };
+    })()`);
+  }
+
+  const opellaFr = await opellaState();
+  assert(opellaFr.tag === "DIV" && opellaFr.href === null && opellaFr.interactiveDescendants === 0 && /en développement/i.test(opellaFr.text), `French Opella card mismatch: ${JSON.stringify(opellaFr)}`);
+  await navigate(`http://127.0.0.1:${webPort}/?lang=en`);
+  await waitFor(() => evaluate("document.documentElement.lang === 'en' && document.body.innerText.includes('Opella')"), "English Portfolio home");
+  const opellaEn = await opellaState();
+  assert(opellaEn.tag === "DIV" && opellaEn.href === null && opellaEn.interactiveDescendants === 0 && /in development/i.test(opellaEn.text), `English Opella card mismatch: ${JSON.stringify(opellaEn)}`);
+
   for (const resource of ["Note_synthese_cockpit.pdf", "pack/pack_comite_core_plus_france.xlsx", "deployment.json"]) {
     const response = await fetch(`${cockpitUrl}${resource}`);
     assert(response.ok, `Cockpit resource unavailable: ${resource} (${response.status})`);
@@ -480,6 +499,8 @@ try {
     cockpitMobile,
     portfolioPointer,
     realEstateHomeLink,
+    opellaFr,
+    opellaEn,
     responsive,
     browserMessages,
   }, null, 2));

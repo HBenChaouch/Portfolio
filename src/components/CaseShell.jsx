@@ -1,13 +1,18 @@
-import { useEffect, useMemo, useState } from "react";
-import { Link, NavLink, Outlet, useLocation } from "react-router-dom";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { Link, NavLink, Outlet, useLocation, useNavigate } from "react-router-dom";
 import { useSidetradeScenario } from "../context/SidetradeScenarioContext.jsx";
 import { useLanguage } from "../context/LanguageContext.jsx";
 import { VALUATION_DATES } from "../data/sidetradeFinancials.js";
+import {
+  activeAnchorFromPositions,
+  buildSidetradeAnalysisLocation,
+  SIDETRADE_ANALYSIS_ROUTE,
+} from "../utils/navigation.js";
 import LanguageToggle from "./LanguageToggle.jsx";
 import Localized from "./Localized.jsx";
 
 const appBase = import.meta.env.BASE_URL.replace(/\/$/, "");
-const analysisBase = `${appBase}/cases/sidetrade-valuation/analysis/`;
+const analysisBase = `${appBase}${SIDETRADE_ANALYSIS_ROUTE}`;
 
 const sidebarGroups = [
   {
@@ -76,10 +81,13 @@ function scrollToSection(hash, behavior = "smooth") {
 
 export default function CaseShell() {
   const location = useLocation();
+  const navigate = useNavigate();
   const { language, t } = useLanguage();
   const { activeScenario, setActiveScenario } = useSidetradeScenario();
   const [activeAnchor, setActiveAnchor] = useState("");
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
+  const activeAnchorRef = useRef("");
+  const skipNextHashScrollRef = useRef(false);
   const isAnalysis = location.pathname.replace(/\/+$/, "").endsWith("/analysis");
   const title = t(getCurrentTitle(location.pathname));
   const analysisHref = `${analysisBase}${language === "en" ? "?lang=en" : ""}`;
@@ -91,14 +99,17 @@ export default function CaseShell() {
 
   useEffect(() => {
     if (!isAnalysis) {
+      activeAnchorRef.current = "";
       setActiveAnchor("");
       return undefined;
     }
 
     if (location.hash) {
       const directAnchor = location.hash.slice(1);
+      activeAnchorRef.current = directAnchor;
       setActiveAnchor(directAnchor);
-      window.requestAnimationFrame(() => scrollToSection(directAnchor, "instant"));
+      if (skipNextHashScrollRef.current) skipNextHashScrollRef.current = false;
+      else window.requestAnimationFrame(() => scrollToSection(directAnchor, "instant"));
     }
 
     let scrollFrame;
@@ -107,20 +118,28 @@ export default function CaseShell() {
       window.cancelAnimationFrame(scrollFrame);
       scrollFrame = window.requestAnimationFrame(() => {
         const activationLine = window.innerWidth <= 900 ? 140 : 120;
-        const sections = anchorIds
+        const positions = anchorIds
           .map((id) => document.getElementById(id))
           .filter(Boolean)
-          .map((section) => ({ section, top: section.getBoundingClientRect().top }))
-          .sort((a, b) => a.top - b.top);
-        const passed = sections.filter(({ top }) => top <= activationLine);
-        const currentTop = passed.at(-1)?.top;
-        const currentRow = passed.filter(({ top }) => Math.abs(top - currentTop) < 2);
-        setActiveAnchor((previous) => (
-          currentRow.find(({ section }) => section.id === previous)?.section.id
-          || currentRow[0]?.section.id
-          || sections[0]?.section.id
-          || ""
-        ));
+          .map((section) => ({ id: section.id, top: section.getBoundingClientRect().top }));
+        const nextAnchor = activeAnchorFromPositions(positions, activationLine, activeAnchorRef.current);
+        if (!nextAnchor) return;
+
+        activeAnchorRef.current = nextAnchor;
+        setActiveAnchor(nextAnchor);
+
+        const nextHash = `#${nextAnchor}`;
+        if (window.location.hash !== nextHash) {
+          skipNextHashScrollRef.current = true;
+          navigate({
+            pathname: location.pathname,
+            search: location.search,
+            hash: nextHash,
+          }, {
+            preventScrollReset: true,
+            replace: true,
+          });
+        }
       });
     }
 
@@ -133,7 +152,7 @@ export default function CaseShell() {
       window.removeEventListener("scroll", updateActiveAnchor);
       window.removeEventListener("resize", updateActiveAnchor);
     };
-  }, [anchorIds, isAnalysis, location.hash]);
+  }, [anchorIds, isAnalysis, location.hash, location.pathname, location.search, navigate]);
 
   useEffect(() => {
     if (!mobileNavOpen) return undefined;
@@ -149,9 +168,14 @@ export default function CaseShell() {
   function handleAnchorClick(event, hash) {
     if (!isAnalysis) return;
     event.preventDefault();
-    window.history.replaceState(null, "", `${analysisHref}#${hash}`);
-    scrollToSection(hash);
+    scrollToSection(hash, "instant");
+    activeAnchorRef.current = hash;
     setActiveAnchor(hash);
+    skipNextHashScrollRef.current = true;
+    navigate(buildSidetradeAnalysisLocation(language, hash), {
+      preventScrollReset: true,
+      replace: true,
+    });
     setMobileNavOpen(false);
   }
 

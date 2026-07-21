@@ -1,6 +1,7 @@
 import { createContext, useContext, useEffect, useMemo } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { translateText } from "../data/translations.js";
+import { buildLocalizedLocation } from "../utils/navigation.js";
 
 const LanguageContext = createContext(null);
 
@@ -17,11 +18,10 @@ export function LanguageProvider({ children }) {
     language,
     t: (text) => translateText(text, language),
     setLanguage(nextLanguage) {
-      const params = new URLSearchParams(location.search);
-      if (nextLanguage === "en") params.set("lang", "en");
-      else params.delete("lang");
-      const search = params.toString();
-      navigate(`${location.pathname}${search ? `?${search}` : ""}${location.hash}`, { replace: true });
+      navigate(buildLocalizedLocation(location, nextLanguage), {
+        preventScrollReset: true,
+        replace: true,
+      });
     },
   }), [language, location.hash, location.pathname, location.search, navigate]);
 

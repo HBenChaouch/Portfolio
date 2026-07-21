@@ -63,10 +63,16 @@ assert.match(fallbackScript, /cases\/sidetrade-valuation/);
 assert.match(fallbackScript, /cases\/sidetrade-valuation\/analysis/);
 
 const caseShell = await text("src/components/CaseShell.jsx");
-assert.match(caseShell, /sidetrade-valuation\/analysis\//, "GitHub Pages anchor base must use the canonical trailing slash");
+const navigation = await text("src/utils/navigation.js");
+assert.match(navigation, /sidetrade-valuation\/analysis\//, "GitHub Pages anchor base must use the canonical trailing slash");
 assert.match(caseShell, /mobile-project-title">Sidetrade</, "Mobile header must identify the active case");
 assert.match(caseShell, /setMobileNavOpen\(false\)/, "Mobile contents must close after an anchor selection");
 assert.match(caseShell, /aria-current=.*activeAnchor/, "The current section must be exposed to assistive technology");
+assert.doesNotMatch(caseShell, /history\.replaceState/, "Anchor changes must flow through React Router");
+assert.match(caseShell, /hash:\s*nextHash/, "Manual scrolling must update the router hash");
+
+const languageContext = await text("src/context/LanguageContext.jsx");
+assert.match(languageContext, /buildLocalizedLocation\(location, nextLanguage\)/, "Language changes must preserve the router hash");
 
 const analysisView = await text("src/routes/AnalysisView.jsx");
 const chapterIndexPosition = analysisView.indexOf('className="desktop-chapter-index"');

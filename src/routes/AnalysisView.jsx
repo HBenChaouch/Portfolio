@@ -1,7 +1,12 @@
 import { useMemo, useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import Localized from "../components/Localized.jsx";
 import { useSidetradeScenario } from "../context/SidetradeScenarioContext.jsx";
 import { useLanguage } from "../context/LanguageContext.jsx";
+import {
+  buildSidetradeAnalysisLocation,
+  SIDETRADE_ANALYSIS_ROUTE,
+} from "../utils/navigation.js";
 import {
   enterpriseValue,
   equityBridge,
@@ -32,7 +37,7 @@ const GS = [0.035, 0.03, 0.025, 0.02, 0.015];
 const EXIT_MULTIPLES = [13, 14, 15, 16, 17];
 const SCENARIO_IDS = ["bear", "base", "bull"];
 const APP_BASE = import.meta.env.BASE_URL.replace(/\/$/, "");
-const ANALYSIS_BASE = `${APP_BASE}/cases/sidetrade-valuation/analysis/`;
+const ANALYSIS_BASE = `${APP_BASE}${SIDETRADE_ANALYSIS_ROUTE}`;
 
 const scenarioCopy = {
   bear: {
@@ -418,6 +423,7 @@ function WaterfallBridge({ activeScenario }) {
 export default function AnalysisView() {
   const { activeScenario, setActiveScenario } = useSidetradeScenario();
   const { language } = useLanguage();
+  const navigate = useNavigate();
   const [fcfView, setFcfView] = useState("norm");
   const scenarioResults = useMemo(() => ({
     bear: resultFor("bear"),
@@ -431,8 +437,10 @@ export default function AnalysisView() {
 
   function handleChapterClick(event, hash) {
     event.preventDefault();
-    window.history.replaceState(null, "", `${analysisHref}#${hash}`);
-    document.getElementById(hash)?.scrollIntoView({ behavior: "smooth", block: "start" });
+    navigate(buildSidetradeAnalysisLocation(language, hash), {
+      preventScrollReset: true,
+      replace: true,
+    });
   }
 
   return (

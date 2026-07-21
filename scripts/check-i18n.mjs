@@ -71,8 +71,9 @@ assert.equal(
 );
 assert.doesNotMatch(Object.values(dictionaries.fr).join("\n"), /\b(?:timing|prices|an implied share price of)\b/i);
 
-const [languageContext, main, app, home, shell, analysis, translations] = await Promise.all([
+const [languageContext, navigation, main, app, home, shell, analysis, translations] = await Promise.all([
   read("src/context/LanguageContext.jsx"),
+  read("src/utils/navigation.js"),
   read("src/main.jsx"),
   read("src/App.jsx"),
   read("src/routes/PortfolioHome.jsx"),
@@ -82,7 +83,9 @@ const [languageContext, main, app, home, shell, analysis, translations] = await 
 ]);
 
 assert.match(languageContext, /get\("lang"\) === "en" \? "en" : "fr"/);
-assert.match(languageContext, /params\.delete\("lang"\)/);
+assert.match(languageContext, /buildLocalizedLocation\(location, nextLanguage\)/);
+assert.match(navigation, /params\.delete\("lang"\)/);
+assert.match(navigation, /hash:\s*normaliseHash\(location\.hash\)/);
 assert.match(main, /<LanguageProvider>/);
 assert.match(app, /language === "en" \? "\?lang=en" : ""/);
 assert.match(home, /<LanguageToggle/);

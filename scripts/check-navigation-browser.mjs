@@ -93,6 +93,16 @@ const footballEn = await evaluate(`({
   lang: document.documentElement.lang
 })`);
 assert(footballEn.lang === "en" && footballEn.hash === "#football" && footballEn.active?.endsWith("#football"), `Football EN mismatch: ${JSON.stringify(footballEn)}`);
+await delay(1000);
+const footballEnStable = await evaluate(`({
+  url: location.href,
+  hash: location.hash,
+  active: document.querySelector('[aria-current="location"]')?.getAttribute('href'),
+  top: document.querySelector('#football')?.getBoundingClientRect().top,
+  lang: document.documentElement.lang
+})`);
+assert(footballEnStable.lang === "en" && footballEnStable.hash === "#football" && footballEnStable.active?.endsWith("#football"), `Football EN after reflow mismatch: ${JSON.stringify(footballEnStable)}`);
+assert(Math.abs(footballEnStable.top - 104) < 3, `Football EN stable alignment mismatch: ${JSON.stringify(footballEnStable)}`);
 
 await command("Emulation.setDeviceMetricsOverride", { width: 390, height: 844, deviceScaleFactor: 1, mobile: true });
 await navigate(base);
@@ -119,6 +129,17 @@ await evaluate(`Array.from(document.querySelectorAll('button')).find((button) =>
 await delay(700);
 const mobileEn = await evaluate(`({ url: location.href, hash: location.hash, lang: document.documentElement.lang, active: document.querySelector('[aria-current="location"]')?.getAttribute('href') })`);
 assert(mobileEn.lang === "en" && mobileEn.hash === "#dcf" && mobileEn.active?.endsWith("#dcf"), `Mobile language mismatch: ${JSON.stringify(mobileEn)}`);
+await delay(1000);
+const mobileEnStable = await evaluate(`({
+  url: location.href,
+  hash: location.hash,
+  lang: document.documentElement.lang,
+  active: document.querySelector('[aria-current="location"]')?.getAttribute('href'),
+  top: document.querySelector('#dcf')?.getBoundingClientRect().top,
+  overflow: document.documentElement.scrollWidth - document.documentElement.clientWidth
+})`);
+assert(mobileEnStable.lang === "en" && mobileEnStable.hash === "#dcf" && mobileEnStable.active?.endsWith("#dcf"), `Mobile language after reflow mismatch: ${JSON.stringify(mobileEnStable)}`);
+assert(Math.abs(mobileEnStable.top - 124) < 3 && mobileEnStable.overflow === 0, `Mobile DCF stable alignment mismatch: ${JSON.stringify(mobileEnStable)}`);
 
 await evaluate(`Array.from(document.querySelectorAll('button')).find((button) => button.textContent.trim() === 'Bull').click()`);
 await delay(200);
@@ -131,6 +152,6 @@ assert(baseScenario.pressed === "true" && baseScenario.has301, `Mobile Base mism
 
 assert(browserMessages.length === 0, `Browser warnings/errors: ${browserMessages.join(" | ")}`);
 console.log("Navigation browser behavior: PASS");
-console.log(JSON.stringify({ direct, scrolled, footballFr, footballEn, mobileInitial, mobileDcf, mobileEn, bull, baseScenario, browserMessages }, null, 2));
+console.log(JSON.stringify({ direct, scrolled, footballFr, footballEn, footballEnStable, mobileInitial, mobileDcf, mobileEn, mobileEnStable, bull, baseScenario, browserMessages }, null, 2));
 await command("Target.closeTarget", { targetId: target.id });
 socket.close();

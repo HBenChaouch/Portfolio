@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { Link, NavLink, Outlet, useLocation, useNavigate } from "react-router-dom";
 import { useSidetradeScenario } from "../context/SidetradeScenarioContext.jsx";
 import { useLanguage } from "../context/LanguageContext.jsx";
@@ -82,11 +82,17 @@ function scrollToSection(hash, behavior = "smooth") {
 export default function CaseShell() {
   const location = useLocation();
   const navigate = useNavigate();
-  const { language, t } = useLanguage();
+  const {
+    completeLanguageTransition,
+    language,
+    languageTransition,
+    t,
+  } = useLanguage();
   const { activeScenario, setActiveScenario } = useSidetradeScenario();
   const [activeAnchor, setActiveAnchor] = useState("");
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
   const activeAnchorRef = useRef("");
+  const languageTransitionRef = useRef(null);
   const skipNextHashScrollRef = useRef(false);
   const isAnalysis = location.pathname.replace(/\/+$/, "").endsWith("/analysis");
   const title = t(getCurrentTitle(location.pathname));
@@ -97,6 +103,60 @@ export default function CaseShell() {
     []
   );
 
+  useLayoutEffect(() => {
+    if (!isAnalysis || !languageTransition?.hash) {
+      languageTransitionRef.current = null;
+      return undefined;
+    }
+
+    const anchor = languageTransition.hash.slice(1);
+    const transition = { anchor, id: languageTransition.id };
+    languageTransitionRef.current = transition;
+    let settleFrame;
+
+    function restoreAnchor() {
+      if (languageTransitionRef.current?.id !== transition.id) return;
+      scrollToSection(anchor, "instant");
+      activeAnchorRef.current = anchor;
+      setActiveAnchor(anchor);
+
+      if (window.location.hash !== `#${anchor}`) {
+        skipNextHashScrollRef.current = true;
+        navigate(buildSidetradeAnalysisLocation(language, anchor), {
+          preventScrollReset: true,
+          replace: true,
+        });
+      }
+    }
+
+    restoreAnchor();
+    settleFrame = window.requestAnimationFrame(() => {
+      restoreAnchor();
+      settleFrame = window.requestAnimationFrame(restoreAnchor);
+    });
+
+    const observedLayout = document.getElementById("main-content");
+    const layoutObserver = observedLayout && typeof ResizeObserver !== "undefined"
+      ? new ResizeObserver(restoreAnchor)
+      : null;
+    if (layoutObserver) layoutObserver.observe(observedLayout);
+
+    const releaseTimer = window.setTimeout(() => {
+      restoreAnchor();
+      settleFrame = window.requestAnimationFrame(() => {
+        if (languageTransitionRef.current?.id !== transition.id) return;
+        languageTransitionRef.current = null;
+        completeLanguageTransition(transition.id);
+      });
+    }, 900);
+
+    return () => {
+      window.cancelAnimationFrame(settleFrame);
+      window.clearTimeout(releaseTimer);
+      layoutObserver?.disconnect();
+    };
+  }, [completeLanguageTransition, isAnalysis, language, languageTransition, navigate]);
+
   useEffect(() => {
     if (!isAnalysis) {
       activeAnchorRef.current = "";
@@ -104,7 +164,11 @@ export default function CaseShell() {
       return undefined;
     }
 
-    if (location.hash) {
+    const lockedAnchor = languageTransitionRef.current?.anchor;
+    if (lockedAnchor) {
+      activeAnchorRef.current = lockedAnchor;
+      setActiveAnchor(lockedAnchor);
+    } else if (location.hash) {
       const directAnchor = location.hash.slice(1);
       activeAnchorRef.current = directAnchor;
       setActiveAnchor(directAnchor);
@@ -117,6 +181,13 @@ export default function CaseShell() {
     function updateActiveAnchor() {
       window.cancelAnimationFrame(scrollFrame);
       scrollFrame = window.requestAnimationFrame(() => {
+        const transitionAnchor = languageTransitionRef.current?.anchor;
+        if (transitionAnchor) {
+          activeAnchorRef.current = transitionAnchor;
+          setActiveAnchor(transitionAnchor);
+          return;
+        }
+
         const activationLine = window.innerWidth <= 900 ? 140 : 120;
         const positions = anchorIds
           .map((id) => document.getElementById(id))

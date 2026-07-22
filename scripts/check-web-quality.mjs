@@ -117,6 +117,9 @@ assert.match(analysisView, /className="chart-disclosures"/, "Trajectory values n
 assert.match(analysisView, /className="transaction-cards"/, "Transaction comps need mobile disclosures");
 assert.match(analysisView, /className="waterfall-mobile"/, "The EV-to-equity bridge needs a vertical mobile representation");
 assert.match(styles, /\.analysis-view \.ff-reference-scale/, "Football references must share the range scale");
+assert.match(styles, /\.analysis-view \.ff-guide-grid/, "Football reference guides must span the valuation rows");
+assert.match(analysisView, /Only the DCF range responds to Bear \/ Base \/ Bull/, "Football field must explain scenario scope");
+assert.match(analysisView, /The market reference sits near the least demanding IRR hurdle/, "Football field must explain the LBO high endpoint");
 assert.match(styles, /\.analysis-view \.transaction-table\s*\{\s*display: none !important;/, "The wide transaction table must yield to mobile disclosures");
 
 const publicCopy = [

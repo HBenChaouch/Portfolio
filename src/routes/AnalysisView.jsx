@@ -350,13 +350,6 @@ function FootballField({ activeScenario, scenarioResults }) {
         <div className="range-track" id={`ff-track-${method}`}>
           <div className="range-bar" style={{ left: `${low}%`, width: `${high - low}%` }} />
           <div className="base-tick" style={{ left: `calc(${base}% - 1px)` }} />
-          {[
-            ["market", VALUATION_CONTEXT.marketEv],
-            ["fair", VALUATION_CONTEXT.fairValueEv],
-            ["control", VALUATION_CONTEXT.controlEv],
-          ].map(([kind, value]) => (
-            <span aria-hidden="true" className={`row-reference ${kind}`} key={kind} style={{ left: `${pctFromValue(value)}%` }} />
-          ))}
           <div className="endpoint left" style={{ left: `${low}%` }}>{fmtM(range.low)}</div>
           <div className="endpoint right" style={{ left: `${high}%` }}>{fmtM(range.high)}</div>
         </div>
@@ -379,6 +372,15 @@ function FootballField({ activeScenario, scenarioResults }) {
             </div>
             <span aria-hidden="true" />
           </div>
+          <div className="ff-guide-grid" aria-hidden="true">
+            <span />
+            <div className="ff-guide-scale">
+              <span className="ff-guide market" style={{ left: `${pctFromValue(VALUATION_CONTEXT.marketEv)}%` }} />
+              <span className="ff-guide fair" style={{ left: `${pctFromValue(VALUATION_CONTEXT.fairValueEv)}%` }} />
+              <span className="ff-guide control" style={{ left: `${pctFromValue(VALUATION_CONTEXT.controlEv)}%` }} />
+            </div>
+            <span />
+          </div>
           {row("dcf", "DCF", "Fundamental", `${scenarioResults[activeScenario].ev.toFixed(0)}m`)}
           {row("trading", "Trading", "Stand-alone", `${VALUATION_CONTEXT.tradingRange.base.toFixed(0)}m`)}
           {row("transaction", "Transaction", "Control", `${VALUATION_CONTEXT.transactionRange.base.toFixed(0)}m`)}
@@ -396,6 +398,13 @@ function FootballField({ activeScenario, scenarioResults }) {
           <span className="tick" style={{ left: "100%" }}>€600m</span>
         </div>
         <div className="base-val">&nbsp;</div>
+      </div>
+      <div className="ff-lbo-reading">
+        <strong>LBO reading</strong>
+        <span>Low {fmtM(VALUATION_CONTEXT.lboRange.low, 1)} · IRR target {fmtPct(VALUATION_CONTEXT.lboIrr.low, 0)}</span>
+        <span>Base {fmtM(VALUATION_CONTEXT.lboRange.base, 1)} · IRR target {fmtPct(VALUATION_CONTEXT.lboIrr.base)}</span>
+        <span>High {fmtM(VALUATION_CONTEXT.lboRange.high, 1)} · IRR target {fmtPct(VALUATION_CONTEXT.lboIrr.high, 0)}</span>
+        <em>The market reference sits near the least demanding IRR hurdle, not the Base LBO case.</em>
       </div>
     </div></Localized>
   );
@@ -785,7 +794,7 @@ FCF  = EBIT × (1 − tax) + D&A − Capex − ΔWC`}</pre>
       </section>
 
       <section className="block" id="football">
-        <div className="sec-head"><div className="left"><div className="num-tag">08 — Football field</div><h2>Four methods, one view</h2></div><div className="right">Scroll back up to switch DCF scenario — the DCF bar below recomposes live.</div></div>
+        <div className="sec-head"><div className="left"><div className="num-tag">08 — Football field</div><h2>Four methods, one view</h2></div><div className="right">Only the DCF range responds to Bear / Base / Bull. Market, trading, transactions and LBO references remain fixed.</div></div>
         <FootballField activeScenario={activeScenario} scenarioResults={scenarioResults} />
         <div className="grid-3" style={{ marginTop: 24 }}>
           <div className="card" style={{ borderTop: "3px solid var(--bordeaux)" }}><div className="mono-k" style={{ color: "var(--bordeaux)" }}>Stand-alone fair value</div><div className="big-card-value">{fmtM(VALUATION_CONTEXT.fairValueEv)} EV</div><p style={{ fontSize: 13, color: "var(--ink-2)", margin: 0 }}>DCF Gordon Growth central value — ~{((VALUATION_CONTEXT.fairValueEv / VALUATION_CONTEXT.marketEv - 1) * 100).toFixed(0)}% above the quoted market EV (~{fmtM(VALUATION_CONTEXT.marketEv)} at €{VALUATION_CONTEXT.sharePriceRef.toFixed(0)}/share, {VALUATION_DATES.marketMedium}). The reference number.</p></div>

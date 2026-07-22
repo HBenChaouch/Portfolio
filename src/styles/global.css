@@ -3667,6 +3667,8 @@ ul {
     grid-template-columns: 1fr;
   }
 
+  .analysis-view .ff-reference-row,
+  .analysis-view .ff-guide-grid,
   .analysis-view .ff-row {
     grid-template-columns: 90px 1fr 80px;
   }
@@ -5323,10 +5325,44 @@ a {
   padding-top: 0;
 }
 
-.analysis-view .ff-reference-row {
+.analysis-view .ff-reference-row,
+.analysis-view .ff-guide-grid {
   display: grid;
   gap: 14px;
   grid-template-columns: 130px minmax(0, 1fr) 100px;
+}
+
+.analysis-view .ff-guide-grid {
+  bottom: 0;
+  left: 0;
+  pointer-events: none;
+  position: absolute;
+  right: 0;
+  top: 54px;
+  z-index: 2;
+}
+
+.analysis-view .ff-guide-scale {
+  position: relative;
+}
+
+.analysis-view .ff-guide {
+  bottom: 0;
+  position: absolute;
+  top: 0;
+  width: 1px;
+}
+
+.analysis-view .ff-guide.market {
+  border-left: 1px dashed var(--market);
+}
+
+.analysis-view .ff-guide.fair {
+  background: var(--bordeaux);
+}
+
+.analysis-view .ff-guide.control {
+  background: var(--bull);
 }
 
 .analysis-view .ff-reference-scale {
@@ -5336,6 +5372,7 @@ a {
 
 .analysis-view .ff-reference-scale .ref-label {
   position: absolute;
+  z-index: 3;
 }
 
 .analysis-view .ff-reference-scale .ref-label.market {
@@ -5351,25 +5388,37 @@ a {
   top: 0;
 }
 
-.analysis-view .ff-row .row-reference {
-  bottom: -10px;
-  pointer-events: none;
-  position: absolute;
-  top: -10px;
-  width: 1px;
-  z-index: 2;
+.analysis-view .ff-lbo-reading {
+  align-items: center;
+  border-top: 1px solid var(--line);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 18px;
+  margin-top: 8px;
+  padding-top: 14px;
 }
 
-.analysis-view .ff-row .row-reference.market {
-  border-left: 1px dashed var(--market);
+.analysis-view .ff-lbo-reading strong,
+.analysis-view .ff-lbo-reading span {
+  font-family: var(--mono);
+  font-size: 9.5px;
+  letter-spacing: .04em;
 }
 
-.analysis-view .ff-row .row-reference.fair {
-  background: var(--bordeaux);
+.analysis-view .ff-lbo-reading strong {
+  color: var(--ink);
+  text-transform: uppercase;
 }
 
-.analysis-view .ff-row .row-reference.control {
-  background: var(--bull);
+.analysis-view .ff-lbo-reading span {
+  color: var(--ink-2);
+}
+
+.analysis-view .ff-lbo-reading em {
+  color: var(--market);
+  flex: 1 1 280px;
+  font-size: 11px;
+  text-align: right;
 }
 
 @media (max-width: 760px) {
@@ -5657,6 +5706,7 @@ a {
   }
 
   .analysis-view .ff-reference-row,
+  .analysis-view .ff-guide-grid,
   .analysis-view .ff-row {
     gap: 8px;
     grid-template-columns: 68px minmax(0, 1fr) 52px;
@@ -5664,6 +5714,10 @@ a {
 
   .analysis-view .ff-reference-scale {
     height: 68px;
+  }
+
+  .analysis-view .ff-guide-grid {
+    top: 68px;
   }
 
   .analysis-view .ff-reference-scale .ref-label {
@@ -5708,6 +5762,16 @@ a {
     display: none;
   }
 
+  .analysis-view .ff-lbo-reading {
+    align-items: flex-start;
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+
+  .analysis-view .ff-lbo-reading em {
+    text-align: left;
+  }
+
   .analysis-view .mobile-range {
     bottom: 2px;
     color: var(--ink-3);
@@ -5731,6 +5795,11 @@ a {
 
   .analysis-view .ff-axis-row .tick:last-child {
     transform: translateX(-100%);
+  }
+
+  .analysis-view .ff-axis-row .tick:nth-child(2),
+  .analysis-view .ff-axis-row .tick:nth-child(5) {
+    display: none;
   }
 
   .analysis-view .ff-axis-row .tick.fair,

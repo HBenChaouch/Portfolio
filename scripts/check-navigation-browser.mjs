@@ -221,12 +221,16 @@ async function responsiveState(width, height, mobile = true) {
       label.left < other.right && label.right > other.left && label.top < other.bottom && label.bottom > other.top
     )));
     const references = ['market', 'fair', 'control'].map((kind) => {
-      const marker = document.querySelector('.ff-row .row-reference.' + kind).getBoundingClientRect();
-      const markerElement = document.querySelector('.ff-row .row-reference.' + kind);
+      const marker = document.querySelector('.ff-guide.' + kind).getBoundingClientRect();
+      const markerElement = document.querySelector('.ff-guide.' + kind);
       const label = document.querySelector('.ff-reference-scale .ref-label.' + kind).getBoundingClientRect();
       const expectedX = scale.left + parseFloat(markerElement.style.left) / 100 * scale.width;
       return { alignmentError: Math.abs(marker.left - expectedX), kind, labelX: label.left + label.width / 2, markerX: marker.left, onScale: marker.left >= scale.left - 1 && marker.left <= scale.right + 1 };
     });
+    const guideRect = document.querySelector('.ff-guide-scale').getBoundingClientRect();
+    const rangeTracks = Array.from(document.querySelectorAll('.ff-row:not(.ff-axis-row) .range-track')).map((element) => element.getBoundingClientRect());
+    const guideCoversRows = guideRect.top <= rangeTracks[0].top + 1 && guideRect.bottom >= rangeTracks.at(-1).bottom - 1;
+    const lboReading = document.querySelector('.ff-lbo-reading')?.textContent ?? '';
     const disclosureTargets = Array.from(document.querySelectorAll('.chart-disclosures summary, .transaction-cards summary, .peer-table .tip > summary'))
       .filter((element) => getComputedStyle(element).display !== 'none')
       .map((element) => element.getBoundingClientRect().height);
@@ -235,6 +239,8 @@ async function responsiveState(width, height, mobile = true) {
       offenders: innerWidth <= 760 ? offenders : [],
       labelsOverlap: overlap,
       references,
+      guideCoversRows,
+      lboReadingComplete: ['222.5', '241.9', '283.5', '25%', '22.5%', '18%'].every((value) => lboReading.includes(value)),
       minDisclosureTarget: Math.min(...disclosureTargets),
       transactionCards: getComputedStyle(document.querySelector('.transaction-cards')).display,
       verticalWaterfall: getComputedStyle(document.querySelector('.waterfall-mobile')).display,
@@ -368,6 +374,7 @@ try {
     assert(state.documentOverflow === 0, `Desktop document overflow at ${viewport.join("x")}: ${JSON.stringify(state)}`);
     assert(!state.labelsOverlap, `Desktop football labels overlap at ${viewport.join("x")}: ${JSON.stringify(state)}`);
     assert(state.references.every((reference) => reference.onScale && reference.alignmentError < 1), `Desktop football scale mismatch at ${viewport.join("x")}: ${JSON.stringify(state.references)}`);
+    assert(state.guideCoversRows && state.lboReadingComplete, `Desktop football guide or LBO reading mismatch at ${viewport.join("x")}: ${JSON.stringify(state)}`);
     desktopLayouts.push(state);
   }
 
@@ -378,6 +385,7 @@ try {
     assert(state.offenders.length === 0, `Horizontal narration overflow at ${viewport.join("x")}: ${JSON.stringify(state.offenders)}`);
     assert(!state.labelsOverlap, `Football labels overlap at ${viewport.join("x")}: ${JSON.stringify(state)}`);
     assert(state.references.every((reference) => reference.onScale && reference.alignmentError < 1), `Football reference outside common scale at ${viewport.join("x")}: ${JSON.stringify(state.references)}`);
+    assert(state.guideCoversRows && state.lboReadingComplete, `Mobile football guide or LBO reading mismatch at ${viewport.join("x")}: ${JSON.stringify(state)}`);
     assert(state.minDisclosureTarget >= 44, `Disclosure target below 44px at ${viewport.join("x")}: ${state.minDisclosureTarget}`);
     assert(state.transactionCards === "grid" && state.verticalWaterfall === "grid", `Mobile representations missing at ${viewport.join("x")}: ${JSON.stringify(state)}`);
     responsive.push(state);

@@ -71,6 +71,17 @@ function fmtPct(value, decimals = 1) {
   return `${(value * 100).toFixed(decimals)}%`;
 }
 
+function fmtLocalizedM(value, decimals, language) {
+  const formatted = value.toFixed(decimals);
+  return `${EURO}${language === "fr" ? formatted.replace(".", ",") : formatted}m`;
+}
+
+function fmtLocalizedPct(value, decimals, language) {
+  const formatted = (value * 100).toFixed(decimals);
+  const localized = language === "fr" ? formatted.replace(".", ",") : formatted;
+  return `${localized}${language === "fr" ? " %" : "%"}`;
+}
+
 function fmtNumber(value, decimals = 1) {
   return value.toFixed(decimals);
 }
@@ -331,7 +342,7 @@ function SensitivityHeatmap({ activeScenario }) {
   );
 }
 
-function FootballField({ activeScenario, scenarioResults }) {
+function FootballField({ activeScenario, language, scenarioResults }) {
   const ranges = {
     dcf: { low: scenarioResults.bear.ev, base: scenarioResults[activeScenario].ev, high: scenarioResults.bull.ev },
     trading: VALUATION_CONTEXT.tradingRange,
@@ -401,9 +412,9 @@ function FootballField({ activeScenario, scenarioResults }) {
       </div>
       <div className="ff-lbo-reading">
         <strong>LBO reading</strong>
-        <span>Low {fmtM(VALUATION_CONTEXT.lboRange.low, 1)} · IRR target {fmtPct(VALUATION_CONTEXT.lboIrr.low, 0)}</span>
-        <span>Base {fmtM(VALUATION_CONTEXT.lboRange.base, 1)} · IRR target {fmtPct(VALUATION_CONTEXT.lboIrr.base)}</span>
-        <span>High {fmtM(VALUATION_CONTEXT.lboRange.high, 1)} · IRR target {fmtPct(VALUATION_CONTEXT.lboIrr.high, 0)}</span>
+        <span>Low {fmtLocalizedM(VALUATION_CONTEXT.lboRange.low, 1, language)} · IRR target {fmtLocalizedPct(VALUATION_CONTEXT.lboIrr.low, 0, language)}</span>
+        <span>Base {fmtLocalizedM(VALUATION_CONTEXT.lboRange.base, 1, language)} · IRR target {fmtLocalizedPct(VALUATION_CONTEXT.lboIrr.base, 1, language)}</span>
+        <span>High {fmtLocalizedM(VALUATION_CONTEXT.lboRange.high, 1, language)} · IRR target {fmtLocalizedPct(VALUATION_CONTEXT.lboIrr.high, 0, language)}</span>
         <em>The market reference sits near the least demanding IRR hurdle, not the Base LBO case.</em>
       </div>
     </div></Localized>
@@ -794,8 +805,8 @@ FCF  = EBIT × (1 − tax) + D&A − Capex − ΔWC`}</pre>
       </section>
 
       <section className="block" id="football">
-        <div className="sec-head"><div className="left"><div className="num-tag">08 — Football field</div><h2>Four methods, one view</h2></div><div className="right">Only the DCF range responds to Bear / Base / Bull. Market, trading, transactions and LBO references remain fixed.</div></div>
-        <FootballField activeScenario={activeScenario} scenarioResults={scenarioResults} />
+        <div className="sec-head"><div className="left"><div className="num-tag">08 — Football field</div><h2>Four methods, one view</h2></div><div className="right">Only the DCF scenario marker responds to Bear / Base / Bull. The range endpoints and all other references remain fixed.</div></div>
+        <FootballField activeScenario={activeScenario} language={language} scenarioResults={scenarioResults} />
         <div className="grid-3" style={{ marginTop: 24 }}>
           <div className="card" style={{ borderTop: "3px solid var(--bordeaux)" }}><div className="mono-k" style={{ color: "var(--bordeaux)" }}>Stand-alone fair value</div><div className="big-card-value">{fmtM(VALUATION_CONTEXT.fairValueEv)} EV</div><p style={{ fontSize: 13, color: "var(--ink-2)", margin: 0 }}>DCF Gordon Growth central value — ~{((VALUATION_CONTEXT.fairValueEv / VALUATION_CONTEXT.marketEv - 1) * 100).toFixed(0)}% above the quoted market EV (~{fmtM(VALUATION_CONTEXT.marketEv)} at €{VALUATION_CONTEXT.sharePriceRef.toFixed(0)}/share, {VALUATION_DATES.marketMedium}). The reference number.</p></div>
           <div className="card" style={{ borderTop: "3px solid var(--bull)" }}><div className="mono-k" style={{ color: "var(--bull)" }}>Control case</div><div className="big-card-value">{fmtM(VALUATION_CONTEXT.controlEv)} EV</div><p style={{ fontSize: 13, color: "var(--ink-2)", margin: 0 }}>Convergence with transaction precedents. ~40% control premium embedded.</p></div>

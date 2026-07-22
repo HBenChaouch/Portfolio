@@ -324,7 +324,7 @@ const fr = {
   "Exit sensitivity range:": "Fourchette de sensibilité de sortie :",
   "08 — Football field": "08 — Football field",
   "Four methods, one view": "Quatre méthodes, une synthèse",
-  "Only the DCF range responds to Bear / Base / Bull. Market, trading, transactions and LBO references remain fixed.": "Seule la fourchette DCF réagit aux scénarios Bear / Base / Bull. Les références de marché, boursières, transactionnelles et LBO restent fixes.",
+  "Only the DCF scenario marker responds to Bear / Base / Bull. The range endpoints and all other references remain fixed.": "Seul le marqueur du scénario DCF réagit à Bear / Base / Bull. Les bornes de la fourchette et toutes les autres références restent fixes.",
   "LBO reading": "Lecture LBO",
   "The market reference sits near the least demanding IRR hurdle, not the Base LBO case.": "La référence de marché se situe près du TRI cible le moins exigeant, et non du cas LBO Base.",
   "Fair value": "Valeur stand-alone",

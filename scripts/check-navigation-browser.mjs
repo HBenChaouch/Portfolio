@@ -231,6 +231,7 @@ async function responsiveState(width, height, mobile = true) {
     const rangeTracks = Array.from(document.querySelectorAll('.ff-row:not(.ff-axis-row) .range-track')).map((element) => element.getBoundingClientRect());
     const guideCoversRows = guideRect.top <= rangeTracks[0].top + 1 && guideRect.bottom >= rangeTracks.at(-1).bottom - 1;
     const lboReading = document.querySelector('.ff-lbo-reading')?.textContent ?? '';
+    const normalizedLboReading = lboReading.replaceAll(',', '.').replaceAll(' %', '%');
     const disclosureTargets = Array.from(document.querySelectorAll('.chart-disclosures summary, .transaction-cards summary, .peer-table .tip > summary'))
       .filter((element) => getComputedStyle(element).display !== 'none')
       .map((element) => element.getBoundingClientRect().height);
@@ -240,7 +241,7 @@ async function responsiveState(width, height, mobile = true) {
       labelsOverlap: overlap,
       references,
       guideCoversRows,
-      lboReadingComplete: ['222.5', '241.9', '283.5', '25%', '22.5%', '18%'].every((value) => lboReading.includes(value)),
+      lboReadingComplete: ['222.5', '241.9', '283.5', '25%', '22.5%', '18%'].every((value) => normalizedLboReading.includes(value)),
       minDisclosureTarget: Math.min(...disclosureTargets),
       transactionCards: getComputedStyle(document.querySelector('.transaction-cards')).display,
       verticalWaterfall: getComputedStyle(document.querySelector('.waterfall-mobile')).display,

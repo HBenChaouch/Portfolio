@@ -3369,28 +3369,6 @@ ul {
   font-weight: 400;
 }
 
-.analysis-view .ff-canvas .ref {
-  bottom: 0;
-  pointer-events: none;
-  position: absolute;
-  top: 50px;
-  width: 1px;
-  z-index: 1;
-}
-
-.analysis-view .ff-canvas .ref.fair {
-  background: var(--bordeaux);
-}
-
-.analysis-view .ff-canvas .ref.control {
-  background: var(--bull);
-}
-
-.analysis-view .ff-canvas .ref.market {
-  border-left: 1px dashed var(--market);
-  width: 0;
-}
-
 .analysis-view .ff-canvas .ref-label {
   background: var(--bg-card);
   border: 1px solid currentColor;

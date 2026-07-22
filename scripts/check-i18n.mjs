@@ -128,6 +128,10 @@ try {
   assert.ok(englishDom.includes("between €13.7m and €14.7m"), "English DOM must preserve the exact QoE range");
   assert.ok(frenchDom.includes("25% à 18%"), "French DOM must localize the segmented LBO range");
   assert.ok(englishDom.includes("25% down to 18%"), "English DOM must preserve the LBO range meaning");
+  assert.ok(frenchDom.includes("€222,5m · TRI cible 25 %"), "French football field must localize LBO money and percentage typography");
+  assert.ok(frenchDom.includes("€241,9m · TRI cible 22,5 %"), "French football field must localize the Base LBO reading");
+  assert.ok(englishDom.includes("€222.5m · IRR target 25%"), "English football field must preserve LBO money and percentage typography");
+  assert.ok(englishDom.includes("€241.9m · IRR target 22.5%"), "English football field must preserve the Base LBO reading");
   assert.equal(translateText("Revenue at €174/share", "fr"), "Chiffre d’affaires à €174 par action");
   for (const label of ["Cas principal", "En développement", "Cockpit opérationnel"]) {
     assert.ok(frenchHome.includes(label), `French home missing honest status: ${label}`);

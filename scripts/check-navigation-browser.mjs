@@ -238,11 +238,16 @@ async function responsiveState(width, height, mobile = true) {
       label.left < other.right && label.right > other.left && label.top < other.bottom && label.bottom > other.top
     )));
     const references = ['market', 'fair', 'control'].map((kind) => {
-      const marker = document.querySelector('.ff-guide.' + kind).getBoundingClientRect();
       const markerElement = document.querySelector('.ff-guide.' + kind);
+      const marker = markerElement.getBoundingClientRect();
+      const markerStyle = getComputedStyle(markerElement);
       const label = document.querySelector('.ff-reference-scale .ref-label.' + kind).getBoundingClientRect();
       const expectedX = scale.left + parseFloat(markerElement.style.left) / 100 * scale.width;
-      return { alignmentError: Math.abs(marker.left - expectedX), kind, labelX: label.left + label.width / 2, markerX: marker.left, onScale: marker.left >= scale.left - 1 && marker.left <= scale.right + 1 };
+      const hasContinuousStroke = markerStyle.backgroundImage === 'none'
+        && markerStyle.borderLeftStyle !== 'dashed'
+        && markerStyle.borderLeftStyle !== 'dotted'
+        && (markerStyle.backgroundColor !== 'rgba(0, 0, 0, 0)' || markerStyle.borderLeftStyle === 'solid');
+      return { alignmentError: Math.abs(marker.left - expectedX), hasContinuousStroke, kind, labelX: label.left + label.width / 2, markerX: marker.left, onScale: marker.left >= scale.left - 1 && marker.left <= scale.right + 1 };
     });
     const guideRect = document.querySelector('.ff-guide-scale').getBoundingClientRect();
     const rangeTracks = Array.from(document.querySelectorAll('.ff-row:not(.ff-axis-row) .range-track')).map((element) => element.getBoundingClientRect());
@@ -398,7 +403,7 @@ try {
     const state = await responsiveState(...viewport, false);
     assert(state.documentOverflow === 0, `Desktop document overflow at ${viewport.join("x")}: ${JSON.stringify(state)}`);
     assert(!state.labelsOverlap, `Desktop football labels overlap at ${viewport.join("x")}: ${JSON.stringify(state)}`);
-    assert(state.references.every((reference) => reference.onScale && reference.alignmentError < 1), `Desktop football scale mismatch at ${viewport.join("x")}: ${JSON.stringify(state.references)}`);
+    assert(state.references.every((reference) => reference.onScale && reference.alignmentError < 1 && reference.hasContinuousStroke), `Desktop football scale or guide continuity mismatch at ${viewport.join("x")}: ${JSON.stringify(state.references)}`);
     assert(state.guideCoversRows && state.lboReadingComplete, `Desktop football guide or LBO reading mismatch at ${viewport.join("x")}: ${JSON.stringify(state)}`);
     assert(state.sidebar.linkCount === 11, `Desktop sidebar destination count mismatch at ${viewport.join("x")}: ${JSON.stringify(state.sidebar)}`);
     assert(state.sidebar.scrollHeight <= state.sidebar.clientHeight + 1, `Desktop sidebar still requires scrolling at ${viewport.join("x")}: ${JSON.stringify(state.sidebar)}`);
@@ -411,7 +416,7 @@ try {
     assert(state.documentOverflow === 0, `Document overflow at ${viewport.join("x")}: ${JSON.stringify(state)}`);
     assert(state.offenders.length === 0, `Horizontal narration overflow at ${viewport.join("x")}: ${JSON.stringify(state.offenders)}`);
     assert(!state.labelsOverlap, `Football labels overlap at ${viewport.join("x")}: ${JSON.stringify(state)}`);
-    assert(state.references.every((reference) => reference.onScale && reference.alignmentError < 1), `Football reference outside common scale at ${viewport.join("x")}: ${JSON.stringify(state.references)}`);
+    assert(state.references.every((reference) => reference.onScale && reference.alignmentError < 1 && reference.hasContinuousStroke), `Football reference outside common scale or discontinuous at ${viewport.join("x")}: ${JSON.stringify(state.references)}`);
     assert(state.guideCoversRows && state.lboReadingComplete, `Mobile football guide or LBO reading mismatch at ${viewport.join("x")}: ${JSON.stringify(state)}`);
     assert(state.sidebar.linkCount === 11, `Mobile summary destination count mismatch at ${viewport.join("x")}: ${JSON.stringify(state.sidebar)}`);
     assert(state.minDisclosureTarget >= 44, `Disclosure target below 44px at ${viewport.join("x")}: ${state.minDisclosureTarget}`);

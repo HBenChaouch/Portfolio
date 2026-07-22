@@ -5371,7 +5371,7 @@ a {
 }
 
 .analysis-view .ff-guide.market {
-  border-left: 1px dashed var(--market);
+  background: var(--market);
 }
 
 .analysis-view .ff-guide.fair {

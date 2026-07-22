@@ -30,7 +30,20 @@ jobs:
           node-version: 24
           cache: npm
       - run: npm ci
-      - run: npm run test:quality
+      - name: Financial and workbook checks
+        run: npm run test:audit
+      - name: Static web quality checks
+        run: npm run test:web
+      - name: Navigation logic checks
+        run: npm run test:navigation
+      - name: Bilingual architecture checks
+        run: npm run test:i18n
+      - name: Build auditable site
+        run: npm run build
+      - name: Real Estate integration checks
+        run: npm run test:real-estate
+      - name: Browser navigation and responsive checks
+        run: npm run test:navigation:browser
       - name: Stamp exact commit
         shell: pwsh
         run: |

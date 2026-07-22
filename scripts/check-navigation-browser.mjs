@@ -6,6 +6,7 @@ import { tmpdir } from "node:os";
 import path from "node:path";
 
 const distRoot = path.resolve("dist");
+const publicBasePath = process.env.GITHUB_ACTIONS ? "/Portfolio/" : "/";
 const delay = (milliseconds) => new Promise((resolve) => setTimeout(resolve, milliseconds));
 
 function assert(condition, message) {
@@ -23,6 +24,10 @@ async function availablePort() {
 async function findChrome() {
   const candidates = [
     process.env.CHROME_PATH,
+    process.env.CHROME_BIN,
+    process.env.PROGRAMFILES && path.join(process.env.PROGRAMFILES, "Google", "Chrome", "Application", "chrome.exe"),
+    process.env["PROGRAMFILES(X86)"] && path.join(process.env["PROGRAMFILES(X86)"], "Google", "Chrome", "Application", "chrome.exe"),
+    process.env.LOCALAPPDATA && path.join(process.env.LOCALAPPDATA, "Google", "Chrome", "Application", "chrome.exe"),
     "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe",
     "C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe",
     "/usr/bin/google-chrome",
@@ -56,7 +61,10 @@ function contentType(filename) {
 const webServer = createServer(async (request, response) => {
   try {
     const pathname = decodeURIComponent(new URL(request.url, "http://127.0.0.1").pathname);
-    const relativePath = pathname.replace(/^\/+/, "");
+    const appPath = publicBasePath !== "/" && pathname.startsWith(publicBasePath)
+      ? pathname.slice(publicBasePath.length)
+      : pathname;
+    const relativePath = appPath.replace(/^\/+/, "");
     let filename = path.resolve(distRoot, relativePath);
     if (!filename.startsWith(distRoot)) throw new Error("Path outside dist");
 
@@ -78,6 +86,7 @@ const webServer = createServer(async (request, response) => {
 
 await new Promise((resolve, reject) => webServer.listen(0, "127.0.0.1", resolve).once("error", reject));
 const webPort = webServer.address().port;
+const portfolioUrl = `http://127.0.0.1:${webPort}${publicBasePath}`;
 const cdpPort = await availablePort();
 const profile = await mkdtemp(path.join(tmpdir(), "sidetrade-navigation-"));
 const chromePath = await findChrome();
@@ -85,14 +94,23 @@ const chromeArguments = [
   ...(process.env.S12_HEADFUL === "1" ? [] : ["--headless=new"]),
   `--remote-debugging-port=${cdpPort}`,
   "--remote-allow-origins=*",
+  "--disable-background-networking",
+  "--disable-dev-shm-usage",
   "--disable-gpu",
+  "--no-sandbox",
   "--no-first-run",
   "--no-default-browser-check",
   `--user-data-dir=${profile}`,
   "about:blank",
 ];
-const chrome = spawn(chromePath, chromeArguments, { stdio: "ignore" });
-const base = `http://127.0.0.1:${webPort}/cases/sidetrade-valuation/analysis/`;
+const chrome = spawn(chromePath, chromeArguments, { stdio: ["ignore", "pipe", "pipe"] });
+let chromeDiagnostics = "";
+for (const stream of [chrome.stdout, chrome.stderr]) {
+  stream?.on("data", (chunk) => {
+    chromeDiagnostics = `${chromeDiagnostics}${chunk}`.slice(-12000);
+  });
+}
+const base = `${portfolioUrl}cases/sidetrade-valuation/analysis/`;
 
 let socket;
 let target;
@@ -101,16 +119,19 @@ const pending = new Map();
 const browserMessages = [];
 
 async function waitForChrome() {
-  for (let attempt = 0; attempt < 100; attempt += 1) {
+  for (let attempt = 0; attempt < 300; attempt += 1) {
+    if (chrome.exitCode !== null) {
+      throw new Error(`Chrome exited before CDP became available (code ${chrome.exitCode}).\n${chromeDiagnostics}`);
+    }
     try {
       const response = await fetch(`http://127.0.0.1:${cdpPort}/json/version`);
       if (response.ok) return;
     } catch {
       // Chrome is still starting.
     }
-    await delay(50);
+    await delay(100);
   }
-  throw new Error("Chrome DevTools endpoint did not start");
+  throw new Error(`Chrome DevTools endpoint did not start within 30 seconds.\n${chromeDiagnostics}`);
 }
 
 function command(method, params = {}) {
@@ -384,7 +405,7 @@ try {
   assert(chartDisclosureOpen, "Trajectory detail did not open from the keyboard");
 
   await command("Emulation.setDeviceMetricsOverride", { width: 1280, height: 720, deviceScaleFactor: 1, mobile: false });
-  const cockpitUrl = `http://127.0.0.1:${webPort}/cases/real-estate-downside/`;
+  const cockpitUrl = `${portfolioUrl}cases/real-estate-downside/`;
   await navigate(cockpitUrl);
   await waitFor(() => evaluate("Boolean(window.__COCKPIT__?.runSelfTests)"), "Real Estate cockpit initialization");
   const cockpitInitial = await evaluate(`(() => {
@@ -406,7 +427,7 @@ try {
     };
   })()`);
   assert(cockpitInitial.passed === 13 && cockpitInitial.total === 13, `Cockpit self-tests mismatch: ${JSON.stringify(cockpitInitial)}`);
-  assert(cockpitInitial.backHref === `http://127.0.0.1:${webPort}/` && cockpitInitial.backTarget === null, `Cockpit return mismatch: ${JSON.stringify(cockpitInitial)}`);
+  assert(cockpitInitial.backHref === portfolioUrl && cockpitInitial.backTarget === null, `Cockpit return mismatch: ${JSON.stringify(cockpitInitial)}`);
   assert(cockpitInitial.downloads.length === 3 && cockpitInitial.downloads.every((link) => link.download && link.target === null), `Cockpit downloads mismatch: ${JSON.stringify(cockpitInitial.downloads)}`);
   assert(!cockpitInitial.oldDomainPresent && cockpitInitial.overflow === 0, `Cockpit public integration mismatch: ${JSON.stringify(cockpitInitial)}`);
 
@@ -439,7 +460,7 @@ try {
   assert(cockpitMobile.overflow === 0 && cockpitMobile.backVisible && cockpitMobile.backHeight >= 44 && cockpitMobile.passed === 13 && cockpitMobile.total === 13, `Mobile cockpit mismatch: ${JSON.stringify(cockpitMobile)}`);
 
   const portfolioPointer = await realPointerClick("document.querySelector('.portfolio-back')", "cockpit Portfolio return");
-  await waitFor(() => evaluate(`location.pathname === '/'`), "Portfolio return navigation");
+  await waitFor(() => evaluate(`location.pathname === ${JSON.stringify(publicBasePath)}`), "Portfolio return navigation");
   await waitFor(() => evaluate(`Boolean(document.querySelector('a[href$="/cases/real-estate-downside/"]'))`), "Portfolio home rendering");
   const realEstateHomeLink = await evaluate(`(() => {
     const link = document.querySelector('a[href$="/cases/real-estate-downside/"]');
@@ -461,7 +482,7 @@ try {
 
   const opellaFr = await opellaState();
   assert(opellaFr.tag === "DIV" && opellaFr.href === null && opellaFr.interactiveDescendants === 0 && /en développement/i.test(opellaFr.text), `French Opella card mismatch: ${JSON.stringify(opellaFr)}`);
-  await navigate(`http://127.0.0.1:${webPort}/?lang=en`);
+  await navigate(`${portfolioUrl}?lang=en`);
   await waitFor(() => evaluate("document.documentElement.lang === 'en' && document.body.innerText.includes('Opella')"), "English Portfolio home");
   const opellaEn = await opellaState();
   assert(opellaEn.tag === "DIV" && opellaEn.href === null && opellaEn.interactiveDescendants === 0 && /in development/i.test(opellaEn.text), `English Opella card mismatch: ${JSON.stringify(opellaEn)}`);

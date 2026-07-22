@@ -5027,7 +5027,7 @@ a {
     padding: var(--space-4) 0;
   }
 }
-/* S10 — shareable bilingual controls */
+/* Shareable bilingual controls */
 .home-toolbar {
   display: flex;
   justify-content: flex-end;
@@ -5091,7 +5091,7 @@ a {
   }
 }
 
-/* S11 — one flagship and two simultaneously legible secondary projects */
+/* One flagship and two simultaneously legible secondary projects */
 @media (min-width: 2200px) {
   .portfolio-home {
     max-width: 2048px;
@@ -5287,7 +5287,7 @@ a {
   }
 }
 
-/* === S13 · responsive financial representations === */
+/* Responsive financial representations */
 
 .analysis-view details.tip {
   border: 0;

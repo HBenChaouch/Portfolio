@@ -51,7 +51,17 @@ assert.match(index, /%BASE_URL%favicon\.svg/);
 const viteConfig = await text("vite.config.js");
 assert.match(viteConfig, /process\.env\.GITHUB_ACTIONS \? "\/Portfolio\/" : "\/"/);
 const workflow = await text(".github/workflows/deploy-pages.yml");
-assert.match(workflow, /npm run test:quality/);
+for (const qualityGate of [
+  "npm run test:audit",
+  "npm run test:web",
+  "npm run test:navigation",
+  "npm run test:i18n",
+  "npm run build",
+  "npm run test:real-estate",
+  "npm run test:navigation:browser",
+]) {
+  assert.match(workflow, new RegExp(qualityGate.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")));
+}
 assert.match(workflow, /public\/deployment\.json/);
 assert.match(workflow, /github\.sha/);
 assert.match(workflow, /enablement: true/);
@@ -118,6 +128,7 @@ const publicCopy = [
   await text("src/data/sidetradeFinancials.js"),
   await text("src/routes/AnalysisView.jsx"),
 ].join("\n");
+assert.doesNotMatch(styles, /\bS\d+\b/, "Styles must not contain internal pass references");
 for (const forbidden of [
   /refresh before distribution/i,
   /pedagogical/i,

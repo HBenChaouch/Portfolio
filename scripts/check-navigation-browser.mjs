@@ -194,6 +194,23 @@ async function waitForStableAnchor(anchor) {
   return current;
 }
 
+async function waitForStableSecondaryAnchor(anchor) {
+  let previous;
+  let stableSamples = 0;
+  let current;
+  await waitFor(async () => {
+    current = await anchorState(anchor);
+    const correctIdentity = current.hash === `#${anchor}` && Number.isFinite(current.top);
+    const stableGeometry = previous
+      && Math.abs(current.top - previous.top) < 0.5
+      && current.documentHeight === previous.documentHeight;
+    stableSamples = correctIdentity && stableGeometry ? stableSamples + 1 : 0;
+    previous = current;
+    return stableSamples >= 2;
+  }, `stable secondary #${anchor}`);
+  return current;
+}
+
 async function responsiveState(width, height, mobile = true) {
   await command("Emulation.setDeviceMetricsOverride", { width, height, deviceScaleFactor: 1, mobile });
   await navigate(`${base}#snapshot`);
@@ -235,6 +252,8 @@ async function responsiveState(width, height, mobile = true) {
     const disclosureTargets = Array.from(document.querySelectorAll('.chart-disclosures summary, .transaction-cards summary, .peer-table .tip > summary'))
       .filter((element) => getComputedStyle(element).display !== 'none')
       .map((element) => element.getBoundingClientRect().height);
+    const sidebar = document.querySelector('.case-sidebar');
+    const sidebarLinks = document.querySelectorAll('#sidetrade-section-navigation .sidebar-entry');
     return {
       documentOverflow: document.documentElement.scrollWidth - document.documentElement.clientWidth,
       offenders: innerWidth <= 760 ? offenders : [],
@@ -242,6 +261,11 @@ async function responsiveState(width, height, mobile = true) {
       references,
       guideCoversRows,
       lboReadingComplete: ['222.5', '241.9', '283.5', '25%', '22.5%', '18%'].every((value) => normalizedLboReading.includes(value)),
+      sidebar: {
+        clientHeight: sidebar.clientHeight,
+        linkCount: sidebarLinks.length,
+        scrollHeight: sidebar.scrollHeight,
+      },
       minDisclosureTarget: Math.min(...disclosureTargets),
       transactionCards: getComputedStyle(document.querySelector('.transaction-cards')).display,
       verticalWaterfall: getComputedStyle(document.querySelector('.waterfall-mobile')).display,
@@ -376,6 +400,8 @@ try {
     assert(!state.labelsOverlap, `Desktop football labels overlap at ${viewport.join("x")}: ${JSON.stringify(state)}`);
     assert(state.references.every((reference) => reference.onScale && reference.alignmentError < 1), `Desktop football scale mismatch at ${viewport.join("x")}: ${JSON.stringify(state.references)}`);
     assert(state.guideCoversRows && state.lboReadingComplete, `Desktop football guide or LBO reading mismatch at ${viewport.join("x")}: ${JSON.stringify(state)}`);
+    assert(state.sidebar.linkCount === 11, `Desktop sidebar destination count mismatch at ${viewport.join("x")}: ${JSON.stringify(state.sidebar)}`);
+    assert(state.sidebar.scrollHeight <= state.sidebar.clientHeight + 1, `Desktop sidebar still requires scrolling at ${viewport.join("x")}: ${JSON.stringify(state.sidebar)}`);
     desktopLayouts.push(state);
   }
 
@@ -387,10 +413,34 @@ try {
     assert(!state.labelsOverlap, `Football labels overlap at ${viewport.join("x")}: ${JSON.stringify(state)}`);
     assert(state.references.every((reference) => reference.onScale && reference.alignmentError < 1), `Football reference outside common scale at ${viewport.join("x")}: ${JSON.stringify(state.references)}`);
     assert(state.guideCoversRows && state.lboReadingComplete, `Mobile football guide or LBO reading mismatch at ${viewport.join("x")}: ${JSON.stringify(state)}`);
+    assert(state.sidebar.linkCount === 11, `Mobile summary destination count mismatch at ${viewport.join("x")}: ${JSON.stringify(state.sidebar)}`);
     assert(state.minDisclosureTarget >= 44, `Disclosure target below 44px at ${viewport.join("x")}: ${state.minDisclosureTarget}`);
     assert(state.transactionCards === "grid" && state.verticalWaterfall === "grid", `Mobile representations missing at ${viewport.join("x")}: ${JSON.stringify(state)}`);
     responsive.push(state);
   }
+
+  await command("Emulation.setDeviceMetricsOverride", { width: 390, height: 844, deviceScaleFactor: 1, mobile: true });
+  await navigate(`${base}#methodology`);
+  const removedAnchorDirect = await waitForStableSecondaryAnchor("methodology");
+  assert(removedAnchorDirect.top > 115 && removedAnchorDirect.top < 145, `Removed sidebar anchor must remain directly addressable: ${JSON.stringify(removedAnchorDirect)}`);
+
+  await navigate(`${base}#executive`);
+  await waitForStableAnchor("executive");
+  const mobileSummaryPointer = await realPointerClick("document.querySelector('.mobile-nav-toggle')", "mobile contents");
+  const mobileSummaryOpen = await evaluate(`(() => {
+    const nav = document.querySelector('#sidetrade-section-navigation');
+    const links = Array.from(nav.querySelectorAll('.sidebar-entry'));
+    return {
+      linkCount: links.length,
+      minTarget: Math.min(...links.map((link) => link.getBoundingClientRect().height)),
+      open: nav.classList.contains('mobile-open'),
+    };
+  })()`);
+  assert(mobileSummaryOpen.open && mobileSummaryOpen.linkCount === 11 && mobileSummaryOpen.minTarget >= 44, `Mobile summary mismatch: ${JSON.stringify(mobileSummaryOpen)}`);
+  const mobileMarketPointer = await realPointerClick("document.querySelector('#sidetrade-section-navigation a[href$=\"#market\"]')", "mobile Market reference");
+  const mobileMarket = await waitForStableAnchor("market");
+  const mobileSummaryClosed = await evaluate("!document.querySelector('#sidetrade-section-navigation').classList.contains('mobile-open')");
+  assert(mobileSummaryClosed && mobileMarket.hash === '#market', `Mobile summary did not close after selection: ${JSON.stringify({ mobileMarket, mobileSummaryClosed })}`);
 
   await command("Emulation.setDeviceMetricsOverride", { width: 390, height: 844, deviceScaleFactor: 1, mobile: true });
   await navigate(`${base}#trading`);
@@ -519,6 +569,12 @@ try {
     bullHas497,
     baseHas301,
     desktopLayouts,
+    removedAnchorDirect,
+    mobileSummaryPointer,
+    mobileSummaryOpen,
+    mobileMarketPointer,
+    mobileMarket,
+    mobileSummaryClosed,
     peerDisclosurePointer,
     peerDisclosureOpen,
     transactionDisclosurePointer,

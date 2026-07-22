@@ -122,6 +122,14 @@ assert.match(analysisView, /Only the DCF scenario marker responds to Bear \/ Bas
 assert.match(analysisView, /The market reference sits near the least demanding IRR hurdle/, "Football field must explain the LBO high endpoint");
 assert.match(styles, /\.analysis-view \.transaction-table\s*\{\s*display: none !important;/, "The wide transaction table must yield to mobile disclosures");
 
+const removedSidebarAnchors = ["cash-conversion", "debt-like", "equity-bridge", "conclusions", "diligence", "conventions", "methodology"];
+for (const hash of removedSidebarAnchors) {
+  assert.doesNotMatch(caseShell, new RegExp(`title: [^\\n]+hash: "${hash}"`), `${hash} must not remain in the primary sidebar`);
+  assert.match(analysisView, new RegExp(`id="${hash}"`), `${hash} content anchor must remain available`);
+}
+assert.equal((caseShell.match(/title: [^\n]+hash:/g) ?? []).length, 11, "Primary sidebar must expose exactly 11 destinations");
+assert.match(styles, /@media \(min-width: 901px\) and \(max-height: 800px\)/, "Short desktop viewports need compact sidebar spacing");
+
 const publicCopy = [
   await text("src/components/CaseShell.jsx"),
   await text("src/data/portfolioCases.js"),

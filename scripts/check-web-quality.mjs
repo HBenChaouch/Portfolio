@@ -28,10 +28,7 @@ assert.equal(
   await sha256("public/Sidetrade_Valuation_2026_v2.xlsx"),
   "B0D93B0A7BF346C2D02D90DC6F83D23C80D9422D902AF1E95E7CA40D385F8ECD",
 );
-assert.equal(
-  await sha256("public/Modele_Carveout_Opella.xlsx"),
-  "17E7C7FB54E71E979A9324417A111A316934B62CE11C31AD7927779F505F6494",
-);
+await assert.rejects(() => read("public/Modele_Carveout_Opella.xlsx"), { code: "ENOENT" });
 
 for (const file of [
   "public/PR_2025_Results_EN.pdf",
@@ -157,5 +154,5 @@ assert.equal(packageJson.scripts["test:workbook"], "node scripts/run-workbook-ch
 
 console.log("Web quality registry: OK");
 console.log("Portfolio projects: Sidetrade / Opella / Real Estate");
-console.log("Downloads: 2 workbooks + 3 PDFs verified");
+console.log("Downloads: 1 workbook + 3 PDFs verified; unfinished Opella workbook excluded");
 console.log("GitHub Pages metadata and SPA fallback: configured");

@@ -4,7 +4,7 @@ import { createHash } from "node:crypto";
 import { readFile } from "node:fs/promises";
 import path from "node:path";
 
-const expectedCommit = "0d2a420a1436d8fca1f73f7cfcc7823b822170f0";
+const expectedCommit = "f5b03b96abc5768d2e3d9be695c420a8999e0f9a";
 const sourceCandidates = [process.env.REAL_ESTATE_SOURCE, ".cockpit-source", "../Real Estate/cockpit"]
   .filter(Boolean)
   .map((candidate) => path.resolve(candidate));
@@ -60,6 +60,45 @@ assert.equal((index.match(/id="scenario-bear"/g) ?? []).length, 1);
 assert.doesNotMatch(index, /target="_blank"/);
 assert.doesNotMatch(index, /cockpit-fund-controlling\//);
 assert.match(index, /Portfolio\/cases\/real-estate-downside\//);
+
+// S21 — public editorial hygiene on the produced bundle (interface + text registry).
+const translationsBuilt = await readFile(path.join(destination, "translations.js"), "utf8");
+const publicSurface = `${index}\n${translationsBuilt}`;
+for (const forbidden of [
+  /claude/i,
+  /anthropic/i,
+  /sunburst/i,
+  /intégration API/i,
+  /API integration/i,
+  /relu avant diffusion/i,
+  /before distribution/i,
+  /en production/i,
+  /in production/i,
+  /livrable de production/i,
+  /production deliverable/i,
+  /auto-recette/i,
+  /13\/13/,
+  /détail en console/i,
+  /details in console/i,
+  /voir console/i,
+  /see console/i,
+]) {
+  assert.doesNotMatch(publicSurface, forbidden, `Public cockpit surface must not expose ${forbidden}`);
+}
+assert.match(translationsBuilt, /Générateur de commentaire de gestion/, "Neutral commentary title (FR) must be present");
+assert.match(translationsBuilt, /Management-commentary generator/, "Neutral commentary title (EN) must be present");
+for (const caveat of [
+  /fictif/i,
+  /fictional/i,
+  /reporting réglementaire/i,
+  /regulatory reporting/i,
+  /valorisation indépendante/i,
+  /independent valuation/i,
+  /audit externe/i,
+  /external audit/i,
+]) {
+  assert.match(translationsBuilt, caveat, `Substantive caveat must remain: ${caveat}`);
+}
 
 const deployment = JSON.parse(await readFile(path.join(destination, "deployment.json"), "utf8"));
 assert.deepEqual(deployment, {

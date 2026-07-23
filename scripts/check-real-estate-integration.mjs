@@ -3,7 +3,7 @@ import { createHash } from "node:crypto";
 import { readFile } from "node:fs/promises";
 import path from "node:path";
 
-const expectedCommit = "d97558d44fb038b0567ac62629650db3b8116aa4";
+const expectedCommit = "eba3ea398f8d726184fdc593c8829f1e26cd5b7f";
 const sourceCandidates = [process.env.REAL_ESTATE_SOURCE, ".cockpit-source", "../Real Estate/cockpit"]
   .filter(Boolean)
   .map((candidate) => path.resolve(candidate));
@@ -44,8 +44,16 @@ const index = await readFile(path.join(destination, "index.html"), "utf8");
 assert.match(index, /class="portfolio-back" href="\.\.\/\.\.\/"/);
 assert.match(index, /← Portfolio/);
 assert.match(index, /id="cockpit-section-navigation"/);
-assert.equal((index.match(/<nav id="cockpit-section-navigation"[\s\S]*?<\/nav>/)?.[0].match(/href="#/g) ?? []).length, 8);
-assert.doesNotMatch(index.match(/<nav id="cockpit-section-navigation"[\s\S]*?<\/nav>/)?.[0] ?? "", /href="#analyse"/);
+const nav = index.match(/<nav id="cockpit-section-navigation"[\s\S]*?<\/nav>/)?.[0] ?? "";
+const shell = index.match(/<header class="cockpit-shell-header"[\s\S]*?<\/header>[\s\S]*?<aside id="cockpit-sidebar"[\s\S]*?<\/aside>/)?.[0] ?? "";
+const shellHashes = [...shell.matchAll(/href="#([^"]+)"/g)].map((match) => match[1]);
+assert.deepEqual(shellHashes, ["consolidation", "covenants", "stress", "portefeuille", "tresorerie", "commentaire", "ressources", "methodo"]);
+assert.equal(new Set(shellHashes).size, 8);
+assert.doesNotMatch(nav, /href="#analyse"/);
+assert.doesNotMatch(index, /class="cockpit-nav-brand"[^>]*href=/);
+assert.equal((index.match(/class="scenario-buttons"/g) ?? []).length, 1);
+assert.equal((index.match(/id="scenario-base"/g) ?? []).length, 1);
+assert.equal((index.match(/id="scenario-bear"/g) ?? []).length, 1);
 assert.doesNotMatch(index, /target="_blank"/);
 assert.doesNotMatch(index, /cockpit-fund-controlling\//);
 assert.match(index, /Portfolio\/cases\/real-estate-downside\//);

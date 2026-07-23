@@ -2,7 +2,7 @@ import { execFileSync } from "node:child_process";
 import { access, copyFile, cp, mkdir, writeFile } from "node:fs/promises";
 import path from "node:path";
 
-const EXPECTED_COMMIT = "8157d68670502db3dff9ca61cf7a5f909f90203d";
+const EXPECTED_COMMIT = "4e071de57feb3319c0484fce8a9206a0b4735851";
 const candidates = [
   process.env.REAL_ESTATE_SOURCE,
   ".cockpit-source",
@@ -30,7 +30,7 @@ if (sourceCommit !== EXPECTED_COMMIT) {
 const destination = path.resolve("dist/cases/real-estate-downside");
 await mkdir(destination, { recursive: true });
 
-for (const filename of ["index.html", "app.js", "data.js", "styles.css", "Note_synthese_cockpit.pdf"]) {
+for (const filename of ["index.html", "translations.js", "app.js", "data.js", "styles.css", "Note_synthese_cockpit.pdf"]) {
   await copyFile(path.join(source, filename), path.join(destination, filename));
 }
 

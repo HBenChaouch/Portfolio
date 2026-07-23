@@ -61,7 +61,7 @@ export default function PortfolioHome() {
           return item.static ? (
             <a
               className="case-grid-item"
-              href={`${import.meta.env.BASE_URL.replace(/\/$/, "")}${item.href}`}
+              href={`${import.meta.env.BASE_URL.replace(/\/$/, "")}${item.href}${language === "en" ? "?lang=en" : ""}`}
               key={item.slug}
             >
               {content}

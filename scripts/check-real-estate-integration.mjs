@@ -1,9 +1,10 @@
 import assert from "node:assert/strict";
+import { execFileSync } from "node:child_process";
 import { createHash } from "node:crypto";
 import { readFile } from "node:fs/promises";
 import path from "node:path";
 
-const expectedCommit = "8157d68670502db3dff9ca61cf7a5f909f90203d";
+const expectedCommit = "4e071de57feb3319c0484fce8a9206a0b4735851";
 const sourceCandidates = [process.env.REAL_ESTATE_SOURCE, ".cockpit-source", "../Real Estate/cockpit"]
   .filter(Boolean)
   .map((candidate) => path.resolve(candidate));
@@ -24,9 +25,11 @@ for (const candidate of sourceCandidates) {
   }
 }
 assert.ok(source, `Cockpit source unavailable: ${sourceCandidates.join(", ")}`);
+execFileSync(process.execPath, [path.join(source, "check-i18n.mjs")], { stdio: "inherit" });
 
 for (const filename of [
   "index.html",
+  "translations.js",
   "app.js",
   "data.js",
   "styles.css",

@@ -159,7 +159,7 @@ async function waitFor(check, label, attempts = 120) {
     if (await check()) return;
     await delay(50);
   }
-  throw new Error(`Timed out waiting for ${label}`);
+  throw new Error(`Timed out waiting for ${label}. Browser messages: ${JSON.stringify(browserMessages.slice(-10))}`);
 }
 
 async function anchorState(anchor) {
@@ -339,7 +339,10 @@ try {
       else resolve(message.result);
       return;
     }
-    if (message.method === "Runtime.exceptionThrown") browserMessages.push(`exception: ${message.params.exceptionDetails.text}`);
+    if (message.method === "Runtime.exceptionThrown") {
+      const details = message.params.exceptionDetails;
+      browserMessages.push(`exception: ${details.exception?.description ?? details.text}`);
+    }
     if (message.method === "Log.entryAdded" && ["warning", "error"].includes(message.params.entry.level)) {
       browserMessages.push(`${message.params.entry.level}: ${message.params.entry.text}`);
     }
@@ -518,6 +521,86 @@ try {
   assert(cockpitInitial.nav.linkCount === 8 && cockpitInitial.nav.allVisible && cockpitInitial.nav.sidebarFits && cockpitInitial.nav.minFontSize > 10 && cockpitInitial.nav.toggleDisplay === "none", `Cockpit desktop navigation mismatch: ${JSON.stringify(cockpitInitial.nav)}`);
   assert(cockpitInitial.shell.banners === 1 && cockpitInitial.shell.brandTag === "SPAN" && cockpitInitial.shell.scenarioGroups === 1 && new Set(cockpitInitial.shell.hashControls).size === 8 && cockpitInitial.shell.hashControls.length === 8, `Cockpit shell duplication mismatch: ${JSON.stringify(cockpitInitial.shell)}`);
 
+  await navigate(`${cockpitUrl}?lang=en#covenants`);
+  await waitFor(() => evaluate("document.documentElement.lang === 'en' && Boolean(window.__COCKPIT__?.runSelfTests)"), "English Cockpit initialization");
+  await delay(250);
+  const cockpitEnglishProbe = await evaluate(`(() => ({
+    ariaLabels: Array.from(document.querySelectorAll('[aria-label]')).map((node) => node.getAttribute('aria-label')),
+    backHref: document.querySelector('.portfolio-back')?.getAttribute('href'),
+    frenchResiduals: Array.from(new Set(
+      (document.documentElement.textContent.match(/\\b(?:actifs?|alerte|avant|blocage|bureaux?|charges|commentaire|contrôle|couverture|démonstration|dette|durée|écart|fonds|hausse|impayés?|limites?|loyers?|méthodologie|modèle|prêteurs?|réalisé|référence|réglementaire|résidentiel|scénario|seuil|taux|télécharger|trésorerie|valeur|vacance)\\b/giu) ?? [])
+        .map((value) => value.toLocaleLowerCase('fr-FR'))
+    )),
+    hash: location.hash,
+    language: document.documentElement.lang,
+    visibleText: document.body.innerText.slice(0, 1200),
+    title: document.title,
+    url: location.href,
+  }))()`);
+  assert(cockpitEnglishProbe.language === "en" && cockpitEnglishProbe.hash === "#covenants" && cockpitEnglishProbe.backHref === `${publicBasePath}?lang=en`, `Direct English Cockpit mismatch: ${JSON.stringify(cockpitEnglishProbe)}`);
+  assert(cockpitEnglishProbe.frenchResiduals.length === 0, `French residuals in English Cockpit: ${JSON.stringify(cockpitEnglishProbe.frenchResiduals)}`);
+  assert(cockpitEnglishProbe.ariaLabels.every((label) => !/\b(?:langue|navigation et scénario|sections du|générer|retour au)\b/i.test(label)), `French accessible label in English Cockpit: ${JSON.stringify(cockpitEnglishProbe.ariaLabels)}`);
+
+  const cockpitLanguageTransitions = [];
+  for (const anchor of ["covenants", "stress", "methodo"]) {
+    await navigate(`${cockpitUrl}#${anchor}`);
+    await waitFor(() => evaluate(`location.hash === '#${anchor}' && document.documentElement.lang === 'fr' && document.querySelector('#cockpit-section-navigation a[aria-current="location"]')?.hash === '#${anchor}'`), `French Cockpit #${anchor}`);
+    const before = await evaluate("({ gav: window.__COCKPIT__.state.gav, nav: window.__COCKPIT__.state.nav, noi: window.__COCKPIT__.state.noi, ltv: window.__COCKPIT__.state.ltv, dscr: window.__COCKPIT__.state.dscr })");
+    const englishPointer = await realPointerClick("document.querySelector('[data-language=\"en\"]')", `Cockpit EN on #${anchor}`);
+    let englishState;
+    await waitFor(async () => {
+      englishState = await evaluate(`(() => {
+        const target = document.querySelector('#${anchor}');
+        const header = document.querySelector('.cockpit-shell-header');
+        return {
+          active: document.querySelector('#cockpit-section-navigation a[aria-current="location"]')?.hash,
+          backHref: document.querySelector('.portfolio-back')?.getAttribute('href'),
+          hash: location.hash,
+          lang: document.documentElement.lang,
+          search: location.search,
+          top: target?.getBoundingClientRect().top,
+          headerBottom: header?.getBoundingClientRect().bottom,
+          viewportHeight: innerHeight,
+          values: { gav: window.__COCKPIT__.state.gav, nav: window.__COCKPIT__.state.nav, noi: window.__COCKPIT__.state.noi, ltv: window.__COCKPIT__.state.ltv, dscr: window.__COCKPIT__.state.dscr },
+        };
+      })()`);
+      return englishState.lang === "en"
+        && englishState.search === "?lang=en"
+        && englishState.hash === `#${anchor}`
+        && englishState.active === `#${anchor}`
+        && englishState.top >= englishState.headerBottom
+        && englishState.top < englishState.viewportHeight - 20;
+    }, `stable English Cockpit #${anchor}`);
+    assert(JSON.stringify(englishState.values) === JSON.stringify(before), `Financial values changed on Cockpit language toggle #${anchor}: ${JSON.stringify({ before, after: englishState.values })}`);
+    await command("Page.reload", { ignoreCache: true });
+    await waitFor(() => evaluate(`document.documentElement.lang === 'en' && location.search === '?lang=en' && location.hash === '#${anchor}' && document.querySelector('#cockpit-section-navigation a[aria-current="location"]')?.hash === '#${anchor}'`), `English Cockpit #${anchor} refresh`);
+    const frenchPointer = await realPointerClick("document.querySelector('[data-language=\"fr\"]')", `Cockpit FR on #${anchor}`);
+    await waitFor(() => evaluate(`document.documentElement.lang === 'fr' && location.search === '' && location.hash === '#${anchor}' && document.querySelector('#cockpit-section-navigation a[aria-current="location"]')?.hash === '#${anchor}'`), `restored French Cockpit #${anchor}`);
+    cockpitLanguageTransitions.push({ anchor, englishPointer, englishState, frenchPointer });
+  }
+
+  await command("Emulation.setEmulatedMedia", { features: [{ name: "prefers-reduced-motion", value: "reduce" }] });
+  await navigate(`${cockpitUrl}?lang=en#methodo`);
+  await waitFor(() => evaluate("document.documentElement.lang === 'en' && location.hash === '#methodo'"), "English Cockpit content scan");
+  await evaluate("document.querySelectorAll('#methodo details').forEach((details) => { details.open = true; })");
+  await evaluate("location.hash = '#commentaire'");
+  await waitFor(() => evaluate("document.querySelector('#commentaire')?.getBoundingClientRect().top >= document.querySelector('.cockpit-shell-header')?.getBoundingClientRect().bottom && document.querySelector('#commentaire')?.getBoundingClientRect().top < innerHeight"), "English commentary anchor");
+  await realPointerClick("document.querySelector('#btn-comment')", "English management commentary");
+  await waitFor(() => evaluate("document.querySelector('.answer p')?.textContent.length > 500 && !document.querySelector('#btn-comment')?.classList.contains('busy')"), "English generated commentary");
+  const cockpitEnglishFullScan = await evaluate(`(() => ({
+    csvFilename: window.COCKPIT_I18N.t('csv.filename'),
+    frenchResiduals: Array.from(new Set(
+      (document.documentElement.textContent.match(/\\b(?:actifs?|alerte|avant|blocage|bureaux?|charges|commentaire|contrôle|couverture|démonstration|dette|durée|écart|fonds|hausse|impayés?|limites?|loyers?|méthodologie|modèle|prêteurs?|réalisé|référence|réglementaire|résidentiel|scénario|seuil|taux|télécharger|trésorerie|valeur|vacance)\\b/giu) ?? [])
+        .map((value) => value.toLocaleLowerCase('fr-FR'))
+    )),
+    generatedComment: document.querySelector('.answer p')?.textContent,
+    glossaryOpen: Array.from(document.querySelectorAll('#methodo details')).every((details) => details.open),
+  }))()`);
+  assert(cockpitEnglishFullScan.glossaryOpen && cockpitEnglishFullScan.csvFilename === "core_plus_france_asset_register.csv", `English disclosures/download mismatch: ${JSON.stringify(cockpitEnglishFullScan)}`);
+  assert(cockpitEnglishFullScan.frenchResiduals.length === 0, `French residuals in full English Cockpit DOM: ${JSON.stringify(cockpitEnglishFullScan.frenchResiduals)}`);
+  await navigate(`${cockpitUrl}#consolidation`);
+  await waitFor(() => evaluate("document.documentElement.lang === 'fr' && Boolean(window.__COCKPIT__?.runSelfTests)"), "French Cockpit restoration");
+
   await command("Emulation.setDeviceMetricsOverride", { width: 1920, height: 1080, deviceScaleFactor: 1, mobile: false });
   await navigate(`${cockpitUrl}?viewport=1920#consolidation`);
   await waitFor(() => evaluate("Boolean(window.__COCKPIT__?.runSelfTests)"), "wide Cockpit initialization");
@@ -675,9 +758,13 @@ try {
       state = await evaluate(`(() => {
         const nav = document.querySelector('.cockpit-shell-header');
         const toggle = document.querySelector('.cockpit-nav-toggle');
+        const languageTargets = Array.from(document.querySelectorAll('.cockpit-language-toggle button'))
+          .map((button) => button.getBoundingClientRect());
         return {
           active: document.querySelector('#cockpit-section-navigation a[aria-current="location"]')?.getAttribute('href'),
           hash: location.hash,
+          languageTargetHeight: Math.min(...languageTargets.map((rect) => rect.height)),
+          languageTargetWidth: Math.min(...languageTargets.map((rect) => rect.width)),
           navHeight: nav?.getBoundingClientRect().height,
           overflow: document.documentElement.scrollWidth - document.documentElement.clientWidth,
           targetTop: document.querySelector('#analyse')?.getBoundingClientRect().top,
@@ -688,17 +775,27 @@ try {
         && state.active === "#tresorerie"
         && Math.abs(state.targetTop - (state.navHeight + 16)) < 1.5;
     }, `mobile Cockpit ${width}px #analyse`);
-    assert(state.overflow === 0 && state.toggleHeight >= 44, `Mobile Cockpit layout mismatch at ${width}x${height}: ${JSON.stringify(state)}`);
-    await evaluate("window.scrollTo(0, document.documentElement.scrollHeight)");
-    await delay(100);
-    state.footer = await evaluate(`(() => {
-      const footer = document.querySelector('footer').getBoundingClientRect();
-      return {
-        gap: Math.max(0, innerHeight - footer.bottom),
-        mainPaddingBottom: parseFloat(getComputedStyle(document.querySelector('main')).paddingBottom),
-        scrollRemainder: document.documentElement.scrollHeight - (scrollY + innerHeight),
-      };
-    })()`);
+    assert(
+      state.overflow === 0
+        && state.toggleHeight >= 44
+        && state.languageTargetHeight >= 44
+        && state.languageTargetWidth >= 44,
+      `Mobile Cockpit layout mismatch at ${width}x${height}: ${JSON.stringify(state)}`,
+    );
+    await waitFor(async () => {
+      await evaluate("window.scrollTo(0, document.documentElement.scrollHeight)");
+      state.footer = await evaluate(`(() => {
+        const footer = document.querySelector('footer').getBoundingClientRect();
+        return {
+          gap: Math.max(0, innerHeight - footer.bottom),
+          mainPaddingBottom: parseFloat(getComputedStyle(document.querySelector('main')).paddingBottom),
+          scrollRemainder: document.documentElement.scrollHeight - (scrollY + innerHeight),
+        };
+      })()`);
+      return state.footer.gap < 8
+        && state.footer.mainPaddingBottom === 0
+        && state.footer.scrollRemainder < 1;
+    }, `mobile Cockpit ${width}px footer geometry`);
     assert(state.footer.gap < 8 && state.footer.mainPaddingBottom === 0 && state.footer.scrollRemainder < 1, `Mobile Cockpit footer spacer mismatch at ${width}x${height}: ${JSON.stringify(state.footer)}`);
     cockpitMobileLayouts.push({ ...state, viewport: { width, height } });
   }
@@ -811,6 +908,15 @@ try {
   await waitFor(() => evaluate("document.documentElement.lang === 'en' && document.body.innerText.includes('Opella')"), "English Portfolio home");
   const opellaEn = await opellaState();
   assert(opellaEn.tag === "DIV" && opellaEn.href === null && opellaEn.interactiveDescendants === 0 && /in development/i.test(opellaEn.text), `English Opella card mismatch: ${JSON.stringify(opellaEn)}`);
+  const englishCockpitHomePointer = await realPointerClick("Array.from(document.querySelectorAll('a')).find((link) => link.href.includes('/cases/real-estate-downside/'))", "English Portfolio Real Estate");
+  await waitFor(() => evaluate("location.pathname.endsWith('/cases/real-estate-downside/') && location.search === '?lang=en' && document.documentElement.lang === 'en'"), "Portfolio EN to Cockpit EN");
+  const englishPortfolioReturnPointer = await realPointerClick("document.querySelector('.portfolio-back')", "English Cockpit Portfolio return");
+  await waitFor(() => evaluate(`location.pathname === ${JSON.stringify(publicBasePath)} && location.search === '?lang=en' && document.documentElement.lang === 'en'`), "Cockpit EN to Portfolio EN");
+  const cockpitEnglishRoundTrip = {
+    cockpitPointer: englishCockpitHomePointer,
+    portfolioPointer: englishPortfolioReturnPointer,
+    finalUrl: await evaluate("location.href"),
+  };
 
   for (const resource of ["Note_synthese_cockpit.pdf", "pack/pack_comite_core_plus_france.xlsx", "deployment.json"]) {
     const response = await fetch(`${cockpitUrl}${resource}`);
@@ -847,6 +953,9 @@ try {
     transactionDisclosureOpen,
     chartDisclosureOpen,
     cockpitInitial,
+    cockpitEnglishProbe,
+    cockpitLanguageTransitions,
+    cockpitEnglishFullScan,
     cockpitWide,
     cockpitAnchorResults,
     cockpitMethodoRefresh,
@@ -870,6 +979,7 @@ try {
     realEstateHomeLink,
     opellaFr,
     opellaEn,
+    cockpitEnglishRoundTrip,
     responsive,
     browserMessages,
   }, null, 2));

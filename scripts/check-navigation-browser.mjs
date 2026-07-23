@@ -541,6 +541,21 @@ try {
   assert(cockpitEnglishProbe.frenchResiduals.length === 0, `French residuals in English Cockpit: ${JSON.stringify(cockpitEnglishProbe.frenchResiduals)}`);
   assert(cockpitEnglishProbe.ariaLabels.every((label) => !/\b(?:langue|navigation et scénario|sections du|générer|retour au)\b/i.test(label)), `French accessible label in English Cockpit: ${JSON.stringify(cockpitEnglishProbe.ariaLabels)}`);
 
+  await navigate(`${cockpitUrl}?lang=en&scenario=bear#tresorerie`);
+  await waitFor(() => evaluate("document.documentElement.lang === 'en' && document.querySelector('#scenario-bear')?.getAttribute('aria-pressed') === 'true'"), "English Cockpit Bear typography");
+  const cockpitEnglishPercentages = await evaluate(`(() => {
+    const selectors = ['#kpid-gav', '#kpid-nav', '#kpid-noi', '#out-rent'];
+    return selectors.map((selector) => document.querySelector(selector)?.textContent.trim());
+  })()`);
+  assert(
+    cockpitEnglishPercentages.some((text) => text?.includes("-30.3%"))
+      && cockpitEnglishPercentages.some((text) => text?.includes("-56.4%"))
+      && cockpitEnglishPercentages.some((text) => text?.includes("-13.6%"))
+      && cockpitEnglishPercentages.some((text) => /^[-−]10%$/.test(text ?? ""))
+      && cockpitEnglishPercentages.every((text) => !/[\u00a0\u202f]%/.test(text ?? "")),
+    `English dynamic percentage typography mismatch: ${JSON.stringify(cockpitEnglishPercentages)}`,
+  );
+
   const cockpitLanguageTransitions = [];
   for (const anchor of ["covenants", "stress", "methodo"]) {
     await navigate(`${cockpitUrl}#${anchor}`);
@@ -954,6 +969,7 @@ try {
     chartDisclosureOpen,
     cockpitInitial,
     cockpitEnglishProbe,
+    cockpitEnglishPercentages,
     cockpitLanguageTransitions,
     cockpitEnglishFullScan,
     cockpitWide,

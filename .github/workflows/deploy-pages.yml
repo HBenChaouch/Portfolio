@@ -23,7 +23,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: HBenChaouch/cockpit-fund-controlling
-          ref: eba3ea398f8d726184fdc593c8829f1e26cd5b7f
+          ref: 8157d68670502db3dff9ca61cf7a5f909f90203d
           path: .cockpit-source
       - uses: actions/setup-node@v4
         with:

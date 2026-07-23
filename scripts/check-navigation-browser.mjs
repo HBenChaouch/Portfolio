@@ -585,6 +585,17 @@ try {
       && cockpitMethodoRefresh.top >= cockpitMethodoRefresh.navHeight
       && cockpitMethodoRefresh.top < cockpitMethodoRefresh.viewportHeight - 40;
   }, "Cockpit stable #methodo after refresh");
+  await evaluate("window.scrollTo(0, document.documentElement.scrollHeight)");
+  await delay(120);
+  const cockpitFooterGapDesktop = await evaluate(`(() => {
+    const footer = document.querySelector('footer').getBoundingClientRect();
+    return {
+      gap: Math.max(0, innerHeight - footer.bottom),
+      mainPaddingBottom: parseFloat(getComputedStyle(document.querySelector('main')).paddingBottom),
+      scrollRemainder: document.documentElement.scrollHeight - (scrollY + innerHeight),
+    };
+  })()`);
+  assert(cockpitFooterGapDesktop.gap < 8 && cockpitFooterGapDesktop.mainPaddingBottom === 0 && cockpitFooterGapDesktop.scrollRemainder < 1, `Cockpit desktop footer spacer mismatch: ${JSON.stringify(cockpitFooterGapDesktop)}`);
 
   await navigate(`${cockpitUrl}#tresorerie`);
   await waitFor(() => evaluate("Boolean(window.__COCKPIT__?.runSelfTests)"), "Cockpit treasury scenario initialization");
@@ -678,6 +689,17 @@ try {
         && Math.abs(state.targetTop - (state.navHeight + 16)) < 1.5;
     }, `mobile Cockpit ${width}px #analyse`);
     assert(state.overflow === 0 && state.toggleHeight >= 44, `Mobile Cockpit layout mismatch at ${width}x${height}: ${JSON.stringify(state)}`);
+    await evaluate("window.scrollTo(0, document.documentElement.scrollHeight)");
+    await delay(100);
+    state.footer = await evaluate(`(() => {
+      const footer = document.querySelector('footer').getBoundingClientRect();
+      return {
+        gap: Math.max(0, innerHeight - footer.bottom),
+        mainPaddingBottom: parseFloat(getComputedStyle(document.querySelector('main')).paddingBottom),
+        scrollRemainder: document.documentElement.scrollHeight - (scrollY + innerHeight),
+      };
+    })()`);
+    assert(state.footer.gap < 8 && state.footer.mainPaddingBottom === 0 && state.footer.scrollRemainder < 1, `Mobile Cockpit footer spacer mismatch at ${width}x${height}: ${JSON.stringify(state.footer)}`);
     cockpitMobileLayouts.push({ ...state, viewport: { width, height } });
   }
 
@@ -828,6 +850,7 @@ try {
     cockpitWide,
     cockpitAnchorResults,
     cockpitMethodoRefresh,
+    cockpitFooterGapDesktop,
     cockpitBearPointer,
     cockpitBearState,
     cockpitBasePointer,

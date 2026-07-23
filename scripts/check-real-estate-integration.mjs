@@ -3,7 +3,7 @@ import { createHash } from "node:crypto";
 import { readFile } from "node:fs/promises";
 import path from "node:path";
 
-const expectedCommit = "eba3ea398f8d726184fdc593c8829f1e26cd5b7f";
+const expectedCommit = "8157d68670502db3dff9ca61cf7a5f909f90203d";
 const sourceCandidates = [process.env.REAL_ESTATE_SOURCE, ".cockpit-source", "../Real Estate/cockpit"]
   .filter(Boolean)
   .map((candidate) => path.resolve(candidate));

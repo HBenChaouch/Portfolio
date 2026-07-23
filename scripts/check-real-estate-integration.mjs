@@ -3,7 +3,7 @@ import { createHash } from "node:crypto";
 import { readFile } from "node:fs/promises";
 import path from "node:path";
 
-const expectedCommit = "8aa74b0a3a34f908f547c9be976160cb1755a0ee";
+const expectedCommit = "d97558d44fb038b0567ac62629650db3b8116aa4";
 const sourceCandidates = [process.env.REAL_ESTATE_SOURCE, ".cockpit-source", "../Real Estate/cockpit"]
   .filter(Boolean)
   .map((candidate) => path.resolve(candidate));
@@ -43,6 +43,9 @@ for (const filename of [
 const index = await readFile(path.join(destination, "index.html"), "utf8");
 assert.match(index, /class="portfolio-back" href="\.\.\/\.\.\/"/);
 assert.match(index, /← Portfolio/);
+assert.match(index, /id="cockpit-section-navigation"/);
+assert.equal((index.match(/<nav id="cockpit-section-navigation"[\s\S]*?<\/nav>/)?.[0].match(/href="#/g) ?? []).length, 8);
+assert.doesNotMatch(index.match(/<nav id="cockpit-section-navigation"[\s\S]*?<\/nav>/)?.[0] ?? "", /href="#analyse"/);
 assert.doesNotMatch(index, /target="_blank"/);
 assert.doesNotMatch(index, /cockpit-fund-controlling\//);
 assert.match(index, /Portfolio\/cases\/real-estate-downside\//);

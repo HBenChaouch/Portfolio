@@ -475,6 +475,8 @@ try {
   const cockpitInitial = await evaluate(`(() => {
     const tests = window.__COCKPIT__.runSelfTests();
     const back = document.querySelector('.portfolio-back');
+    const nav = document.querySelector('.cockpit-nav');
+    const navLinks = Array.from(document.querySelectorAll('#cockpit-section-navigation a'));
     return {
       backHref: back?.href,
       backTarget: back?.getAttribute('target'),
@@ -484,6 +486,16 @@ try {
         target: link.getAttribute('target'),
       })),
       oldDomainPresent: document.documentElement.innerHTML.includes('hbenchaouch.github.io/cockpit-fund-controlling'),
+      nav: {
+        allVisible: navLinks.every((link) => {
+          const rect = link.getBoundingClientRect();
+          return rect.left >= 0 && rect.right <= innerWidth && rect.top >= 0 && rect.bottom <= innerHeight;
+        }),
+        height: nav?.getBoundingClientRect().height,
+        labels: navLinks.map((link) => link.textContent.trim()),
+        linkCount: navLinks.length,
+        toggleDisplay: getComputedStyle(document.querySelector('.cockpit-nav-toggle')).display,
+      },
       overflow: document.documentElement.scrollWidth - document.documentElement.clientWidth,
       passed: tests.passed,
       total: tests.total,
@@ -494,6 +506,72 @@ try {
   assert(cockpitInitial.backHref === portfolioUrl && cockpitInitial.backTarget === null, `Cockpit return mismatch: ${JSON.stringify(cockpitInitial)}`);
   assert(cockpitInitial.downloads.length === 3 && cockpitInitial.downloads.every((link) => link.download && link.target === null), `Cockpit downloads mismatch: ${JSON.stringify(cockpitInitial.downloads)}`);
   assert(!cockpitInitial.oldDomainPresent && cockpitInitial.overflow === 0, `Cockpit public integration mismatch: ${JSON.stringify(cockpitInitial)}`);
+  assert(cockpitInitial.nav.linkCount === 8 && cockpitInitial.nav.allVisible && cockpitInitial.nav.toggleDisplay === "none", `Cockpit desktop navigation mismatch: ${JSON.stringify(cockpitInitial.nav)}`);
+
+  await command("Emulation.setDeviceMetricsOverride", { width: 1920, height: 1080, deviceScaleFactor: 1, mobile: false });
+  await navigate(`${cockpitUrl}?viewport=1920#consolidation`);
+  await waitFor(() => evaluate("Boolean(window.__COCKPIT__?.runSelfTests)"), "wide Cockpit initialization");
+  const cockpitWide = await evaluate(`(() => {
+    const links = Array.from(document.querySelectorAll('#cockpit-section-navigation a'));
+    return {
+      allVisible: links.every((link) => {
+        const rect = link.getBoundingClientRect();
+        return rect.left >= 0 && rect.right <= innerWidth && rect.top >= 0 && rect.bottom <= innerHeight;
+      }),
+      linkCount: links.length,
+      overflow: document.documentElement.scrollWidth - document.documentElement.clientWidth,
+    };
+  })()`);
+  assert(cockpitWide.linkCount === 8 && cockpitWide.allVisible && cockpitWide.overflow === 0, `Wide Cockpit navigation mismatch: ${JSON.stringify(cockpitWide)}`);
+
+  await command("Emulation.setDeviceMetricsOverride", { width: 1280, height: 720, deviceScaleFactor: 1, mobile: false });
+  const cockpitAnchors = ["consolidation", "covenants", "stress", "portefeuille", "tresorerie", "analyse", "commentaire", "ressources", "methodo"];
+  const cockpitAnchorResults = [];
+  for (const anchor of cockpitAnchors) {
+    await navigate(`${cockpitUrl}?anchor=${anchor}#${anchor}`);
+    await waitFor(() => evaluate("Boolean(window.__COCKPIT__?.runSelfTests)"), `Cockpit #${anchor} initialization`);
+    let state;
+    const expectedActive = anchor === "analyse" ? "#tresorerie" : `#${anchor}`;
+    await waitFor(async () => {
+      state = await evaluate(`(() => {
+        const target = document.querySelector('#${anchor}');
+        const nav = document.querySelector('.cockpit-nav');
+        return {
+          active: document.querySelector('#cockpit-section-navigation a[aria-current="location"]')?.getAttribute('href'),
+          hash: location.hash,
+          navHeight: nav?.getBoundingClientRect().height,
+          overflow: document.documentElement.scrollWidth - document.documentElement.clientWidth,
+          top: target?.getBoundingClientRect().top,
+        };
+      })()`);
+      return state.hash === `#${anchor}`
+        && state.active === expectedActive
+        && Math.abs(state.top - (state.navHeight + 16)) < 1.5;
+    }, `Cockpit stable #${anchor}`);
+    assert(state.overflow === 0, `Cockpit #${anchor} overflow: ${JSON.stringify(state)}`);
+    cockpitAnchorResults.push(state);
+  }
+
+  await command("Page.reload", { ignoreCache: true });
+  await waitFor(() => evaluate("document.readyState === 'complete' && Boolean(window.__COCKPIT__?.runSelfTests)"), "Cockpit #methodo refresh");
+  let cockpitMethodoRefresh;
+  await waitFor(async () => {
+    cockpitMethodoRefresh = await evaluate(`(() => {
+      const nav = document.querySelector('.cockpit-nav');
+      return {
+        active: document.querySelector('#cockpit-section-navigation a[aria-current="location"]')?.getAttribute('href'),
+        hash: location.hash,
+        navHeight: nav?.getBoundingClientRect().height,
+        top: document.querySelector('#methodo')?.getBoundingClientRect().top,
+      };
+    })()`);
+    return cockpitMethodoRefresh.hash === "#methodo"
+      && cockpitMethodoRefresh.active === "#methodo"
+      && Math.abs(cockpitMethodoRefresh.top - (cockpitMethodoRefresh.navHeight + 16)) < 1.5;
+  }, "Cockpit stable #methodo after refresh");
+
+  await navigate(cockpitUrl);
+  await waitFor(() => evaluate("Boolean(window.__COCKPIT__?.runSelfTests)"), "Cockpit reset after anchor checks");
 
   await command("Input.dispatchKeyEvent", { key: "b", code: "KeyB", type: "keyDown", windowsVirtualKeyCode: 66 });
   await command("Input.dispatchKeyEvent", { key: "b", code: "KeyB", type: "keyUp", windowsVirtualKeyCode: 66 });
@@ -507,21 +585,103 @@ try {
   const cockpitAfterRefresh = await evaluate("(() => { const tests = window.__COCKPIT__.runSelfTests(); return { href: location.href, passed: tests.passed, total: tests.total }; })()");
   assert(cockpitAfterRefresh.href === cockpitUrl && cockpitAfterRefresh.passed === 13 && cockpitAfterRefresh.total === 13, `Cockpit refresh mismatch: ${JSON.stringify(cockpitAfterRefresh)}`);
 
+  const cockpitMobileLayouts = [];
+  for (const [width, height] of [[360, 800], [390, 844], [430, 932]]) {
+    await command("Emulation.setDeviceMetricsOverride", { width, height, deviceScaleFactor: 1, mobile: true });
+    await navigate(`${cockpitUrl}?mobile=${width}#analyse`);
+    await waitFor(() => evaluate("Boolean(window.__COCKPIT__?.runSelfTests)"), `mobile Cockpit ${width}px initialization`);
+    let state;
+    await waitFor(async () => {
+      state = await evaluate(`(() => {
+        const nav = document.querySelector('.cockpit-nav');
+        const toggle = document.querySelector('.cockpit-nav-toggle');
+        return {
+          active: document.querySelector('#cockpit-section-navigation a[aria-current="location"]')?.getAttribute('href'),
+          hash: location.hash,
+          navHeight: nav?.getBoundingClientRect().height,
+          overflow: document.documentElement.scrollWidth - document.documentElement.clientWidth,
+          targetTop: document.querySelector('#analyse')?.getBoundingClientRect().top,
+          toggleHeight: toggle?.getBoundingClientRect().height,
+        };
+      })()`);
+      return state.hash === "#analyse"
+        && state.active === "#tresorerie"
+        && Math.abs(state.targetTop - (state.navHeight + 16)) < 1.5;
+    }, `mobile Cockpit ${width}px #analyse`);
+    assert(state.overflow === 0 && state.toggleHeight >= 44, `Mobile Cockpit layout mismatch at ${width}x${height}: ${JSON.stringify(state)}`);
+    cockpitMobileLayouts.push({ ...state, viewport: { width, height } });
+  }
+
   await command("Emulation.setDeviceMetricsOverride", { width: 390, height: 844, deviceScaleFactor: 1, mobile: true });
-  await command("Page.reload", { ignoreCache: true });
+  await navigate(cockpitUrl);
   await waitFor(() => evaluate("document.readyState === 'complete' && Boolean(window.__COCKPIT__?.runSelfTests)"), "mobile cockpit refresh");
   const cockpitMobile = await evaluate(`(() => {
     const back = document.querySelector('.portfolio-back').getBoundingClientRect();
+    const toggle = document.querySelector('.cockpit-nav-toggle').getBoundingClientRect();
     const tests = window.__COCKPIT__.runSelfTests();
     return {
       backHeight: back.height,
       backVisible: back.top >= 0 && back.bottom <= innerHeight,
       overflow: document.documentElement.scrollWidth - document.documentElement.clientWidth,
       passed: tests.passed,
+      toggleHeight: toggle.height,
       total: tests.total,
     };
   })()`);
-  assert(cockpitMobile.overflow === 0 && cockpitMobile.backVisible && cockpitMobile.backHeight >= 44 && cockpitMobile.passed === 13 && cockpitMobile.total === 13, `Mobile cockpit mismatch: ${JSON.stringify(cockpitMobile)}`);
+  assert(cockpitMobile.overflow === 0 && cockpitMobile.backVisible && cockpitMobile.backHeight >= 44 && cockpitMobile.toggleHeight >= 44 && cockpitMobile.passed === 13 && cockpitMobile.total === 13, `Mobile cockpit mismatch: ${JSON.stringify(cockpitMobile)}`);
+
+  const cockpitMenuPointer = await realPointerClick("document.querySelector('.cockpit-nav-toggle')", "Cockpit mobile contents");
+  const cockpitMenuOpen = await evaluate(`(() => {
+    const nav = document.querySelector('#cockpit-section-navigation');
+    const links = Array.from(nav.querySelectorAll('a'));
+    return {
+      expanded: document.querySelector('.cockpit-nav-toggle').getAttribute('aria-expanded'),
+      linkCount: links.length,
+      minTarget: Math.min(...links.map((link) => link.getBoundingClientRect().height)),
+      open: nav.classList.contains('is-open'),
+    };
+  })()`);
+  assert(cockpitMenuOpen.expanded === "true" && cockpitMenuOpen.linkCount === 8 && cockpitMenuOpen.minTarget >= 44 && cockpitMenuOpen.open, `Cockpit mobile menu mismatch: ${JSON.stringify(cockpitMenuOpen)}`);
+  await command("Input.dispatchKeyEvent", { key: "Escape", code: "Escape", type: "keyDown", windowsVirtualKeyCode: 27 });
+  await command("Input.dispatchKeyEvent", { key: "Escape", code: "Escape", type: "keyUp", windowsVirtualKeyCode: 27 });
+  const cockpitMenuEscape = await evaluate(`(() => ({
+    expanded: document.querySelector('.cockpit-nav-toggle').getAttribute('aria-expanded'),
+    focused: document.activeElement === document.querySelector('.cockpit-nav-toggle'),
+    open: document.querySelector('#cockpit-section-navigation').classList.contains('is-open'),
+  }))()`);
+  assert(cockpitMenuEscape.expanded === "false" && cockpitMenuEscape.focused && !cockpitMenuEscape.open, `Cockpit Escape mismatch: ${JSON.stringify(cockpitMenuEscape)}`);
+
+  await evaluate("document.querySelector('.cockpit-nav-toggle').focus()");
+  await command("Input.dispatchKeyEvent", { key: "Enter", code: "Enter", type: "keyDown", windowsVirtualKeyCode: 13 });
+  await command("Input.dispatchKeyEvent", { key: "Enter", code: "Enter", type: "keyUp", windowsVirtualKeyCode: 13 });
+  await waitFor(() => evaluate("document.querySelector('#cockpit-section-navigation').classList.contains('is-open')"), "Cockpit keyboard menu open");
+  const cockpitToggleFocus = await evaluate(`(() => {
+    const style = getComputedStyle(document.querySelector('.cockpit-nav-toggle'));
+    return { outlineStyle: style.outlineStyle, outlineWidth: style.outlineWidth };
+  })()`);
+  assert(parseFloat(cockpitToggleFocus.outlineWidth) >= 2 && cockpitToggleFocus.outlineStyle !== "none", `Cockpit toggle focus mismatch: ${JSON.stringify(cockpitToggleFocus)}`);
+  await evaluate("document.querySelector('#cockpit-section-navigation a[href=\"#methodo\"]').focus()");
+  await command("Input.dispatchKeyEvent", { key: "Enter", code: "Enter", type: "keyDown", windowsVirtualKeyCode: 13 });
+  await command("Input.dispatchKeyEvent", { key: "Enter", code: "Enter", type: "keyUp", windowsVirtualKeyCode: 13 });
+  let cockpitKeyboardMethodo;
+  await waitFor(async () => {
+    cockpitKeyboardMethodo = await evaluate(`(() => {
+      const nav = document.querySelector('.cockpit-nav');
+      return {
+        active: document.querySelector('#cockpit-section-navigation a[aria-current="location"]')?.getAttribute('href'),
+        focusedToggle: document.activeElement === document.querySelector('.cockpit-nav-toggle'),
+        hash: location.hash,
+        navHeight: nav?.getBoundingClientRect().height,
+        open: document.querySelector('#cockpit-section-navigation').classList.contains('is-open'),
+        top: document.querySelector('#methodo')?.getBoundingClientRect().top,
+      };
+    })()`);
+    return cockpitKeyboardMethodo.hash === "#methodo"
+      && cockpitKeyboardMethodo.active === "#methodo"
+      && !cockpitKeyboardMethodo.open
+      && cockpitKeyboardMethodo.focusedToggle
+      && Math.abs(cockpitKeyboardMethodo.top - (cockpitKeyboardMethodo.navHeight + 16)) < 1.5;
+  }, "Cockpit keyboard #methodo");
 
   const portfolioPointer = await realPointerClick("document.querySelector('.portfolio-back')", "cockpit Portfolio return");
   await waitFor(() => evaluate(`location.pathname === ${JSON.stringify(publicBasePath)}`), "Portfolio return navigation");
@@ -586,8 +746,17 @@ try {
     transactionDisclosureOpen,
     chartDisclosureOpen,
     cockpitInitial,
+    cockpitWide,
+    cockpitAnchorResults,
+    cockpitMethodoRefresh,
     cockpitAfterRefresh,
     cockpitMobile,
+    cockpitMobileLayouts,
+    cockpitMenuPointer,
+    cockpitMenuOpen,
+    cockpitMenuEscape,
+    cockpitToggleFocus,
+    cockpitKeyboardMethodo,
     portfolioPointer,
     realEstateHomeLink,
     opellaFr,

@@ -90,7 +90,7 @@ assert.doesNotMatch(index, /target="_blank"/);
 assert.doesNotMatch(index, /cockpit-fund-controlling\//);
 assert.match(index, /Portfolio\/cases\/real-estate-downside\//);
 
-// S21 — public editorial hygiene on the produced bundle (interface + text registry).
+// Public editorial hygiene on the produced bundle (interface + text registry).
 const translationsBuilt = await readFile(path.join(destination, "translations.js"), "utf8");
 const publicSurface = `${index}\n${translationsBuilt}`;
 for (const forbidden of [
@@ -138,7 +138,7 @@ assert.deepEqual(deployment, {
   commit: expectedCommit,
 });
 
-// S21/remédiation — inspection réelle du texte du PDF public effectivement intégré.
+// Inspection réelle du texte du PDF public effectivement intégré.
 const pdf = await extractPdfText(path.join(destination, "Note_synthese_cockpit.pdf"));
 assert.equal(pdf.pages, 1, `Executive note must remain a single page (got ${pdf.pages})`);
 for (const forbidden of [

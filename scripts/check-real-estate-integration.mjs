@@ -19,7 +19,21 @@ async function extractPdfText(file) {
 }
 const phrase = (words) => new RegExp(words.trim().split(/\s+/).map((w) => w.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")).join("\\s*"), "i");
 
-const expectedCommit = "744a9cefa96bfe453581ad313e4b96896fa3004e";
+// Positionnement transversal : ni framing de candidature/poste, ni « pédagogique ».
+// Appliqué au DOM public ET au texte du PDF. « fund controller/controlling »,
+// « application » seul et « distribution » restent autorisés (contexte légitime).
+const EDITORIAL_FORBIDDEN = [
+  /candidature/i,
+  /missions du poste/i,
+  /recruteur/i,
+  /\boffres?\b/i,
+  /fund-controller application/i,
+  /job application/i,
+  /pédagogique/i,
+  /pedagogical/i,
+];
+
+const expectedCommit = "c687ae732eedf834fcc644b896b8609c3536a516";
 const sourceCandidates = [process.env.REAL_ESTATE_SOURCE, ".cockpit-source", "../Real Estate/cockpit"]
   .filter(Boolean)
   .map((candidate) => path.resolve(candidate));
@@ -100,6 +114,9 @@ for (const forbidden of [
 ]) {
   assert.doesNotMatch(publicSurface, forbidden, `Public cockpit surface must not expose ${forbidden}`);
 }
+for (const forbidden of EDITORIAL_FORBIDDEN) {
+  assert.doesNotMatch(publicSurface, forbidden, `Public cockpit DOM (index.html + translations.js) must not expose ${forbidden}`);
+}
 assert.match(translationsBuilt, /Générateur de commentaire de gestion/, "Neutral commentary title (FR) must be present");
 assert.match(translationsBuilt, /Management-commentary generator/, "Neutral commentary title (EN) must be present");
 for (const caveat of [
@@ -134,16 +151,12 @@ for (const forbidden of [
   "12 contrôles",
   "détail en console",
   "hbenchaouch.github.io/cockpit-fund-controlling",
-  // Framing de candidature/poste — le document doit rester transversal.
-  "candidature",
-  "missions du poste",
-  "à l'appui d'une candidature",
-  "recruteur",
 ]) {
   assert.doesNotMatch(pdf.text, phrase(forbidden), `Executive note must not contain "${forbidden}"`);
 }
-// "offre" borné au mot (évite coffre/souffre) ; "fund controller/controlling" restent autorisés (domaine du cas).
-assert.doesNotMatch(pdf.text, /\boffres?\b/i, "Executive note must not reference a job offer");
+for (const forbidden of EDITORIAL_FORBIDDEN) {
+  assert.doesNotMatch(pdf.text, forbidden, `Executive note must not contain ${forbidden}`);
+}
 assert.match(pdf.text, phrase("hbenchaouch.github.io/Portfolio/cases/real-estate-downside"), "Executive note must carry the Portfolio-integrated URL");
 for (const required of ["fictif", "reporting réglementaire", "valorisation indépendante", "audit externe", "réconcili", "PASS / FAIL"]) {
   assert.match(pdf.text, phrase(required), `Executive note must retain "${required}"`);

@@ -6,7 +6,14 @@ import { tmpdir } from "node:os";
 import path from "node:path";
 
 const distRoot = path.resolve("dist");
-const publicBasePath = process.env.GITHUB_ACTIONS ? "/Portfolio/" : "/";
+// The public base path is derived from the artifact actually under test, not from
+// the ambient environment: the browser gate must exercise whatever dist was built,
+// so a build/env base mismatch surfaces explicitly instead of hiding behind a
+// generic anchor timeout.
+const distIndexHtml = await readFile(path.join(distRoot, "index.html"), "utf8");
+const baseMatch = distIndexHtml.match(/(?:src|href)="(\/(?:[^"/]+\/)*)assets\//);
+const publicBasePath = baseMatch ? baseMatch[1] : "/";
+console.log(`[navigation] public base path detected from dist/index.html: ${publicBasePath}`);
 const delay = (milliseconds) => new Promise((resolve) => setTimeout(resolve, milliseconds));
 
 function assert(condition, message) {
@@ -357,6 +364,13 @@ try {
   await command("Emulation.setDeviceMetricsOverride", { width: 1280, height: 720, deviceScaleFactor: 1, mobile: false });
 
   await navigate(`${base}#dcf`);
+  // Fail fast with an explicit cause if the SPA never mounts under the served base
+  // (build/env base mismatch), rather than letting the #dcf stability wait time out generically.
+  await waitFor(
+    () => evaluate("Boolean(document.querySelector('.analysis-view'))"),
+    `analysis view mount under base ${publicBasePath} — check that dist was built for this base`,
+    40,
+  );
   const direct = await waitForStableAnchor("dcf");
   assert(direct.top > 95 && direct.top < 130, `Direct DCF alignment mismatch: ${JSON.stringify(direct)}`);
 

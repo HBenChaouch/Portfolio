@@ -3,8 +3,23 @@ import { execFileSync } from "node:child_process";
 import { createHash } from "node:crypto";
 import { readFile } from "node:fs/promises";
 import path from "node:path";
+import { getDocument } from "pdfjs-dist/legacy/build/pdf.mjs";
 
-const expectedCommit = "f5b03b96abc5768d2e3d9be695c420a8999e0f9a";
+async function extractPdfText(file) {
+  const data = new Uint8Array(await readFile(file));
+  const doc = await getDocument({ data, useSystemFonts: false, isEvalSupported: false }).promise;
+  let text = "";
+  for (let n = 1; n <= doc.numPages; n += 1) {
+    const content = await (await doc.getPage(n)).getTextContent();
+    text += content.items.map((item) => item.str).join(" ") + "\n";
+  }
+  const pages = doc.numPages;
+  await doc.cleanup();
+  return { text: text.replace(/\s+/g, " ").trim(), pages };
+}
+const phrase = (words) => new RegExp(words.trim().split(/\s+/).map((w) => w.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")).join("\\s*"), "i");
+
+const expectedCommit = "b0e7f5d609666d5ee0086032ca5a2ad9d57bfe26";
 const sourceCandidates = [process.env.REAL_ESTATE_SOURCE, ".cockpit-source", "../Real Estate/cockpit"]
   .filter(Boolean)
   .map((candidate) => path.resolve(candidate));
@@ -106,4 +121,28 @@ assert.deepEqual(deployment, {
   commit: expectedCommit,
 });
 
-console.log(`Real Estate integration: pinned ${expectedCommit}; source-identical static build and downloads`);
+// S21/remédiation — inspection réelle du texte du PDF public effectivement intégré.
+const pdf = await extractPdfText(path.join(destination, "Note_synthese_cockpit.pdf"));
+assert.equal(pdf.pages, 1, `Executive note must remain a single page (got ${pdf.pages})`);
+for (const forbidden of [
+  "recette automatique",
+  "auto-recette",
+  "IA générative",
+  "assisté par IA",
+  "IA accélère",
+  "ne se diffuse",
+  "12 contrôles",
+  "détail en console",
+  "hbenchaouch.github.io/cockpit-fund-controlling",
+]) {
+  assert.doesNotMatch(pdf.text, phrase(forbidden), `Executive note must not contain "${forbidden}"`);
+}
+assert.match(pdf.text, phrase("hbenchaouch.github.io/Portfolio/cases/real-estate-downside"), "Executive note must carry the Portfolio-integrated URL");
+for (const required of ["fictif", "reporting réglementaire", "valorisation indépendante", "audit externe", "réconcili", "PASS / FAIL"]) {
+  assert.match(pdf.text, phrase(required), `Executive note must retain "${required}"`);
+}
+for (const sentinel of ["317,4", "170,5", "46,9 %", "2,59x", "221,3", "100,00", "1,20x", "60 %"]) {
+  assert.match(pdf.text, phrase(sentinel), `Executive note must keep the sentinel value "${sentinel}"`);
+}
+
+console.log(`Real Estate integration: pinned ${expectedCommit}; source-identical static build, downloads and executive-note text verified`);

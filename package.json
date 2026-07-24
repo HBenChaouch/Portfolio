@@ -24,6 +24,7 @@
     "react-router-dom": "^7.0.0"
   },
   "devDependencies": {
+    "pdfjs-dist": "6.1.200",
     "vite": "^7.0.0"
   }
 }

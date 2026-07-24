@@ -2,7 +2,7 @@ import { execFileSync } from "node:child_process";
 import { access, copyFile, cp, mkdir, writeFile } from "node:fs/promises";
 import path from "node:path";
 
-const EXPECTED_COMMIT = "f5b03b96abc5768d2e3d9be695c420a8999e0f9a";
+const EXPECTED_COMMIT = "b0e7f5d609666d5ee0086032ca5a2ad9d57bfe26";
 const candidates = [
   process.env.REAL_ESTATE_SOURCE,
   ".cockpit-source",

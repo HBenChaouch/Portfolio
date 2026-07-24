@@ -19,7 +19,7 @@ async function extractPdfText(file) {
 }
 const phrase = (words) => new RegExp(words.trim().split(/\s+/).map((w) => w.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")).join("\\s*"), "i");
 
-const expectedCommit = "b0e7f5d609666d5ee0086032ca5a2ad9d57bfe26";
+const expectedCommit = "744a9cefa96bfe453581ad313e4b96896fa3004e";
 const sourceCandidates = [process.env.REAL_ESTATE_SOURCE, ".cockpit-source", "../Real Estate/cockpit"]
   .filter(Boolean)
   .map((candidate) => path.resolve(candidate));
@@ -134,9 +134,16 @@ for (const forbidden of [
   "12 contrôles",
   "détail en console",
   "hbenchaouch.github.io/cockpit-fund-controlling",
+  // Framing de candidature/poste — le document doit rester transversal.
+  "candidature",
+  "missions du poste",
+  "à l'appui d'une candidature",
+  "recruteur",
 ]) {
   assert.doesNotMatch(pdf.text, phrase(forbidden), `Executive note must not contain "${forbidden}"`);
 }
+// "offre" borné au mot (évite coffre/souffre) ; "fund controller/controlling" restent autorisés (domaine du cas).
+assert.doesNotMatch(pdf.text, /\boffres?\b/i, "Executive note must not reference a job offer");
 assert.match(pdf.text, phrase("hbenchaouch.github.io/Portfolio/cases/real-estate-downside"), "Executive note must carry the Portfolio-integrated URL");
 for (const required of ["fictif", "reporting réglementaire", "valorisation indépendante", "audit externe", "réconcili", "PASS / FAIL"]) {
   assert.match(pdf.text, phrase(required), `Executive note must retain "${required}"`);

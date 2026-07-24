@@ -947,9 +947,47 @@ try {
     finalUrl: await evaluate("location.href"),
   };
 
+  // S22-A — accessibility, downloads and responsive on the Cockpit.
+  await navigate(`${cockpitUrl}`);
+  await waitFor(() => evaluate("Boolean(window.__COCKPIT__?.runSelfTests)"), "Cockpit S22-A init");
+  const cockpitA11y = await evaluate(`(() => {
+    const b = document.querySelector('#dl-csv');
+    return {
+      csvTag: b?.tagName, csvType: b?.getAttribute('type'), csvFocusable: b ? b.tabIndex >= 0 : false,
+      anchorsWithHash: document.querySelectorAll('a[href="#"]').length,
+      downloads: [...document.querySelectorAll('.dl-grid a[download]')].map((a) => a.getAttribute('href')).sort(),
+      liveRegion: Boolean(document.querySelector('#a11y-status[aria-live="polite"]')),
+    };
+  })()`);
+  assert(cockpitA11y.csvTag === "BUTTON" && cockpitA11y.csvType === "button" && cockpitA11y.csvFocusable, `CSV control must be a focusable button: ${JSON.stringify(cockpitA11y)}`);
+  assert(cockpitA11y.anchorsWithHash === 0, `Cockpit must expose no empty '#' link (found ${cockpitA11y.anchorsWithHash})`);
+  assert(cockpitA11y.downloads.length === 2 && cockpitA11y.downloads[0] === "Note_synthese_cockpit.pdf" && cockpitA11y.downloads[1] === "pack/pack_comite_core_plus_france.xlsx", `Cockpit downloads mismatch: ${JSON.stringify(cockpitA11y.downloads)}`);
+  assert(cockpitA11y.liveRegion, "Cockpit must expose an aria-live=polite status region");
+
+  await command("Browser.setDownloadBehavior", { behavior: "deny" });
+  await evaluate("document.querySelector('#scenario-bear').click(); document.querySelector('#dl-csv').click();");
+  await waitFor(() => evaluate("/csv/i.test(document.querySelector('#a11y-status')?.textContent||'') && /bear/i.test(document.querySelector('#a11y-status')?.textContent||'')"), "CSV Bear announcement");
+  await evaluate("document.querySelector('#scenario-base').click(); document.querySelector('#dl-csv').click();");
+  await waitFor(() => evaluate("/csv/i.test(document.querySelector('#a11y-status')?.textContent||'') && /base/i.test(document.querySelector('#a11y-status')?.textContent||'')"), "CSV Base announcement");
+
+  const cockpitOverflow = {};
+  for (const [w, h] of [[360, 780], [390, 844], [430, 932], [1280, 720], [1920, 1080]]) {
+    await command("Emulation.setDeviceMetricsOverride", { width: w, height: h, deviceScaleFactor: 1, mobile: w < 800 });
+    cockpitOverflow[`${w}x${h}`] = await evaluate("document.documentElement.scrollWidth - document.documentElement.clientWidth");
+  }
+  await command("Emulation.setDeviceMetricsOverride", { width: 1280, height: 720, deviceScaleFactor: 1, mobile: false });
+  for (const [vp, ov] of Object.entries(cockpitOverflow)) assert(ov <= 0, `Cockpit horizontal overflow at ${vp}: ${ov}px`);
+
   for (const resource of ["Note_synthese_cockpit.pdf", "pack/pack_comite_core_plus_france.xlsx", "deployment.json"]) {
     const response = await fetch(`${cockpitUrl}${resource}`);
     assert(response.ok, `Cockpit resource unavailable: ${resource} (${response.status})`);
+  }
+  for (const [resource, mime] of [
+    ["Note_synthese_cockpit.pdf", "application/pdf"],
+    ["pack/pack_comite_core_plus_france.xlsx", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"],
+  ]) {
+    const response = await fetch(`${cockpitUrl}${resource}`);
+    assert((response.headers.get("content-type") || "").includes(mime), `Cockpit download MIME mismatch: ${resource} -> ${response.headers.get("content-type")}`);
   }
 
   assert(browserMessages.length === 0, `Browser warnings/errors: ${browserMessages.join(" | ")}`);

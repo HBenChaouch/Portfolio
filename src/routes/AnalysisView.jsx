@@ -456,7 +456,7 @@ function WaterfallBridge({ activeScenario }) {
         <text className="wf-label" x="720" y="95">Implied share price</text>
         <text className="wf-final" x="720" y="158">{EURO}{bridge.sharePrice.toFixed(0)}</text>
         <text className="wf-sub" x="815" y="158">/ share</text>
-        <text className="wf-sub" x="720" y="188">{fmtM(bridge.equity)} equity ÷ {FY25.dilutedShares.toLocaleString("en-GB")} diluted shares</text>
+        <text className="wf-sub" x="970" y="188" textAnchor="end">{fmtM(bridge.equity)} equity ÷ {FY25.dilutedShares.toLocaleString("en-GB")} diluted shares</text>
         <text className="wf-sub" x="720" y="208">Stand-alone central case</text>
       </svg>
       <ol className="waterfall-mobile" aria-label="Enterprise value to share price bridge">

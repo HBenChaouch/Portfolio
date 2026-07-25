@@ -449,7 +449,7 @@ function WaterfallBridge({ activeScenario }) {
         <text className="wf-label" x={bar2X + barW / 2} y={equityTop - 30} textAnchor="middle">Equity Value</text>
         <text className="wf-value accent" x={bar2X + barW / 2} y={equityTop - 10} textAnchor="middle">{fmtM(bridge.equity)}</text>
         <text className="wf-sub" x={bar1X + barW / 2} y={baseline + 20} textAnchor="middle">EV · DCF + comps central case</text>
-        <text className="wf-sub" x={bar2X + barW / 2} y={baseline + 20} textAnchor="middle">{fmtM(DISPLAY_VALUES.grossFinancialDebt, 1)} debt − {fmtM(DISPLAY_VALUES.cashAndMarketableSecurities, 1)} cash = {fmtM(NET_DEBT.strict, 1)} net debt</text>
+        <text className="wf-sub" x={(bar1X + bar2X + barW) / 2} y={baseline + 36} textAnchor="middle">{fmtM(DISPLAY_VALUES.grossFinancialDebt, 1)} debt − {fmtM(DISPLAY_VALUES.cashAndMarketableSecurities, 1)} cash = {fmtM(NET_DEBT.strict, 1)} net debt</text>
         <line x1="600" x2="600" y1="50" y2="240" stroke="var(--line)" strokeWidth="1" strokeDasharray="2 4" />
         <path className="wf-arrow" d="M 620 145 L 700 145" />
         <path className="wf-arrow" d="M 692 139 L 702 145 L 692 151" />

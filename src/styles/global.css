@@ -3323,6 +3323,13 @@ ul {
   padding: 10px 0;
 }
 
+/* Aligné avec .ff-row et placé avant les media queries pour que 860px/760px
+   redimensionnent les colonnes des repères comme celles des barres. */
+.analysis-view .ff-reference-row,
+.analysis-view .ff-guide-grid {
+  grid-template-columns: 130px minmax(0, 1fr) 100px;
+}
+
 .analysis-view .ff-row .label {
   color: var(--ink-2);
   font-family: var(--mono);
@@ -5346,7 +5353,6 @@ a {
 .analysis-view .ff-guide-grid {
   display: grid;
   gap: 14px;
-  grid-template-columns: 130px minmax(0, 1fr) 100px;
 }
 
 .analysis-view .ff-guide-grid {
@@ -5367,7 +5373,7 @@ a {
   bottom: 0;
   position: absolute;
   top: 0;
-  width: 1px;
+  width: 2px;
 }
 
 .analysis-view .ff-guide.market {
@@ -5735,6 +5741,10 @@ a {
 
   .analysis-view .ff-guide-grid {
     top: 68px;
+  }
+
+  .analysis-view .ff-guide {
+    width: 1.5px;
   }
 
   .analysis-view .ff-reference-scale .ref-label {

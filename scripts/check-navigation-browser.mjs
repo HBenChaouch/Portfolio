@@ -492,7 +492,7 @@ try {
   const cockpitInitial = await evaluate(`(() => {
     const tests = window.__COCKPIT__.runSelfTests();
     const back = document.querySelector('.portfolio-back');
-    const nav = document.querySelector('.cockpit-shell-header');
+    const nav = document.querySelector('.cockpit-control-bar');
     const sidebar = document.querySelector('#cockpit-sidebar');
     const navLinks = Array.from(document.querySelectorAll('#cockpit-section-navigation a'));
     return {
@@ -517,10 +517,10 @@ try {
         toggleDisplay: getComputedStyle(document.querySelector('.cockpit-nav-toggle')).display,
       },
       shell: {
-        banners: document.querySelectorAll('body > header').length,
-        brandTag: document.querySelector('.cockpit-nav-brand')?.tagName,
-        hashControls: Array.from(document.querySelectorAll('.cockpit-shell-header a[href^="#"], #cockpit-sidebar a[href^="#"]')).map((link) => link.hash),
-        scenarioGroups: document.querySelectorAll('.scenario-buttons').length,
+        banners: Array.from(document.querySelectorAll('header')).filter((header) => !header.closest('main, section, article, aside, nav')).length,
+        brandTag: document.querySelector('.control-title-brand')?.tagName,
+        hashControls: Array.from(document.querySelectorAll('.cockpit-control-bar a[href^="#"], #cockpit-sidebar a[href^="#"]')).map((link) => link.hash),
+        scenarioGroups: document.querySelectorAll('.scenario-segment').length,
       },
       overflow: document.documentElement.scrollWidth - document.documentElement.clientWidth,
       passed: tests.passed,
@@ -580,7 +580,7 @@ try {
     await waitFor(async () => {
       englishState = await evaluate(`(() => {
         const target = document.querySelector('#${anchor}');
-        const header = document.querySelector('.cockpit-shell-header');
+        const header = document.querySelector('.cockpit-control-bar');
         return {
           active: document.querySelector('#cockpit-section-navigation a[aria-current="location"]')?.hash,
           backHref: document.querySelector('.portfolio-back')?.getAttribute('href'),
@@ -613,7 +613,7 @@ try {
   await waitFor(() => evaluate("document.documentElement.lang === 'en' && location.hash === '#methodo'"), "English Cockpit content scan");
   await evaluate("document.querySelectorAll('#methodo details').forEach((details) => { details.open = true; })");
   await evaluate("location.hash = '#commentaire'");
-  await waitFor(() => evaluate("document.querySelector('#commentaire')?.getBoundingClientRect().top >= document.querySelector('.cockpit-shell-header')?.getBoundingClientRect().bottom && document.querySelector('#commentaire')?.getBoundingClientRect().top < innerHeight"), "English commentary anchor");
+  await waitFor(() => evaluate("document.querySelector('#commentaire')?.getBoundingClientRect().top >= document.querySelector('.cockpit-control-bar')?.getBoundingClientRect().bottom && document.querySelector('#commentaire')?.getBoundingClientRect().top < innerHeight"), "English commentary anchor");
   await realPointerClick("document.querySelector('#btn-comment')", "English management commentary");
   await waitFor(() => evaluate("document.querySelector('.answer p')?.textContent.length > 500 && !document.querySelector('#btn-comment')?.classList.contains('busy')"), "English generated commentary");
   const cockpitEnglishFullScan = await evaluate(`(() => ({
@@ -659,11 +659,11 @@ try {
     await waitFor(async () => {
       state = await evaluate(`(() => {
         const target = document.querySelector('#${anchor}');
-        const nav = document.querySelector('.cockpit-shell-header');
+        const nav = document.querySelector('.cockpit-control-bar');
         return {
           active: document.querySelector('#cockpit-section-navigation a[aria-current="location"]')?.getAttribute('href'),
           hash: location.hash,
-          navHeight: nav?.getBoundingClientRect().height,
+          navHeight: nav?.getBoundingClientRect().bottom,
           overflow: document.documentElement.scrollWidth - document.documentElement.clientWidth,
           top: target?.getBoundingClientRect().top,
           viewportHeight: innerHeight,
@@ -683,11 +683,11 @@ try {
   let cockpitMethodoRefresh;
   await waitFor(async () => {
     cockpitMethodoRefresh = await evaluate(`(() => {
-      const nav = document.querySelector('.cockpit-shell-header');
+      const nav = document.querySelector('.cockpit-control-bar');
       return {
         active: document.querySelector('#cockpit-section-navigation a[aria-current="location"]')?.getAttribute('href'),
         hash: location.hash,
-        navHeight: nav?.getBoundingClientRect().height,
+        navHeight: nav?.getBoundingClientRect().bottom,
         top: document.querySelector('#methodo')?.getBoundingClientRect().top,
         viewportHeight: innerHeight,
       };
@@ -717,8 +717,8 @@ try {
     cockpitBearState = await evaluate(`(() => ({
       active: document.querySelector('#scenario-bear')?.getAttribute('aria-pressed'),
       global: document.querySelector('#global-scenario-state')?.textContent.trim(),
+      segment: document.querySelector('.scenario-segment')?.getAttribute('data-scenario'),
       hash: location.hash,
-      indicators: Array.from(document.querySelectorAll('[data-scenario-indicator]')).map((item) => item.textContent.trim()),
       note: document.querySelector('#tr-note')?.textContent.trim(),
       search: location.search,
       treasury: document.querySelector('#tr-tfoot')?.textContent.replace(/\\s+/g, ' ').trim(),
@@ -726,8 +726,8 @@ try {
     return cockpitBearState.active === "true"
       && cockpitBearState.hash === "#tresorerie"
       && cockpitBearState.search === "?scenario=bear"
-      && cockpitBearState.indicators.length === 7
-      && cockpitBearState.indicators.every((text) => text === "Scénario actif : Bear")
+      && cockpitBearState.global === "Scénario actif : Bear"
+      && cockpitBearState.segment === "bear"
       && /suspendues/i.test(cockpitBearState.note)
       && /0,00/.test(cockpitBearState.treasury)
       && /11,70/.test(cockpitBearState.treasury);
@@ -739,8 +739,8 @@ try {
     cockpitBaseState = await evaluate(`(() => ({
       active: document.querySelector('#scenario-base')?.getAttribute('aria-pressed'),
       global: document.querySelector('#global-scenario-state')?.textContent.trim(),
+      segment: document.querySelector('.scenario-segment')?.getAttribute('data-scenario'),
       hash: location.hash,
-      indicators: Array.from(document.querySelectorAll('[data-scenario-indicator]')).map((item) => item.textContent.trim()),
       note: document.querySelector('#tr-note')?.textContent.trim(),
       search: location.search,
       treasury: document.querySelector('#tr-tfoot')?.textContent.replace(/\\s+/g, ' ').trim(),
@@ -748,7 +748,8 @@ try {
     return cockpitBaseState.active === "true"
       && cockpitBaseState.hash === "#tresorerie"
       && cockpitBaseState.search === ""
-      && cockpitBaseState.indicators.every((text) => text === "Scénario actif : Base")
+      && cockpitBaseState.global === "Scénario actif : Base"
+      && cockpitBaseState.segment === "base"
       && /−7,00/.test(cockpitBaseState.treasury)
       && /7,59/.test(cockpitBaseState.treasury);
   }, "Cockpit Base scenario from treasury");
@@ -760,22 +761,22 @@ try {
   await waitFor(async () => {
     cockpitCustomState = await evaluate(`(() => ({
       global: document.querySelector('#global-scenario-state')?.textContent.trim(),
+      segment: document.querySelector('.scenario-segment')?.getAttribute('data-scenario'),
       hash: location.hash,
-      indicators: Array.from(document.querySelectorAll('[data-scenario-indicator]')).map((item) => item.textContent.trim()),
       search: location.search,
     }))()`);
     return cockpitCustomState.global === "Scénario actif : Personnalisé"
       && cockpitCustomState.hash === "#tresorerie"
       && cockpitCustomState.search.includes("scenario=custom")
-      && cockpitCustomState.indicators.every((text) => text === "Scénario actif : Personnalisé");
+      && cockpitCustomState.segment === "custom";
   }, "Cockpit custom scenario after keyboard slider change");
 
   await navigate(`${cockpitUrl}?scenario=bear#tresorerie`);
   await waitFor(() => evaluate("document.querySelector('#scenario-bear')?.getAttribute('aria-pressed') === 'true' && location.hash === '#tresorerie'"), "Cockpit direct Bear scenario");
   await command("Page.reload", { ignoreCache: true });
   await waitFor(() => evaluate("document.readyState === 'complete' && document.querySelector('#scenario-bear')?.getAttribute('aria-pressed') === 'true' && location.search === '?scenario=bear' && location.hash === '#tresorerie'"), "Cockpit Bear scenario refresh");
-  const cockpitAfterRefresh = await evaluate("(() => { const tests = window.__COCKPIT__.runSelfTests(); return { href: location.href, indicator: document.querySelector('#tresorerie [data-scenario-indicator]')?.textContent.trim(), passed: tests.passed, total: tests.total }; })()");
-  assert(cockpitAfterRefresh.indicator === "Scénario actif : Bear" && cockpitAfterRefresh.passed === 13 && cockpitAfterRefresh.total === 13, `Cockpit refresh mismatch: ${JSON.stringify(cockpitAfterRefresh)}`);
+  const cockpitAfterRefresh = await evaluate("(() => { const tests = window.__COCKPIT__.runSelfTests(); return { href: location.href, scenario: document.querySelector('.scenario-segment')?.getAttribute('data-scenario'), passed: tests.passed, total: tests.total }; })()");
+  assert(cockpitAfterRefresh.scenario === "bear" && cockpitAfterRefresh.passed === 13 && cockpitAfterRefresh.total === 13, `Cockpit refresh mismatch: ${JSON.stringify(cockpitAfterRefresh)}`);
 
   const cockpitMobileLayouts = [];
   for (const [width, height] of [[360, 800], [390, 844], [430, 932]]) {
@@ -785,7 +786,7 @@ try {
     let state;
     await waitFor(async () => {
       state = await evaluate(`(() => {
-        const nav = document.querySelector('.cockpit-shell-header');
+        const nav = document.querySelector('.cockpit-control-bar');
         const toggle = document.querySelector('.cockpit-nav-toggle');
         const languageTargets = Array.from(document.querySelectorAll('.cockpit-language-toggle button'))
           .map((button) => button.getBoundingClientRect());
@@ -794,7 +795,7 @@ try {
           hash: location.hash,
           languageTargetHeight: Math.min(...languageTargets.map((rect) => rect.height)),
           languageTargetWidth: Math.min(...languageTargets.map((rect) => rect.width)),
-          navHeight: nav?.getBoundingClientRect().height,
+          navHeight: nav?.getBoundingClientRect().bottom,
           overflow: document.documentElement.scrollWidth - document.documentElement.clientWidth,
           targetTop: document.querySelector('#analyse')?.getBoundingClientRect().top,
           toggleHeight: toggle?.getBoundingClientRect().height,
@@ -855,7 +856,7 @@ try {
       expanded: document.querySelector('.cockpit-nav-toggle').getAttribute('aria-expanded'),
       linkCount: links.length,
       minTarget: Math.min(...links.map((link) => link.getBoundingClientRect().height)),
-      scenarioTargets: Array.from(sidebar.querySelectorAll('.scenario-button')).map((button) => button.getBoundingClientRect().height),
+      scenarioTargets: Array.from(document.querySelectorAll('.scenario-seg-btn')).map((button) => button.getBoundingClientRect().height),
       open: sidebar.classList.contains('is-open'),
     };
   })()`);
@@ -869,10 +870,10 @@ try {
   }))()`);
   assert(cockpitMenuEscape.expanded === "false" && cockpitMenuEscape.focused && !cockpitMenuEscape.open, `Cockpit Escape mismatch: ${JSON.stringify(cockpitMenuEscape)}`);
 
-  await realPointerClick("document.querySelector('.cockpit-nav-toggle')", "Cockpit mobile contents for Bear");
+  // Le sélecteur de scénario vit dans la barre de contrôle (toujours visible en
+  // mobile), plus dans le menu : on clique Bear directement, sans ouvrir le menu.
   const cockpitMobileBearPointer = await realPointerClick("document.querySelector('#scenario-bear')", "Cockpit mobile Bear scenario");
   await waitFor(() => evaluate("location.hash === '#tresorerie' && location.search === '?scenario=bear' && document.querySelector('#scenario-bear')?.getAttribute('aria-pressed') === 'true' && !document.querySelector('#cockpit-sidebar')?.classList.contains('is-open') && document.activeElement === document.querySelector('.cockpit-nav-toggle')"), "Cockpit mobile Bear state");
-  await realPointerClick("document.querySelector('.cockpit-nav-toggle')", "Cockpit mobile contents for Base");
   const cockpitMobileBasePointer = await realPointerClick("document.querySelector('#scenario-base')", "Cockpit mobile Base scenario");
   await waitFor(() => evaluate("location.hash === '#tresorerie' && location.search === '' && document.querySelector('#scenario-base')?.getAttribute('aria-pressed') === 'true' && !document.querySelector('#cockpit-sidebar')?.classList.contains('is-open') && document.activeElement === document.querySelector('.cockpit-nav-toggle')"), "Cockpit mobile Base state");
 
@@ -891,12 +892,12 @@ try {
   let cockpitKeyboardMethodo;
   await waitFor(async () => {
     cockpitKeyboardMethodo = await evaluate(`(() => {
-      const nav = document.querySelector('.cockpit-shell-header');
+      const nav = document.querySelector('.cockpit-control-bar');
       return {
         active: document.querySelector('#cockpit-section-navigation a[aria-current="location"]')?.getAttribute('href'),
         focusedToggle: document.activeElement === document.querySelector('.cockpit-nav-toggle'),
         hash: location.hash,
-        navHeight: nav?.getBoundingClientRect().height,
+        navHeight: nav?.getBoundingClientRect().bottom,
         open: document.querySelector('#cockpit-sidebar').classList.contains('is-open'),
         top: document.querySelector('#methodo')?.getBoundingClientRect().top,
         viewportHeight: innerHeight,

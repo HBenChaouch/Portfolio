@@ -33,7 +33,7 @@ const EDITORIAL_FORBIDDEN = [
   /pedagogical/i,
 ];
 
-const expectedCommit = "1af4a9be502c00447a392dc333376e082001a786";
+const expectedCommit = "1e9f2ac5928e7c7768267ed6ef32075e25121a1a";
 const sourceCandidates = [process.env.REAL_ESTATE_SOURCE, ".cockpit-source", "../Real Estate/cockpit"]
   .filter(Boolean)
   .map((candidate) => path.resolve(candidate));
@@ -77,13 +77,14 @@ assert.match(index, /class="portfolio-back" href="\.\.\/\.\.\/"/);
 assert.match(index, /← Portfolio/);
 assert.match(index, /id="cockpit-section-navigation"/);
 const nav = index.match(/<nav id="cockpit-section-navigation"[\s\S]*?<\/nav>/)?.[0] ?? "";
-const shell = index.match(/<header class="cockpit-shell-header"[\s\S]*?<\/header>[\s\S]*?<aside id="cockpit-sidebar"[\s\S]*?<\/aside>/)?.[0] ?? "";
-const shellHashes = [...shell.matchAll(/href="#([^"]+)"/g)].map((match) => match[1]);
+const sidebar = index.match(/<aside id="cockpit-sidebar"[\s\S]*?<\/aside>/)?.[0] ?? "";
+const shellHashes = [...sidebar.matchAll(/href="#([^"]+)"/g)].map((match) => match[1]);
 assert.deepEqual(shellHashes, ["consolidation", "covenants", "stress", "portefeuille", "tresorerie", "commentaire", "ressources", "methodo"]);
 assert.equal(new Set(shellHashes).size, 8);
 assert.doesNotMatch(nav, /href="#analyse"/);
-assert.doesNotMatch(index, /class="cockpit-nav-brand"[^>]*href=/);
-assert.equal((index.match(/class="scenario-buttons"/g) ?? []).length, 1);
+assert.doesNotMatch(sidebar, /id="scenario-(base|bear)"/);
+const controlBar = index.match(/<header class="cockpit-control-bar"[\s\S]*?<\/header>/)?.[0] ?? "";
+assert.equal((controlBar.match(/class="scenario-segment"/g) ?? []).length, 1);
 assert.equal((index.match(/id="scenario-base"/g) ?? []).length, 1);
 assert.equal((index.match(/id="scenario-bear"/g) ?? []).length, 1);
 assert.doesNotMatch(index, /target="_blank"/);

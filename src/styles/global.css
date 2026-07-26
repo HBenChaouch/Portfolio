@@ -4211,10 +4211,26 @@ a {
   }
 }
 
+/* 901-1000px: the desktop sidebar (248px) is back but the viewport is still
+   narrow, so the control bar (title + scenario segment + date) overflows and
+   the market-reference date gets truncated. Drop the redundant page title
+   (already hidden below 681px) and keep the actions right-aligned; this
+   restores comfortable room without touching the figures or the date text. */
+@media (min-width: 901px) and (max-width: 1000px) {
+  .control-title {
+    display: none;
+  }
+
+  .control-actions {
+    margin-left: auto;
+  }
+}
+
 /* Below this width the .twoup right column is too narrow to hold a
    three-value range strip; stack the two panels so the strip regains full
-   width and its three cells stay legible side by side. */
-@media (max-width: 1280px) {
+   width and its three cells stay legible side by side. Capped at 1279px so
+   1280px and above keep the two-column layout untouched. */
+@media (max-width: 1279px) {
   .analysis-view .twoup {
     grid-template-columns: 1fr;
   }

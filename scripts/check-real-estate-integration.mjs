@@ -33,7 +33,7 @@ const EDITORIAL_FORBIDDEN = [
   /pedagogical/i,
 ];
 
-const expectedCommit = "1e9f2ac5928e7c7768267ed6ef32075e25121a1a";
+const expectedCommit = "419100668bd7d446a39ab75b545f555a2b6837ee";
 const sourceCandidates = [process.env.REAL_ESTATE_SOURCE, ".cockpit-source", "../Real Estate/cockpit"]
   .filter(Boolean)
   .map((candidate) => path.resolve(candidate));

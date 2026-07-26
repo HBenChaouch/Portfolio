@@ -64,7 +64,7 @@ assert.match(workflow, /github\.sha/);
 assert.match(workflow, /enablement: true/);
 assert.match(workflow, /actions\/deploy-pages@v4/);
 assert.match(workflow, /repository: HBenChaouch\/cockpit-fund-controlling/);
-assert.match(workflow, /ref: 1e9f2ac5928e7c7768267ed6ef32075e25121a1a/);
+assert.match(workflow, /ref: 419100668bd7d446a39ab75b545f555a2b6837ee/);
 const styles = await text("src/styles/global.css");
 assert.match(styles, /\.analysis-view \.result-strip \.cell[\s\S]*?min-width: 0/);
 assert.match(styles, /\.case-grid-item:first-child[\s\S]*?grid-row: span 2/);
@@ -99,7 +99,7 @@ const integrationScript = await text("scripts/integrate-real-estate-case.mjs");
 assert.match(portfolioHome, /item\.static/);
 assert.doesNotMatch(portfolioHome, /target="_blank"/);
 assert.match(integrationScript, /dist\/cases\/real-estate-downside/);
-assert.match(integrationScript, /1e9f2ac5928e7c7768267ed6ef32075e25121a1a/);
+assert.match(integrationScript, /419100668bd7d446a39ab75b545f555a2b6837ee/);
 const chapterIndexPosition = analysisView.indexOf('className="desktop-chapter-index"');
 const keyStatsPosition = analysisView.indexOf('className="keystats"');
 assert.ok(

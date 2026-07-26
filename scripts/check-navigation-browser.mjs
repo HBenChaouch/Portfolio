@@ -872,10 +872,12 @@ try {
 
   // Le sélecteur de scénario vit dans la barre de contrôle (toujours visible en
   // mobile), plus dans le menu : on clique Bear directement, sans ouvrir le menu.
+  // Le menu n'étant pas ouvert, le focus doit rester sur le bouton scénario
+  // cliqué (pas de renvoi vers « Sommaire »).
   const cockpitMobileBearPointer = await realPointerClick("document.querySelector('#scenario-bear')", "Cockpit mobile Bear scenario");
-  await waitFor(() => evaluate("location.hash === '#tresorerie' && location.search === '?scenario=bear' && document.querySelector('#scenario-bear')?.getAttribute('aria-pressed') === 'true' && !document.querySelector('#cockpit-sidebar')?.classList.contains('is-open') && document.activeElement === document.querySelector('.cockpit-nav-toggle')"), "Cockpit mobile Bear state");
+  await waitFor(() => evaluate("location.hash === '#tresorerie' && location.search === '?scenario=bear' && document.querySelector('#scenario-bear')?.getAttribute('aria-pressed') === 'true' && !document.querySelector('#cockpit-sidebar')?.classList.contains('is-open') && document.activeElement === document.querySelector('#scenario-bear')"), "Cockpit mobile Bear state");
   const cockpitMobileBasePointer = await realPointerClick("document.querySelector('#scenario-base')", "Cockpit mobile Base scenario");
-  await waitFor(() => evaluate("location.hash === '#tresorerie' && location.search === '' && document.querySelector('#scenario-base')?.getAttribute('aria-pressed') === 'true' && !document.querySelector('#cockpit-sidebar')?.classList.contains('is-open') && document.activeElement === document.querySelector('.cockpit-nav-toggle')"), "Cockpit mobile Base state");
+  await waitFor(() => evaluate("location.hash === '#tresorerie' && location.search === '' && document.querySelector('#scenario-base')?.getAttribute('aria-pressed') === 'true' && !document.querySelector('#cockpit-sidebar')?.classList.contains('is-open') && document.activeElement === document.querySelector('#scenario-base')"), "Cockpit mobile Base state");
 
   await evaluate("document.querySelector('.cockpit-nav-toggle').focus()");
   await command("Input.dispatchKeyEvent", { key: "Enter", code: "Enter", type: "keyDown", windowsVirtualKeyCode: 13 });

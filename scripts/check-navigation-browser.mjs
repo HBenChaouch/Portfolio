@@ -827,6 +827,28 @@ try {
         && state.footer.scrollRemainder < 1;
     }, `mobile Cockpit ${width}px footer geometry`);
     assert(state.footer.gap < 8 && state.footer.mainPaddingBottom === 0 && state.footer.scrollRemainder < 1, `Mobile Cockpit footer spacer mismatch at ${width}x${height}: ${JSON.stringify(state.footer)}`);
+    // Non-régression du scénario Personnalisé : déplacer un curseur bascule en
+    // custom, et la barre de contrôle doit rester sans débordement horizontal
+    // (le débordement historique n'apparaissait qu'en custom, pas en Base).
+    let customLayout;
+    await waitFor(async () => {
+      customLayout = await evaluate(`(() => {
+        const segment = document.querySelector('.scenario-segment');
+        if (segment?.getAttribute('data-scenario') !== 'custom') {
+          const slider = document.querySelector('#sliders input[type="range"]');
+          if (slider) {
+            slider.value = String(Number(slider.value) + Number(slider.step || 1));
+            slider.dispatchEvent(new Event('input', { bubbles: true }));
+          }
+        }
+        return {
+          segment: segment?.getAttribute('data-scenario'),
+          overflow: document.documentElement.scrollWidth - document.documentElement.clientWidth,
+        };
+      })()`);
+      return customLayout.segment === "custom";
+    }, `mobile Cockpit ${width}px custom scenario`);
+    assert(customLayout.overflow === 0, `Mobile Cockpit custom-scenario overflow at ${width}x${height}: ${JSON.stringify(customLayout)}`);
     cockpitMobileLayouts.push({ ...state, viewport: { width, height } });
   }
 

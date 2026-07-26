@@ -3170,6 +3170,17 @@ ul {
   margin-top: 6px;
 }
 
+/* Three-value ranges nested in the narrow .twoup column: shrink the serif
+   figure fluidly so the three cells stay side by side without overlapping. */
+.analysis-view .twoup .result-strip.three .v {
+  font-size: clamp(17px, 1.5vw, 30px);
+  white-space: nowrap;
+}
+
+.analysis-view .twoup .result-strip.three .cell {
+  padding: 16px 10px;
+}
+
 .analysis-view .sensi-wrap {
   margin-top: 32px;
 }
@@ -4193,10 +4204,19 @@ a {
   }
 }
 
-@media (min-width: 901px) and (max-width: 1350px) {
+@media (min-width: 681px) and (max-width: 1350px) {
   .control-title span:first-child,
   .control-title i {
     display: none;
+  }
+}
+
+/* Below this width the .twoup right column is too narrow to hold a
+   three-value range strip; stack the two panels so the strip regains full
+   width and its three cells stay legible side by side. */
+@media (max-width: 1280px) {
+  .analysis-view .twoup {
+    grid-template-columns: 1fr;
   }
 }
 
@@ -5053,6 +5073,35 @@ a {
     padding: var(--space-4) 0;
   }
 }
+
+/* With the 248px sidebar present, the many-column QoE (7) and cash (5)
+   bridges get too cramped and their serif figures overlap between ~900px and
+   1200px. Stack them to a single column across that band, mirroring the
+   mobile (<=900px) layout, so the numbers stay legible. Above 1200px the
+   figures fit within their cells and the horizontal bridge is kept. */
+@media (min-width: 901px) and (max-width: 1200px) {
+  .qoe-bridge,
+  .cash-bridge {
+    grid-template-columns: 1fr;
+  }
+
+  .qoe-node + .qoe-connector,
+  .qoe-connector + .qoe-node,
+  .cash-bridge > div + div {
+    border-left: 0;
+    border-top: 1px solid var(--line);
+  }
+
+  .qoe-node,
+  .qoe-connector {
+    min-height: 112px;
+  }
+
+  .cash-bridge > div {
+    min-height: 96px;
+  }
+}
+
 /* Shareable bilingual controls */
 .home-toolbar {
   display: flex;

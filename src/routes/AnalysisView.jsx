@@ -435,7 +435,7 @@ function WaterfallBridge({ activeScenario }) {
 
   return (
     <Localized><div aria-label="Enterprise value to share price bridge" className="waterfall-wrap" role="region" tabIndex="0">
-      <svg aria-labelledby="waterfall-title waterfall-desc" className="waterfall-svg" id="waterfall-svg" role="img" viewBox="0 0 1000 280" preserveAspectRatio="xMidYMid meet">
+      <svg aria-labelledby="waterfall-title waterfall-desc" className="waterfall-svg" id="waterfall-svg" role="img" viewBox="0 0 1090 280" preserveAspectRatio="xMidYMid meet">
         <title id="waterfall-title">Enterprise value to implied share price bridge</title>
         <desc id="waterfall-desc">Enterprise value {fmtM(bridge.ev)}, less net debt {fmtM(bridge.netDebt, 1)}, equals equity value {fmtM(bridge.equity)} and an implied share price of {EURO}{bridge.sharePrice.toFixed(0)}.</desc>
         <rect className="wf-bar ev" x={bar1X} y={evTop} width={barW} height={baseline - evTop} />
@@ -456,7 +456,7 @@ function WaterfallBridge({ activeScenario }) {
         <text className="wf-label" x="720" y="95">Implied share price</text>
         <text className="wf-final" x="720" y="158">{EURO}{bridge.sharePrice.toFixed(0)}</text>
         <text className="wf-sub" x="815" y="158">/ share</text>
-        <text className="wf-sub" x="970" y="188" textAnchor="end">{fmtM(bridge.equity)} equity ÷ {FY25.dilutedShares.toLocaleString("en-GB")} diluted shares</text>
+        <text className="wf-sub" x="720" y="188">{fmtM(bridge.equity)} equity ÷ {FY25.dilutedShares.toLocaleString("en-GB")} diluted shares</text>
         <text className="wf-sub" x="720" y="208">Stand-alone central case</text>
       </svg>
       <ol className="waterfall-mobile" aria-label="Enterprise value to share price bridge">

@@ -237,7 +237,24 @@ function executeOpellaFalsifications(snapshot, sourceManifest, tolerance) {
       return candidate;
     },
     X6: (candidate) => {
-      candidate.m7.inventory.push(structuredClone(candidate.m7.inventory[0]));
+      const original = candidate.m7.inventory.find(
+        ({ qualification }) => ["récurrent", "ponctuel"].includes(qualification),
+      );
+      assert.ok(original, "X6 requires a qualified M7 inventory line");
+      const copy = structuredClone(original);
+      copy.qualification = original.qualification === "récurrent" ? "ponctuel" : "récurrent";
+      const originalKey = `${original.id}|${original.side}`;
+      const copyKey = `${copy.id}|${copy.side}`;
+      assert.equal(copyKey, originalKey, "X6 requires the same id|side logical key");
+      assert.deepEqual(
+        [original.qualification, copy.qualification].sort(),
+        ["ponctuel", "récurrent"],
+        "X6 requires opposite recurring and one-off qualifications",
+      );
+      candidate.m7.inventory.push(copy);
+      console.log(
+        `Opella G2 X6 non-disjoint partition: ${originalKey} is both ${original.qualification} and ${copy.qualification}`,
+      );
       return candidate;
     },
     X7: (candidate) => {

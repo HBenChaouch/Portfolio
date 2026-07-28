@@ -394,19 +394,37 @@ export async function runOpellaIntegrationChecks({ sourceRoot } = {}) {
     await assertFileSha256(path.join(bundleRoot, file.path), file.sha256, `bundle ${file.path}`);
   }
   assert.deepEqual(bundleManifest.downloads, []);
-  assert.deepEqual(bundleManifest.presentationFiles, []);
-  assert.deepEqual(bundleManifest.allowedNonFinancialLiterals, []);
-  assert.deepEqual(bundleManifest.requiredPublicMessages.fr, []);
-  assert.deepEqual(bundleManifest.requiredPublicMessages.en, []);
-  assert.deepEqual(bundleManifest.forbiddenPublicTerms.fr, []);
-  assert.deepEqual(bundleManifest.forbiddenPublicTerms.en, []);
+  assert.deepEqual(bundleManifest.presentationFiles, [
+    "src/App.jsx",
+    "src/components/OpellaCaseShell.jsx",
+    "src/context/OpellaScenarioContext.jsx",
+    "src/data/opellaCase.js",
+    "src/routes/OpellaAnalysisView.jsx",
+  ]);
+  assert.ok(bundleManifest.allowedNonFinancialLiterals.length > 0);
+  assert.equal(bundleManifest.requiredPublicMessages.status, "implemented");
+  assert.equal(bundleManifest.requiredPublicMessages.fr.length, bundleManifest.requiredPublicMessages.en.length);
+  assert.equal(bundleManifest.forbiddenPublicTerms.status, "implemented");
+  assert.ok(bundleManifest.forbiddenPublicTerms.fr.includes("MOIC"));
+  assert.ok(bundleManifest.forbiddenPublicTerms.en.includes("IRR"));
   assert.deepEqual(
     bundleManifest.generatedFiles.map(({ path: filename }) => filename).sort(),
     declaredBundleFiles.sort(),
   );
   assert.ok(bundleManifest.bundleFiles.every(({ role }) => Boolean(role)));
   assert.ok(bundleManifest.generatedFiles.every(({ role, generatedBy }) => Boolean(role && generatedBy)));
-  assert.ok(Object.values(bundleManifest.publicExposure).every((value) => value === false));
+  assert.deepEqual(bundleManifest.publicExposure, {
+    cardAvailable: false,
+    route: true,
+    href: false,
+    cta: false,
+    canonical: false,
+    sitemap: false,
+    fallback: false,
+    download: false,
+    publicWorkbook: false,
+    publicBuildPage: true,
+  });
   assert.equal(bundleManifest.financialRegistryFields.count, sourceManifest.financialRegistryFields.length);
   assert.equal(bundleManifest.formulas.count, sourceManifest.relations.length);
   assert.equal(bundleManifest.fundingVectors.normativeCount, sourceManifest.fundingVectors.normative.length);
@@ -622,6 +640,44 @@ export async function runOpellaIntegrationChecks({ sourceRoot } = {}) {
       filename,
     );
   }
+
+  const presentationApprovedNumbers = new Set(
+    bundleManifest.allowedNonFinancialLiterals
+      .filter(({ file, value }) => file === "src/routes/OpellaAnalysisView.jsx" && /^\d+(?:\.\d+)?$/.test(value))
+      .map(({ value }) => value),
+  );
+  for (const filename of bundleManifest.presentationFiles) {
+    await assertNoUnapprovedNumericLiterals(
+      path.join(repositoryRoot, filename),
+      presentationApprovedNumbers,
+      filename,
+    );
+  }
+  const presentationSources = Object.fromEntries(await Promise.all(
+    bundleManifest.presentationFiles.map(async (filename) => [
+      filename,
+      await readFile(path.join(repositoryRoot, filename), "utf8"),
+    ]),
+  ));
+  const opellaViewSource = presentationSources["src/routes/OpellaAnalysisView.jsx"];
+  const opellaCopySource = presentationSources["src/data/opellaCase.js"];
+  assert.doesNotMatch(
+    opellaViewSource,
+    />\s*[-+]?\d+(?:[.,]\d+)?\s*(?:%|x|M€|€m|€)\s*</,
+    "G3: Opella JSX must not contain a rendered financial literal",
+  );
+  assert.doesNotMatch(
+    opellaCopySource,
+    /:\s*["'`][^"'`\n]*(?:€|\b\d+(?:[.,]\d+)?\s*(?:%|x|M€|€m))[^"'`\n]*["'`]/,
+    "G3: Opella dictionaries must not carry financial values",
+  );
+  assert.match(opellaViewSource, /line\.contribution\[result\.calendar\.maxHorizon\]/);
+  assert.match(opellaViewSource, /snapshot\.outputs\["O-SEPCOST"\]|kpis\["O-SEPCOST"\]/);
+  assert.match(opellaCopySource, /hors BFR de séparation/);
+  assert.match(opellaCopySource, /excluding separation working capital/);
+  console.log(
+    `Opella G3 lineage: ${bundleManifest.presentationFiles.length} presentation files, registry/engine values only`,
+  );
 
   if (sourceRoot) {
     await verifySourceBoundary(path.resolve(sourceRoot), bundleManifest, engineContract);

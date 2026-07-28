@@ -1,6 +1,7 @@
 import { useMemo, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Localized from "../components/Localized.jsx";
+import AccessibleWaterfallBridge from "../components/WaterfallBridge.jsx";
 import { useSidetradeScenario } from "../context/SidetradeScenarioContext.jsx";
 import { useLanguage } from "../context/LanguageContext.jsx";
 import {
@@ -434,7 +435,7 @@ function WaterfallBridge({ activeScenario }) {
   const equityTop = yFor(bridge.equity);
 
   return (
-    <Localized><div aria-label="Enterprise value to share price bridge" className="waterfall-wrap" role="region" tabIndex="0">
+    <Localized><AccessibleWaterfallBridge ariaLabel="Enterprise value to share price bridge">
       <svg aria-labelledby="waterfall-title waterfall-desc" className="waterfall-svg" id="waterfall-svg" role="img" viewBox="0 0 1090 280" preserveAspectRatio="xMidYMid meet">
         <title id="waterfall-title">Enterprise value to implied share price bridge</title>
         <desc id="waterfall-desc">Enterprise value {fmtM(bridge.ev)}, less net debt {fmtM(bridge.netDebt, 1)}, equals equity value {fmtM(bridge.equity)} and an implied share price of {EURO}{bridge.sharePrice.toFixed(0)}.</desc>
@@ -465,7 +466,7 @@ function WaterfallBridge({ activeScenario }) {
         <li><span>Equity Value</span><strong>{fmtM(bridge.equity)}</strong><small>After strict net debt</small></li>
         <li className="final"><span>Implied share price</span><strong>{EURO}{bridge.sharePrice.toFixed(0)}</strong><small>{FY25.dilutedShares.toLocaleString("en-GB")} diluted shares</small></li>
       </ol>
-    </div></Localized>
+    </AccessibleWaterfallBridge></Localized>
   );
 }
 

@@ -1,4 +1,11 @@
-export default function DataTable({ columns, rows, highlightColumn = 2, label = "Financial data table" }) {
+export default function DataTable({
+  columns,
+  getRowKey,
+  highlightColumn = 2,
+  label = "Financial data table",
+  rowHeaderColumn = null,
+  rows,
+}) {
   function cellClass(cell, index) {
     const classes = [];
     const value = typeof cell === "string" ? cell.trim() : "";
@@ -21,12 +28,19 @@ export default function DataTable({ columns, rows, highlightColumn = 2, label = 
         </thead>
         <tbody>
           {rows.map((row, rowIndex) => (
-            <tr key={`row-${rowIndex}`}>
-              {row.map((cell, index) => (
-                <td className={cellClass(cell, index)} key={`cell-${rowIndex}-${index}`}>
-                  {cell}
-                </td>
-              ))}
+            <tr key={getRowKey ? getRowKey(row, rowIndex) : `row-${rowIndex}`}>
+              {row.map((cell, index) => {
+                const Cell = index === rowHeaderColumn ? "th" : "td";
+                return (
+                  <Cell
+                    className={cellClass(cell, index)}
+                    key={`cell-${rowIndex}-${index}`}
+                    scope={index === rowHeaderColumn ? "row" : undefined}
+                  >
+                    {cell}
+                  </Cell>
+                );
+              })}
             </tr>
           ))}
         </tbody>

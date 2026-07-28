@@ -1,4 +1,11 @@
 export const SIDETRADE_ANALYSIS_ROUTE = "/cases/sidetrade-valuation/analysis/";
+export const OPELLA_ANALYSIS_ROUTE = "/cases/opella-carve-out/analysis/";
+export const OPELLA_SCENARIO_PARAMS = Object.freeze({
+  "S-COST": "op_cost",
+  "S-TSA": "op_tsa",
+  "S-ONEOFF": "op_oneoff",
+  "S-OPS": "op_ops",
+});
 
 function normaliseHash(hash = "") {
   if (!hash) return "";
@@ -6,11 +13,34 @@ function normaliseHash(hash = "") {
 }
 
 export function buildSidetradeAnalysisLocation(language, hash = "") {
+  return buildCaseAnalysisLocation(SIDETRADE_ANALYSIS_ROUTE, language, hash);
+}
+
+export function buildCaseAnalysisLocation(
+  pathname,
+  language,
+  hash = "",
+  currentSearch = "",
+) {
+  const params = new URLSearchParams(currentSearch);
+  if (language === "en") params.set("lang", "en");
+  else params.delete("lang");
+  const search = params.toString();
+
   return {
-    pathname: SIDETRADE_ANALYSIS_ROUTE,
-    search: language === "en" ? "?lang=en" : "",
+    pathname,
+    search: search ? `?${search}` : "",
     hash: normaliseHash(hash),
   };
+}
+
+export function buildOpellaAnalysisLocation(language, hash = "", currentSearch = "") {
+  return buildCaseAnalysisLocation(
+    OPELLA_ANALYSIS_ROUTE,
+    language,
+    hash,
+    currentSearch,
+  );
 }
 
 export function buildLocalizedLocation(location, nextLanguage) {

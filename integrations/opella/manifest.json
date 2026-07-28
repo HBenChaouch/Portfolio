@@ -81,7 +81,13 @@
     }
   ],
   "downloads": [],
-  "presentationFiles": [],
+  "presentationFiles": [
+    "src/App.jsx",
+    "src/components/OpellaCaseShell.jsx",
+    "src/context/OpellaScenarioContext.jsx",
+    "src/data/opellaCase.js",
+    "src/routes/OpellaAnalysisView.jsx"
+  ],
   "financialRegistryFields": {
     "source": "source-manifest.json#/financialRegistryFields",
     "count": 24,
@@ -139,20 +145,175 @@
       }
     ]
   },
-  "allowedNonFinancialLiterals": [],
+  "allowedNonFinancialLiterals": [
+    {
+      "file": "src/data/opellaCase.js",
+      "node": "executive.eyebrow",
+      "value": "carve-out readiness",
+      "reason": "Public positioning phrase, distinct from internal process terminology."
+    },
+    {
+      "file": "src/routes/OpellaAnalysisView.jsx",
+      "node": "structural zero and list origin",
+      "value": "0",
+      "reason": "Formatting, empty state, SVG origin and array indexing only."
+    },
+    {
+      "file": "src/routes/OpellaAnalysisView.jsx",
+      "node": "structural unit and single-item guard",
+      "value": "1",
+      "reason": "Display precision, period indexing and chart guard only."
+    },
+    {
+      "file": "src/routes/OpellaAnalysisView.jsx",
+      "node": "display precision",
+      "value": "2",
+      "reason": "Maximum presentation precision for multipliers and percentages."
+    },
+    {
+      "file": "src/routes/OpellaAnalysisView.jsx",
+      "node": "non-zero display precision ceiling",
+      "value": "12",
+      "reason": "Presentation-only ceiling preventing a non-zero amount from being rendered as the zero token."
+    },
+    {
+      "file": "src/routes/OpellaAnalysisView.jsx",
+      "node": "chart point radius",
+      "value": "5",
+      "reason": "Non-financial SVG geometry."
+    },
+    {
+      "file": "src/routes/OpellaAnalysisView.jsx",
+      "node": "peak point radius",
+      "value": "7",
+      "reason": "Non-financial SVG geometry."
+    },
+    {
+      "file": "src/routes/OpellaAnalysisView.jsx",
+      "node": "chart label inset",
+      "value": "20",
+      "reason": "Non-financial SVG geometry."
+    },
+    {
+      "file": "src/routes/OpellaAnalysisView.jsx",
+      "node": "chart right inset",
+      "value": "24",
+      "reason": "Non-financial SVG geometry."
+    },
+    {
+      "file": "src/routes/OpellaAnalysisView.jsx",
+      "node": "chart top inset",
+      "value": "28",
+      "reason": "Non-financial SVG geometry."
+    },
+    {
+      "file": "src/routes/OpellaAnalysisView.jsx",
+      "node": "chart left inset",
+      "value": "52",
+      "reason": "Non-financial SVG geometry."
+    },
+    {
+      "file": "src/routes/OpellaAnalysisView.jsx",
+      "node": "chart bottom inset",
+      "value": "56",
+      "reason": "Non-financial SVG geometry."
+    },
+    {
+      "file": "src/routes/OpellaAnalysisView.jsx",
+      "node": "chart view height",
+      "value": "300",
+      "reason": "Non-financial SVG geometry."
+    },
+    {
+      "file": "src/routes/OpellaAnalysisView.jsx",
+      "node": "chart view width",
+      "value": "920",
+      "reason": "Non-financial SVG geometry."
+    }
+  ],
   "requiredPublicMessages": {
-    "status": "deferred-until-public-view",
-    "fr": [],
-    "en": []
+    "status": "implemented",
+    "fr": [
+      {
+        "id": "opella.status.illustrative",
+        "value": "Analyse illustrative fondée sur des faits transactionnels publics et des estimations explicitement identifiées."
+      },
+      {
+        "id": "opella.limit.estimates",
+        "value": "Les hypothèses de périmètre, de trajectoire, de coûts stand-alone, de TSA et de financement ne sont pas des données publiques."
+      },
+      {
+        "id": "opella.limit.stub",
+        "value": "La première période post-closing est un stub de huit mois"
+      },
+      {
+        "id": "opella.limit.counterfactual",
+        "value": "Le contrefactuel maintient Opella dans le périmètre vendeur"
+      },
+      {
+        "id": "opella.limit.cashflow",
+        "value": "L’analyse ne constitue ni un échéancier de dette ni un tableau de flux de trésorerie complet."
+      },
+      {
+        "id": "opella.limit.buyer",
+        "value": "L’analyse ne constitue pas une analyse de rendement acquéreur."
+      }
+    ],
+    "en": [
+      {
+        "id": "opella.status.illustrative",
+        "value": "Illustrative analysis based on public transaction facts and explicitly identified estimates."
+      },
+      {
+        "id": "opella.limit.estimates",
+        "value": "Perimeter, trajectory, stand-alone cost, TSA and funding assumptions are not public data."
+      },
+      {
+        "id": "opella.limit.stub",
+        "value": "The first post-closing period is an eight-month stub"
+      },
+      {
+        "id": "opella.limit.counterfactual",
+        "value": "The counterfactual keeps Opella in the seller perimeter"
+      },
+      {
+        "id": "opella.limit.cashflow",
+        "value": "The analysis is neither a debt schedule nor a complete cash-flow statement."
+      },
+      {
+        "id": "opella.limit.buyer",
+        "value": "The analysis is not a buyer-return analysis."
+      }
+    ]
   },
   "forbiddenPublicTerms": {
-    "status": "deferred-until-public-view",
-    "fr": [],
-    "en": []
+    "status": "implemented",
+    "fr": [
+      "gate",
+      "niveau de readiness",
+      "snapshot",
+      "générateur",
+      "workbook canonique",
+      "audit interne",
+      "MOIC",
+      "TRI",
+      "IRR"
+    ],
+    "en": [
+      "gate",
+      "readiness level",
+      "snapshot",
+      "generator",
+      "canonical workbook",
+      "internal audit",
+      "MOIC",
+      "TRI",
+      "IRR"
+    ]
   },
   "publicExposure": {
     "cardAvailable": false,
-    "route": false,
+    "route": true,
     "href": false,
     "cta": false,
     "canonical": false,
@@ -160,6 +321,6 @@
     "fallback": false,
     "download": false,
     "publicWorkbook": false,
-    "publicBuildPage": false
+    "publicBuildPage": true
   }
 }

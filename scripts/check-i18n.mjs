@@ -4,6 +4,7 @@ import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { MemoryRouter } from "react-router-dom";
 import { createServer } from "vite";
+import { opellaCopyDictionaries } from "../src/data/opellaCase.js";
 import { dictionaries, languages, translateText } from "../src/data/translations.js";
 
 const root = new URL("../", import.meta.url);
@@ -28,6 +29,24 @@ for (const [language, dictionary] of Object.entries(dictionaries)) {
     for (const number of valueNumbers) {
       assert.ok(keyDigits.includes(number), `${language} dictionary introduces a numeric literal absent from its key: ${key} -> ${value}`);
     }
+  }
+}
+assert.deepEqual(
+  Object.keys(opellaCopyDictionaries.fr),
+  Object.keys(opellaCopyDictionaries.en),
+  "Opella FR/EN content IDs must stay aligned",
+);
+for (const [language, dictionary] of Object.entries(opellaCopyDictionaries)) {
+  for (const [key, value] of Object.entries(dictionary)) {
+    assert.doesNotMatch(
+      value,
+      forbiddenFinancialLiteral,
+      `${language} Opella dictionary carries a financial literal: ${key}`,
+    );
+    const peer = opellaCopyDictionaries[language === "fr" ? "en" : "fr"][key];
+    const slots = [...value.matchAll(/\{\{(\w+)\}\}/g)].map((match) => match[1]).sort();
+    const peerSlots = [...peer.matchAll(/\{\{(\w+)\}\}/g)].map((match) => match[1]).sort();
+    assert.deepEqual(slots, peerSlots, `${key} must expose the same FR/EN message slots`);
   }
 }
 
@@ -71,14 +90,27 @@ assert.equal(
 );
 assert.doesNotMatch(Object.values(dictionaries.fr).join("\n"), /\b(?:timing|prices|an implied share price of)\b/i);
 
-const [languageContext, navigation, main, app, home, shell, analysis, translations] = await Promise.all([
+const [
+  languageContext,
+  navigation,
+  main,
+  app,
+  home,
+  shell,
+  portfolioShell,
+  analysis,
+  opellaAnalysis,
+  translations,
+] = await Promise.all([
   read("src/context/LanguageContext.jsx"),
   read("src/utils/navigation.js"),
   read("src/main.jsx"),
   read("src/App.jsx"),
   read("src/routes/PortfolioHome.jsx"),
   read("src/components/CaseShell.jsx"),
+  read("src/components/PortfolioCaseShell.jsx"),
   read("src/routes/AnalysisView.jsx"),
+  read("src/routes/OpellaAnalysisView.jsx"),
   read("src/data/translations.js"),
 ]);
 
@@ -89,9 +121,10 @@ assert.match(navigation, /hash:\s*normaliseHash\(location\.hash\)/);
 assert.match(main, /<LanguageProvider>/);
 assert.match(app, /language === "en" \? "\?lang=en" : ""/);
 assert.match(home, /<LanguageToggle/);
-assert.match(shell, /<LanguageToggle compact/);
-assert.match(shell, /analysisHref/);
+assert.match(portfolioShell, /<LanguageToggle compact/);
+assert.match(portfolioShell, /analysisHref/);
 assert.match(analysis, /<Localized><article/);
+assert.match(opellaAnalysis, /createOpellaCopy\(language\)/);
 assert.doesNotMatch(translations, /sidetradeFinancials|dcfEngine|lbo_engine/);
 assert.doesNotMatch(`${home}\n${shell}\n${analysis}`, /toggle[^\n]*(?:USD|dollar)|(?:USD|dollar)[^\n]*toggle/i);
 
@@ -109,6 +142,11 @@ try {
   const englishDom = renderRoute("/cases/sidetrade-valuation/analysis?lang=en");
   const frenchHome = renderRoute("/");
   const englishHome = renderRoute("/?lang=en");
+  const opellaFrenchDom = renderRoute("/cases/opella-carve-out/analysis/");
+  const opellaEnglishDom = renderRoute("/cases/opella-carve-out/analysis/?lang=en");
+  const opellaEnglishHighCost = renderRoute(
+    "/cases/opella-carve-out/analysis/?lang=en&op_cost=high#funding-need",
+  );
   const forbiddenRenderedFrench = /exact same|pre-buyout reference|automation \+ payments|digital banking SaaS|profitable SaaS|reporting \/ compliance SaaS|after ~|founder rollover|subscription mix and growth band|sector et geography|Office-of-Adjacence|Vertical banking SaaS|Adds vertical-SaaS|stet-alone|àggle|25%\s+to\s+18%|174\s*€174/i;
   assert.doesNotMatch(frenchDom, forbiddenRenderedFrench, "Rendered French DOM contains English or hybrid residue");
   for (const expectedFrench of [
@@ -141,8 +179,57 @@ try {
   }
   assert.doesNotMatch(frenchHome, /Modele_Carveout_Opella\.xlsx|Télécharger le workbook/);
   assert.doesNotMatch(englishHome, /Modele_Carveout_Opella\.xlsx|Download the workbook/);
+
+  const visibleText = (markup) => markup.replace(/<[^>]+>/g, " ").replace(/\s+/g, " ");
+  const opellaFrenchText = visibleText(opellaFrenchDom);
+  const opellaEnglishText = visibleText(opellaEnglishDom);
+  for (const [outputId, frenchValue, englishValue] of [
+    ["O-RUNRATE", "120 M€", "€120m"],
+    ["O-SEPCOST", "296 M€", "€296m"],
+    ["O-PEAK", "321 M€", "€321m"],
+    ["O-STEADY", "P4", "P4"],
+  ]) {
+    assert.ok(opellaFrenchDom.includes(`data-output-id="${outputId}"`));
+    assert.ok(opellaEnglishDom.includes(`data-output-id="${outputId}"`));
+    assert.ok(opellaFrenchText.includes(frenchValue), `French Opella DOM missing ${outputId}`);
+    assert.ok(opellaEnglishText.includes(englishValue), `English Opella DOM missing ${outputId}`);
+  }
+  for (const label of [
+    "Coûts stand-alone récurrents",
+    "Retard de sortie de TSA",
+    "Coûts ponctuels",
+    "Croissance et marge",
+  ]) assert.ok(opellaFrenchText.includes(label), `French Opella lever missing: ${label}`);
+  for (const label of [
+    "Recurring stand-alone costs",
+    "TSA exit delay",
+    "One-offs",
+    "Growth and margin",
+  ]) assert.ok(opellaEnglishText.includes(label), `English Opella lever missing: ${label}`);
+  assert.doesNotMatch(
+    opellaEnglishText,
+    /\b(?:Calculé|Croissant|Hypothèses|Coûts|Périmètre|Régime|Résorbé)\b/i,
+    "English Opella DOM contains French residue",
+  );
+  for (const rendered of [opellaFrenchDom, opellaEnglishDom]) {
+    const scenarioMarkup = rendered.slice(
+      rendered.indexOf('id="scenarios"'),
+      rendered.indexOf('id="buyer-implications"'),
+    );
+    assert.doesNotMatch(
+      scenarioMarkup,
+      />\s*(?:Bear|Base|Bull)\s*</i,
+      "Opella scenario controls must not reuse Sidetrade labels",
+    );
+  }
+  assert.ok(
+    visibleText(opellaEnglishHighCost).includes("€156m"),
+    "English URL-serialized high-cost state must recompute the run-rate",
+  );
 } finally {
   await vite.close();
 }
 
-console.log(`i18n architecture: PASS (${Object.keys(dictionaries.fr).length} aligned FR/EN entries)`);
+console.log(
+  `i18n architecture: PASS (${Object.keys(dictionaries.fr).length} shared entries + ${Object.keys(opellaCopyDictionaries.fr).length} Opella entries)`,
+);

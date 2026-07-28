@@ -3,6 +3,11 @@ import { createHash } from "node:crypto";
 import { readFile } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import { createElement } from "react";
+import { renderToStaticMarkup } from "react-dom/server";
+import { MemoryRouter } from "react-router-dom";
+import { createServer } from "vite";
+import { opellaPrimaryAnchors } from "../src/data/opellaCase.js";
 import { portfolioCases } from "../src/data/portfolioCases.js";
 import { listRelativeFiles, readJson } from "./integration-manifest.mjs";
 
@@ -33,7 +38,7 @@ assert.equal(
   "B0D93B0A7BF346C2D02D90DC6F83D23C80D9422D902AF1E95E7CA40D385F8ECD",
 );
 await assert.rejects(() => read("public/Modele_Carveout_Opella.xlsx"), { code: "ENOENT" });
-await assert.rejects(() => read("src/routes/OpellaAnalysisView.jsx"), { code: "ENOENT" });
+assert.match(await text("src/routes/OpellaAnalysisView.jsx"), /export default function OpellaAnalysisView/);
 
 const publicFiles = await listRelativeFiles(path.join(rootPath, "public"));
 assert.deepEqual(
@@ -45,8 +50,19 @@ assert.deepEqual(
 const opellaBundleManifest = await readJson(path.join(rootPath, "integrations", "opella", "manifest.json"));
 assert.equal(opellaBundleManifest.status, "inactive");
 assert.deepEqual(opellaBundleManifest.downloads, []);
-assert.deepEqual(opellaBundleManifest.presentationFiles, []);
-assert.ok(Object.values(opellaBundleManifest.publicExposure).every((value) => value === false));
+assert.ok(opellaBundleManifest.presentationFiles.includes("src/routes/OpellaAnalysisView.jsx"));
+assert.deepEqual(opellaBundleManifest.publicExposure, {
+  cardAvailable: false,
+  route: true,
+  href: false,
+  cta: false,
+  canonical: false,
+  sitemap: false,
+  fallback: false,
+  download: false,
+  publicWorkbook: false,
+  publicBuildPage: true,
+});
 
 for (const file of [
   "public/PR_2025_Results_EN.pdf",
@@ -96,22 +112,23 @@ assert.match(sitemap, /Portfolio\/cases\/real-estate-downside\//);
 assert.doesNotMatch(sitemap, /opella-carve-out/);
 
 const caseShell = await text("src/components/CaseShell.jsx");
+const portfolioCaseShell = await text("src/components/PortfolioCaseShell.jsx");
 const navigation = await text("src/utils/navigation.js");
 assert.match(navigation, /sidetrade-valuation\/analysis\//, "GitHub Pages anchor base must use the canonical trailing slash");
-assert.match(caseShell, /mobile-project-title">Sidetrade</, "Mobile header must identify the active case");
-assert.match(caseShell, /setMobileNavOpen\(false\)/, "Mobile contents must close after an anchor selection");
-assert.match(caseShell, /aria-current=.*activeAnchor/, "The current section must be exposed to assistive technology");
-assert.doesNotMatch(caseShell, /history\.replaceState/, "Anchor changes must flow through React Router");
-assert.match(caseShell, /hash:\s*nextHash/, "Manual scrolling must update the router hash");
+assert.match(caseShell, /mobileTitle="Sidetrade"/, "Mobile header must identify the active case");
+assert.match(portfolioCaseShell, /setMobileNavOpen\(false\)/, "Mobile contents must close after an anchor selection");
+assert.match(portfolioCaseShell, /aria-current=.*activeAnchor/, "The current section must be exposed to assistive technology");
+assert.doesNotMatch(portfolioCaseShell, /history\.replaceState/, "Anchor changes must flow through React Router");
+assert.match(portfolioCaseShell, /hash:\s*nextHash/, "Manual scrolling must update the router hash");
 
 const languageContext = await text("src/context/LanguageContext.jsx");
 assert.match(languageContext, /buildLocalizedLocation\(location, nextLanguage\)/, "Language changes must preserve the router hash");
-assert.match(caseShell, /userScrollIntentRef/, "The scroll spy must require explicit user scroll intent");
-assert.match(caseShell, /addEventListener\("wheel"/, "Wheel input must enable the scroll spy");
-assert.match(caseShell, /addEventListener\("scrollend"/, "Scroll intent must end on the browser scrollend event");
-assert.match(caseShell, /ResizeObserver\(geometryChanged\)/, "Anchors must reconverge after translated layout changes");
-assert.match(caseShell, /stableFrames < 2/, "Anchor restoration must use geometric stability instead of a timeout");
-assert.doesNotMatch(caseShell, /setTimeout/, "Anchor preservation must not depend on an arbitrary timeout");
+assert.match(portfolioCaseShell, /userScrollIntentRef/, "The scroll spy must require explicit user scroll intent");
+assert.match(portfolioCaseShell, /addEventListener\("wheel"/, "Wheel input must enable the scroll spy");
+assert.match(portfolioCaseShell, /addEventListener\("scrollend"/, "Scroll intent must end on the browser scrollend event");
+assert.match(portfolioCaseShell, /ResizeObserver\(geometryChanged\)/, "Anchors must reconverge after translated layout changes");
+assert.match(portfolioCaseShell, /stableFrames < 2/, "Anchor restoration must use geometric stability instead of a timeout");
+assert.doesNotMatch(portfolioCaseShell, /setTimeout/, "Anchor preservation must not depend on an arbitrary timeout");
 
 const analysisView = await text("src/routes/AnalysisView.jsx");
 const portfolioHome = await text("src/routes/PortfolioHome.jsx");
@@ -121,7 +138,8 @@ assert.match(portfolioHome, /item\.static/);
 assert.doesNotMatch(portfolioHome, /target="_blank"/);
 assert.match(integrationScript, /dist\/cases\/real-estate-downside/);
 assert.match(integrationScript, /6b8ddfe3dc48d581a4f1282ea2272c06a8d32337/);
-assert.doesNotMatch(app, /opella-carve-out/);
+assert.match(app, /path="\/cases\/opella-carve-out"/);
+assert.match(app, /path="\/cases\/opella-carve-out\/analysis"/);
 assert.doesNotMatch(integrationScript, /opella-carve-out/);
 const chapterIndexPosition = analysisView.indexOf('className="desktop-chapter-index"');
 const keyStatsPosition = analysisView.indexOf('className="keystats"');
@@ -155,6 +173,7 @@ assert.match(styles, /@media \(min-width: 901px\) and \(max-height: 800px\)/, "S
 
 const publicCopy = [
   await text("src/components/CaseShell.jsx"),
+  await text("src/components/PortfolioCaseShell.jsx"),
   await text("src/data/portfolioCases.js"),
   await text("src/data/sidetradeFinancials.js"),
   await text("src/routes/AnalysisView.jsx"),
@@ -186,7 +205,64 @@ const packageJson = JSON.parse(await text("package.json"));
 assert.equal(packageJson.dependencies["framer-motion"], undefined);
 assert.equal(packageJson.scripts["test:workbook"], "node scripts/run-workbook-check.mjs");
 
+const vite = await createServer({ appType: "custom", logLevel: "silent", server: { middlewareMode: true } });
+try {
+  const [{ default: App }, { LanguageProvider }] = await Promise.all([
+    vite.ssrLoadModule("/src/App.jsx"),
+    vite.ssrLoadModule("/src/context/LanguageContext.jsx"),
+  ]);
+  const renderRoute = (entry) => renderToStaticMarkup(
+    createElement(MemoryRouter, { initialEntries: [entry] },
+      createElement(LanguageProvider, null, createElement(App))),
+  );
+  const opellaFr = renderRoute("/cases/opella-carve-out/analysis/");
+  const opellaEn = renderRoute("/cases/opella-carve-out/analysis/?lang=en");
+  for (const rendered of [opellaFr, opellaEn]) {
+    let previous = -1;
+    for (const anchor of opellaPrimaryAnchors) {
+      const position = rendered.indexOf(`id="${anchor}"`);
+      assert.ok(position > previous, `Opella primary anchor order mismatch at ${anchor}`);
+      previous = position;
+    }
+    assert.ok(rendered.indexOf('id="methodology"') > previous, "Opella methodology must remain a direct secondary anchor");
+    assert.deepEqual(
+      [...rendered.matchAll(/data-output-id="([^"]+)"/g)].map((match) => match[1]),
+      ["O-RUNRATE", "O-SEPCOST", "O-PEAK", "O-STEADY"],
+      "Executive view must contain only the four frozen Opella KPIs",
+    );
+    assert.equal(
+      (rendered.match(/data-content-id="opella\.funding\.state"/g) ?? []).length,
+      1,
+      "O-RESORB must have one authoritative rendering under funding-need",
+    );
+    const buyerStart = rendered.indexOf('id="buyer-implications"');
+    const diligenceStart = rendered.indexOf('id="diligence"');
+    const buyerMarkup = rendered.slice(buyerStart, diligenceStart);
+    assert.doesNotMatch(buyerMarkup, /(?:€|\b\d+(?:[.,]\d+)?\s*(?:%|x|M€|€m))/);
+    assert.doesNotMatch(rendered, /\b(?:MOIC|TRI|IRR)\b/i);
+    assert.doesNotMatch(rendered, /(?:download=|Modele_Carveout_Opella\.xlsx)/i);
+  }
+  for (const [language, rendered] of [["fr", opellaFr], ["en", opellaEn]]) {
+    for (const message of opellaBundleManifest.requiredPublicMessages[language]) {
+      assert.ok(rendered.includes(message.value), `${language} Opella DOM missing ${message.id}`);
+    }
+    for (const term of opellaBundleManifest.forbiddenPublicTerms[language]) {
+      const escaped = term.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+      const pattern = /^[A-Z]{2,}$/.test(term) || term.toLowerCase() === "gate"
+        ? `\\b${escaped}\\b`
+        : escaped;
+      assert.doesNotMatch(
+        rendered,
+        new RegExp(pattern, "i"),
+        `${language} Opella DOM contains forbidden public term ${term}`,
+      );
+    }
+  }
+} finally {
+  await vite.close();
+}
+
 console.log("Web quality registry: OK");
 console.log("Portfolio projects: Sidetrade / Opella / Real Estate");
-console.log("Downloads: 1 workbook + 3 PDFs verified; unfinished Opella workbook excluded");
+console.log("Downloads: 1 workbook + 3 PDFs verified; Opella downloads remain disabled");
 console.log("GitHub Pages metadata and SPA fallback: configured");

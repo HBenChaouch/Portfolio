@@ -45,6 +45,989 @@
   --control-height: 44px;
 }
 
+/* === OPELLA CARVE-OUT ANALYSIS === */
+
+.opella-analysis-view {
+  margin: 0 auto;
+  max-width: 1420px;
+  min-width: 0;
+  padding: 0 clamp(20px, 3.5vw, 54px) 56px;
+}
+
+.opella-analysis-view :is(section[id], .opella-methodology) {
+  scroll-margin-top: 104px;
+}
+
+.opella-model-status {
+  color: var(--ink-3);
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+}
+
+.opella-shell-reset,
+.opella-scenario-summary button {
+  background: var(--paper);
+  border: 1px solid var(--line-strong);
+  color: var(--bordeaux);
+  cursor: pointer;
+  min-height: 44px;
+  padding: 0 14px;
+}
+
+.opella-shell-reset:disabled,
+.opella-scenario-summary button:disabled {
+  color: var(--ink-3);
+  cursor: default;
+  opacity: .72;
+}
+
+.opella-hero {
+  border-bottom: 1px solid var(--line-strong);
+  display: grid;
+  gap: clamp(32px, 4vw, 68px);
+  grid-template-columns: minmax(0, 1.05fr) minmax(480px, .95fr);
+  padding: clamp(56px, 7vw, 100px) 0 clamp(52px, 6vw, 84px);
+}
+
+.opella-hero-copy {
+  align-self: center;
+}
+
+.opella-hero h1 {
+  font-size: clamp(42px, 4.7vw, 72px);
+  letter-spacing: -.025em;
+  max-width: 14ch;
+}
+
+.opella-hero-copy > p:not(.eyebrow) {
+  font-size: clamp(16px, 1.4vw, 19px);
+  line-height: 1.7;
+  margin-top: 24px;
+  max-width: 68ch;
+}
+
+.opella-illustrative {
+  border-left: 3px solid var(--bordeaux);
+  color: var(--ink-3);
+  display: block;
+  font-family: var(--mono);
+  font-size: 11px;
+  line-height: 1.55;
+  margin-top: 28px;
+  max-width: 70ch;
+  padding: 4px 0 4px 14px;
+}
+
+.opella-kpi-grid {
+  align-self: stretch;
+  border-left: 1px solid var(--line-strong);
+  border-top: 1px solid var(--line-strong);
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.opella-kpi-grid .metric-tile {
+  background: rgba(255, 255, 254, .62);
+  min-height: 210px;
+  min-width: 0;
+  padding: clamp(22px, 2.2vw, 32px);
+}
+
+.opella-kpi-grid .metric-tile > span:first-child {
+  min-height: 34px;
+}
+
+.opella-kpi-grid .metric-tile strong {
+  font-size: clamp(28px, 2.7vw, 43px);
+  overflow-wrap: anywhere;
+}
+
+.opella-kpi-grid .metric-tile small {
+  line-height: 1.45;
+}
+
+.opella-kpi-grid .metric-meta {
+  border-top: 1px solid var(--line);
+  margin-top: 12px;
+  padding-top: 10px;
+}
+
+.opella-kpi-grid .metric-meta .opella-status,
+.opella-kpi-grid .metric-meta .opella-sepcost-components {
+  display: inline;
+  font-size: 9px;
+  letter-spacing: .04em;
+  text-transform: none;
+}
+
+.opella-section {
+  border-bottom: 1px solid var(--line-strong);
+  padding: clamp(60px, 7vw, 96px) 0;
+}
+
+.opella-section-header {
+  max-width: 980px;
+}
+
+.opella-section-header h2 {
+  font-size: clamp(34px, 3.8vw, 56px);
+  letter-spacing: -.018em;
+  max-width: 18ch;
+}
+
+.opella-section-intro {
+  font-size: clamp(15px, 1.2vw, 18px);
+  line-height: 1.7;
+  margin-top: 18px;
+  max-width: 76ch;
+}
+
+.opella-subtitle {
+  font-size: clamp(25px, 2.4vw, 36px);
+  margin: 48px 0 20px;
+}
+
+.opella-status {
+  border: 1px solid var(--line-strong);
+  border-radius: 999px;
+  color: var(--ink-3);
+  display: inline-flex;
+  font-family: var(--mono);
+  font-size: 9px;
+  letter-spacing: .07em;
+  line-height: 1;
+  padding: 6px 8px;
+  text-transform: uppercase;
+  width: fit-content;
+}
+
+.opella-status.status-public {
+  border-color: color-mix(in srgb, var(--green) 42%, transparent);
+  color: var(--green);
+}
+
+.opella-status.status-calculé {
+  border-color: color-mix(in srgb, var(--bordeaux) 38%, transparent);
+  color: var(--bordeaux);
+}
+
+.opella-fact-grid {
+  border-left: 1px solid var(--line-strong);
+  border-top: 1px solid var(--line-strong);
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  margin-top: 34px;
+}
+
+.opella-fact-grid article {
+  background: rgba(255, 255, 254, .62);
+  border-bottom: 1px solid var(--line-strong);
+  border-right: 1px solid var(--line-strong);
+  display: flex;
+  flex-direction: column;
+  min-height: 190px;
+  min-width: 0;
+  padding: clamp(22px, 2.4vw, 34px);
+}
+
+.opella-fact-grid article > span:first-child,
+.opella-ownership h3,
+.funding-state-heading > span {
+  color: var(--ink-3);
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: .09em;
+  text-transform: uppercase;
+}
+
+.opella-fact-grid article strong {
+  font-family: var(--serif);
+  font-size: clamp(28px, 3vw, 44px);
+  font-weight: 500;
+  margin: 18px 0;
+  overflow-wrap: anywhere;
+}
+
+.opella-fact-grid article small {
+  color: var(--ink-3);
+  font-family: var(--mono);
+  font-size: 10px;
+  margin-top: auto;
+  padding-top: 14px;
+}
+
+.opella-ownership {
+  background: var(--paper);
+  border: 1px solid var(--line-strong);
+  margin-top: 18px;
+  padding: 24px;
+}
+
+.opella-ownership h3 {
+  font-family: var(--mono);
+  font-weight: 600;
+  margin-bottom: 16px;
+}
+
+.opella-ownership > div {
+  align-items: center;
+  border-top: 1px solid var(--line);
+  display: grid;
+  gap: 18px;
+  grid-template-columns: minmax(0, 1fr) auto auto;
+  min-height: 54px;
+}
+
+.opella-ownership strong {
+  color: var(--bordeaux);
+  font-family: var(--serif);
+  font-size: 23px;
+}
+
+.opella-waterfall {
+  margin-top: 34px;
+}
+
+.opella-bridge-visual {
+  align-items: stretch;
+  border: 1px solid var(--line-strong);
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.opella-bridge-visual li {
+  background: rgba(255, 255, 254, .7);
+  display: flex;
+  flex-direction: column;
+  min-height: 152px;
+  padding: 24px;
+  position: relative;
+}
+
+.opella-bridge-visual li + li {
+  border-left: 1px solid var(--line-strong);
+}
+
+.opella-bridge-visual li + li::before {
+  background: var(--bg);
+  border: 1px solid var(--line-strong);
+  border-radius: 50%;
+  color: var(--bordeaux);
+  content: "→";
+  display: grid;
+  height: 30px;
+  left: -16px;
+  place-items: center;
+  position: absolute;
+  top: calc(50% - 15px);
+  width: 30px;
+  z-index: 1;
+}
+
+.opella-bridge-visual span {
+  color: var(--ink-3);
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+}
+
+.opella-bridge-visual strong {
+  color: var(--bordeaux);
+  font-family: var(--serif);
+  font-size: clamp(27px, 2.5vw, 39px);
+  font-weight: 500;
+  margin-top: auto;
+  padding-top: 18px;
+}
+
+.opella-bridge-visual small {
+  color: var(--ink-3);
+  margin-top: 8px;
+}
+
+.opella-bridge-visual .bridge-negative {
+  background: var(--bg-alt);
+}
+
+.opella-bridge-visual .bridge-output {
+  background: var(--navy);
+  color: var(--bg);
+}
+
+.opella-bridge-visual .bridge-output :is(span, small) {
+  color: rgba(250, 247, 242, .72);
+}
+
+.opella-bridge-visual .bridge-output strong {
+  color: var(--bg);
+}
+
+.opella-bridge-mobile {
+  display: none;
+}
+
+.opella-analysis-view .table-scroll {
+  background: var(--paper);
+  border: 1px solid var(--line-strong);
+  margin-top: 22px;
+}
+
+.opella-analysis-view .data-table {
+  min-width: max-content;
+}
+
+.opella-analysis-view .data-table :is(th, td) {
+  max-width: 420px;
+  white-space: normal;
+}
+
+.opella-analysis-view .data-table th[scope="row"] {
+  background: transparent;
+  color: var(--ink);
+  font-family: var(--sans);
+  font-size: 13px;
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+.opella-analysis-view .data-table a {
+  color: var(--bordeaux);
+  font-weight: 600;
+  text-decoration: underline;
+  text-decoration-color: color-mix(in srgb, var(--bordeaux) 30%, transparent);
+  text-underline-offset: 3px;
+}
+
+.opella-bar-chart {
+  background: var(--paper);
+  border: 1px solid var(--line-strong);
+  display: grid;
+  gap: 0;
+  margin-top: 34px;
+  padding: 14px 22px;
+}
+
+.opella-bar-row {
+  align-items: center;
+  border-bottom: 1px solid var(--line);
+  display: grid;
+  gap: 16px;
+  grid-template-columns: minmax(190px, .9fr) minmax(180px, 1.4fr) auto auto;
+  min-height: 64px;
+}
+
+.opella-bar-row:last-child {
+  border-bottom: 0;
+}
+
+.opella-bar-row > span:first-child {
+  color: var(--ink-2);
+  font-size: 13px;
+}
+
+.opella-bar-row strong {
+  color: var(--bordeaux);
+  font-family: var(--serif);
+  font-size: 20px;
+  white-space: nowrap;
+}
+
+.opella-bar-track {
+  background: var(--bg-alt);
+  height: 12px;
+  overflow: hidden;
+}
+
+.opella-bar-track i,
+.funding-mobile-profile i {
+  background: linear-gradient(90deg, var(--bordeaux), var(--bordeaux-soft));
+  display: block;
+  height: 100%;
+  width: var(--bar-size);
+}
+
+.tsa-timeline {
+  background: var(--paper);
+  border: 1px solid var(--line-strong);
+  margin-top: 34px;
+  overflow: hidden;
+}
+
+.tsa-timeline-head,
+.tsa-timeline-row {
+  display: grid;
+  grid-template-columns: minmax(210px, 1.2fr) repeat(6, minmax(70px, 1fr));
+}
+
+.tsa-timeline-head {
+  background: var(--bg-alt);
+  color: var(--ink-3);
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+
+.tsa-timeline :is(.tsa-timeline-head, .tsa-timeline-row) > * {
+  align-items: center;
+  border-bottom: 1px solid var(--line);
+  border-right: 1px solid var(--line);
+  display: flex;
+  justify-content: center;
+  min-height: 48px;
+  padding: 8px;
+  text-align: center;
+}
+
+.tsa-timeline-row strong {
+  font-size: 12px;
+  justify-content: flex-start;
+  text-align: left;
+}
+
+.tsa-timeline-row span {
+  color: var(--ink-3);
+  font-family: var(--mono);
+  font-size: 9px;
+}
+
+.tsa-timeline-row span.active {
+  background: var(--bordeaux-bg);
+  color: var(--bordeaux);
+  font-weight: 700;
+}
+
+.funding-curve {
+  background: linear-gradient(180deg, rgba(255, 255, 254, .92), rgba(243, 238, 228, .72));
+  border: 1px solid var(--line-strong);
+  height: 340px;
+  margin-top: 34px;
+  overflow: hidden;
+  position: relative;
+}
+
+.funding-curve svg {
+  height: 100%;
+  width: 100%;
+}
+
+.funding-axis {
+  stroke: var(--line-strong);
+  stroke-width: 1;
+}
+
+.funding-area-line {
+  stroke: var(--bordeaux);
+  stroke-linejoin: round;
+  stroke-width: 4;
+  vector-effect: non-scaling-stroke;
+}
+
+.funding-point {
+  fill: var(--paper);
+  stroke: var(--bordeaux);
+  stroke-width: 3;
+  vector-effect: non-scaling-stroke;
+}
+
+.funding-point.peak {
+  fill: var(--bordeaux);
+}
+
+.funding-period-label {
+  fill: var(--ink-3);
+  font-family: var(--mono);
+  font-size: 18px;
+}
+
+.funding-peak-callout {
+  background: var(--navy);
+  color: var(--bg);
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  max-width: 230px;
+  padding: 14px 18px;
+  position: absolute;
+  right: 22px;
+  top: 22px;
+}
+
+.funding-peak-callout span,
+.funding-peak-callout small {
+  color: rgba(250, 247, 242, .72);
+  font-family: var(--mono);
+  font-size: 9px;
+  letter-spacing: .05em;
+  text-transform: uppercase;
+}
+
+.funding-peak-callout strong {
+  font-family: var(--serif);
+  font-size: 27px;
+}
+
+.funding-mobile-profile {
+  display: none;
+}
+
+.funding-peak-announcement {
+  color: var(--ink-3);
+  font-size: 13px;
+  margin-top: 14px;
+}
+
+.funding-peak-announcement strong {
+  color: var(--bordeaux);
+  font-family: var(--serif);
+  font-size: 22px;
+}
+
+.funding-state-card {
+  background: var(--navy);
+  color: var(--bg);
+  display: grid;
+  gap: 20px;
+  margin-top: 34px;
+  padding: clamp(26px, 3.5vw, 48px);
+}
+
+.funding-state-heading {
+  border-bottom: 1px solid rgba(250, 247, 242, .2);
+  padding-bottom: 20px;
+}
+
+.funding-state-heading > span {
+  color: rgba(250, 247, 242, .66);
+}
+
+.funding-state-heading h3 {
+  color: var(--bg);
+  font-size: clamp(34px, 3.5vw, 52px);
+  margin-top: 8px;
+}
+
+.funding-state-card > p,
+.funding-counterfactual p {
+  color: rgba(250, 247, 242, .84);
+  font-size: 15px;
+  line-height: 1.65;
+  max-width: 88ch;
+}
+
+.funding-state-card .table-scroll {
+  border-color: rgba(250, 247, 242, .25);
+  margin-top: 0;
+}
+
+.funding-counterfactual {
+  border-left: 3px solid var(--bordeaux-soft);
+  padding-left: 16px;
+}
+
+.funding-counterfactual strong {
+  display: block;
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: .08em;
+  margin-bottom: 7px;
+  text-transform: uppercase;
+}
+
+.opella-scenario-panel {
+  border: 1px solid var(--line-strong);
+  display: grid;
+  gap: 0;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  margin-top: 34px;
+}
+
+.opella-lever {
+  border: 0;
+  border-bottom: 1px solid var(--line-strong);
+  border-right: 1px solid var(--line-strong);
+  margin: 0;
+  min-width: 0;
+  padding: 24px;
+}
+
+.opella-lever:nth-child(even) {
+  border-right: 0;
+}
+
+.opella-lever legend {
+  color: var(--ink);
+  float: left;
+  font-family: var(--serif);
+  font-size: 23px;
+  font-weight: 600;
+  padding: 0;
+  width: 100%;
+}
+
+.opella-lever-meta {
+  clear: both;
+  color: var(--ink-3);
+  display: flex;
+  flex-wrap: wrap;
+  font-family: var(--mono);
+  font-size: 9px;
+  gap: 8px 16px;
+  padding-top: 8px;
+}
+
+.opella-lever-options {
+  display: grid;
+  gap: 8px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  margin-top: 18px;
+}
+
+.opella-lever-options button {
+  background: var(--paper);
+  border: 1px solid var(--line-strong);
+  color: var(--ink-3);
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-height: 68px;
+  min-width: 0;
+  padding: 8px;
+}
+
+.opella-lever-options button[aria-pressed="true"] {
+  background: var(--bordeaux);
+  color: var(--bg);
+}
+
+.opella-lever-options button span {
+  font-family: var(--mono);
+  font-size: 9px;
+  text-transform: uppercase;
+}
+
+.opella-lever-options button strong {
+  font-size: 12px;
+  margin-top: 5px;
+  overflow-wrap: anywhere;
+}
+
+.opella-scenario-summary {
+  align-items: center;
+  background: var(--bg-alt);
+  display: flex;
+  gap: 18px;
+  grid-column: 1 / -1;
+  justify-content: space-between;
+  min-height: 76px;
+  padding: 14px 24px;
+}
+
+.opella-scenario-summary > span {
+  color: var(--bordeaux);
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+
+.buyer-implications {
+  background: var(--bg-alt);
+  border-left: 4px solid var(--market);
+  margin-top: 30px;
+  max-width: 900px;
+  padding: clamp(24px, 3vw, 38px);
+}
+
+.buyer-implications p {
+  font-size: 16px;
+  line-height: 1.7;
+}
+
+.buyer-implications a {
+  color: var(--bordeaux);
+  display: inline-flex;
+  font-family: var(--mono);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: .07em;
+  margin-top: 18px;
+  min-height: 44px;
+  text-transform: uppercase;
+}
+
+.opella-limitations {
+  display: grid;
+  gap: 0;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  margin-top: 28px;
+}
+
+.opella-limitations p {
+  border-bottom: 1px solid var(--line);
+  border-right: 1px solid var(--line);
+  font-size: 13px;
+  line-height: 1.6;
+  min-height: 112px;
+  padding: 20px;
+}
+
+.opella-limitations .opella-no-download {
+  background: var(--navy);
+  color: var(--bg);
+  grid-column: 1 / -1;
+  min-height: auto;
+}
+
+.opella-methodology {
+  border-top: 1px solid var(--line-strong);
+  margin-top: 54px;
+  padding-top: 42px;
+}
+
+.opella-methodology h3 {
+  font-size: clamp(30px, 3vw, 44px);
+}
+
+.opella-methodology > div {
+  column-count: 2;
+  column-gap: 48px;
+  margin-top: 24px;
+}
+
+.opella-methodology p:not(.eyebrow) {
+  break-inside: avoid;
+  font-size: 13px;
+  line-height: 1.7;
+  margin-bottom: 18px;
+}
+
+@media (max-width: 1180px) {
+  .opella-hero {
+    grid-template-columns: 1fr;
+  }
+
+  .opella-hero h1 {
+    max-width: 19ch;
+  }
+
+  .opella-kpi-grid {
+    width: 100%;
+  }
+
+  .tsa-timeline {
+    overflow-x: auto;
+  }
+
+  .tsa-timeline-head,
+  .tsa-timeline-row {
+    min-width: 900px;
+  }
+}
+
+@media (max-width: 900px) {
+  .opella-analysis-view {
+    padding-left: 20px;
+    padding-right: 20px;
+  }
+
+  .opella-analysis-view :is(section[id], .opella-methodology) {
+    scroll-margin-top: 128px;
+  }
+
+  .opella-model-status {
+    display: none;
+  }
+
+  .opella-shell-reset {
+    font-size: 10px;
+    padding: 0 10px;
+  }
+
+  .opella-hero {
+    padding-top: 48px;
+  }
+
+  .opella-bridge-visual,
+  .funding-curve {
+    display: none;
+  }
+
+  .opella-bridge-mobile {
+    border: 1px solid var(--line-strong);
+    display: grid;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .opella-bridge-mobile li {
+    border-left: 3px solid var(--bordeaux);
+    display: grid;
+    gap: 4px 12px;
+    grid-template-columns: minmax(0, 1fr) auto;
+    min-height: 76px;
+    padding: 14px;
+  }
+
+  .opella-bridge-mobile li + li {
+    border-top: 1px solid var(--line);
+  }
+
+  .opella-bridge-mobile strong {
+    color: var(--bordeaux);
+    font-family: var(--serif);
+    font-size: 21px;
+  }
+
+  .opella-bridge-mobile small {
+    color: var(--ink-3);
+    font-size: 10px;
+    grid-column: 1 / -1;
+  }
+
+  .funding-mobile-profile {
+    border: 1px solid var(--line-strong);
+    display: grid;
+    margin-top: 28px;
+  }
+
+  .funding-mobile-profile article {
+    display: grid;
+    gap: 8px 14px;
+    grid-template-columns: minmax(0, 1fr) auto;
+    padding: 14px;
+  }
+
+  .funding-mobile-profile article + article {
+    border-top: 1px solid var(--line);
+  }
+
+  .funding-mobile-profile article > span {
+    color: var(--ink-3);
+    font-family: var(--mono);
+    font-size: 10px;
+  }
+
+  .funding-mobile-profile article > strong {
+    color: var(--bordeaux);
+    font-family: var(--serif);
+    font-size: 20px;
+  }
+
+  .funding-mobile-profile article > div {
+    background: var(--bg-alt);
+    grid-column: 1 / -1;
+    height: 8px;
+  }
+
+  .opella-bar-row {
+    grid-template-columns: minmax(130px, 1fr) auto;
+    padding: 10px 0;
+  }
+
+  .opella-bar-track {
+    grid-column: 1 / -1;
+    grid-row: 2;
+  }
+
+  .opella-bar-row .opella-status {
+    display: none;
+  }
+
+  .opella-scenario-panel {
+    grid-template-columns: 1fr;
+  }
+
+  .opella-lever,
+  .opella-lever:nth-child(even) {
+    border-right: 0;
+  }
+
+  .opella-methodology > div {
+    column-count: 1;
+  }
+}
+
+@media (max-width: 620px) {
+  .case-main:has(.opella-analysis-view) .control-title {
+    display: none;
+  }
+
+  .case-main:has(.opella-analysis-view) .control-actions {
+    justify-content: space-between;
+    width: 100%;
+  }
+
+  .opella-kpi-grid,
+  .opella-fact-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .opella-kpi-grid .metric-tile {
+    min-height: 174px;
+  }
+
+  .opella-ownership > div {
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+
+  .opella-ownership .opella-status {
+    display: none;
+  }
+
+  .opella-lever {
+    padding: 18px 14px;
+  }
+
+  .opella-lever-options {
+    gap: 5px;
+  }
+
+  .opella-lever-options button {
+    min-height: 72px;
+    padding: 6px 4px;
+  }
+
+  .opella-lever-options button strong {
+    font-size: 10px;
+  }
+
+  .opella-limitations {
+    grid-template-columns: 1fr;
+  }
+
+  .opella-limitations .opella-no-download {
+    grid-column: auto;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .opella-analysis-view *,
+  .opella-shell-reset {
+    scroll-behavior: auto !important;
+    transition: none !important;
+  }
+}
+
+@media (prefers-contrast: more) {
+  .opella-status,
+  .opella-fact-grid,
+  .opella-kpi-grid,
+  .opella-analysis-view .table-scroll,
+  .opella-bar-chart,
+  .opella-scenario-panel {
+    border-color: currentColor;
+  }
+}
+
 * {
   box-sizing: border-box;
 }

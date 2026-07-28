@@ -285,7 +285,18 @@ function addLine(lines, {
   if (lines.some((line) => line.id === id && line.side === side)) {
     fail("OP-ENGINE-INPUT", `duplicate inventory line ${id}|${side}`);
   }
-  lines.push({ id, module, group, side, qualification, amounts });
+  lines.push({
+    id,
+    module,
+    group,
+    side,
+    qualification,
+    amounts,
+    contribution: Object.fromEntries(Object.entries(amounts).map(([period, amount]) => [
+      period,
+      side === "cas" ? -amount : amount,
+    ])),
+  });
 }
 
 export function classifyOpellaFunding(periods, tolerance = Number.EPSILON) {
@@ -576,7 +587,7 @@ export function calculateOpella(financials, selections = {}) {
     const s = -c;
     const contributions = inventory.map((line) => ({
       line,
-      value: line.side === "cas" ? -line.amounts[period] : line.amounts[period],
+      value: line.contribution[period],
     }));
     const eGap = sum(contributions.filter(({ line }) => line.qualification === "récurrent").map(({ value }) => value));
     const nOneOff = sum(contributions.filter(({ line }) => line.qualification === "ponctuel").map(({ value }) => value));

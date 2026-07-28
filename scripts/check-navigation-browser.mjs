@@ -1,5 +1,5 @@
 import { spawn } from "node:child_process";
-import { access, mkdtemp, readFile, rm, stat } from "node:fs/promises";
+import { access, mkdir, mkdtemp, readFile, rm, stat, writeFile } from "node:fs/promises";
 import { createServer } from "node:http";
 import { createServer as createNetServer } from "node:net";
 import { tmpdir } from "node:os";
@@ -118,6 +118,7 @@ for (const stream of [chrome.stdout, chrome.stderr]) {
   });
 }
 const base = `${portfolioUrl}cases/sidetrade-valuation/analysis/`;
+const opellaBase = `${portfolioUrl}cases/opella-carve-out/analysis/`;
 
 let socket;
 let target;
@@ -962,6 +963,245 @@ try {
   await waitFor(() => evaluate("document.documentElement.lang === 'en' && document.body.innerText.includes('Opella')"), "English Portfolio home");
   const opellaEn = await opellaState();
   assert(opellaEn.tag === "DIV" && opellaEn.href === null && opellaEn.interactiveDescendants === 0 && /in development/i.test(opellaEn.text), `English Opella card mismatch: ${JSON.stringify(opellaEn)}`);
+
+  // O2-B — testable direct route while the Portfolio card remains inactive.
+  await navigate(`${portfolioUrl}cases/opella-carve-out?lang=en&op_cost=high#funding-need`);
+  await waitFor(
+    () => evaluate("Boolean(document.querySelector('.opella-analysis-view')) && location.pathname.endsWith('/cases/opella-carve-out/analysis/')"),
+    "Opella alias redirect and direct view",
+  );
+  const opellaAlias = await waitForStableAnchor("funding-need");
+  assert(
+    opellaAlias.lang === "en"
+      && opellaAlias.hash === "#funding-need"
+      && opellaAlias.url.includes("op_cost=high"),
+    `Opella alias must preserve language, scenario and hash: ${JSON.stringify(opellaAlias)}`,
+  );
+  const opellaInitial = await evaluate(`(() => {
+    const anchorIds = Array.from(document.querySelectorAll('.opella-analysis-view section[id]')).map((section) => section.id);
+    const outputs = Object.fromEntries(Array.from(document.querySelectorAll('.opella-kpi-grid [data-output-id]')).map((tile) => [
+      tile.dataset.outputId,
+      tile.querySelector('strong')?.textContent,
+    ]));
+    const tables = Array.from(document.querySelectorAll('.opella-analysis-view .table-scroll'));
+    const graphs = Array.from(document.querySelectorAll('.opella-analysis-view [role="img"]'));
+    return {
+      anchorIds,
+      downloadCount: document.querySelectorAll('.opella-analysis-view [download], .opella-analysis-view a[href$=".xlsx"]').length,
+      graphsNamed: graphs.every((graph) => Boolean(graph.getAttribute('aria-label'))),
+      outputs,
+      stateRenderCount: document.querySelectorAll('[data-content-id="opella.funding.state"]').length,
+      tableCount: tables.length,
+      tablesAccessible: tables.every((table) => table.tabIndex === 0 && Boolean(table.getAttribute('aria-label'))),
+    };
+  })()`);
+  assert(
+    JSON.stringify(opellaInitial.anchorIds) === JSON.stringify([
+      "executive",
+      "transaction",
+      "perimeter",
+      "standalone-build",
+      "tsa",
+      "one-offs",
+      "cash-transition",
+      "funding-need",
+      "scenarios",
+      "buyer-implications",
+      "diligence",
+      "sources",
+      "methodology",
+    ]),
+    `Opella anchor order mismatch: ${JSON.stringify(opellaInitial.anchorIds)}`,
+  );
+  assert(
+    Object.keys(opellaInitial.outputs).join(",") === "O-RUNRATE,O-SEPCOST,O-PEAK,O-STEADY"
+      && /156/.test(opellaInitial.outputs["O-RUNRATE"])
+      && opellaInitial.stateRenderCount === 1,
+    `Opella headline outputs or O-RESORB rendering mismatch: ${JSON.stringify(opellaInitial)}`,
+  );
+  assert(
+    opellaInitial.downloadCount === 0
+      && opellaInitial.graphsNamed
+      && opellaInitial.tableCount >= 10
+      && opellaInitial.tablesAccessible,
+    `Opella graph/table/download contract mismatch: ${JSON.stringify(opellaInitial)}`,
+  );
+
+  const opellaFrenchPointer = await realPointerClick(visibleButton("FR"), "Opella language FR");
+  await waitFor(
+    () => evaluate("document.documentElement.lang === 'fr' && location.search === '?op_cost=high' && location.hash === '#funding-need'"),
+    "Opella FR language preservation",
+  );
+  await waitForStableAnchor("funding-need");
+  const opellaLowCostPointer = await realPointerClick(
+    "Array.from(document.querySelectorAll('.opella-lever-options button')).find((button) => button.getAttribute('aria-label')?.startsWith('Coûts stand-alone récurrents · Basse ·'))",
+    "Opella low stand-alone cost",
+  );
+  await waitFor(
+    () => evaluate("new URLSearchParams(location.search).get('op_cost') === 'low' && document.querySelector('[data-output-id=\"O-RUNRATE\"] strong')?.textContent.includes('78')"),
+    "Opella low-cost recomputation",
+  );
+  const opellaEnglishPointer = await realPointerClick(visibleButton("EN"), "Opella language EN");
+  await waitFor(
+    () => evaluate("document.documentElement.lang === 'en' && location.search.includes('lang=en') && location.search.includes('op_cost=low') && location.hash === '#funding-need'"),
+    "Opella EN language preservation",
+  );
+  await waitForStableAnchor("funding-need");
+
+  const opellaLeverPointers = [];
+  for (const [label, parameter, state] of [
+    ["Recurring stand-alone costs · High ·", "op_cost", "high"],
+    ["TSA exit delay · High ·", "op_tsa", "high"],
+    ["One-offs · High ·", "op_oneoff", "high"],
+    ["Growth and margin · Low ·", "op_ops", "low"],
+  ]) {
+    const before = await evaluate("Array.from(document.querySelectorAll('.opella-kpi-grid [data-output-id] strong')).map((node) => node.textContent).join('|')");
+    const pointer = await realPointerClick(
+      `Array.from(document.querySelectorAll('.opella-lever-options button')).find((button) => button.getAttribute('aria-label')?.startsWith(${JSON.stringify(label)}))`,
+      `Opella lever ${parameter}`,
+    );
+    await waitFor(
+      () => evaluate(`new URLSearchParams(location.search).get(${JSON.stringify(parameter)}) === ${JSON.stringify(state)}`),
+      `Opella URL state ${parameter}`,
+    );
+    await waitForStableAnchor("funding-need");
+    const after = await evaluate("Array.from(document.querySelectorAll('.opella-kpi-grid [data-output-id] strong')).map((node) => node.textContent).join('|')");
+    assert(before !== after, `${parameter} must recompute at least one headline KPI`);
+    opellaLeverPointers.push({ parameter, pointer, state });
+  }
+  const opellaResetPointer = await realPointerClick(
+    "Array.from(document.querySelectorAll('.opella-scenario-summary button')).find((button) => /central case/i.test(button.textContent))",
+    "Opella central reset",
+  );
+  await waitFor(
+    () => evaluate("location.search === '?lang=en' && location.hash === '#funding-need' && Array.from(document.querySelectorAll('.opella-lever-options button[aria-pressed=\"true\"]')).every((button) => /Central/i.test(button.textContent))"),
+    "Opella central reset state",
+  );
+
+  const opellaResponsive = {};
+  const opellaVisualAnchors = {
+    "360x800": "funding-need",
+    "390x844": "scenarios",
+    "430x932": "executive",
+    "1280x720": "standalone-build",
+    "1920x1080": "funding-need",
+  };
+  const opellaVisualLanguages = {
+    "360x800": "fr",
+    "390x844": "en",
+    "430x932": "fr",
+    "1280x720": "fr",
+    "1920x1080": "en",
+  };
+  const opellaReviewDirectory = path.resolve(".agent-logs", "opella-o2-b-visual-review");
+  await mkdir(opellaReviewDirectory, { recursive: true });
+  for (const [width, height] of [[360, 800], [390, 844], [430, 932], [1280, 720], [1920, 1080]]) {
+    await command("Emulation.setDeviceMetricsOverride", {
+      width,
+      height,
+      deviceScaleFactor: 1,
+      mobile: width < 800,
+    });
+    const viewportId = `${width}x${height}`;
+    const visualAnchor = opellaVisualAnchors[viewportId];
+    const visualLanguage = opellaVisualLanguages[viewportId];
+    await navigate(`${opellaBase}${visualLanguage === "en" ? "?lang=en" : ""}#${visualAnchor}`);
+    await waitForStableAnchor(visualAnchor);
+    const state = await evaluate(`(() => {
+      const controls = Array.from(document.querySelectorAll('.opella-lever-options button'));
+      const tableRegions = Array.from(document.querySelectorAll('.opella-analysis-view .table-scroll'));
+      const mobile = innerWidth <= 900;
+      return {
+        controls: controls.length,
+        documentOverflow: document.documentElement.scrollWidth - document.documentElement.clientWidth,
+        fundingDesktop: getComputedStyle(document.querySelector('.funding-curve')).display,
+        fundingMobile: getComputedStyle(document.querySelector('.funding-mobile-profile')).display,
+        minControlTarget: Math.min(...controls.map((button) => button.getBoundingClientRect().height)),
+        mobile,
+        mobileBridge: getComputedStyle(document.querySelector('.opella-bridge-mobile')).display,
+        tableRegionsAccessible: tableRegions.every((region) => region.tabIndex === 0 && Boolean(region.getAttribute('aria-label'))),
+        wideBridge: getComputedStyle(document.querySelector('.opella-bridge-visual')).display,
+      };
+    })()`);
+    assert(state.documentOverflow === 0, `Opella horizontal overflow at ${width}x${height}: ${JSON.stringify(state)}`);
+    assert(state.controls === 12 && state.minControlTarget >= 44, `Opella control targets at ${width}x${height}: ${JSON.stringify(state)}`);
+    assert(state.tableRegionsAccessible, `Opella table region accessibility at ${width}x${height}: ${JSON.stringify(state)}`);
+    if (width <= 900) {
+      assert(
+        state.mobileBridge === "grid"
+          && state.wideBridge === "none"
+          && state.fundingMobile === "grid"
+          && state.fundingDesktop === "none",
+        `Opella dedicated mobile visuals missing at ${width}x${height}: ${JSON.stringify(state)}`,
+      );
+    }
+    await evaluate(`(() => {
+      const target = document.getElementById(${JSON.stringify(visualAnchor)});
+      const content = target?.querySelector('.opella-section-header, .opella-hero-copy') ?? target;
+      if (!content) return;
+      const offset = innerWidth <= 900 ? 128 : 96;
+      scrollTo(0, Math.max(0, scrollY + content.getBoundingClientRect().top - offset));
+    })()`);
+    const screenshot = await command("Page.captureScreenshot", {
+      captureBeyondViewport: false,
+      format: "png",
+      fromSurface: true,
+    });
+    const screenshotName = `${viewportId}-${visualLanguage}-${visualAnchor}.png`;
+    await writeFile(
+      path.join(opellaReviewDirectory, screenshotName),
+      Buffer.from(screenshot.data, "base64"),
+    );
+    opellaResponsive[viewportId] = {
+      ...state,
+      language: visualLanguage,
+      screenshot: path.join(".agent-logs", "opella-o2-b-visual-review", screenshotName),
+      visualAnchor,
+    };
+  }
+  await writeFile(
+    path.join(opellaReviewDirectory, "review.json"),
+    `${JSON.stringify({
+      browserMessages,
+      captures: opellaResponsive,
+      generatedAt: new Date().toISOString(),
+      route: "/cases/opella-carve-out/analysis/",
+    }, null, 2)}\n`,
+    "utf8",
+  );
+
+  await command("Emulation.setDeviceMetricsOverride", { width: 390, height: 844, deviceScaleFactor: 1, mobile: true });
+  const opellaMenuPointer = await realPointerClick("document.querySelector('.mobile-nav-toggle')", "Opella mobile contents");
+  await waitFor(
+    () => evaluate("document.querySelector('.mobile-nav-toggle')?.getAttribute('aria-expanded') === 'true' && getComputedStyle(document.querySelector('#opella-section-navigation')).display === 'grid'"),
+    "Opella mobile contents open",
+  );
+  await command("Input.dispatchKeyEvent", { key: "Escape", code: "Escape", type: "keyDown", windowsVirtualKeyCode: 27 });
+  await command("Input.dispatchKeyEvent", { key: "Escape", code: "Escape", type: "keyUp", windowsVirtualKeyCode: 27 });
+  const opellaMenuEscape = await evaluate(`(() => ({
+    expanded: document.querySelector('.mobile-nav-toggle')?.getAttribute('aria-expanded'),
+    focused: document.activeElement === document.querySelector('.mobile-nav-toggle'),
+  }))()`);
+  assert(
+    opellaMenuEscape.expanded === "false" && opellaMenuEscape.focused,
+    `Opella Escape/focus return mismatch: ${JSON.stringify(opellaMenuEscape)}`,
+  );
+
+  await command("Emulation.setDeviceMetricsOverride", { width: 1280, height: 720, deviceScaleFactor: 1, mobile: false });
+  await navigate(`${opellaBase}?lang=en#methodology`);
+  const opellaMethodology = await waitForStableSecondaryAnchor("methodology");
+  assert(
+    opellaMethodology.lang === "en"
+      && opellaMethodology.hash === "#methodology"
+      && opellaMethodology.overflow === 0,
+    `Opella direct methodology anchor mismatch: ${JSON.stringify(opellaMethodology)}`,
+  );
+
+  await navigate(`${portfolioUrl}?lang=en`);
+  await waitFor(
+    () => evaluate("document.documentElement.lang === 'en' && Boolean(document.querySelector('.case-grid'))"),
+    "English Portfolio home after Opella browser checks",
+  );
   const englishCockpitHomePointer = await realPointerClick("Array.from(document.querySelectorAll('a')).find((link) => link.href.includes('/cases/real-estate-downside/'))", "English Portfolio Real Estate");
   await waitFor(() => evaluate("location.pathname.endsWith('/cases/real-estate-downside/') && location.search === '?lang=en' && document.documentElement.lang === 'en'"), "Portfolio EN to Cockpit EN");
   const englishPortfolioReturnPointer = await realPointerClick("document.querySelector('.portfolio-back')", "English Cockpit Portfolio return");
@@ -1072,6 +1312,17 @@ try {
     realEstateHomeLink,
     opellaFr,
     opellaEn,
+    opellaAlias,
+    opellaInitial,
+    opellaFrenchPointer,
+    opellaLowCostPointer,
+    opellaEnglishPointer,
+    opellaLeverPointers,
+    opellaResetPointer,
+    opellaResponsive,
+    opellaMenuPointer,
+    opellaMenuEscape,
+    opellaMethodology,
     cockpitEnglishRoundTrip,
     responsive,
     browserMessages,

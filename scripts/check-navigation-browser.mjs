@@ -219,6 +219,116 @@ async function waitForStableSecondaryAnchor(anchor) {
   return current;
 }
 
+function shellAccessibilityAuditExpression(navigationSelector) {
+  return `(() => {
+    const parseColor = (value) => {
+      const channels = value?.match(/[\\d.]+/g)?.map(Number) ?? [];
+      return {
+        a: channels.length > 3 ? channels[3] : 1,
+        b: channels[2] ?? 0,
+        g: channels[1] ?? 0,
+        r: channels[0] ?? 0,
+      };
+    };
+    const blend = (foreground, background) => ({
+      a: 1,
+      b: foreground.b * foreground.a + background.b * (1 - foreground.a),
+      g: foreground.g * foreground.a + background.g * (1 - foreground.a),
+      r: foreground.r * foreground.a + background.r * (1 - foreground.a),
+    });
+    const luminance = ({ r, g, b }) => {
+      const channels = [r, g, b].map((channel) => {
+        const value = channel / 255;
+        return value <= 0.04045 ? value / 12.92 : ((value + 0.055) / 1.055) ** 2.4;
+      });
+      return 0.2126 * channels[0] + 0.7152 * channels[1] + 0.0722 * channels[2];
+    };
+    const contrast = (first, second) => {
+      const firstLuminance = luminance(first);
+      const secondLuminance = luminance(second);
+      return (Math.max(firstLuminance, secondLuminance) + 0.05)
+        / (Math.min(firstLuminance, secondLuminance) + 0.05);
+    };
+    const sidebar = document.querySelector('.case-sidebar');
+    const gradientStops = (
+      getComputedStyle(sidebar).backgroundImage.match(/rgba?\\([^)]+\\)/g)
+      ?? [getComputedStyle(sidebar).backgroundColor]
+    ).map(parseColor);
+    const backgrounds = [];
+    for (let step = 0; step <= 20; step += 1) {
+      const ratio = step / 20;
+      const first = gradientStops[0];
+      const last = gradientStops.at(-1);
+      backgrounds.push({
+        a: 1,
+        b: first.b + (last.b - first.b) * ratio,
+        g: first.g + (last.g - first.g) * ratio,
+        r: first.r + (last.r - first.r) * ratio,
+      });
+    }
+    const contrastElements = Array.from(document.querySelectorAll([
+      '.case-sidebar .workspace',
+      '.case-sidebar .sidebar-brand span',
+      '.case-sidebar .sidebar-brand small',
+      '.case-sidebar .project-switcher-label',
+      '.case-sidebar .mobile-project-title',
+      '.case-sidebar .mobile-nav-toggle',
+      '.case-sidebar .sidebar-group-title',
+      '.case-sidebar .sidebar-entry:not(.active):not([aria-current])',
+      '.case-sidebar .sidebar-foot',
+    ].join(','))).filter((element) => {
+      const rect = element.getBoundingClientRect();
+      const style = getComputedStyle(element);
+      return rect.width > 0 && rect.height > 0 && style.visibility !== 'hidden';
+    });
+    const contrastRatios = contrastElements.flatMap((element) => {
+      const foreground = parseColor(getComputedStyle(element).color);
+      return backgrounds.map((background) => contrast(blend(foreground, background), background));
+    });
+    const targets = Array.from(document.querySelectorAll(
+      '.case-sidebar a, .case-sidebar button, .language-toggle button',
+    )).filter((element) => {
+      const rect = element.getBoundingClientRect();
+      const style = getComputedStyle(element);
+      return rect.width > 0
+        && rect.height > 0
+        && style.display !== 'none'
+        && style.visibility !== 'hidden';
+    }).map((element) => {
+      const rect = element.getBoundingClientRect();
+      return { height: rect.height, text: element.textContent.trim(), width: rect.width };
+    });
+    const navigation = document.querySelector(${JSON.stringify(navigationSelector)});
+    let lastReachable = null;
+    if (navigation && innerWidth > 900) {
+      const originalScrollTop = navigation.scrollTop;
+      navigation.scrollTop = navigation.scrollHeight;
+      const navigationRect = navigation.getBoundingClientRect();
+      const lastLink = Array.from(navigation.querySelectorAll('.sidebar-entry')).at(-1);
+      const lastLinkRect = lastLink?.getBoundingClientRect();
+      lastReachable = Boolean(lastLinkRect)
+        && lastLinkRect.top >= navigationRect.top - 1
+        && lastLinkRect.bottom <= navigationRect.bottom + 1;
+      navigation.scrollTop = originalScrollTop;
+    }
+    return {
+      contrastElements: contrastElements.length,
+      minContrast: contrastRatios.length ? Math.min(...contrastRatios) : null,
+      minTargetHeight: targets.length ? Math.min(...targets.map(({ height }) => height)) : null,
+      minTargetWidth: targets.length ? Math.min(...targets.map(({ width }) => width)) : null,
+      navigation: navigation ? {
+        clientHeight: navigation.clientHeight,
+        internalScrollable: getComputedStyle(navigation).overflowY === 'auto'
+          && navigation.tabIndex === 0,
+        lastReachable,
+        scrollHeight: navigation.scrollHeight,
+        scrollRange: Math.max(0, navigation.scrollHeight - navigation.clientHeight),
+      } : null,
+      targetCount: targets.length,
+    };
+  })()`;
+}
+
 async function responsiveState(width, height, mobile = true) {
   await command("Emulation.setDeviceMetricsOverride", { width, height, deviceScaleFactor: 1, mobile });
   await navigate(`${base}#snapshot`);
@@ -279,6 +389,7 @@ async function responsiveState(width, height, mobile = true) {
         linkCount: sidebarLinks.length,
         scrollHeight: sidebar.scrollHeight,
       },
+      shellAccessibility: ${shellAccessibilityAuditExpression("#sidetrade-section-navigation")},
       minDisclosureTarget: Math.min(...disclosureTargets),
       transactionCards: getComputedStyle(document.querySelector('.transaction-cards')).display,
       verticalWaterfall: getComputedStyle(document.querySelector('.waterfall-mobile')).display,
@@ -425,6 +536,28 @@ try {
     assert(state.guideCoversRows && state.lboReadingComplete, `Desktop football guide or LBO reading mismatch at ${viewport.join("x")}: ${JSON.stringify(state)}`);
     assert(state.sidebar.linkCount === 11, `Desktop sidebar destination count mismatch at ${viewport.join("x")}: ${JSON.stringify(state.sidebar)}`);
     assert(state.sidebar.scrollHeight <= state.sidebar.clientHeight + 1, `Desktop sidebar still requires scrolling at ${viewport.join("x")}: ${JSON.stringify(state.sidebar)}`);
+    assert(
+      state.shellAccessibility.targetCount >= 14
+        && state.shellAccessibility.minTargetHeight >= 44
+        && state.shellAccessibility.minTargetWidth >= 44,
+      `Sidetrade shell target below 44x44 at ${viewport.join("x")}: ${JSON.stringify(state.shellAccessibility)}`,
+    );
+    assert(
+      state.shellAccessibility.contrastElements >= 10
+        && state.shellAccessibility.minContrast >= 4.5,
+      `Sidetrade shell text contrast below 4.5:1 at ${viewport.join("x")}: ${JSON.stringify(state.shellAccessibility)}`,
+    );
+    assert(
+      state.shellAccessibility.navigation.internalScrollable
+        && state.shellAccessibility.navigation.lastReachable,
+      `Sidetrade internal sidebar navigation is not keyboard-scrollable at ${viewport.join("x")}: ${JSON.stringify(state.shellAccessibility.navigation)}`,
+    );
+    if (viewport[1] === 720) {
+      assert(
+        state.shellAccessibility.navigation.scrollRange > 0,
+        `Sidetrade 1280x720 sidebar must expose internal scrolling: ${JSON.stringify(state.shellAccessibility.navigation)}`,
+      );
+    }
     desktopLayouts.push(state);
   }
 
@@ -437,6 +570,11 @@ try {
     assert(state.references.every((reference) => reference.onScale && reference.alignmentError < 1 && reference.hasContinuousStroke), `Football reference outside common scale or discontinuous at ${viewport.join("x")}: ${JSON.stringify(state.references)}`);
     assert(state.guideCoversRows && state.lboReadingComplete, `Mobile football guide or LBO reading mismatch at ${viewport.join("x")}: ${JSON.stringify(state)}`);
     assert(state.sidebar.linkCount === 11, `Mobile summary destination count mismatch at ${viewport.join("x")}: ${JSON.stringify(state.sidebar)}`);
+    assert(
+      state.shellAccessibility.minTargetHeight >= 44
+        && state.shellAccessibility.minTargetWidth >= 44,
+      `Mobile Sidetrade shell target below 44x44 at ${viewport.join("x")}: ${JSON.stringify(state.shellAccessibility)}`,
+    );
     assert(state.minDisclosureTarget >= 44, `Disclosure target below 44px at ${viewport.join("x")}: ${state.minDisclosureTarget}`);
     assert(state.transactionCards === "grid" && state.verticalWaterfall === "grid", `Mobile representations missing at ${viewport.join("x")}: ${JSON.stringify(state)}`);
     responsive.push(state);
@@ -985,9 +1123,30 @@ try {
     ]));
     const tables = Array.from(document.querySelectorAll('.opella-analysis-view .table-scroll'));
     const graphs = Array.from(document.querySelectorAll('.opella-analysis-view [role="img"]'));
+    const fundingTables = Array.from(document.querySelectorAll('#funding-need table'));
+    const tableContract = (table) => ({
+      caption: table?.querySelector('caption')?.textContent.trim(),
+      columnHeaders: Array.from(table?.querySelectorAll('thead th[scope="col"]') ?? [])
+        .map((header) => header.textContent.trim()),
+      consistentRows: Array.from(table?.querySelectorAll('tbody tr') ?? []).every((row) => (
+        row.children.length === table.querySelectorAll('thead th[scope="col"]').length
+        && row.firstElementChild?.tagName === 'TH'
+        && row.firstElementChild?.getAttribute('scope') === 'row'
+      )),
+      rowHeaders: Array.from(table?.querySelectorAll('tbody th[scope="row"]') ?? [])
+        .map((header) => header.textContent.trim()),
+    });
+    const fundingSeries = tableContract(fundingTables.find(
+      (table) => table.querySelector('caption')?.textContent.trim() === 'Funding-need profile by period',
+    ));
+    const fundingState = tableContract(fundingTables.find(
+      (table) => table.querySelector('caption')?.textContent.trim().startsWith('Funding state at the horizon'),
+    ));
     return {
       anchorIds,
       downloadCount: document.querySelectorAll('.opella-analysis-view [download], .opella-analysis-view a[href$=".xlsx"]').length,
+      fundingSeries,
+      fundingState,
       graphsNamed: graphs.every((graph) => Boolean(graph.getAttribute('aria-label'))),
       outputs,
       stateRenderCount: document.querySelectorAll('[data-content-id="opella.funding.state"]').length,
@@ -1025,6 +1184,30 @@ try {
       && opellaInitial.tableCount >= 10
       && opellaInitial.tablesAccessible,
     `Opella graph/table/download contract mismatch: ${JSON.stringify(opellaInitial)}`,
+  );
+  assert(
+    JSON.stringify(opellaInitial.fundingSeries.columnHeaders) === JSON.stringify([
+      "Period",
+      "Cumulative need",
+      "Change",
+      "Recurring gap",
+      "One-off component",
+    ])
+      && JSON.stringify(opellaInitial.fundingSeries.rowHeaders.map((header) => header.match(/^P[1-5]\b/)?.[0])) === JSON.stringify(["P1", "P2", "P3", "P4", "P5"])
+      && !/at the horizon/i.test(opellaInitial.fundingSeries.columnHeaders.join(" "))
+      && opellaInitial.fundingSeries.consistentRows,
+    `Opella funding period table semantics mismatch: ${JSON.stringify(opellaInitial.fundingSeries)}`,
+  );
+  assert(
+    JSON.stringify(opellaInitial.fundingState.columnHeaders) === JSON.stringify([
+      "Indicator",
+      "Value",
+      "Reference",
+    ])
+      && opellaInitial.fundingState.rowHeaders.length >= 6
+      && opellaInitial.fundingState.consistentRows
+      && opellaInitial.fundingState.rowHeaders[0] === "Funding state at the horizon",
+    `Opella funding state table semantics mismatch: ${JSON.stringify(opellaInitial.fundingState)}`,
   );
 
   const opellaFrenchPointer = await realPointerClick(visibleButton("FR"), "Opella language FR");
@@ -1120,12 +1303,36 @@ try {
         mobile,
         mobileBridge: getComputedStyle(document.querySelector('.opella-bridge-mobile')).display,
         tableRegionsAccessible: tableRegions.every((region) => region.tabIndex === 0 && Boolean(region.getAttribute('aria-label'))),
+        shellAccessibility: ${shellAccessibilityAuditExpression("#opella-section-navigation")},
         wideBridge: getComputedStyle(document.querySelector('.opella-bridge-visual')).display,
       };
     })()`);
     assert(state.documentOverflow === 0, `Opella horizontal overflow at ${width}x${height}: ${JSON.stringify(state)}`);
     assert(state.controls === 12 && state.minControlTarget >= 44, `Opella control targets at ${width}x${height}: ${JSON.stringify(state)}`);
     assert(state.tableRegionsAccessible, `Opella table region accessibility at ${width}x${height}: ${JSON.stringify(state)}`);
+    assert(
+      state.shellAccessibility.minTargetHeight >= 44
+        && state.shellAccessibility.minTargetWidth >= 44,
+      `Opella shell target below 44x44 at ${width}x${height}: ${JSON.stringify(state.shellAccessibility)}`,
+    );
+    if (width > 900) {
+      assert(
+        state.shellAccessibility.contrastElements >= 10
+          && state.shellAccessibility.minContrast >= 4.5,
+        `Opella shell text contrast below 4.5:1 at ${width}x${height}: ${JSON.stringify(state.shellAccessibility)}`,
+      );
+      assert(
+        state.shellAccessibility.navigation.internalScrollable
+          && state.shellAccessibility.navigation.lastReachable,
+        `Opella internal sidebar navigation is not keyboard-scrollable at ${width}x${height}: ${JSON.stringify(state.shellAccessibility.navigation)}`,
+      );
+      if (height === 720) {
+        assert(
+          state.shellAccessibility.navigation.scrollRange > 0,
+          `Opella 1280x720 sidebar must expose internal scrolling: ${JSON.stringify(state.shellAccessibility.navigation)}`,
+        );
+      }
+    }
     if (width <= 900) {
       assert(
         state.mobileBridge === "grid"

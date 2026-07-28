@@ -257,6 +257,7 @@ export default function PortfolioCaseShell({
           className={`sidebar-nav ${mobileNavOpen ? "mobile-open" : ""}`}
           id={sectionNavigationId}
           aria-label={sectionNavigationLabel}
+          tabIndex="0"
         >
           {sidebarGroups.map((group, index) => (
             <div className="sidebar-group" key={group.label}>

@@ -16,6 +16,53 @@ const rootPath = fileURLToPath(rootUrl);
 const read = (path) => readFile(new URL(path, rootUrl));
 const text = async (path) => (await read(path)).toString("utf8");
 const sha256 = async (path) => createHash("sha256").update(await read(path)).digest("hex").toUpperCase();
+const markupText = (markup) => markup
+  .replace(/<[^>]+>/g, " ")
+  .replace(/&amp;/g, "&")
+  .replace(/&#x27;/g, "'")
+  .replace(/&quot;/g, "\"")
+  .replace(/\s+/g, " ")
+  .trim();
+
+function tableFromCaption(markup, caption) {
+  const marker = `<caption class="sr-only">${caption}</caption>`;
+  const markerIndex = markup.indexOf(marker);
+  assert.ok(markerIndex >= 0, `Missing table caption: ${caption}`);
+  const tableStart = markup.lastIndexOf("<table", markerIndex);
+  const tableEnd = markup.indexOf("</table>", markerIndex);
+  assert.ok(tableStart >= 0 && tableEnd > markerIndex, `Incomplete table markup: ${caption}`);
+  return markup.slice(tableStart, tableEnd + "</table>".length);
+}
+
+function firstTableWithin(markup, startMarker, endMarker) {
+  const sectionStart = markup.indexOf(startMarker);
+  const sectionEnd = markup.indexOf(endMarker, sectionStart);
+  assert.ok(sectionStart >= 0 && sectionEnd > sectionStart, `Missing table section: ${startMarker}`);
+  const tableStart = markup.indexOf("<table", sectionStart);
+  const tableEnd = markup.indexOf("</table>", tableStart);
+  assert.ok(tableStart >= 0 && tableStart < sectionEnd && tableEnd > tableStart, `Missing table in ${startMarker}`);
+  return markup.slice(tableStart, tableEnd + "</table>".length);
+}
+
+function scopedHeaders(tableMarkup, scope) {
+  return [...tableMarkup.matchAll(new RegExp(`<th[^>]*scope="${scope}"[^>]*>([\\s\\S]*?)</th>`, "g"))]
+    .map((match) => markupText(match[1]));
+}
+
+function assertSimpleTableSemantics(tableMarkup, expectedColumns, label) {
+  assert.deepEqual(scopedHeaders(tableMarkup, "col"), expectedColumns, `${label} column contract`);
+  const tbody = tableMarkup.match(/<tbody>([\s\S]*?)<\/tbody>/)?.[1] ?? "";
+  const bodyRows = [...tbody.matchAll(/<tr>([\s\S]*?)<\/tr>/g)].map((match) => match[1]);
+  assert.ok(bodyRows.length > 0, `${label} must expose body rows`);
+  for (const row of bodyRows) {
+    assert.match(row, /^<th[^>]*scope="row"/, `${label} rows must begin with th scope="row"`);
+    assert.equal(
+      (row.match(/<(?:th|td)\b/g) ?? []).length,
+      expectedColumns.length,
+      `${label} row width must match its headers`,
+    );
+  }
+}
 
 assert.deepEqual(portfolioCases.map(({ slug }) => slug), [
   "sidetrade-valuation",
@@ -217,6 +264,62 @@ try {
   );
   const opellaFr = renderRoute("/cases/opella-carve-out/analysis/");
   const opellaEn = renderRoute("/cases/opella-carve-out/analysis/?lang=en");
+  const fundingSeriesContracts = [
+    {
+      caption: "Profil du besoin de financement par période",
+      columns: ["Période", "Besoin cumulé", "Variation", "Écart récurrent", "Composante ponctuelle"],
+      forbiddenBoundary: /(?:à la borne|à l’horizon)/i,
+      markup: opellaFr,
+    },
+    {
+      caption: "Funding-need profile by period",
+      columns: ["Period", "Cumulative need", "Change", "Recurring gap", "One-off component"],
+      forbiddenBoundary: /at the horizon/i,
+      markup: opellaEn,
+    },
+  ];
+  for (const contract of fundingSeriesContracts) {
+    const fundingSeries = tableFromCaption(contract.markup, contract.caption);
+    assertSimpleTableSemantics(fundingSeries, contract.columns, contract.caption);
+    assert.doesNotMatch(
+      markupText(fundingSeries),
+      contract.forbiddenBoundary,
+      `${contract.caption} must not apply a horizon label to P1-P4`,
+    );
+    const periodRowHeaders = scopedHeaders(fundingSeries, "row");
+    assert.deepEqual(
+      periodRowHeaders.map((header) => header.match(/^P[1-5]\b/)?.[0]),
+      ["P1", "P2", "P3", "P4", "P5"],
+      `${contract.caption} must preserve every snapshot period identifier`,
+    );
+  }
+
+  const fundingStateContracts = [
+    {
+      columns: ["Indicateur", "Valeur", "Référence"],
+      end: 'class="funding-counterfactual"',
+      horizonReference: /H = P5\b/,
+      markup: opellaFr,
+      start: 'data-content-id="opella.funding.state"',
+    },
+    {
+      columns: ["Indicator", "Value", "Reference"],
+      end: 'class="funding-counterfactual"',
+      horizonReference: /H = P5\b/,
+      markup: opellaEn,
+      start: 'data-content-id="opella.funding.state"',
+    },
+  ];
+  for (const contract of fundingStateContracts) {
+    const fundingState = firstTableWithin(contract.markup, contract.start, contract.end);
+    assertSimpleTableSemantics(fundingState, contract.columns, contract.columns.join(" | "));
+    assert.match(
+      markupText(fundingState),
+      contract.horizonReference,
+      "The state summary must reserve its horizon reference for H=P5",
+    );
+  }
+
   for (const rendered of [opellaFr, opellaEn]) {
     let previous = -1;
     for (const anchor of opellaPrimaryAnchors) {

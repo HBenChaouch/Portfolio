@@ -385,6 +385,10 @@ export default function OpellaAnalysisView() {
     horizon: periodLabel(result.calendar.maxHorizon),
     pk: pk ? periodLabel(pk) : copy("common.notApplicable"),
   };
+  const horizonReferenceSlots = { period: stateSlots.horizon };
+  const horizonReference = copy("funding.reference.horizon", horizonReferenceSlots);
+  const stateReference = copy("funding.reference.state", horizonReferenceSlots);
+  const finalWindowReference = copy("funding.reference.finalWindow", horizonReferenceSlots);
   const conditionalMessages = [];
   if (state === "résorbé" && peak.value <= tolerance) {
     conditionalMessages.push(copy("funding.conditional.noNeed", stateSlots));
@@ -730,9 +734,9 @@ export default function OpellaAnalysisView() {
           columns={[
             copy("common.period"),
             copy("funding.periodNeed"),
-            copy("funding.delta"),
-            copy("funding.recurringGap"),
-            copy("funding.oneOffGap"),
+            copy("funding.periodChange"),
+            copy("funding.periodRecurringGap"),
+            copy("funding.periodOneOffGap"),
           ]}
           getRowKey={(row) => row[0]}
           highlightColumn={1}
@@ -760,13 +764,17 @@ export default function OpellaAnalysisView() {
           {conditionalMessages.map((message) => <p key={message}>{message}</p>)}
           <p>{copy("funding.notDebt")}</p>
           <DataTable
-            columns={[copy("common.value"), copy("common.period"), copy("common.status")]}
+            columns={[
+              copy("common.indicator"),
+              copy("common.value"),
+              copy("common.reference"),
+            ]}
             getRowKey={(row) => row[0]}
             highlightColumn={1}
             label={`${copy("funding.stateTitle")} · ${stateLabel}`}
             rowHeaderColumn={0}
             rows={[
-              [copy("funding.stateTitle"), stateLabel, copy("common.calculated")],
+              [copy("funding.stateTitle"), stateLabel, stateReference],
               [
                 state === "plateau"
                   ? copy("funding.plateauAtHorizon")
@@ -774,39 +782,39 @@ export default function OpellaAnalysisView() {
                     ? copy("funding.residualNeed")
                     : copy("funding.needAtHorizon"),
                 formatMoney(fundingLast.need, language),
-                periodLabel(result.calendar.maxHorizon),
+                horizonReference,
               ],
               [
                 copy("funding.delta"),
                 formatMoney(result.modules.m7.horizon.delta, language, { signed: true }),
-                periodLabel(result.calendar.maxHorizon),
+                horizonReference,
               ],
               [
                 copy("funding.recurringGap"),
                 formatMoney(fundingLast.eGap, language, { signed: true }),
-                periodLabel(result.calendar.maxHorizon),
+                horizonReference,
               ],
               [
                 copy("funding.oneOffGap"),
                 formatMoney(fundingLast.nOneOff, language, { signed: true }),
-                periodLabel(result.calendar.maxHorizon),
+                horizonReference,
               ],
               ...(grossDiffersFromNeed ? [[
                 copy("funding.grossBalance"),
                 formatMoney(fundingLast.sCum, language, { signed: true }),
-                periodLabel(result.calendar.maxHorizon),
+                horizonReference,
               ]] : []),
               ...(state === "résorbé" && fundingLast.sCum < -tolerance
                 ? [[
                   copy("funding.residualSurplus"),
                   formatMoney(residualSurplus, language),
-                  periodLabel(result.calendar.maxHorizon),
+                  horizonReference,
                 ]]
                 : []),
               [
                 copy("funding.pk"),
                 pk ? periodLabel(pk) : copy("common.notApplicable"),
-                copy("common.calculated"),
+                finalWindowReference,
               ],
             ]}
           />

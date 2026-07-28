@@ -36,6 +36,40 @@ assert.deepEqual(
   Object.keys(opellaCopyDictionaries.en),
   "Opella FR/EN content IDs must stay aligned",
 );
+assert.deepEqual(
+  [
+    opellaCopyDictionaries.fr["funding.periodChange"],
+    opellaCopyDictionaries.fr["funding.periodRecurringGap"],
+    opellaCopyDictionaries.fr["funding.periodOneOffGap"],
+  ],
+  ["Variation", "Écart récurrent", "Composante ponctuelle"],
+  "French period-series headers must describe each row rather than the horizon",
+);
+assert.deepEqual(
+  [
+    opellaCopyDictionaries.en["funding.periodChange"],
+    opellaCopyDictionaries.en["funding.periodRecurringGap"],
+    opellaCopyDictionaries.en["funding.periodOneOffGap"],
+  ],
+  ["Change", "Recurring gap", "One-off component"],
+  "English period-series headers must describe each row rather than the horizon",
+);
+assert.doesNotMatch(
+  [
+    opellaCopyDictionaries.fr["funding.periodChange"],
+    opellaCopyDictionaries.fr["funding.periodRecurringGap"],
+    opellaCopyDictionaries.fr["funding.periodOneOffGap"],
+  ].join(" "),
+  /(?:à la borne|à l’horizon)/i,
+);
+assert.doesNotMatch(
+  [
+    opellaCopyDictionaries.en["funding.periodChange"],
+    opellaCopyDictionaries.en["funding.periodRecurringGap"],
+    opellaCopyDictionaries.en["funding.periodOneOffGap"],
+  ].join(" "),
+  /at the horizon/i,
+);
 for (const [language, dictionary] of Object.entries(opellaCopyDictionaries)) {
   for (const [key, value] of Object.entries(dictionary)) {
     assert.doesNotMatch(

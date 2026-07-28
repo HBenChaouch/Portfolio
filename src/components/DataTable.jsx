@@ -19,6 +19,7 @@ export default function DataTable({
   return (
     <div aria-label={label} className="table-scroll" role="region" tabIndex="0">
       <table aria-label={label} className="data-table">
+        <caption className="sr-only">{label}</caption>
         <thead>
           <tr>
             {columns.map((column) => (

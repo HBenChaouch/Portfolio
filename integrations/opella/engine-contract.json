@@ -8,7 +8,7 @@
   "generatedFrom": "build_carveout.py",
   "levers": {
     "S-COST": {
-      "label": "Co�ts stand-alone r�currents",
+      "label": "Coûts stand-alone récurrents",
       "states": {
         "basse": 0.65,
         "centrale": 1,
@@ -44,7 +44,7 @@
         ]
       },
       "unit": "croissance / pts de marge",
-      "variable": "trajectoire op�rationnelle de M1"
+      "variable": "trajectoire opérationnelle de M1"
     },
     "S-TSA": {
       "label": "Retard de sortie de TSA",
@@ -54,7 +54,7 @@
         "haute": 9
       },
       "unit": "mois",
-      "variable": "dur�e et double run de M4"
+      "variable": "durée et double run de M4"
     }
   },
   "maxPeriods": 9,

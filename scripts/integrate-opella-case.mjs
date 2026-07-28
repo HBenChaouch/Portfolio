@@ -30,6 +30,8 @@ import ast
 import json
 import sys
 
+sys.stdout.reconfigure(encoding="utf-8", errors="strict", newline="\n")
+
 with open(sys.argv[1], encoding="utf-8") as handle:
     tree = ast.parse(handle.read(), filename=sys.argv[1])
 
@@ -55,10 +57,28 @@ print(json.dumps({
 }, ensure_ascii=False, sort_keys=True))
 `;
 
-export async function extractOpellaEngineContract(generator) {
-  const python = process.env.OPELLA_PYTHON ?? "python";
-  const output = execFileSync(python, ["-c", pythonExtractor, generator], { encoding: "utf8" });
-  const contract = JSON.parse(output);
+export const serializeOpellaEngineContract = (contract) => (
+  `${JSON.stringify(contract, null, 2)}\n`
+);
+
+export async function extractOpellaEngineContract(
+  generator,
+  { environment = process.env } = {},
+) {
+  const python = environment.OPELLA_PYTHON ?? process.env.OPELLA_PYTHON ?? "python";
+  const output = execFileSync(
+    python,
+    ["-X", "utf8", "-c", pythonExtractor, generator],
+    {
+      env: {
+        ...environment,
+        PYTHONIOENCODING: "utf-8:strict",
+      },
+    },
+  );
+  const decoded = new TextDecoder("utf-8", { fatal: true }).decode(output);
+  assert.doesNotMatch(decoded, /\uFFFD/, "Python extraction must not contain U+FFFD");
+  const contract = JSON.parse(decoded);
   contract.generatedFromSha256 = await sha256File(generator);
   return contract;
 }
@@ -231,7 +251,8 @@ export async function integrateOpellaBundle(sourceRoot = defaultSourceRoot) {
   const engineContract = await extractOpellaEngineContract(
     path.join(sourceRoot, opellaSourceNames.generator),
   );
-  const engineContractText = `${JSON.stringify(engineContract, null, 2)}\n`;
+  const engineContractText = serializeOpellaEngineContract(engineContract);
+  assert.doesNotMatch(engineContractText, /\uFFFD/, "Engine contract must not contain U+FFFD");
   const attributesText = ".gitattributes text eol=lf\n*.json text eol=lf\n";
   const sourceManifestSha = await sha256File(sourceManifestPath);
 

@@ -21,6 +21,7 @@ import {
 import {
   extractOpellaEngineContract,
   opellaSourceNames,
+  serializeOpellaEngineContract,
 } from "./integrate-opella-case.mjs";
 
 const scriptPath = fileURLToPath(import.meta.url);
@@ -39,6 +40,269 @@ const relationTolerance = (sourceManifest, id) => {
   return tolerance;
 };
 
+class OpellaRelationFailure extends Error {
+  constructor(relation, message) {
+    super(`${relation}: ${message}`);
+    this.name = "OpellaRelationFailure";
+    this.relation = relation;
+  }
+}
+
+const requireRelation = (condition, relation, message) => {
+  if (!condition) {
+    throw new OpellaRelationFailure(relation, message);
+  }
+};
+
+const contributionAt = (line, period) => (
+  line.contribution?.[period]
+  ?? (line.side === "cas" ? -line.amounts[period] : line.amounts[period])
+);
+
+const relationChecks = {
+  "R-QUAL": (candidate, tolerance) => {
+    const horizon = candidate.calendar.horizon;
+    const forcedQualifications = {
+      "L-M3": "récurrent",
+      "L-M4": "ponctuel",
+      "L-M5": "ponctuel",
+      "L-M6SEP": "ponctuel",
+    };
+    for (const line of candidate.m7.inventory) {
+      requireRelation(
+        ["récurrent", "ponctuel"].includes(line.qualification),
+        "R-QUAL",
+        `${line.id} must declare exactly one accepted qualification`,
+      );
+      const forced = forcedQualifications[line.group];
+      requireRelation(
+        !forced || line.qualification === forced,
+        "R-QUAL",
+        `${line.id} qualification contradicts group ${line.group}`,
+      );
+      requireRelation(
+        horizon.includes(line.start),
+        "R-QUAL",
+        `${line.id} start must belong to the modeled horizon`,
+      );
+      const startIndex = horizon.indexOf(line.start);
+      if (line.qualification === "récurrent") {
+        requireRelation(
+          line.declaredEnd === null,
+          "R-QUAL",
+          `${line.id} recurring line must not declare an end inside the horizon`,
+        );
+        requireRelation(
+          horizon.slice(startIndex).every((period) => period in line.amounts),
+          "R-QUAL",
+          `${line.id} recurring footprint must cover the horizon from its start`,
+        );
+      } else {
+        requireRelation(
+          horizon.includes(line.declaredEnd),
+          "R-QUAL",
+          `${line.id} one-off end must belong to the modeled horizon`,
+        );
+        const endIndex = horizon.indexOf(line.declaredEnd);
+        requireRelation(
+          horizon.slice(endIndex + 1).every(
+            (period) => Math.abs(line.amounts[period] ?? 0) <= tolerance,
+          ),
+          "R-QUAL",
+          `${line.id} one-off footprint continues after its declared end`,
+        );
+      }
+    }
+  },
+  "R-CF": (candidate, tolerance) => {
+    for (const period of candidate.calendar.horizon) {
+      const counterfactualLines = candidate.m7.inventory.filter(
+        ({ side }) => side === "contrefactuel",
+      );
+      const lineTotal = counterfactualLines.reduce(
+        (total, line) => total + line.amounts[period],
+        0,
+      );
+      requireRelation(
+        Math.abs(lineTotal - candidate.m7.counterfactual.cash[period]) <= tolerance,
+        "R-CF",
+        `${period} counterfactual cash differs from the sum of its lines`,
+      );
+    }
+  },
+  "R-EGAP": (candidate, tolerance) => {
+    for (const row of candidate.m7.periods) {
+      const expected = candidate.m7.inventory
+        .filter(({ qualification }) => qualification === "récurrent")
+        .reduce((total, line) => total + contributionAt(line, row.period), 0);
+      requireRelation(
+        Math.abs(expected - row.eGap) <= tolerance,
+        "R-EGAP",
+        `${row.period} eGap differs from the direct recurring-line sum`,
+      );
+    }
+  },
+  "R-NPONC": (candidate, tolerance) => {
+    for (const row of candidate.m7.periods) {
+      const expected = candidate.m7.inventory
+        .filter(({ qualification }) => qualification === "ponctuel")
+        .reduce((total, line) => total + contributionAt(line, row.period), 0);
+      requireRelation(
+        Math.abs(expected - row.nOneOff) <= tolerance,
+        "R-NPONC",
+        `${row.period} nOneOff differs from the direct one-off-line sum`,
+      );
+    }
+  },
+  "R-RECUR": (candidate, tolerance) => {
+    const lineKeys = candidate.m7.inventory.map(({ id, side }) => `${id}|${side}`);
+    requireRelation(
+      new Set(lineKeys).size === lineKeys.length,
+      "R-RECUR",
+      "the recurring and one-off subsets must be disjoint",
+    );
+    for (const row of candidate.m7.periods) {
+      requireRelation(
+        Math.abs(row.s - row.eGap - row.nOneOff) <= tolerance,
+        "R-RECUR",
+        `${row.period} does not satisfy s = E + N`,
+      );
+    }
+  },
+  "R-FUNDING-CUM": (candidate, tolerance) => {
+    let cumulative = 0;
+    for (const row of candidate.m7.periods) {
+      cumulative += row.s;
+      requireRelation(
+        Math.abs(row.s + row.c) <= tolerance,
+        "R-FUNDING-CUM",
+        `${row.period} does not satisfy s = -c`,
+      );
+      requireRelation(
+        Math.abs(row.sCum - cumulative) <= tolerance,
+        "R-FUNDING-CUM",
+        `${row.period} cumulative balance is not memorized from origin`,
+      );
+      requireRelation(
+        Math.abs(row.need - Math.max(0, cumulative)) <= tolerance,
+        "R-FUNDING-CUM",
+        `${row.period} need is not the single clipping of cumulative balance`,
+      );
+    }
+  },
+};
+
+function executeOpellaFalsifications(snapshot, sourceManifest, tolerance) {
+  const normative = sourceManifest.fundingVectors.normative;
+  const injectors = {
+    X1: (candidate) => {
+      delete candidate.m7.inventory[0].qualification;
+      return candidate;
+    },
+    X2: (candidate) => {
+      const recurring = candidate.m7.inventory.find(
+        ({ qualification }) => qualification === "récurrent",
+      );
+      recurring.declaredEnd = candidate.calendar.horizon[0];
+      return candidate;
+    },
+    X3: (candidate) => {
+      const oneOff = candidate.m7.inventory.find(
+        ({ qualification }) => qualification === "ponctuel",
+      );
+      oneOff.declaredEnd = "P-outside-horizon";
+      for (const period of candidate.calendar.horizon) {
+        oneOff.amounts[period] = -1;
+        oneOff.contribution[period] = 1;
+      }
+      return candidate;
+    },
+    X4: (candidate) => {
+      const values = candidate.m7.periods.map(({ eGap }) => eGap);
+      candidate.m7.periods.forEach((row, index) => {
+        row.eGap = values[(index + values.length - 1) % values.length];
+      });
+      return candidate;
+    },
+    X5: (candidate) => {
+      const perturbation = tolerance + tolerance;
+      for (const row of candidate.m7.periods) {
+        row.eGap += perturbation;
+        row.nOneOff = row.s - row.eGap;
+        assert.ok(
+          Math.abs(row.s - row.eGap - row.nOneOff) <= tolerance,
+          "X5 residual mutant must preserve s = E + N while falsifying direct N",
+        );
+      }
+      return candidate;
+    },
+    X6: (candidate) => {
+      candidate.m7.inventory.push(structuredClone(candidate.m7.inventory[0]));
+      return candidate;
+    },
+    X7: (candidate) => {
+      const horizonEnd = candidate.calendar.horizon.at(-1);
+      candidate.m7.counterfactual.cash[horizonEnd] += tolerance + tolerance;
+      return candidate;
+    },
+    X8: (candidate) => {
+      const vector = normative.find(({ id }) => id === "V9");
+      assert.ok(vector, "X8 requires normative vector V9");
+      const result = runOpellaFundingVector(vector.E, vector.N, tolerance);
+      candidate.calendar.horizon = result.periods.map(({ period }) => period);
+      candidate.m7.periods = structuredClone(result.periods);
+      let previousNeed = 0;
+      for (const row of candidate.m7.periods) {
+        previousNeed = Math.max(0, previousNeed + row.s);
+        row.need = previousNeed;
+      }
+      assert.ok(
+        candidate.m7.periods.some(
+          (row, index) => Math.abs(row.need - result.periods[index].need) > tolerance,
+        ),
+        "X8 requires V9 to distinguish period clipping from memorized cumulative clipping",
+      );
+      return candidate;
+    },
+  };
+
+  const declared = sourceManifest.fundingVectors.falsification;
+  const declaredIds = declared.map(({ id }) => id);
+  assertUnique(declaredIds, "Opella falsification vectors");
+  assert.deepEqual(
+    Object.keys(injectors).sort(),
+    [...declaredIds].sort(),
+    "Every declared falsification vector must have exactly one executable injector",
+  );
+  for (const relation of new Set(declared.map(({ relation: id }) => id))) {
+    relationChecks[relation](snapshot, tolerance);
+  }
+
+  const executed = new Set();
+  for (const vector of declared) {
+    const check = relationChecks[vector.relation];
+    assert.equal(
+      typeof check,
+      "function",
+      `${vector.id} must name an executable relation check for ${vector.relation}`,
+    );
+    const candidate = injectors[vector.id](structuredClone(snapshot));
+    assert.throws(
+      () => check(candidate, tolerance),
+      (error) => error instanceof OpellaRelationFailure && error.relation === vector.relation,
+      `${vector.id} must be intercepted by ${vector.relation}`,
+    );
+    executed.add(vector.id);
+  }
+
+  assert.deepEqual(
+    [...executed].sort(),
+    [...declaredIds].sort(),
+    "A declared falsification vector was not executed",
+  );
+  return executed.size;
+}
+
 async function verifySourceBoundary(sourceRoot, bundleManifest, bundledEngineContract) {
   for (const source of bundleManifest.sourceFiles) {
     const relative = source.path.replace(/^Transaction Services\//, "");
@@ -56,8 +320,32 @@ async function verifySourceBoundary(sourceRoot, bundleManifest, bundledEngineCon
     "TS manifest and integrated source manifest must be byte-identical",
   );
 
-  const extracted = await extractOpellaEngineContract(
-    path.join(sourceRoot, opellaSourceNames.generator),
+  const generator = path.join(sourceRoot, opellaSourceNames.generator);
+  const withoutPythonUtf8 = { ...process.env };
+  delete withoutPythonUtf8.PYTHONUTF8;
+  const extracted = await extractOpellaEngineContract(generator, {
+    environment: withoutPythonUtf8,
+  });
+  const extractedWithPythonUtf8 = await extractOpellaEngineContract(generator, {
+    environment: {
+      ...withoutPythonUtf8,
+      PYTHONUTF8: "1",
+    },
+  });
+  const ambientBytes = Buffer.from(serializeOpellaEngineContract(extracted), "utf8");
+  const pythonUtf8Bytes = Buffer.from(
+    serializeOpellaEngineContract(extractedWithPythonUtf8),
+    "utf8",
+  );
+  assert.deepEqual(
+    ambientBytes,
+    pythonUtf8Bytes,
+    "Engine contract extraction must be byte-identical with and without PYTHONUTF8=1",
+  );
+  assert.doesNotMatch(
+    ambientBytes.toString("utf8"),
+    /\uFFFD/,
+    "Extracted engine contract must not contain U+FFFD",
   );
   assert.deepEqual(
     bundledEngineContract,
@@ -71,6 +359,7 @@ export async function runOpellaIntegrationChecks({ sourceRoot } = {}) {
   const snapshot = await readJson(path.join(bundleRoot, "snapshot.json"));
   const sourceManifest = await readJson(path.join(bundleRoot, "source-manifest.json"));
   const engineContract = await readJson(path.join(bundleRoot, "engine-contract.json"));
+  const engineContractText = await readFile(path.join(bundleRoot, "engine-contract.json"), "utf8");
   const declaredBundleFiles = bundleManifest.bundleFiles.map(({ path: filename }) => filename);
   const engineSource = await readFile(path.join(repositoryRoot, "src", "utils", "opellaEngine.js"), "utf8");
 
@@ -122,6 +411,7 @@ export async function runOpellaIntegrationChecks({ sourceRoot } = {}) {
     engineContract.generatedFromSha256,
     sourceManifest.sourceFiles[opellaSourceNames.generator],
   );
+  assert.doesNotMatch(engineContractText, /\uFFFD/, "Bundled engine contract must not contain U+FFFD");
   assert.doesNotMatch(engineSource, /from\s+["'][^"']*(?:dcfEngine|SidetradeScenario|react)/i);
   assert.doesNotMatch(engineSource, /\b(?:document|window)\./);
 
@@ -201,6 +491,30 @@ export async function runOpellaIntegrationChecks({ sourceRoot } = {}) {
     const final = actual.periods.at(-1);
     close(final.s, vector.E.at(-1) + vector.N.at(-1), tolerance, `${vector.id} Δ_H = E_H + N_H`);
   }
+  assert.ok(
+    base.modules.m7.periods.every(
+      (row) => Math.abs(row.nOneOff - (row.s - row.eGap)) <= tolerance,
+    ),
+    "Central results must expose why the N = s - E mutant needs X5",
+  );
+  const falsificationCount = executeOpellaFalsifications(snapshot, sourceManifest, tolerance);
+  const unexecutedDeclaration = structuredClone(sourceManifest);
+  unexecutedDeclaration.fundingVectors.falsification.push({
+    ...unexecutedDeclaration.fundingVectors.falsification.at(-1),
+    id: "X-unexecuted",
+  });
+  assert.throws(
+    () => executeOpellaFalsifications(snapshot, unexecutedDeclaration, tolerance),
+    /Every declared falsification vector must have exactly one executable injector/,
+    "A declared but unexecuted falsification vector must fail G2",
+  );
+  const falsificationCoverage = sourceManifest.fundingVectors.falsification
+    .map(({ id, relation }) => `${id}→${relation}`)
+    .join(", ");
+  console.log(
+    `Opella G2 falsifications: X1–X8 ${falsificationCount}/${sourceManifest.fundingVectors.falsification.length} executed and intercepted (${falsificationCoverage})`,
+  );
+  console.log("Opella G2 X5 residual mutant N = s − E: R-RECUR preserved, R-NPONC intercepted");
 
   const scenarioResults = {};
   let scenarioStateCount = 0;

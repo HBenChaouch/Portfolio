@@ -22,6 +22,7 @@ import {
   sensitivityWaccExit,
   sensitivityWaccG,
 } from "../src/utils/dcfEngine.js";
+import { runOpellaIntegrationChecks } from "./check-opella-integration.mjs";
 
 const close = (actual, expected, tolerance = 1e-9) => {
   assert.ok(Math.abs(actual - expected) <= tolerance, `${actual} != ${expected}`);
@@ -156,6 +157,8 @@ const analysisSource = await readFile(
 assert.match(analysisSource, /VALUATION_CONTEXT\.controlEquityUpside/);
 assert.match(analysisSource, /DISPLAY_VALUES\.grossFinancialDebt/);
 assert.match(analysisSource, /SOURCES\.engine\.status/);
+
+await runOpellaIntegrationChecks();
 
 console.log("Canonical registry: OK");
 for (const [scenario, expected] of Object.entries(sentinels)) {

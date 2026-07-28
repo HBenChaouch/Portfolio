@@ -1,0 +1,165 @@
+{
+  "manifest": "opella-sidetrade-inactive-bundle",
+  "version": "1.0.0",
+  "case": "opella-carve-out",
+  "pass": "O2-A",
+  "status": "inactive",
+  "sourceBaseline": {
+    "repository": "parent",
+    "commit": "b9d05bf5cbcde08f05aeb297c839537ad180fdce",
+    "note": "Transaction Services is not an autonomous repository; no synthetic commit pin is used."
+  },
+  "sourceFiles": [
+    {
+      "path": "Transaction Services/build_carveout.py",
+      "sha256": "65CA9F4DCD2418E057A910C873397FCE8D43B1FEC38EA81A0E7E4092FF3BB818"
+    },
+    {
+      "path": "Transaction Services/Modele_Carveout_Opella.xlsx",
+      "sha256": "8D9D3EA0F81279A254A6E01563228227DF8DF1A93F1210E0BA44C1468CC87874"
+    },
+    {
+      "path": "Transaction Services/opella_case_snapshot.json",
+      "sha256": "BAA9B01E9641601AD327B64B8F0BF33639783E27311918BA34AE2C3EA4018921"
+    },
+    {
+      "path": "Transaction Services/opella_integration_manifest.json",
+      "sha256": "3491C046A7183BF12DB7EE9F0B0F4CF3089A53ADB747E3E554ABBC3491D6EACE"
+    }
+  ],
+  "snapshotIdentity": {
+    "source": "Transaction Services/opella_case_snapshot.json",
+    "bundle": "snapshot.json",
+    "sha256": "BAA9B01E9641601AD327B64B8F0BF33639783E27311918BA34AE2C3EA4018921"
+  },
+  "bundleFiles": [
+    {
+      "path": "snapshot.json",
+      "sha256": "BAA9B01E9641601AD327B64B8F0BF33639783E27311918BA34AE2C3EA4018921",
+      "mime": "application/json",
+      "role": "Byte-identical O1 semantic snapshot and sole carrier of financial values."
+    },
+    {
+      "path": "source-manifest.json",
+      "sha256": "3491C046A7183BF12DB7EE9F0B0F4CF3089A53ADB747E3E554ABBC3491D6EACE",
+      "mime": "application/json",
+      "role": "Byte-identical O1 chain, relation, tolerance, lineage and vector contract."
+    },
+    {
+      "path": "engine-contract.json",
+      "sha256": "F712AFD95FB6FDE72182C995198D59B19471DC381680FC943908D8EE0A01C854",
+      "mime": "application/json",
+      "role": "Generated extraction of the O1 scenario lever constants required by the JavaScript engine."
+    },
+    {
+      "path": ".gitattributes",
+      "sha256": "90831897BE795C126837BFDDC68BDC1788C9049F07F1D5B512620655795D26A1",
+      "mime": "text/plain",
+      "role": "Repository-local LF serialization contract preserving byte-identical JSON checkouts."
+    }
+  ],
+  "generatedFiles": [
+    {
+      "path": "snapshot.json",
+      "generatedBy": "Transaction Services/build_carveout.py",
+      "role": "financial-values"
+    },
+    {
+      "path": "source-manifest.json",
+      "generatedBy": "Transaction Services/build_carveout.py",
+      "role": "source-contract"
+    },
+    {
+      "path": "engine-contract.json",
+      "generatedBy": "Sidetrade/scripts/integrate-opella-case.mjs",
+      "role": "engine-input-contract"
+    },
+    {
+      "path": ".gitattributes",
+      "generatedBy": "Sidetrade/scripts/integrate-opella-case.mjs",
+      "role": "serialization-contract"
+    }
+  ],
+  "downloads": [],
+  "presentationFiles": [],
+  "financialRegistryFields": {
+    "source": "source-manifest.json#/financialRegistryFields",
+    "count": 24,
+    "exposure": "registered-but-not-public"
+  },
+  "formulas": {
+    "source": "source-manifest.json#/relations",
+    "count": 22
+  },
+  "fundingVectors": {
+    "source": "source-manifest.json#/fundingVectors",
+    "normativeCount": 15,
+    "falsificationCount": 8,
+    "coverageCount": 12
+  },
+  "scenarios": {
+    "leverContract": "engine-contract.json#/levers",
+    "expectedResults": "snapshot.json#/scenarios",
+    "leverCount": 4
+  },
+  "registry": {
+    "module": "src/data/opellaFinancials.js",
+    "values": "snapshot.json",
+    "metadata": "snapshot.json",
+    "contracts": [
+      "source-manifest.json",
+      "engine-contract.json"
+    ]
+  },
+  "engine": {
+    "module": "src/utils/opellaEngine.js",
+    "inputs": [
+      "snapshot.json",
+      "engine-contract.json"
+    ],
+    "vectors": "source-manifest.json#/fundingVectors"
+  },
+  "literalPolicy": {
+    "scannedFiles": [
+      "src/data/opellaFinancials.js",
+      "scripts/check-opella-integration.mjs"
+    ],
+    "allowedNumericLiterals": [
+      {
+        "value": "0",
+        "reason": "structural zero, empty-state and index validation only"
+      },
+      {
+        "value": "1",
+        "reason": "structural cardinality and mutation validation only"
+      },
+      {
+        "value": "2",
+        "reason": "structural removal of the [] suffix in declared registry paths only"
+      }
+    ]
+  },
+  "allowedNonFinancialLiterals": [],
+  "requiredPublicMessages": {
+    "status": "deferred-until-public-view",
+    "fr": [],
+    "en": []
+  },
+  "forbiddenPublicTerms": {
+    "status": "deferred-until-public-view",
+    "fr": [],
+    "en": []
+  },
+  "publicExposure": {
+    "cardAvailable": false,
+    "route": false,
+    "href": false,
+    "cta": false,
+    "canonical": false,
+    "sitemap": false,
+    "fallback": false,
+    "download": false,
+    "publicWorkbook": false,
+    "publicBuildPage": false
+  }
+}

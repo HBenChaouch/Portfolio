@@ -1,0 +1,64 @@
+{
+  "central": {
+    "S-COST": "centrale",
+    "S-ONEOFF": "centrale",
+    "S-OPS": "centrale",
+    "S-TSA": "centrale"
+  },
+  "generatedFrom": "build_carveout.py",
+  "levers": {
+    "S-COST": {
+      "label": "Co�ts stand-alone r�currents",
+      "states": {
+        "basse": 0.65,
+        "centrale": 1,
+        "haute": 1.3
+      },
+      "unit": "x run-rate",
+      "variable": "run-rate par fonction de M3"
+    },
+    "S-ONEOFF": {
+      "label": "One-offs",
+      "states": {
+        "basse": 0.75,
+        "centrale": 1,
+        "haute": 1.45
+      },
+      "unit": "x montant",
+      "variable": "montants de M5"
+    },
+    "S-OPS": {
+      "label": "Croissance et marge",
+      "states": {
+        "basse": [
+          0.01,
+          0
+        ],
+        "centrale": [
+          0.03,
+          0.003
+        ],
+        "haute": [
+          0.05,
+          0.006
+        ]
+      },
+      "unit": "croissance / pts de marge",
+      "variable": "trajectoire op�rationnelle de M1"
+    },
+    "S-TSA": {
+      "label": "Retard de sortie de TSA",
+      "states": {
+        "basse": -3,
+        "centrale": 0,
+        "haute": 9
+      },
+      "unit": "mois",
+      "variable": "dur�e et double run de M4"
+    }
+  },
+  "maxPeriods": 9,
+  "schemaVersion": 1,
+  "tsaExtensionUplift": 0.2,
+  "generatedFromSha256": "65CA9F4DCD2418E057A910C873397FCE8D43B1FEC38EA81A0E7E4092FF3BB818"
+}

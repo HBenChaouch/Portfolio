@@ -34,6 +34,18 @@ npm.cmd run test:quality
 - Toute modification du pin exige le gate d’intégration et la mise à jour du
   gitlink Sidetrade dans le parent.
 
+## Intégration Opella inactive
+
+- `integrations/opella/manifest.json` ferme le bundle ; les valeurs financières
+  vivent uniquement dans `snapshot.json`.
+- Régénérer le bundle depuis `Sidetrade/` avec
+  `node scripts/integrate-opella-case.mjs`.
+- Le contrôle interne est agrégé à `test:financial`. Depuis le dépôt parent,
+  le contrôle croisé s’exécute avec
+  `node Sidetrade/scripts/check-opella-integration.mjs --source "Transaction Services"`.
+- Ce bundle interne n’autorise ni route, ni CTA actif, ni téléchargement, ni
+  copie du workbook sous `public/`.
+
 ## Efficacité
 
 - Ne pas afficher le JSON complet de `test:navigation:browser` en succès.

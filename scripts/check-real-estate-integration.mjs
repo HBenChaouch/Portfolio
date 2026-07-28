@@ -1,9 +1,9 @@
 import assert from "node:assert/strict";
 import { execFileSync } from "node:child_process";
-import { createHash } from "node:crypto";
 import { readFile } from "node:fs/promises";
 import path from "node:path";
 import { getDocument } from "pdfjs-dist/legacy/build/pdf.mjs";
+import { sha256File } from "./integration-manifest.mjs";
 
 async function extractPdfText(file) {
   const data = new Uint8Array(await readFile(file));
@@ -39,10 +39,6 @@ const sourceCandidates = [process.env.REAL_ESTATE_SOURCE, ".cockpit-source", "..
   .map((candidate) => path.resolve(candidate));
 const destination = path.resolve("dist/cases/real-estate-downside");
 
-async function sha256(filename) {
-  return createHash("sha256").update(await readFile(filename)).digest("hex").toUpperCase();
-}
-
 let source;
 for (const candidate of sourceCandidates) {
   try {
@@ -66,8 +62,8 @@ for (const filename of [
   "pack/pack_comite_core_plus_france.xlsx",
 ]) {
   assert.equal(
-    await sha256(path.join(destination, filename)),
-    await sha256(path.join(source, filename)),
+    await sha256File(path.join(destination, filename)),
+    await sha256File(path.join(source, filename)),
     `${filename} must be copied byte-for-byte from the pinned cockpit source`,
   );
 }

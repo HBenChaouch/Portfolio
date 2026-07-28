@@ -1,0 +1,2765 @@
+{
+  "case": "opella-carve-out",
+  "generatedBy": "build_carveout.py",
+  "generatedAt": "2026-07-28",
+  "currency": "EUR",
+  "unit": "EURm",
+  "sources": [
+    {
+      "id": "S1",
+      "label": "Communiqué Sanofi du 21/10/2024 — négociations exclusives avec CD&R",
+      "value_date": "2024-10-21",
+      "accessed": "2026-07-28",
+      "status": "public",
+      "references": [
+        {
+          "label": "Sanofi — Sanofi and CD&R partner to fuel Opella’s ambitions in consumer healthcare",
+          "url": "https://www.sanofi.com/en/media-room/press-releases/2024/2024-10-21-05-30-00-2965875",
+          "accessed": "2026-07-28"
+        }
+      ],
+      "fields": "EV c.16 Md€ et multiple c.14x EBITDA 2024e ; ne fournit ni CA ni marge",
+      "cells": {
+        "id": "'Lisez-moi'!B15",
+        "details": "'Lisez-moi'!C15"
+      }
+    },
+    {
+      "id": "S2",
+      "label": "Communiqué Sanofi du 30/04/2025 — closing de la cession d'Opella",
+      "value_date": "2025-04-30",
+      "accessed": "2026-07-28",
+      "status": "public",
+      "references": [
+        {
+          "label": "Sanofi — Sanofi and CD&R close Opella transaction, create global consumer healthcare leader",
+          "url": "https://www.sanofi.com/en/media-room/press-releases/2025/2025-04-30-11-00-00-3071167",
+          "accessed": "2026-07-28"
+        }
+      ],
+      "fields": "closing, participations CD&R 50,0 % / Sanofi 48,2 % / Bpifrance 1,8 %, origine du calendrier",
+      "cells": {
+        "id": "'Lisez-moi'!B16",
+        "details": "'Lisez-moi'!C16"
+      }
+    },
+    {
+      "id": "S3",
+      "label": "Presse financière (Transacted, FiercePharma), oct. 2024 à avr. 2025",
+      "value_date": "2025-04-30",
+      "accessed": "2026-07-28",
+      "status": "recoupement public",
+      "references": [
+        {
+          "label": "Transacted — Sanofi Strikes €16bn Deal with CD&R for Consumer Health Unit",
+          "url": "https://www.transacted.io/sanofi-strikes-e16bn-deal-with-cdr-for-consumer-health-unit",
+          "accessed": "2026-07-28"
+        },
+        {
+          "label": "Fierce Pharma — Sanofi in exclusive negotiations to sell 50% stake in €16B Opella",
+          "url": "https://www.fiercepharma.com/pharma/sanofi-exclusive-negotiations-sell-50-stake-eu16b-consumer-health-unit-opella",
+          "accessed": "2026-07-28"
+        }
+      ],
+      "fields": "recoupement de l'EV et du multiple de S1 ; aucune cellule propre",
+      "cells": {
+        "id": "'Lisez-moi'!B17",
+        "details": "'Lisez-moi'!C17"
+      }
+    },
+    {
+      "id": "S4",
+      "label": "Hypothèses du rédacteur",
+      "value_date": "2026-07-08",
+      "accessed": "2026-07-16",
+      "status": "estimation",
+      "references": [
+        {
+          "label": "Hypothèses internes portées par le générateur canonique",
+          "path": "Transaction Services/build_carveout.py",
+          "accessed": "2026-07-16"
+        }
+      ],
+      "fields": "CA périmètre, trajectoire, allocations, coûts stand-alone, TSA, one-offs, bridge cash, contrefactuel",
+      "cells": {
+        "id": "'Lisez-moi'!B18",
+        "details": "'Lisez-moi'!C18"
+      }
+    }
+  ],
+  "lineage": [
+    {
+      "id": "LN-L-EBITDA",
+      "sourceIds": [
+        "S4"
+      ],
+      "assumptions": [
+        {
+          "path": "m1.revenue",
+          "cell": "Hypothèses!C6"
+        },
+        {
+          "path": "m1.margin",
+          "cell": "Hypothèses!C7"
+        }
+      ],
+      "formulaIds": [
+        "R-PERIM"
+      ],
+      "outputs": [
+        "m1.ebitda @ Hypothèses!C8",
+        "m7.inventory[L-EBITDA] @ 'M6 Bridge'!H6"
+      ]
+    },
+    {
+      "id": "LN-ENTRY-MULTIPLE",
+      "sourceIds": [
+        "S1",
+        "S4"
+      ],
+      "assumptions": [
+        {
+          "path": "m1.enterpriseValue",
+          "cell": "Hypothèses!C9"
+        },
+        {
+          "path": "m1.ebitda",
+          "cell": "Hypothèses!C8"
+        }
+      ],
+      "formulaIds": [
+        "R-MULT"
+      ],
+      "outputs": [
+        "m1.entryMultiple @ Hypothèses!C10"
+      ]
+    },
+    {
+      "id": "LN-OWNERSHIP",
+      "sourceIds": [
+        "S2"
+      ],
+      "assumptions": [
+        {
+          "path": "m1.ownership.cdr",
+          "cell": "Hypothèses!C11"
+        },
+        {
+          "path": "m1.ownership.sanofi",
+          "cell": "Hypothèses!C12"
+        },
+        {
+          "path": "m1.ownership.bpifrance",
+          "cell": "Hypothèses!C13"
+        }
+      ],
+      "formulaIds": [
+        "R-OWN"
+      ],
+      "outputs": [
+        "m1.ownership.total @ Hypothèses!C14"
+      ]
+    },
+    {
+      "id": "LN-O-RUNRATE",
+      "sourceIds": [
+        "S4"
+      ],
+      "assumptions": [
+        {
+          "path": "m3.functions[F-IT].runRate",
+          "cell": "'M3 Stand-alone'!C11"
+        },
+        {
+          "path": "m3.functions[F-SUP].runRate",
+          "cell": "'M3 Stand-alone'!C12"
+        },
+        {
+          "path": "m3.functions[F-DIS].runRate",
+          "cell": "'M3 Stand-alone'!C13"
+        },
+        {
+          "path": "m3.functions[F-QUA].runRate",
+          "cell": "'M3 Stand-alone'!C14"
+        }
+      ],
+      "formulaIds": [
+        "R-RAMP",
+        "R-STANDALONE"
+      ],
+      "outputs": [
+        "outputs.O-RUNRATE @ 'M3 Stand-alone'!C15"
+      ]
+    },
+    {
+      "id": "LN-O-SEPCOST",
+      "sourceIds": [
+        "S4"
+      ],
+      "assumptions": [
+        {
+          "path": "m4.services[T-IT].monthly",
+          "cell": "'M4 TSA'!C6"
+        },
+        {
+          "path": "m4.services[T-SC].monthly",
+          "cell": "'M4 TSA'!C7"
+        },
+        {
+          "path": "m4.services[T-FIN].monthly",
+          "cell": "'M4 TSA'!C8"
+        },
+        {
+          "path": "m4.services[T-REG].monthly",
+          "cell": "'M4 TSA'!C9"
+        },
+        {
+          "path": "m4.services[T-OTH].monthly",
+          "cell": "'M4 TSA'!C10"
+        },
+        {
+          "path": "m5.lines[O-IT].P1",
+          "cell": "'M5 One-offs'!D6"
+        },
+        {
+          "path": "m5.lines[O-IT].P2",
+          "cell": "'M5 One-offs'!E6"
+        },
+        {
+          "path": "m5.lines[O-IT].P3",
+          "cell": "'M5 One-offs'!F6"
+        },
+        {
+          "path": "m5.lines[O-IT].P4",
+          "cell": "'M5 One-offs'!G6"
+        },
+        {
+          "path": "m5.lines[O-IT].P5",
+          "cell": "'M5 One-offs'!H6"
+        },
+        {
+          "path": "m5.lines[O-LEG].P1",
+          "cell": "'M5 One-offs'!D7"
+        },
+        {
+          "path": "m5.lines[O-LEG].P2",
+          "cell": "'M5 One-offs'!E7"
+        },
+        {
+          "path": "m5.lines[O-LEG].P3",
+          "cell": "'M5 One-offs'!F7"
+        },
+        {
+          "path": "m5.lines[O-LEG].P4",
+          "cell": "'M5 One-offs'!G7"
+        },
+        {
+          "path": "m5.lines[O-LEG].P5",
+          "cell": "'M5 One-offs'!H7"
+        },
+        {
+          "path": "m5.lines[O-BRD].P1",
+          "cell": "'M5 One-offs'!D8"
+        },
+        {
+          "path": "m5.lines[O-BRD].P2",
+          "cell": "'M5 One-offs'!E8"
+        },
+        {
+          "path": "m5.lines[O-BRD].P3",
+          "cell": "'M5 One-offs'!F8"
+        },
+        {
+          "path": "m5.lines[O-BRD].P4",
+          "cell": "'M5 One-offs'!G8"
+        },
+        {
+          "path": "m5.lines[O-BRD].P5",
+          "cell": "'M5 One-offs'!H8"
+        },
+        {
+          "path": "m5.lines[O-HR].P1",
+          "cell": "'M5 One-offs'!D9"
+        },
+        {
+          "path": "m5.lines[O-HR].P2",
+          "cell": "'M5 One-offs'!E9"
+        },
+        {
+          "path": "m5.lines[O-HR].P3",
+          "cell": "'M5 One-offs'!F9"
+        },
+        {
+          "path": "m5.lines[O-HR].P4",
+          "cell": "'M5 One-offs'!G9"
+        },
+        {
+          "path": "m5.lines[O-HR].P5",
+          "cell": "'M5 One-offs'!H9"
+        },
+        {
+          "path": "m5.lines[O-SC].P1",
+          "cell": "'M5 One-offs'!D10"
+        },
+        {
+          "path": "m5.lines[O-SC].P2",
+          "cell": "'M5 One-offs'!E10"
+        },
+        {
+          "path": "m5.lines[O-SC].P3",
+          "cell": "'M5 One-offs'!F10"
+        },
+        {
+          "path": "m5.lines[O-SC].P4",
+          "cell": "'M5 One-offs'!G10"
+        },
+        {
+          "path": "m5.lines[O-SC].P5",
+          "cell": "'M5 One-offs'!H10"
+        },
+        {
+          "path": "m5.lines[O-ADV].P1",
+          "cell": "'M5 One-offs'!D11"
+        },
+        {
+          "path": "m5.lines[O-ADV].P2",
+          "cell": "'M5 One-offs'!E11"
+        },
+        {
+          "path": "m5.lines[O-ADV].P3",
+          "cell": "'M5 One-offs'!F11"
+        },
+        {
+          "path": "m5.lines[O-ADV].P4",
+          "cell": "'M5 One-offs'!G11"
+        },
+        {
+          "path": "m5.lines[O-ADV].P5",
+          "cell": "'M5 One-offs'!H11"
+        },
+        {
+          "path": "m6.L-SEPCAPEX.P1",
+          "cell": "'M6 Bridge'!D23"
+        },
+        {
+          "path": "m6.L-SEPCAPEX.P2",
+          "cell": "'M6 Bridge'!E23"
+        },
+        {
+          "path": "m6.L-SEPCAPEX.P3",
+          "cell": "'M6 Bridge'!F23"
+        },
+        {
+          "path": "m6.L-SEPCAPEX.P4",
+          "cell": "'M6 Bridge'!G23"
+        },
+        {
+          "path": "m6.L-SEPCAPEX.P5",
+          "cell": "'M6 Bridge'!H23"
+        }
+      ],
+      "formulaIds": [
+        "R-TSA-SUM",
+        "R-ONEOFF-SUM",
+        "R-SEPCOST"
+      ],
+      "outputs": [
+        "outputs.O-SEPCOST @ 'M6 Bridge'!C34"
+      ]
+    },
+    {
+      "id": "LN-O-PEAK",
+      "sourceIds": [
+        "S4"
+      ],
+      "assumptions": [
+        {
+          "path": "m6.cash.P1",
+          "cell": "'M6 Bridge'!D31"
+        },
+        {
+          "path": "m6.cash.P2",
+          "cell": "'M6 Bridge'!E31"
+        },
+        {
+          "path": "m6.cash.P3",
+          "cell": "'M6 Bridge'!F31"
+        },
+        {
+          "path": "m6.cash.P4",
+          "cell": "'M6 Bridge'!G31"
+        },
+        {
+          "path": "m6.cash.P5",
+          "cell": "'M6 Bridge'!H31"
+        },
+        {
+          "path": "m7.counterfactual.cash.P1",
+          "cell": "'M7 Financement'!C15"
+        },
+        {
+          "path": "m7.counterfactual.cash.P2",
+          "cell": "'M7 Financement'!D15"
+        },
+        {
+          "path": "m7.counterfactual.cash.P3",
+          "cell": "'M7 Financement'!E15"
+        },
+        {
+          "path": "m7.counterfactual.cash.P4",
+          "cell": "'M7 Financement'!F15"
+        },
+        {
+          "path": "m7.counterfactual.cash.P5",
+          "cell": "'M7 Financement'!G15"
+        }
+      ],
+      "formulaIds": [
+        "R-CASH",
+        "R-CF",
+        "R-FUNDING-CUM",
+        "R-PEAK"
+      ],
+      "outputs": [
+        "outputs.O-PEAK.value @ 'M7 Financement'!C71",
+        "outputs.O-PEAK.period @ 'M7 Financement'!C72"
+      ]
+    },
+    {
+      "id": "LN-O-STEADY",
+      "sourceIds": [
+        "S4"
+      ],
+      "assumptions": [
+        {
+          "path": "m3.functions[F-IT].ramp.P1",
+          "cell": "'M3 Stand-alone'!E6"
+        },
+        {
+          "path": "m3.functions[F-IT].ramp.P2",
+          "cell": "'M3 Stand-alone'!F6"
+        },
+        {
+          "path": "m3.functions[F-IT].ramp.P3",
+          "cell": "'M3 Stand-alone'!G6"
+        },
+        {
+          "path": "m3.functions[F-IT].ramp.P4",
+          "cell": "'M3 Stand-alone'!H6"
+        },
+        {
+          "path": "m3.functions[F-IT].ramp.P5",
+          "cell": "'M3 Stand-alone'!I6"
+        },
+        {
+          "path": "m3.functions[F-SUP].ramp.P1",
+          "cell": "'M3 Stand-alone'!E7"
+        },
+        {
+          "path": "m3.functions[F-SUP].ramp.P2",
+          "cell": "'M3 Stand-alone'!F7"
+        },
+        {
+          "path": "m3.functions[F-SUP].ramp.P3",
+          "cell": "'M3 Stand-alone'!G7"
+        },
+        {
+          "path": "m3.functions[F-SUP].ramp.P4",
+          "cell": "'M3 Stand-alone'!H7"
+        },
+        {
+          "path": "m3.functions[F-SUP].ramp.P5",
+          "cell": "'M3 Stand-alone'!I7"
+        },
+        {
+          "path": "m3.functions[F-DIS].ramp.P1",
+          "cell": "'M3 Stand-alone'!E8"
+        },
+        {
+          "path": "m3.functions[F-DIS].ramp.P2",
+          "cell": "'M3 Stand-alone'!F8"
+        },
+        {
+          "path": "m3.functions[F-DIS].ramp.P3",
+          "cell": "'M3 Stand-alone'!G8"
+        },
+        {
+          "path": "m3.functions[F-DIS].ramp.P4",
+          "cell": "'M3 Stand-alone'!H8"
+        },
+        {
+          "path": "m3.functions[F-DIS].ramp.P5",
+          "cell": "'M3 Stand-alone'!I8"
+        },
+        {
+          "path": "m3.functions[F-QUA].ramp.P1",
+          "cell": "'M3 Stand-alone'!E9"
+        },
+        {
+          "path": "m3.functions[F-QUA].ramp.P2",
+          "cell": "'M3 Stand-alone'!F9"
+        },
+        {
+          "path": "m3.functions[F-QUA].ramp.P3",
+          "cell": "'M3 Stand-alone'!G9"
+        },
+        {
+          "path": "m3.functions[F-QUA].ramp.P4",
+          "cell": "'M3 Stand-alone'!H9"
+        },
+        {
+          "path": "m3.functions[F-QUA].ramp.P5",
+          "cell": "'M3 Stand-alone'!I9"
+        },
+        {
+          "path": "m4.byPeriod.P1",
+          "cell": "'M4 TSA'!J11"
+        },
+        {
+          "path": "m4.byPeriod.P2",
+          "cell": "'M4 TSA'!K11"
+        },
+        {
+          "path": "m4.byPeriod.P3",
+          "cell": "'M4 TSA'!L11"
+        },
+        {
+          "path": "m4.byPeriod.P4",
+          "cell": "'M4 TSA'!M11"
+        },
+        {
+          "path": "m4.byPeriod.P5",
+          "cell": "'M4 TSA'!N11"
+        },
+        {
+          "path": "m5.byPeriod.P1",
+          "cell": "'M5 One-offs'!D12"
+        },
+        {
+          "path": "m5.byPeriod.P2",
+          "cell": "'M5 One-offs'!E12"
+        },
+        {
+          "path": "m5.byPeriod.P3",
+          "cell": "'M5 One-offs'!F12"
+        },
+        {
+          "path": "m5.byPeriod.P4",
+          "cell": "'M5 One-offs'!G12"
+        },
+        {
+          "path": "m5.byPeriod.P5",
+          "cell": "'M5 One-offs'!H12"
+        }
+      ],
+      "formulaIds": [
+        "R-RAMP",
+        "R-TSA-SUM",
+        "R-ONEOFF-SUM",
+        "R-STEADY"
+      ],
+      "outputs": [
+        "outputs.O-STEADY @ Calendrier!C14"
+      ]
+    },
+    {
+      "id": "LN-O-RESORB",
+      "sourceIds": [
+        "S4"
+      ],
+      "assumptions": [
+        {
+          "path": "m7.periods[P5].need",
+          "cell": "'M7 Financement'!G64"
+        },
+        {
+          "path": "m7.periods[P5].eGap",
+          "cell": "'M7 Financement'!G38"
+        },
+        {
+          "path": "m7.periods[P5].nOneOff",
+          "cell": "'M7 Financement'!G56"
+        },
+        {
+          "path": "m7.horizon.delta",
+          "cell": "'M7 Financement'!C74"
+        }
+      ],
+      "formulaIds": [
+        "R-EGAP",
+        "R-NPONC",
+        "R-RECUR",
+        "R-RESORB",
+        "R-PK"
+      ],
+      "outputs": [
+        "outputs.O-RESORB.state @ 'M7 Financement'!C76"
+      ]
+    }
+  ],
+  "calendar": {
+    "closing": "2025-04-30",
+    "periods": [
+      {
+        "id": "P0",
+        "label": "FY2024",
+        "start": "2024-01-01",
+        "end": "2024-12-31",
+        "months": 12,
+        "role": "base vendeur, avant séparation",
+        "inHorizon": false
+      },
+      {
+        "id": "P1",
+        "label": "Mai–déc. 2025",
+        "start": "2025-05-01",
+        "end": "2025-12-31",
+        "months": 8,
+        "role": "stub post-closing",
+        "inHorizon": true
+      },
+      {
+        "id": "P2",
+        "label": "FY2026",
+        "start": "2026-01-01",
+        "end": "2026-12-31",
+        "months": 12,
+        "role": "transition",
+        "inHorizon": true
+      },
+      {
+        "id": "P3",
+        "label": "FY2027",
+        "start": "2027-01-01",
+        "end": "2027-12-31",
+        "months": 12,
+        "role": "première année candidate au régime établi",
+        "inHorizon": true
+      },
+      {
+        "id": "P4",
+        "label": "FY2028",
+        "start": "2028-01-01",
+        "end": "2028-12-31",
+        "months": 12,
+        "role": "année civile ouverte par la règle 4 du §4",
+        "inHorizon": true
+      },
+      {
+        "id": "P5",
+        "label": "FY2029",
+        "start": "2029-01-01",
+        "end": "2029-12-31",
+        "months": 12,
+        "role": "année civile ouverte par la règle 4 du §4",
+        "inHorizon": true
+      }
+    ],
+    "maxHorizon": "P5",
+    "horizon": [
+      "P1",
+      "P2",
+      "P3",
+      "P4",
+      "P5"
+    ],
+    "steadyState": "P4",
+    "tsaMonthMapping": {
+      "T-IT": {
+        "P1": 8,
+        "P2": 12,
+        "P3": 4
+      },
+      "T-SC": {
+        "P1": 8,
+        "P2": 10
+      },
+      "T-FIN": {
+        "P1": 8,
+        "P2": 4
+      },
+      "T-REG": {
+        "P1": 8,
+        "P2": 12,
+        "P3": 4
+      },
+      "T-OTH": {
+        "P1": 8,
+        "P2": 4
+      }
+    }
+  },
+  "m1": {
+    "revenue": {
+      "value": 5000.0,
+      "formatId": "money-eur-m-0",
+      "status": "estimation",
+      "source": "S4",
+      "cell": "Hypothèses!C6"
+    },
+    "margin": {
+      "value": 0.2286,
+      "formatId": "percent-2",
+      "status": "calculé",
+      "source": "S4",
+      "cell": "Hypothèses!C7"
+    },
+    "ebitda": {
+      "value": 1143.0,
+      "formatId": "money-eur-m-0",
+      "status": "calculé",
+      "source": "S4",
+      "cell": "Hypothèses!C8",
+      "formulaId": "R-PERIM"
+    },
+    "enterpriseValue": {
+      "value": 16000.0,
+      "formatId": "money-eur-m-0",
+      "status": "public",
+      "source": "S1",
+      "cell": "Hypothèses!C9"
+    },
+    "entryMultiple": {
+      "value": 13.9982502187,
+      "formatId": "multiple-1",
+      "status": "calculé",
+      "source": "S1+S4",
+      "cell": "Hypothèses!C10",
+      "formulaId": "R-MULT"
+    },
+    "ownership": {
+      "cdr": {
+        "value": 0.5,
+        "formatId": "percent-1",
+        "status": "public",
+        "source": "S2",
+        "cell": "Hypothèses!C11"
+      },
+      "sanofi": {
+        "value": 0.482,
+        "formatId": "percent-1",
+        "status": "public",
+        "source": "S2",
+        "cell": "Hypothèses!C12"
+      },
+      "bpifrance": {
+        "value": 0.018,
+        "formatId": "percent-1",
+        "status": "public",
+        "source": "S2",
+        "cell": "Hypothèses!C13"
+      }
+    }
+  },
+  "m2": {
+    "rate": {
+      "value": 0.016,
+      "formatId": "percent-2",
+      "status": "estimation",
+      "source": "S4",
+      "cell": "Hypothèses!C21"
+    },
+    "byPeriod": {
+      "P1": 54.9333333333,
+      "P2": 84.872,
+      "P3": 87.41816,
+      "P4": 90.0407048,
+      "P5": 92.741925944
+    }
+  },
+  "m3": {
+    "functions": [
+      {
+        "id": "F-IT",
+        "label": "IT et infrastructure",
+        "runRate": -40.0,
+        "driver": "ERP, licences, hébergement, cybersécurité en propre",
+        "ramp": {
+          "P1": 0.25,
+          "P2": 0.7,
+          "P3": 1.0,
+          "P4": 1.0,
+          "P5": 1.0
+        },
+        "applied": {
+          "P1": -10.0,
+          "P2": -28.0,
+          "P3": -40.0,
+          "P4": -40.0,
+          "P5": -40.0
+        },
+        "cells": {
+          "P1": "'M3 Stand-alone'!E11",
+          "P2": "'M3 Stand-alone'!F11",
+          "P3": "'M3 Stand-alone'!G11",
+          "P4": "'M3 Stand-alone'!H11",
+          "P5": "'M3 Stand-alone'!I11"
+        }
+      },
+      {
+        "id": "F-SUP",
+        "label": "Fonctions support (finance, RH, juridique)",
+        "runRate": -30.0,
+        "driver": "équipes siège à recréer, sortie des centres de services Sanofi",
+        "ramp": {
+          "P1": 0.4,
+          "P2": 0.85,
+          "P3": 1.0,
+          "P4": 1.0,
+          "P5": 1.0
+        },
+        "applied": {
+          "P1": -12.0,
+          "P2": -25.5,
+          "P3": -30.0,
+          "P4": -30.0,
+          "P5": -30.0
+        },
+        "cells": {
+          "P1": "'M3 Stand-alone'!E12",
+          "P2": "'M3 Stand-alone'!F12",
+          "P3": "'M3 Stand-alone'!G12",
+          "P4": "'M3 Stand-alone'!H12",
+          "P5": "'M3 Stand-alone'!I12"
+        }
+      },
+      {
+        "id": "F-DIS",
+        "label": "Distribution et achats",
+        "runRate": -25.0,
+        "driver": "perte de mutualisation des contrats groupe",
+        "ramp": {
+          "P1": 0.5,
+          "P2": 1.0,
+          "P3": 1.0,
+          "P4": 1.0,
+          "P5": 1.0
+        },
+        "applied": {
+          "P1": -12.5,
+          "P2": -25.0,
+          "P3": -25.0,
+          "P4": -25.0,
+          "P5": -25.0
+        },
+        "cells": {
+          "P1": "'M3 Stand-alone'!E13",
+          "P2": "'M3 Stand-alone'!F13",
+          "P3": "'M3 Stand-alone'!G13",
+          "P4": "'M3 Stand-alone'!H13",
+          "P5": "'M3 Stand-alone'!I13"
+        }
+      },
+      {
+        "id": "F-QUA",
+        "label": "Qualité, réglementaire, pharmacovigilance",
+        "runRate": -25.0,
+        "driver": "licences et équipes dédiées imposées par la réglementation",
+        "ramp": {
+          "P1": 0.45,
+          "P2": 0.9,
+          "P3": 1.0,
+          "P4": 1.0,
+          "P5": 1.0
+        },
+        "applied": {
+          "P1": -11.25,
+          "P2": -22.5,
+          "P3": -25.0,
+          "P4": -25.0,
+          "P5": -25.0
+        },
+        "cells": {
+          "P1": "'M3 Stand-alone'!E14",
+          "P2": "'M3 Stand-alone'!F14",
+          "P3": "'M3 Stand-alone'!G14",
+          "P4": "'M3 Stand-alone'!H14",
+          "P5": "'M3 Stand-alone'!I14"
+        }
+      }
+    ],
+    "runRateTotal": -120.0,
+    "runRateTotalCell": "'M3 Stand-alone'!C15",
+    "byPeriod": {
+      "P1": -45.75,
+      "P2": -101.0,
+      "P3": -120.0,
+      "P4": -120.0,
+      "P5": -120.0
+    },
+    "byPeriodCells": {
+      "P1": "'M3 Stand-alone'!E15",
+      "P2": "'M3 Stand-alone'!F15",
+      "P3": "'M3 Stand-alone'!G15",
+      "P4": "'M3 Stand-alone'!H15",
+      "P5": "'M3 Stand-alone'!I15"
+    }
+  },
+  "m4": {
+    "services": [
+      {
+        "id": "T-IT",
+        "label": "IT (ERP, infrastructure, support)",
+        "monthly": -2.1,
+        "startMonth": 1,
+        "duration": 24,
+        "exitMonth": 24,
+        "extensionAvailable": 12,
+        "doubleRunMonths": 6,
+        "monthsByPeriod": {
+          "P1": 8,
+          "P2": 12,
+          "P3": 4,
+          "P4": 0,
+          "P5": 0
+        },
+        "costByPeriod": {
+          "P1": -16.8,
+          "P2": -25.2,
+          "P3": -8.4,
+          "P4": 0.0,
+          "P5": 0.0
+        },
+        "exitStrategy": "ERP en propre puis infogérance",
+        "cells": {
+          "monthly": "'M4 TSA'!C6",
+          "startMonth": "'M4 TSA'!D6",
+          "duration": "'M4 TSA'!E6",
+          "calendarDuration": "Calendrier!C19",
+          "exitMonth": "'M4 TSA'!F6",
+          "extensionAvailable": "'M4 TSA'!G6",
+          "doubleRunMonths": "'M4 TSA'!H6",
+          "monthsByPeriod": {
+            "P1": "Calendrier!D19",
+            "P2": "Calendrier!E19",
+            "P3": "Calendrier!F19",
+            "P4": "Calendrier!G19",
+            "P5": "Calendrier!H19"
+          },
+          "costByPeriod": {
+            "P1": "'M4 TSA'!J6",
+            "P2": "'M4 TSA'!K6",
+            "P3": "'M4 TSA'!L6",
+            "P4": "'M4 TSA'!M6",
+            "P5": "'M4 TSA'!N6"
+          },
+          "exitStrategy": "'M4 TSA'!O6"
+        }
+      },
+      {
+        "id": "T-SC",
+        "label": "Supply chain et logistique",
+        "monthly": -1.25,
+        "startMonth": 1,
+        "duration": 18,
+        "exitMonth": 18,
+        "extensionAvailable": 6,
+        "doubleRunMonths": 4,
+        "monthsByPeriod": {
+          "P1": 8,
+          "P2": 10,
+          "P3": 0,
+          "P4": 0,
+          "P5": 0
+        },
+        "costByPeriod": {
+          "P1": -10.0,
+          "P2": -12.5,
+          "P3": 0.0,
+          "P4": 0.0,
+          "P5": 0.0
+        },
+        "exitStrategy": "reprise des contrats 3PL en direct",
+        "cells": {
+          "monthly": "'M4 TSA'!C7",
+          "startMonth": "'M4 TSA'!D7",
+          "duration": "'M4 TSA'!E7",
+          "calendarDuration": "Calendrier!C20",
+          "exitMonth": "'M4 TSA'!F7",
+          "extensionAvailable": "'M4 TSA'!G7",
+          "doubleRunMonths": "'M4 TSA'!H7",
+          "monthsByPeriod": {
+            "P1": "Calendrier!D20",
+            "P2": "Calendrier!E20",
+            "P3": "Calendrier!F20",
+            "P4": "Calendrier!G20",
+            "P5": "Calendrier!H20"
+          },
+          "costByPeriod": {
+            "P1": "'M4 TSA'!J7",
+            "P2": "'M4 TSA'!K7",
+            "P3": "'M4 TSA'!L7",
+            "P4": "'M4 TSA'!M7",
+            "P5": "'M4 TSA'!N7"
+          },
+          "exitStrategy": "'M4 TSA'!O7"
+        }
+      },
+      {
+        "id": "T-FIN",
+        "label": "Finance (comptabilité, paie, fiscalité)",
+        "monthly": -0.85,
+        "startMonth": 1,
+        "duration": 12,
+        "exitMonth": 12,
+        "extensionAvailable": 6,
+        "doubleRunMonths": 3,
+        "monthsByPeriod": {
+          "P1": 8,
+          "P2": 4,
+          "P3": 0,
+          "P4": 0,
+          "P5": 0
+        },
+        "costByPeriod": {
+          "P1": -6.8,
+          "P2": -3.4,
+          "P3": 0.0,
+          "P4": 0.0,
+          "P5": 0.0
+        },
+        "exitStrategy": "internalisation et centre de services",
+        "cells": {
+          "monthly": "'M4 TSA'!C8",
+          "startMonth": "'M4 TSA'!D8",
+          "duration": "'M4 TSA'!E8",
+          "calendarDuration": "Calendrier!C21",
+          "exitMonth": "'M4 TSA'!F8",
+          "extensionAvailable": "'M4 TSA'!G8",
+          "doubleRunMonths": "'M4 TSA'!H8",
+          "monthsByPeriod": {
+            "P1": "Calendrier!D21",
+            "P2": "Calendrier!E21",
+            "P3": "Calendrier!F21",
+            "P4": "Calendrier!G21",
+            "P5": "Calendrier!H21"
+          },
+          "costByPeriod": {
+            "P1": "'M4 TSA'!J8",
+            "P2": "'M4 TSA'!K8",
+            "P3": "'M4 TSA'!L8",
+            "P4": "'M4 TSA'!M8",
+            "P5": "'M4 TSA'!N8"
+          },
+          "exitStrategy": "'M4 TSA'!O8"
+        }
+      },
+      {
+        "id": "T-REG",
+        "label": "Réglementaire et pharmacovigilance",
+        "monthly": -0.5,
+        "startMonth": 1,
+        "duration": 24,
+        "exitMonth": 24,
+        "extensionAvailable": 12,
+        "doubleRunMonths": 4,
+        "monthsByPeriod": {
+          "P1": 8,
+          "P2": 12,
+          "P3": 4,
+          "P4": 0,
+          "P5": 0
+        },
+        "costByPeriod": {
+          "P1": -4.0,
+          "P2": -6.0,
+          "P3": -2.0,
+          "P4": 0.0,
+          "P5": 0.0
+        },
+        "exitStrategy": "équipes dédiées, contrainte de licences",
+        "cells": {
+          "monthly": "'M4 TSA'!C9",
+          "startMonth": "'M4 TSA'!D9",
+          "duration": "'M4 TSA'!E9",
+          "calendarDuration": "Calendrier!C22",
+          "exitMonth": "'M4 TSA'!F9",
+          "extensionAvailable": "'M4 TSA'!G9",
+          "doubleRunMonths": "'M4 TSA'!H9",
+          "monthsByPeriod": {
+            "P1": "Calendrier!D22",
+            "P2": "Calendrier!E22",
+            "P3": "Calendrier!F22",
+            "P4": "Calendrier!G22",
+            "P5": "Calendrier!H22"
+          },
+          "costByPeriod": {
+            "P1": "'M4 TSA'!J9",
+            "P2": "'M4 TSA'!K9",
+            "P3": "'M4 TSA'!L9",
+            "P4": "'M4 TSA'!M9",
+            "P5": "'M4 TSA'!N9"
+          },
+          "exitStrategy": "'M4 TSA'!O9"
+        }
+      },
+      {
+        "id": "T-OTH",
+        "label": "Autres (immobilier, achats)",
+        "monthly": -0.3,
+        "startMonth": 1,
+        "duration": 12,
+        "exitMonth": 12,
+        "extensionAvailable": 6,
+        "doubleRunMonths": 1,
+        "monthsByPeriod": {
+          "P1": 8,
+          "P2": 4,
+          "P3": 0,
+          "P4": 0,
+          "P5": 0
+        },
+        "costByPeriod": {
+          "P1": -2.4,
+          "P2": -1.2,
+          "P3": 0.0,
+          "P4": 0.0,
+          "P5": 0.0
+        },
+        "exitStrategy": "baux directs et contrats cadres propres",
+        "cells": {
+          "monthly": "'M4 TSA'!C10",
+          "startMonth": "'M4 TSA'!D10",
+          "duration": "'M4 TSA'!E10",
+          "calendarDuration": "Calendrier!C23",
+          "exitMonth": "'M4 TSA'!F10",
+          "extensionAvailable": "'M4 TSA'!G10",
+          "doubleRunMonths": "'M4 TSA'!H10",
+          "monthsByPeriod": {
+            "P1": "Calendrier!D23",
+            "P2": "Calendrier!E23",
+            "P3": "Calendrier!F23",
+            "P4": "Calendrier!G23",
+            "P5": "Calendrier!H23"
+          },
+          "costByPeriod": {
+            "P1": "'M4 TSA'!J10",
+            "P2": "'M4 TSA'!K10",
+            "P3": "'M4 TSA'!L10",
+            "P4": "'M4 TSA'!M10",
+            "P5": "'M4 TSA'!N10"
+          },
+          "exitStrategy": "'M4 TSA'!O10"
+        }
+      }
+    ],
+    "byPeriod": {
+      "P1": -40.0,
+      "P2": -48.3,
+      "P3": -10.4,
+      "P4": 0.0,
+      "P5": 0.0
+    },
+    "byPeriodCells": {
+      "P1": "'M4 TSA'!J11",
+      "P2": "'M4 TSA'!K11",
+      "P3": "'M4 TSA'!L11",
+      "P4": "'M4 TSA'!M11",
+      "P5": "'M4 TSA'!N11"
+    }
+  },
+  "m5": {
+    "lines": [
+      {
+        "id": "O-IT",
+        "label": "Séparation IT (migration ERP, données, réseaux)",
+        "status": "estimation",
+        "byPeriod": {
+          "P1": -24.0,
+          "P2": -34.0,
+          "P3": 0.0,
+          "P4": 0.0,
+          "P5": 0.0
+        }
+      },
+      {
+        "id": "O-LEG",
+        "label": "Mise en place des entités juridiques",
+        "status": "estimation",
+        "byPeriod": {
+          "P1": -12.0,
+          "P2": -6.0,
+          "P3": 0.0,
+          "P4": 0.0,
+          "P5": 0.0
+        }
+      },
+      {
+        "id": "O-BRD",
+        "label": "Marque et packaging (rebranding)",
+        "status": "estimation",
+        "byPeriod": {
+          "P1": -14.0,
+          "P2": -16.0,
+          "P3": -4.0,
+          "P4": 0.0,
+          "P5": 0.0
+        }
+      },
+      {
+        "id": "O-HR",
+        "label": "Ressources humaines (transferts, rétention)",
+        "status": "estimation",
+        "byPeriod": {
+          "P1": -9.0,
+          "P2": -7.0,
+          "P3": 0.0,
+          "P4": 0.0,
+          "P5": 0.0
+        }
+      },
+      {
+        "id": "O-SC",
+        "label": "Requalification supply chain (sites, licences)",
+        "status": "estimation",
+        "byPeriod": {
+          "P1": -4.0,
+          "P2": -7.0,
+          "P3": -3.0,
+          "P4": 0.0,
+          "P5": 0.0
+        }
+      },
+      {
+        "id": "O-ADV",
+        "label": "Conseils (juridique, financier, intégration)",
+        "status": "à confirmer",
+        "byPeriod": {
+          "P1": -8.0,
+          "P2": -4.0,
+          "P3": 0.0,
+          "P4": 0.0,
+          "P5": 0.0
+        }
+      }
+    ],
+    "byPeriod": {
+      "P1": -71.0,
+      "P2": -74.0,
+      "P3": -7.0,
+      "P4": 0.0,
+      "P5": 0.0
+    },
+    "byPeriodCells": {
+      "P1": "'M5 One-offs'!D12",
+      "P2": "'M5 One-offs'!E12",
+      "P3": "'M5 One-offs'!F12",
+      "P4": "'M5 One-offs'!G12",
+      "P5": "'M5 One-offs'!H12"
+    }
+  },
+  "m6": {
+    "taxRate": {
+      "value": 0.22,
+      "formatId": "percent-1",
+      "status": "estimation",
+      "source": "S4",
+      "cell": "Hypothèses!C24"
+    },
+    "capexRate": {
+      "value": 0.025,
+      "formatId": "percent-1",
+      "status": "estimation",
+      "source": "S4",
+      "cell": "Hypothèses!C25"
+    },
+    "wcIntensity": {
+      "value": 0.15,
+      "formatId": "percent-1",
+      "status": "estimation",
+      "source": "S4",
+      "cell": "Hypothèses!C26"
+    },
+    "cash": {
+      "P1": 364.9744666667,
+      "P2": 676.898506,
+      "P3": 823.11758708,
+      "P4": 917.4667277694,
+      "P5": 909.8622362718
+    },
+    "cashCells": {
+      "P1": "'M6 Bridge'!D31",
+      "P2": "'M6 Bridge'!E31",
+      "P3": "'M6 Bridge'!F31",
+      "P4": "'M6 Bridge'!G31",
+      "P5": "'M6 Bridge'!H31"
+    },
+    "standaloneRunRate": {
+      "value": 1384.7377484414,
+      "formatId": "money-eur-m-0",
+      "status": "calculé",
+      "source": "S4",
+      "cell": "'M6 Bridge'!C33",
+      "formulaId": "R-STANDALONE"
+    }
+  },
+  "m7": {
+    "counterfactual": {
+      "definition": "Opella reste dans le périmètre du vendeur : les allocations corporate continuent d'être supportées, aucun coût stand-alone propre, aucune TSA, aucun one-off, aucun capex ni BFR de séparation ; même trajectoire de CA et de marge que le cas.",
+      "cash": {
+        "P1": 519.3914666667,
+        "P2": 814.872346,
+        "P3": 852.10342228,
+        "P4": 890.8349780254,
+        "P5": 931.1235340355
+      },
+      "cells": {
+        "P1": "'M7 Financement'!C15",
+        "P2": "'M7 Financement'!D15",
+        "P3": "'M7 Financement'!E15",
+        "P4": "'M7 Financement'!F15",
+        "P5": "'M7 Financement'!G15"
+      }
+    },
+    "inventory": [
+      {
+        "id": "L-EBITDA",
+        "label": "EBITDA périmètre (tel qu'alloué par le vendeur)",
+        "module": "M1",
+        "group": "L-M6OTH",
+        "side": "cas",
+        "qualification": "récurrent",
+        "start": "P1",
+        "declaredEnd": null,
+        "lrec": false,
+        "driver": "CA de la période × marge périmètre ; deux hypothèses S4, non publiées par S1",
+        "source": "S4",
+        "status": "calculé",
+        "amounts": {
+          "P1": 795.16,
+          "P2": 1244.4357,
+          "P3": 1298.159676,
+          "P4": 1353.98709843,
+          "P5": 1411.9958224974
+        },
+        "contribution": {
+          "P1": -795.16,
+          "P2": -1244.4357,
+          "P3": -1298.159676,
+          "P4": -1353.98709843,
+          "P5": -1411.9958224974
+        },
+        "cells": {
+          "P1": "'M6 Bridge'!D6",
+          "P2": "'M6 Bridge'!E6",
+          "P3": "'M6 Bridge'!F6",
+          "P4": "'M6 Bridge'!G6",
+          "P5": "'M6 Bridge'!H6"
+        }
+      },
+      {
+        "id": "L-ALLOC",
+        "label": "Allocations vendeur réintégrées",
+        "module": "M2",
+        "group": "L-M6OTH",
+        "side": "cas",
+        "qualification": "récurrent",
+        "start": "P1",
+        "declaredEnd": null,
+        "lrec": false,
+        "driver": "1.60% du CA de la période",
+        "source": "S4",
+        "status": "estimation",
+        "amounts": {
+          "P1": 54.9333333333,
+          "P2": 84.872,
+          "P3": 87.41816,
+          "P4": 90.0407048,
+          "P5": 92.741925944
+        },
+        "contribution": {
+          "P1": -54.9333333333,
+          "P2": -84.872,
+          "P3": -87.41816,
+          "P4": -90.0407048,
+          "P5": -92.741925944
+        },
+        "cells": {
+          "P1": "'M6 Bridge'!D7",
+          "P2": "'M6 Bridge'!E7",
+          "P3": "'M6 Bridge'!F7",
+          "P4": "'M6 Bridge'!G7",
+          "P5": "'M6 Bridge'!H7"
+        }
+      },
+      {
+        "id": "L-M3-F-IT",
+        "label": "Coûts stand-alone — IT et infrastructure",
+        "module": "M3",
+        "group": "L-M3",
+        "side": "cas",
+        "qualification": "récurrent",
+        "start": "P1",
+        "declaredEnd": null,
+        "lrec": false,
+        "driver": "ERP, licences, hébergement, cybersécurité en propre",
+        "source": "S4",
+        "status": "estimation",
+        "amounts": {
+          "P1": -10.0,
+          "P2": -28.0,
+          "P3": -40.0,
+          "P4": -40.0,
+          "P5": -40.0
+        },
+        "contribution": {
+          "P1": 10.0,
+          "P2": 28.0,
+          "P3": 40.0,
+          "P4": 40.0,
+          "P5": 40.0
+        },
+        "cells": {
+          "P1": "'M6 Bridge'!D8",
+          "P2": "'M6 Bridge'!E8",
+          "P3": "'M6 Bridge'!F8",
+          "P4": "'M6 Bridge'!G8",
+          "P5": "'M6 Bridge'!H8"
+        }
+      },
+      {
+        "id": "L-M3-F-SUP",
+        "label": "Coûts stand-alone — Fonctions support (finance, RH, juridique)",
+        "module": "M3",
+        "group": "L-M3",
+        "side": "cas",
+        "qualification": "récurrent",
+        "start": "P1",
+        "declaredEnd": null,
+        "lrec": false,
+        "driver": "équipes siège à recréer, sortie des centres de services Sanofi",
+        "source": "S4",
+        "status": "estimation",
+        "amounts": {
+          "P1": -12.0,
+          "P2": -25.5,
+          "P3": -30.0,
+          "P4": -30.0,
+          "P5": -30.0
+        },
+        "contribution": {
+          "P1": 12.0,
+          "P2": 25.5,
+          "P3": 30.0,
+          "P4": 30.0,
+          "P5": 30.0
+        },
+        "cells": {
+          "P1": "'M6 Bridge'!D9",
+          "P2": "'M6 Bridge'!E9",
+          "P3": "'M6 Bridge'!F9",
+          "P4": "'M6 Bridge'!G9",
+          "P5": "'M6 Bridge'!H9"
+        }
+      },
+      {
+        "id": "L-M3-F-DIS",
+        "label": "Coûts stand-alone — Distribution et achats",
+        "module": "M3",
+        "group": "L-M3",
+        "side": "cas",
+        "qualification": "récurrent",
+        "start": "P1",
+        "declaredEnd": null,
+        "lrec": false,
+        "driver": "perte de mutualisation des contrats groupe",
+        "source": "S4",
+        "status": "estimation",
+        "amounts": {
+          "P1": -12.5,
+          "P2": -25.0,
+          "P3": -25.0,
+          "P4": -25.0,
+          "P5": -25.0
+        },
+        "contribution": {
+          "P1": 12.5,
+          "P2": 25.0,
+          "P3": 25.0,
+          "P4": 25.0,
+          "P5": 25.0
+        },
+        "cells": {
+          "P1": "'M6 Bridge'!D10",
+          "P2": "'M6 Bridge'!E10",
+          "P3": "'M6 Bridge'!F10",
+          "P4": "'M6 Bridge'!G10",
+          "P5": "'M6 Bridge'!H10"
+        }
+      },
+      {
+        "id": "L-M3-F-QUA",
+        "label": "Coûts stand-alone — Qualité, réglementaire, pharmacovigilance",
+        "module": "M3",
+        "group": "L-M3",
+        "side": "cas",
+        "qualification": "récurrent",
+        "start": "P1",
+        "declaredEnd": null,
+        "lrec": false,
+        "driver": "licences et équipes dédiées imposées par la réglementation",
+        "source": "S4",
+        "status": "estimation",
+        "amounts": {
+          "P1": -11.25,
+          "P2": -22.5,
+          "P3": -25.0,
+          "P4": -25.0,
+          "P5": -25.0
+        },
+        "contribution": {
+          "P1": 11.25,
+          "P2": 22.5,
+          "P3": 25.0,
+          "P4": 25.0,
+          "P5": 25.0
+        },
+        "cells": {
+          "P1": "'M6 Bridge'!D11",
+          "P2": "'M6 Bridge'!E11",
+          "P3": "'M6 Bridge'!F11",
+          "P4": "'M6 Bridge'!G11",
+          "P5": "'M6 Bridge'!H11"
+        }
+      },
+      {
+        "id": "L-M4-T-IT",
+        "label": "TSA — IT (ERP, infrastructure, support)",
+        "module": "M4",
+        "group": "L-M4",
+        "side": "cas",
+        "qualification": "ponctuel",
+        "start": "P1",
+        "declaredEnd": "P3",
+        "lrec": false,
+        "driver": "2.10 M€/mois × mois contractuels affectés",
+        "source": "S4",
+        "status": "estimation",
+        "amounts": {
+          "P1": -16.8,
+          "P2": -25.2,
+          "P3": -8.4,
+          "P4": 0.0,
+          "P5": 0.0
+        },
+        "contribution": {
+          "P1": 16.8,
+          "P2": 25.2,
+          "P3": 8.4,
+          "P4": -0.0,
+          "P5": -0.0
+        },
+        "cells": {
+          "P1": "'M6 Bridge'!D12",
+          "P2": "'M6 Bridge'!E12",
+          "P3": "'M6 Bridge'!F12",
+          "P4": "'M6 Bridge'!G12",
+          "P5": "'M6 Bridge'!H12"
+        }
+      },
+      {
+        "id": "L-M4-T-SC",
+        "label": "TSA — Supply chain et logistique",
+        "module": "M4",
+        "group": "L-M4",
+        "side": "cas",
+        "qualification": "ponctuel",
+        "start": "P1",
+        "declaredEnd": "P2",
+        "lrec": false,
+        "driver": "1.25 M€/mois × mois contractuels affectés",
+        "source": "S4",
+        "status": "estimation",
+        "amounts": {
+          "P1": -10.0,
+          "P2": -12.5,
+          "P3": 0.0,
+          "P4": 0.0,
+          "P5": 0.0
+        },
+        "contribution": {
+          "P1": 10.0,
+          "P2": 12.5,
+          "P3": -0.0,
+          "P4": -0.0,
+          "P5": -0.0
+        },
+        "cells": {
+          "P1": "'M6 Bridge'!D13",
+          "P2": "'M6 Bridge'!E13",
+          "P3": "'M6 Bridge'!F13",
+          "P4": "'M6 Bridge'!G13",
+          "P5": "'M6 Bridge'!H13"
+        }
+      },
+      {
+        "id": "L-M4-T-FIN",
+        "label": "TSA — Finance (comptabilité, paie, fiscalité)",
+        "module": "M4",
+        "group": "L-M4",
+        "side": "cas",
+        "qualification": "ponctuel",
+        "start": "P1",
+        "declaredEnd": "P2",
+        "lrec": false,
+        "driver": "0.85 M€/mois × mois contractuels affectés",
+        "source": "S4",
+        "status": "estimation",
+        "amounts": {
+          "P1": -6.8,
+          "P2": -3.4,
+          "P3": 0.0,
+          "P4": 0.0,
+          "P5": 0.0
+        },
+        "contribution": {
+          "P1": 6.8,
+          "P2": 3.4,
+          "P3": -0.0,
+          "P4": -0.0,
+          "P5": -0.0
+        },
+        "cells": {
+          "P1": "'M6 Bridge'!D14",
+          "P2": "'M6 Bridge'!E14",
+          "P3": "'M6 Bridge'!F14",
+          "P4": "'M6 Bridge'!G14",
+          "P5": "'M6 Bridge'!H14"
+        }
+      },
+      {
+        "id": "L-M4-T-REG",
+        "label": "TSA — Réglementaire et pharmacovigilance",
+        "module": "M4",
+        "group": "L-M4",
+        "side": "cas",
+        "qualification": "ponctuel",
+        "start": "P1",
+        "declaredEnd": "P3",
+        "lrec": false,
+        "driver": "0.50 M€/mois × mois contractuels affectés",
+        "source": "S4",
+        "status": "estimation",
+        "amounts": {
+          "P1": -4.0,
+          "P2": -6.0,
+          "P3": -2.0,
+          "P4": 0.0,
+          "P5": 0.0
+        },
+        "contribution": {
+          "P1": 4.0,
+          "P2": 6.0,
+          "P3": 2.0,
+          "P4": -0.0,
+          "P5": -0.0
+        },
+        "cells": {
+          "P1": "'M6 Bridge'!D15",
+          "P2": "'M6 Bridge'!E15",
+          "P3": "'M6 Bridge'!F15",
+          "P4": "'M6 Bridge'!G15",
+          "P5": "'M6 Bridge'!H15"
+        }
+      },
+      {
+        "id": "L-M4-T-OTH",
+        "label": "TSA — Autres (immobilier, achats)",
+        "module": "M4",
+        "group": "L-M4",
+        "side": "cas",
+        "qualification": "ponctuel",
+        "start": "P1",
+        "declaredEnd": "P2",
+        "lrec": false,
+        "driver": "0.30 M€/mois × mois contractuels affectés",
+        "source": "S4",
+        "status": "estimation",
+        "amounts": {
+          "P1": -2.4,
+          "P2": -1.2,
+          "P3": 0.0,
+          "P4": 0.0,
+          "P5": 0.0
+        },
+        "contribution": {
+          "P1": 2.4,
+          "P2": 1.2,
+          "P3": -0.0,
+          "P4": -0.0,
+          "P5": -0.0
+        },
+        "cells": {
+          "P1": "'M6 Bridge'!D16",
+          "P2": "'M6 Bridge'!E16",
+          "P3": "'M6 Bridge'!F16",
+          "P4": "'M6 Bridge'!G16",
+          "P5": "'M6 Bridge'!H16"
+        }
+      },
+      {
+        "id": "L-M5-O-IT",
+        "label": "One-off — Séparation IT (migration ERP, données, réseaux)",
+        "module": "M5",
+        "group": "L-M5",
+        "side": "cas",
+        "qualification": "ponctuel",
+        "start": "P1",
+        "declaredEnd": "P2",
+        "lrec": false,
+        "driver": "montant engagé sur la période",
+        "source": "S4",
+        "status": "estimation",
+        "amounts": {
+          "P1": -24.0,
+          "P2": -34.0,
+          "P3": 0.0,
+          "P4": 0.0,
+          "P5": 0.0
+        },
+        "contribution": {
+          "P1": 24.0,
+          "P2": 34.0,
+          "P3": -0.0,
+          "P4": -0.0,
+          "P5": -0.0
+        },
+        "cells": {
+          "P1": "'M6 Bridge'!D17",
+          "P2": "'M6 Bridge'!E17",
+          "P3": "'M6 Bridge'!F17",
+          "P4": "'M6 Bridge'!G17",
+          "P5": "'M6 Bridge'!H17"
+        }
+      },
+      {
+        "id": "L-M5-O-LEG",
+        "label": "One-off — Mise en place des entités juridiques",
+        "module": "M5",
+        "group": "L-M5",
+        "side": "cas",
+        "qualification": "ponctuel",
+        "start": "P1",
+        "declaredEnd": "P2",
+        "lrec": false,
+        "driver": "montant engagé sur la période",
+        "source": "S4",
+        "status": "estimation",
+        "amounts": {
+          "P1": -12.0,
+          "P2": -6.0,
+          "P3": 0.0,
+          "P4": 0.0,
+          "P5": 0.0
+        },
+        "contribution": {
+          "P1": 12.0,
+          "P2": 6.0,
+          "P3": -0.0,
+          "P4": -0.0,
+          "P5": -0.0
+        },
+        "cells": {
+          "P1": "'M6 Bridge'!D18",
+          "P2": "'M6 Bridge'!E18",
+          "P3": "'M6 Bridge'!F18",
+          "P4": "'M6 Bridge'!G18",
+          "P5": "'M6 Bridge'!H18"
+        }
+      },
+      {
+        "id": "L-M5-O-BRD",
+        "label": "One-off — Marque et packaging (rebranding)",
+        "module": "M5",
+        "group": "L-M5",
+        "side": "cas",
+        "qualification": "ponctuel",
+        "start": "P1",
+        "declaredEnd": "P3",
+        "lrec": false,
+        "driver": "montant engagé sur la période",
+        "source": "S4",
+        "status": "estimation",
+        "amounts": {
+          "P1": -14.0,
+          "P2": -16.0,
+          "P3": -4.0,
+          "P4": 0.0,
+          "P5": 0.0
+        },
+        "contribution": {
+          "P1": 14.0,
+          "P2": 16.0,
+          "P3": 4.0,
+          "P4": -0.0,
+          "P5": -0.0
+        },
+        "cells": {
+          "P1": "'M6 Bridge'!D19",
+          "P2": "'M6 Bridge'!E19",
+          "P3": "'M6 Bridge'!F19",
+          "P4": "'M6 Bridge'!G19",
+          "P5": "'M6 Bridge'!H19"
+        }
+      },
+      {
+        "id": "L-M5-O-HR",
+        "label": "One-off — Ressources humaines (transferts, rétention)",
+        "module": "M5",
+        "group": "L-M5",
+        "side": "cas",
+        "qualification": "ponctuel",
+        "start": "P1",
+        "declaredEnd": "P2",
+        "lrec": false,
+        "driver": "montant engagé sur la période",
+        "source": "S4",
+        "status": "estimation",
+        "amounts": {
+          "P1": -9.0,
+          "P2": -7.0,
+          "P3": 0.0,
+          "P4": 0.0,
+          "P5": 0.0
+        },
+        "contribution": {
+          "P1": 9.0,
+          "P2": 7.0,
+          "P3": -0.0,
+          "P4": -0.0,
+          "P5": -0.0
+        },
+        "cells": {
+          "P1": "'M6 Bridge'!D20",
+          "P2": "'M6 Bridge'!E20",
+          "P3": "'M6 Bridge'!F20",
+          "P4": "'M6 Bridge'!G20",
+          "P5": "'M6 Bridge'!H20"
+        }
+      },
+      {
+        "id": "L-M5-O-SC",
+        "label": "One-off — Requalification supply chain (sites, licences)",
+        "module": "M5",
+        "group": "L-M5",
+        "side": "cas",
+        "qualification": "ponctuel",
+        "start": "P1",
+        "declaredEnd": "P3",
+        "lrec": false,
+        "driver": "montant engagé sur la période",
+        "source": "S4",
+        "status": "estimation",
+        "amounts": {
+          "P1": -4.0,
+          "P2": -7.0,
+          "P3": -3.0,
+          "P4": 0.0,
+          "P5": 0.0
+        },
+        "contribution": {
+          "P1": 4.0,
+          "P2": 7.0,
+          "P3": 3.0,
+          "P4": -0.0,
+          "P5": -0.0
+        },
+        "cells": {
+          "P1": "'M6 Bridge'!D21",
+          "P2": "'M6 Bridge'!E21",
+          "P3": "'M6 Bridge'!F21",
+          "P4": "'M6 Bridge'!G21",
+          "P5": "'M6 Bridge'!H21"
+        }
+      },
+      {
+        "id": "L-M5-O-ADV",
+        "label": "One-off — Conseils (juridique, financier, intégration)",
+        "module": "M5",
+        "group": "L-M5",
+        "side": "cas",
+        "qualification": "ponctuel",
+        "start": "P1",
+        "declaredEnd": "P2",
+        "lrec": false,
+        "driver": "montant engagé sur la période",
+        "source": "S4",
+        "status": "à confirmer",
+        "amounts": {
+          "P1": -8.0,
+          "P2": -4.0,
+          "P3": 0.0,
+          "P4": 0.0,
+          "P5": 0.0
+        },
+        "contribution": {
+          "P1": 8.0,
+          "P2": 4.0,
+          "P3": -0.0,
+          "P4": -0.0,
+          "P5": -0.0
+        },
+        "cells": {
+          "P1": "'M6 Bridge'!D22",
+          "P2": "'M6 Bridge'!E22",
+          "P3": "'M6 Bridge'!F22",
+          "P4": "'M6 Bridge'!G22",
+          "P5": "'M6 Bridge'!H22"
+        }
+      },
+      {
+        "id": "L-SEPCAPEX",
+        "label": "Capex de séparation",
+        "module": "M6",
+        "group": "L-M6SEP",
+        "side": "cas",
+        "qualification": "ponctuel",
+        "start": "P1",
+        "declaredEnd": "P3",
+        "lrec": false,
+        "driver": "investissements dédiés à la séparation, distincts du capex courant",
+        "source": "S4",
+        "status": "estimation",
+        "amounts": {
+          "P1": -20.0,
+          "P2": -20.0,
+          "P3": -5.0,
+          "P4": 0.0,
+          "P5": 0.0
+        },
+        "contribution": {
+          "P1": 20.0,
+          "P2": 20.0,
+          "P3": 5.0,
+          "P4": -0.0,
+          "P5": -0.0
+        },
+        "cells": {
+          "P1": "'M6 Bridge'!D23",
+          "P2": "'M6 Bridge'!E23",
+          "P3": "'M6 Bridge'!F23",
+          "P4": "'M6 Bridge'!G23",
+          "P5": "'M6 Bridge'!H23"
+        }
+      },
+      {
+        "id": "L-SEPWC",
+        "label": "BFR de séparation — constitution",
+        "module": "M6",
+        "group": "L-M6SEP",
+        "side": "cas",
+        "qualification": "ponctuel",
+        "start": "P1",
+        "declaredEnd": "P2",
+        "lrec": false,
+        "driver": "stocks de sécurité, décalage clients, perte des conditions groupe",
+        "source": "S4",
+        "status": "estimation",
+        "amounts": {
+          "P1": -55.0,
+          "P2": -10.0,
+          "P3": 0.0,
+          "P4": 0.0,
+          "P5": 0.0
+        },
+        "contribution": {
+          "P1": 55.0,
+          "P2": 10.0,
+          "P3": -0.0,
+          "P4": -0.0,
+          "P5": -0.0
+        },
+        "cells": {
+          "P1": "'M6 Bridge'!D24",
+          "P2": "'M6 Bridge'!E24",
+          "P3": "'M6 Bridge'!F24",
+          "P4": "'M6 Bridge'!G24",
+          "P5": "'M6 Bridge'!H24"
+        }
+      },
+      {
+        "id": "L-SEPWCREC",
+        "label": "BFR de séparation — reprise",
+        "module": "M6",
+        "group": "L-M6SEP",
+        "side": "cas",
+        "qualification": "ponctuel",
+        "start": "P3",
+        "declaredEnd": "P4",
+        "lrec": true,
+        "driver": "normalisation des conditions de paiement et des stocks",
+        "source": "S4",
+        "status": "estimation",
+        "amounts": {
+          "P1": 0.0,
+          "P2": 0.0,
+          "P3": 15.0,
+          "P4": 50.0,
+          "P5": 0.0
+        },
+        "contribution": {
+          "P1": -0.0,
+          "P2": -0.0,
+          "P3": -15.0,
+          "P4": -50.0,
+          "P5": -0.0
+        },
+        "cells": {
+          "P1": "'M6 Bridge'!D25",
+          "P2": "'M6 Bridge'!E25",
+          "P3": "'M6 Bridge'!F25",
+          "P4": "'M6 Bridge'!G25",
+          "P5": "'M6 Bridge'!H25"
+        }
+      },
+      {
+        "id": "L-TAXREC",
+        "label": "Impôts — effet des postes récurrents",
+        "module": "M6",
+        "group": "L-M6OTH",
+        "side": "cas",
+        "qualification": "récurrent",
+        "start": "P1",
+        "declaredEnd": null,
+        "lrec": false,
+        "driver": "taux d'impôt cash effectif de 22% sur la base récurrente",
+        "source": "S4",
+        "status": "calculé",
+        "amounts": {
+          "P1": -176.9555333333,
+          "P2": -270.227694,
+          "P3": -278.42712392,
+          "P4": -291.2861167106,
+          "P5": -304.6423046571
+        },
+        "contribution": {
+          "P1": 176.9555333333,
+          "P2": 270.227694,
+          "P3": 278.42712392,
+          "P4": 291.2861167106,
+          "P5": 304.6423046571
+        },
+        "cells": {
+          "P1": "'M6 Bridge'!D26",
+          "P2": "'M6 Bridge'!E26",
+          "P3": "'M6 Bridge'!F26",
+          "P4": "'M6 Bridge'!G26",
+          "P5": "'M6 Bridge'!H26"
+        }
+      },
+      {
+        "id": "L-TAXPONC",
+        "label": "Impôts — effet des coûts de séparation",
+        "module": "M6",
+        "group": "L-M6OTH",
+        "side": "cas",
+        "qualification": "ponctuel",
+        "start": "P1",
+        "declaredEnd": "P3",
+        "lrec": false,
+        "driver": "taux d'impôt cash effectif de 22% sur TSA et one-offs",
+        "source": "S4",
+        "status": "calculé",
+        "amounts": {
+          "P1": 24.42,
+          "P2": 26.906,
+          "P3": 3.828,
+          "P4": -0.0,
+          "P5": -0.0
+        },
+        "contribution": {
+          "P1": -24.42,
+          "P2": -26.906,
+          "P3": -3.828,
+          "P4": 0.0,
+          "P5": 0.0
+        },
+        "cells": {
+          "P1": "'M6 Bridge'!D27",
+          "P2": "'M6 Bridge'!E27",
+          "P3": "'M6 Bridge'!F27",
+          "P4": "'M6 Bridge'!G27",
+          "P5": "'M6 Bridge'!H27"
+        }
+      },
+      {
+        "id": "L-CAPEX",
+        "label": "Capex courant",
+        "module": "M6",
+        "group": "L-M6OTH",
+        "side": "cas",
+        "qualification": "récurrent",
+        "start": "P1",
+        "declaredEnd": null,
+        "lrec": false,
+        "driver": "2.5% du CA de la période",
+        "source": "S4",
+        "status": "estimation",
+        "amounts": {
+          "P1": -85.8333333333,
+          "P2": -132.6125,
+          "P3": -136.590875,
+          "P4": -140.68860125,
+          "P5": -144.9092592875
+        },
+        "contribution": {
+          "P1": 85.8333333333,
+          "P2": 132.6125,
+          "P3": 136.590875,
+          "P4": 140.68860125,
+          "P5": 144.9092592875
+        },
+        "cells": {
+          "P1": "'M6 Bridge'!D28",
+          "P2": "'M6 Bridge'!E28",
+          "P3": "'M6 Bridge'!F28",
+          "P4": "'M6 Bridge'!G28",
+          "P5": "'M6 Bridge'!H28"
+        }
+      },
+      {
+        "id": "L-WC",
+        "label": "BFR courant",
+        "module": "M6",
+        "group": "L-M6OTH",
+        "side": "cas",
+        "qualification": "récurrent",
+        "start": "P1",
+        "declaredEnd": null,
+        "lrec": false,
+        "driver": "15% du CA incrémental de la période",
+        "source": "S4",
+        "status": "estimation",
+        "amounts": {
+          "P1": -15.0,
+          "P2": -23.175,
+          "P3": -23.87025,
+          "P4": -24.5863575,
+          "P5": -25.323948225
+        },
+        "contribution": {
+          "P1": 15.0,
+          "P2": 23.175,
+          "P3": 23.87025,
+          "P4": 24.5863575,
+          "P5": 25.323948225
+        },
+        "cells": {
+          "P1": "'M6 Bridge'!D29",
+          "P2": "'M6 Bridge'!E29",
+          "P3": "'M6 Bridge'!F29",
+          "P4": "'M6 Bridge'!G29",
+          "P5": "'M6 Bridge'!H29"
+        }
+      },
+      {
+        "id": "L-OTHER",
+        "label": "Autres éléments cash déclarés",
+        "module": "M6",
+        "group": "L-M6OTH",
+        "side": "cas",
+        "qualification": "récurrent",
+        "start": "P1",
+        "declaredEnd": null,
+        "lrec": false,
+        "driver": "poste déclaré nul en base ; entrée de diligence ouverte",
+        "source": "S4",
+        "status": "à confirmer",
+        "amounts": {
+          "P1": 0.0,
+          "P2": 0.0,
+          "P3": 0.0,
+          "P4": 0.0,
+          "P5": 0.0
+        },
+        "contribution": {
+          "P1": -0.0,
+          "P2": -0.0,
+          "P3": -0.0,
+          "P4": -0.0,
+          "P5": -0.0
+        },
+        "cells": {
+          "P1": "'M6 Bridge'!D30",
+          "P2": "'M6 Bridge'!E30",
+          "P3": "'M6 Bridge'!F30",
+          "P4": "'M6 Bridge'!G30",
+          "P5": "'M6 Bridge'!H30"
+        }
+      },
+      {
+        "id": "L-CF-EBITDA",
+        "label": "EBITDA périmètre (maintien dans le groupe)",
+        "module": "CF",
+        "group": "L-CF",
+        "side": "contrefactuel",
+        "qualification": "récurrent",
+        "start": "P1",
+        "declaredEnd": null,
+        "lrec": false,
+        "driver": "même trajectoire de CA et de marge que le cas",
+        "source": "S4",
+        "status": "calculé",
+        "amounts": {
+          "P1": 795.16,
+          "P2": 1244.4357,
+          "P3": 1298.159676,
+          "P4": 1353.98709843,
+          "P5": 1411.9958224974
+        },
+        "contribution": {
+          "P1": 795.16,
+          "P2": 1244.4357,
+          "P3": 1298.159676,
+          "P4": 1353.98709843,
+          "P5": 1411.9958224974
+        },
+        "cells": {
+          "P1": "'M7 Financement'!C10",
+          "P2": "'M7 Financement'!D10",
+          "P3": "'M7 Financement'!E10",
+          "P4": "'M7 Financement'!F10",
+          "P5": "'M7 Financement'!G10"
+        }
+      },
+      {
+        "id": "L-CF-TAX",
+        "label": "Impôts (contrefactuel)",
+        "module": "CF",
+        "group": "L-CF",
+        "side": "contrefactuel",
+        "qualification": "récurrent",
+        "start": "P1",
+        "declaredEnd": null,
+        "lrec": false,
+        "driver": "même taux effectif de 22%, base sans séparation",
+        "source": "S4",
+        "status": "calculé",
+        "amounts": {
+          "P1": -174.9352,
+          "P2": -273.775854,
+          "P3": -285.59512872,
+          "P4": -297.8771616546,
+          "P5": -310.6390809494
+        },
+        "contribution": {
+          "P1": -174.9352,
+          "P2": -273.775854,
+          "P3": -285.59512872,
+          "P4": -297.8771616546,
+          "P5": -310.6390809494
+        },
+        "cells": {
+          "P1": "'M7 Financement'!C11",
+          "P2": "'M7 Financement'!D11",
+          "P3": "'M7 Financement'!E11",
+          "P4": "'M7 Financement'!F11",
+          "P5": "'M7 Financement'!G11"
+        }
+      },
+      {
+        "id": "L-CF-CAPEX",
+        "label": "Capex courant (contrefactuel)",
+        "module": "CF",
+        "group": "L-CF",
+        "side": "contrefactuel",
+        "qualification": "récurrent",
+        "start": "P1",
+        "declaredEnd": null,
+        "lrec": false,
+        "driver": "capex courant inchangé par la séparation",
+        "source": "S4",
+        "status": "estimation",
+        "amounts": {
+          "P1": -85.8333333333,
+          "P2": -132.6125,
+          "P3": -136.590875,
+          "P4": -140.68860125,
+          "P5": -144.9092592875
+        },
+        "contribution": {
+          "P1": -85.8333333333,
+          "P2": -132.6125,
+          "P3": -136.590875,
+          "P4": -140.68860125,
+          "P5": -144.9092592875
+        },
+        "cells": {
+          "P1": "'M7 Financement'!C12",
+          "P2": "'M7 Financement'!D12",
+          "P3": "'M7 Financement'!E12",
+          "P4": "'M7 Financement'!F12",
+          "P5": "'M7 Financement'!G12"
+        }
+      },
+      {
+        "id": "L-CF-WC",
+        "label": "BFR courant (contrefactuel)",
+        "module": "CF",
+        "group": "L-CF",
+        "side": "contrefactuel",
+        "qualification": "récurrent",
+        "start": "P1",
+        "declaredEnd": null,
+        "lrec": false,
+        "driver": "BFR d'exploitation inchangé par la séparation",
+        "source": "S4",
+        "status": "estimation",
+        "amounts": {
+          "P1": -15.0,
+          "P2": -23.175,
+          "P3": -23.87025,
+          "P4": -24.5863575,
+          "P5": -25.323948225
+        },
+        "contribution": {
+          "P1": -15.0,
+          "P2": -23.175,
+          "P3": -23.87025,
+          "P4": -24.5863575,
+          "P5": -25.323948225
+        },
+        "cells": {
+          "P1": "'M7 Financement'!C13",
+          "P2": "'M7 Financement'!D13",
+          "P3": "'M7 Financement'!E13",
+          "P4": "'M7 Financement'!F13",
+          "P5": "'M7 Financement'!G13"
+        }
+      },
+      {
+        "id": "L-CF-OTHER",
+        "label": "Autres éléments cash déclarés (contrefactuel)",
+        "module": "CF",
+        "group": "L-CF",
+        "side": "contrefactuel",
+        "qualification": "récurrent",
+        "start": "P1",
+        "declaredEnd": null,
+        "lrec": false,
+        "driver": "miroir du poste déclaré du cas",
+        "source": "S4",
+        "status": "à confirmer",
+        "amounts": {
+          "P1": 0.0,
+          "P2": 0.0,
+          "P3": 0.0,
+          "P4": 0.0,
+          "P5": 0.0
+        },
+        "contribution": {
+          "P1": 0.0,
+          "P2": 0.0,
+          "P3": 0.0,
+          "P4": 0.0,
+          "P5": 0.0
+        },
+        "cells": {
+          "P1": "'M7 Financement'!C14",
+          "P2": "'M7 Financement'!D14",
+          "P3": "'M7 Financement'!E14",
+          "P4": "'M7 Financement'!F14",
+          "P5": "'M7 Financement'!G14"
+        }
+      }
+    ],
+    "periods": [
+      {
+        "period": "P1",
+        "c": -154.417,
+        "s": 154.417,
+        "sCum": 154.417,
+        "need": 154.417,
+        "eGap": -7.163,
+        "nOneOff": 161.58,
+        "cells": {
+          "c": "'M7 Financement'!C61",
+          "s": "'M7 Financement'!C62",
+          "sCum": "'M7 Financement'!C63",
+          "need": "'M7 Financement'!C64",
+          "eGap": "'M7 Financement'!C38",
+          "nOneOff": "'M7 Financement'!C56"
+        }
+      },
+      {
+        "period": "P2",
+        "c": -137.97384,
+        "s": 137.97384,
+        "sCum": 292.39084,
+        "need": 292.39084,
+        "eGap": 12.57984,
+        "nOneOff": 125.394,
+        "cells": {
+          "c": "'M7 Financement'!D61",
+          "s": "'M7 Financement'!D62",
+          "sCum": "'M7 Financement'!D63",
+          "need": "'M7 Financement'!D64",
+          "eGap": "'M7 Financement'!D38",
+          "nOneOff": "'M7 Financement'!D56"
+        }
+      },
+      {
+        "period": "P3",
+        "c": -28.9858352,
+        "s": 28.9858352,
+        "sCum": 321.3766752,
+        "need": 321.3766752,
+        "eGap": 25.4138352,
+        "nOneOff": 3.572,
+        "cells": {
+          "c": "'M7 Financement'!E61",
+          "s": "'M7 Financement'!E62",
+          "sCum": "'M7 Financement'!E63",
+          "need": "'M7 Financement'!E64",
+          "eGap": "'M7 Financement'!E38",
+          "nOneOff": "'M7 Financement'!E56"
+        }
+      },
+      {
+        "period": "P4",
+        "c": 26.631749744,
+        "s": -26.631749744,
+        "sCum": 294.744925456,
+        "need": 294.744925456,
+        "eGap": 23.368250256,
+        "nOneOff": -50.0,
+        "cells": {
+          "c": "'M7 Financement'!F61",
+          "s": "'M7 Financement'!F62",
+          "sCum": "'M7 Financement'!F63",
+          "need": "'M7 Financement'!F64",
+          "eGap": "'M7 Financement'!F38",
+          "nOneOff": "'M7 Financement'!F56"
+        }
+      },
+      {
+        "period": "P5",
+        "c": -21.2612977637,
+        "s": 21.2612977637,
+        "sCum": 316.0062232197,
+        "need": 316.0062232197,
+        "eGap": 21.2612977637,
+        "nOneOff": 0.0,
+        "cells": {
+          "c": "'M7 Financement'!G61",
+          "s": "'M7 Financement'!G62",
+          "sCum": "'M7 Financement'!G63",
+          "need": "'M7 Financement'!G64",
+          "eGap": "'M7 Financement'!G38",
+          "nOneOff": "'M7 Financement'!G56"
+        }
+      }
+    ],
+    "peak": {
+      "amount": 321.3766752,
+      "period": "P3",
+      "cells": {
+        "amount": "'M7 Financement'!C71",
+        "period": "'M7 Financement'!C72"
+      }
+    },
+    "horizon": {
+      "period": "P5",
+      "delta": 21.2612977637,
+      "residualSurplus": 0.0,
+      "cells": {
+        "period": "'M7 Financement'!C73",
+        "delta": "'M7 Financement'!C74",
+        "residualSurplus": "'M7 Financement'!C75"
+      }
+    },
+    "resorb": {
+      "state": "croissant à l'horizon",
+      "cell": "'M7 Financement'!C76"
+    }
+  },
+  "m8": {
+    "entryLeverage": 4.0,
+    "equityCheque": 10461.0490062344,
+    "note": "encadré secondaire illustratif ; aucun retour sponsor, ni multiple de sortie, ni taux de rendement, ni grille de sensibilité de sortie"
+  },
+  "outputs": {
+    "O-RUNRATE": {
+      "value": 120.0,
+      "formatId": "money-eur-m-0",
+      "period": "P5",
+      "status": "estimation",
+      "source": "M3"
+    },
+    "O-SEPCOST": {
+      "value": 295.7,
+      "formatId": "money-eur-m-0",
+      "period": "P1–P5",
+      "status": "estimation",
+      "source": "M4, M5, M6",
+      "cell": "'M6 Bridge'!C34",
+      "scope": "TSA + one-offs + capex de séparation, hors BFR de séparation",
+      "components": [
+        "L-M4-T-IT",
+        "L-M4-T-SC",
+        "L-M4-T-FIN",
+        "L-M4-T-REG",
+        "L-M4-T-OTH",
+        "L-M5-O-IT",
+        "L-M5-O-LEG",
+        "L-M5-O-BRD",
+        "L-M5-O-HR",
+        "L-M5-O-SC",
+        "L-M5-O-ADV",
+        "L-SEPCAPEX"
+      ],
+      "excludes": [
+        "L-SEPWC",
+        "L-SEPWCREC"
+      ]
+    },
+    "O-PEAK": {
+      "value": 321.3766752,
+      "period": "P3",
+      "formatId": "money-eur-m-0",
+      "status": "calculé",
+      "source": "M7"
+    },
+    "O-STEADY": {
+      "value": "P4",
+      "formatId": "period-id",
+      "status": "calculé",
+      "source": "M3, M4, M5"
+    },
+    "O-RESORB": {
+      "state": "croissant à l'horizon",
+      "fieldPaths": {
+        "needAtHorizon": "m7.periods[period=P5].need",
+        "delta": "m7.horizon.delta",
+        "eGap": "m7.periods[period=P5].eGap",
+        "nOneOff": "m7.periods[period=P5].nOneOff",
+        "grossBalance": "m7.periods[period=P5].sCum",
+        "residualSurplus": "m7.horizon.residualSurplus"
+      },
+      "status": "calculé",
+      "source": "M7"
+    }
+  },
+  "scenarios": {
+    "S-COST": {
+      "label": "Coûts stand-alone récurrents",
+      "variable": "run-rate par fonction de M3",
+      "unit": "x run-rate",
+      "states": {
+        "basse": {
+          "runRate": 78.0,
+          "sepCost": 295.7,
+          "peak": 252.32809,
+          "peakPeriod": "P2",
+          "steady": "P4",
+          "resorbState": "non résorbé à l'horizon",
+          "maxHorizon": "P5",
+          "cells": {
+            "runRate": "Scénarios!D6",
+            "sepCost": "Scénarios!E6",
+            "peak": "Scénarios!F6",
+            "peakPeriod": "Scénarios!G6",
+            "steady": "Scénarios!H6"
+          }
+        },
+        "centrale": {
+          "runRate": 120.0,
+          "sepCost": 295.7,
+          "peak": 321.3766752,
+          "peakPeriod": "P3",
+          "steady": "P4",
+          "resorbState": "croissant à l'horizon",
+          "maxHorizon": "P5",
+          "cells": {
+            "runRate": "Scénarios!D7",
+            "sepCost": "Scénarios!E7",
+            "peak": "Scénarios!F7",
+            "peakPeriod": "Scénarios!G7",
+            "steady": "Scénarios!H7"
+          }
+        },
+        "haute": {
+          "runRate": 156.0,
+          "sepCost": 295.7,
+          "peak": 434.5857232197,
+          "peakPeriod": "P5",
+          "steady": "P4",
+          "resorbState": "croissant à l'horizon",
+          "maxHorizon": "P5",
+          "cells": {
+            "runRate": "Scénarios!D8",
+            "sepCost": "Scénarios!E8",
+            "peak": "Scénarios!F8",
+            "peakPeriod": "Scénarios!G8",
+            "steady": "Scénarios!H8"
+          }
+        }
+      }
+    },
+    "S-TSA": {
+      "label": "Retard de sortie de TSA",
+      "variable": "durée et double run de M4",
+      "unit": "mois",
+      "states": {
+        "basse": {
+          "runRate": 120.0,
+          "sepCost": 280.7,
+          "peak": 309.6766752,
+          "peakPeriod": "P3",
+          "steady": "P4",
+          "resorbState": "croissant à l'horizon",
+          "maxHorizon": "P5",
+          "cells": {
+            "runRate": "Scénarios!D10",
+            "sepCost": "Scénarios!E10",
+            "peak": "Scénarios!F10",
+            "peakPeriod": "Scénarios!G10",
+            "steady": "Scénarios!H10"
+          }
+        },
+        "centrale": {
+          "runRate": 120.0,
+          "sepCost": 295.7,
+          "peak": 321.3766752,
+          "peakPeriod": "P3",
+          "steady": "P4",
+          "resorbState": "croissant à l'horizon",
+          "maxHorizon": "P5",
+          "cells": {
+            "runRate": "Scénarios!D11",
+            "sepCost": "Scénarios!E11",
+            "peak": "Scénarios!F11",
+            "peakPeriod": "Scénarios!G11",
+            "steady": "Scénarios!H11"
+          }
+        },
+        "haute": {
+          "runRate": 120.0,
+          "sepCost": 349.7,
+          "peak": 377.2173599163,
+          "peakPeriod": "P6",
+          "steady": "P5",
+          "resorbState": "croissant à l'horizon",
+          "maxHorizon": "P6",
+          "cells": {
+            "runRate": "Scénarios!D12",
+            "sepCost": "Scénarios!E12",
+            "peak": "Scénarios!F12",
+            "peakPeriod": "Scénarios!G12",
+            "steady": "Scénarios!H12"
+          }
+        }
+      }
+    },
+    "S-ONEOFF": {
+      "label": "One-offs",
+      "variable": "montants de M5",
+      "unit": "x montant",
+      "states": {
+        "basse": {
+          "runRate": 120.0,
+          "sepCost": 257.7,
+          "peak": 291.7366752,
+          "peakPeriod": "P3",
+          "steady": "P4",
+          "resorbState": "croissant à l'horizon",
+          "maxHorizon": "P5",
+          "cells": {
+            "runRate": "Scénarios!D14",
+            "sepCost": "Scénarios!E14",
+            "peak": "Scénarios!F14",
+            "peakPeriod": "Scénarios!G14",
+            "steady": "Scénarios!H14"
+          }
+        },
+        "centrale": {
+          "runRate": 120.0,
+          "sepCost": 295.7,
+          "peak": 321.3766752,
+          "peakPeriod": "P3",
+          "steady": "P4",
+          "resorbState": "croissant à l'horizon",
+          "maxHorizon": "P5",
+          "cells": {
+            "runRate": "Scénarios!D15",
+            "sepCost": "Scénarios!E15",
+            "peak": "Scénarios!F15",
+            "peakPeriod": "Scénarios!G15",
+            "steady": "Scénarios!H15"
+          }
+        },
+        "haute": {
+          "runRate": 120.0,
+          "sepCost": 364.1,
+          "peak": 374.7286752,
+          "peakPeriod": "P3",
+          "steady": "P4",
+          "resorbState": "croissant à l'horizon",
+          "maxHorizon": "P5",
+          "cells": {
+            "runRate": "Scénarios!D16",
+            "sepCost": "Scénarios!E16",
+            "peak": "Scénarios!F16",
+            "peakPeriod": "Scénarios!G16",
+            "steady": "Scénarios!H16"
+          }
+        }
+      }
+    },
+    "S-OPS": {
+      "label": "Croissance et marge",
+      "variable": "trajectoire opérationnelle de M1",
+      "unit": "croissance / pts de marge",
+      "states": {
+        "basse": {
+          "runRate": 120.0,
+          "sepCost": 295.7,
+          "peak": 335.3332602498,
+          "peakPeriod": "P5",
+          "steady": "P4",
+          "resorbState": "croissant à l'horizon",
+          "maxHorizon": "P5",
+          "cells": {
+            "runRate": "Scénarios!D18",
+            "sepCost": "Scénarios!E18",
+            "peak": "Scénarios!F18",
+            "peakPeriod": "Scénarios!G18",
+            "steady": "Scénarios!H18"
+          }
+        },
+        "centrale": {
+          "runRate": 120.0,
+          "sepCost": 295.7,
+          "peak": 321.3766752,
+          "peakPeriod": "P3",
+          "steady": "P4",
+          "resorbState": "croissant à l'horizon",
+          "maxHorizon": "P5",
+          "cells": {
+            "runRate": "Scénarios!D19",
+            "sepCost": "Scénarios!E19",
+            "peak": "Scénarios!F19",
+            "peakPeriod": "Scénarios!G19",
+            "steady": "Scénarios!H19"
+          }
+        },
+        "haute": {
+          "runRate": 120.0,
+          "sepCost": 295.7,
+          "peak": 313.8992,
+          "peakPeriod": "P3",
+          "steady": "P4",
+          "resorbState": "croissant à l'horizon",
+          "maxHorizon": "P5",
+          "cells": {
+            "runRate": "Scénarios!D20",
+            "sepCost": "Scénarios!E20",
+            "peak": "Scénarios!F20",
+            "peakPeriod": "Scénarios!G20",
+            "steady": "Scénarios!H20"
+          }
+        }
+      }
+    }
+  }
+}

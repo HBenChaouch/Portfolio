@@ -1,0 +1,787 @@
+{
+  "manifest": "opella-transaction-services",
+  "version": "1.1.0",
+  "spec": "docs/agent/08-opella-case.md",
+  "note": "Manifeste source côté Transaction Services. Il déclare la chaîne de production, les tolérances des relations du §5.2 et les vecteurs de contrôle. Il ne contient aucune valeur du cas : celles-ci vivent dans le workbook et son export.",
+  "chain": {
+    "generator": "build_carveout.py",
+    "workbook": "Modele_Carveout_Opella.xlsx",
+    "snapshot": "opella_case_snapshot.json",
+    "manifest": "opella_integration_manifest.json",
+    "form": "trois sorties de la même exécution, depuis la même logique",
+    "properties": [
+      "le workbook est régénérable depuis le générateur seul",
+      "le snapshot est réconcilié champ à champ avec le workbook avant publication",
+      "le manifeste est régénéré par le même générateur et ne contient aucune valeur du cas",
+      "aucune valeur n'entre dans le snapshot sans exister dans le workbook",
+      "le snapshot n'est jamais une entrée du générateur"
+    ],
+    "deterministic": true,
+    "determinismProof": "les propriétés du document sont figées à BUILD_STAMP ; deux exécutions produisent les mêmes SHA-256 du workbook, du snapshot et du manifeste"
+  },
+  "sourceFiles": {
+    "build_carveout.py": "65CA9F4DCD2418E057A910C873397FCE8D43B1FEC38EA81A0E7E4092FF3BB818",
+    "Modele_Carveout_Opella.xlsx": "8D9D3EA0F81279A254A6E01563228227DF8DF1A93F1210E0BA44C1468CC87874",
+    "opella_case_snapshot.json": "BAA9B01E9641601AD327B64B8F0BF33639783E27311918BA34AE2C3EA4018921"
+  },
+  "sourceContract": {
+    "requiredIds": [
+      "S1",
+      "S2",
+      "S3",
+      "S4"
+    ],
+    "requiredFields": [
+      "id",
+      "label",
+      "value_date",
+      "accessed",
+      "status",
+      "fields",
+      "references"
+    ],
+    "publicReferenceRequiredFields": [
+      "label",
+      "url",
+      "accessed"
+    ],
+    "internalReferenceRequiredFields": [
+      "label",
+      "path",
+      "accessed"
+    ],
+    "exactUrlRequiredFor": [
+      "S1",
+      "S2",
+      "S3"
+    ],
+    "internalAssumptionSource": "S4"
+  },
+  "lineageContract": {
+    "requiredRecords": [
+      "LN-L-EBITDA",
+      "LN-ENTRY-MULTIPLE",
+      "LN-OWNERSHIP",
+      "LN-O-RUNRATE",
+      "LN-O-SEPCOST",
+      "LN-O-PEAK",
+      "LN-O-STEADY",
+      "LN-O-RESORB"
+    ],
+    "requiredLinks": [
+      "sourceIds",
+      "assumptions",
+      "formulaIds",
+      "outputs"
+    ],
+    "rule": "chaque chaîne relie une source à au moins une hypothèse/cellule, une formule identifiée et un output ; L-EBITDA relève de S4, jamais de S1"
+  },
+  "canonicalCarriers": {
+    "B_H": {
+      "path": "m7.periods[period=m7.horizon.period].need",
+      "forbiddenValuePaths": [
+        "outputs.O-RESORB.needAtHorizon"
+      ]
+    },
+    "E_H": {
+      "path": "m7.periods[period=m7.horizon.period].eGap",
+      "forbiddenValuePaths": [
+        "outputs.O-RESORB.eGap"
+      ]
+    },
+    "N_H": {
+      "path": "m7.periods[period=m7.horizon.period].nOneOff",
+      "forbiddenValuePaths": [
+        "outputs.O-RESORB.nOneOff"
+      ]
+    },
+    "Pk": {
+      "path": "m7.resorb.pk",
+      "absentStates": [
+        "non résorbé à l'horizon",
+        "croissant à l'horizon"
+      ],
+      "nullForbidden": true
+    }
+  },
+  "toleranceUnits": {
+    "EURm": "millions d'euros ; une tolérance de 1e-6 vaut un euro",
+    "ratio": "fraction sans unité",
+    "month": "mois entiers",
+    "exact": "comparaison symbolique : égalité stricte, aucune tolérance numérique admise"
+  },
+  "relations": [
+    {
+      "id": "R-PERIM",
+      "gate": "G1",
+      "tolerance": 1e-06,
+      "unit": "EURm",
+      "justification": "identité de définition ; tout écart au-dessus de l'euro est une erreur de câblage"
+    },
+    {
+      "id": "R-MULT",
+      "gate": "G1",
+      "tolerance": 1e-09,
+      "unit": "ratio",
+      "justification": "quotient de deux cellules du même onglet ; seul l'arrondi binaire est admis"
+    },
+    {
+      "id": "R-OWN",
+      "gate": "G1",
+      "tolerance": 1e-09,
+      "unit": "ratio",
+      "justification": "somme de trois participations publiées ; doit valoir 100 %"
+    },
+    {
+      "id": "R-STANDALONE",
+      "gate": "G1",
+      "tolerance": 1e-06,
+      "unit": "EURm",
+      "justification": "agrégat de trois postes de la même feuille"
+    },
+    {
+      "id": "R-RAMP",
+      "gate": "G1",
+      "tolerance": 1e-12,
+      "unit": "ratio",
+      "justification": "bornage d'un taux à [0 ; 1] ; le dépassement est booléen, pas graduel"
+    },
+    {
+      "id": "R-TSA-SUM",
+      "gate": "G1",
+      "tolerance": 1e-06,
+      "unit": "EURm",
+      "justification": "somme de cinq lignes de service"
+    },
+    {
+      "id": "R-TSA-CAL",
+      "gate": "G1",
+      "tolerance": 0,
+      "unit": "month",
+      "justification": "des mois contractuels sont des entiers : la conversion ne perd ni ne crée de mois"
+    },
+    {
+      "id": "R-DOUBLERUN",
+      "gate": "G1",
+      "tolerance": 0,
+      "unit": "month",
+      "justification": "fenêtre exprimée en mois entiers, bornée par la durée du service"
+    },
+    {
+      "id": "R-ONEOFF-SUM",
+      "gate": "G1",
+      "tolerance": 1e-06,
+      "unit": "EURm",
+      "justification": "somme de six lignes de nature"
+    },
+    {
+      "id": "R-CASH",
+      "gate": "G1",
+      "tolerance": 1e-06,
+      "unit": "EURm",
+      "justification": "le cash de période est la somme signée de ses lignes, sans poste résiduel"
+    },
+    {
+      "id": "R-CF",
+      "gate": "G1",
+      "tolerance": 1e-06,
+      "unit": "EURm",
+      "justification": "contrefactuel unique et ligné ; un écart signalerait un second contrefactuel"
+    },
+    {
+      "id": "R-QUAL",
+      "gate": "G1",
+      "tolerance": "exact",
+      "unit": "exact",
+      "justification": "comparaison symbolique : une qualification est récurrente ou ponctuelle, jamais approchée"
+    },
+    {
+      "id": "R-FUNDING-CUM",
+      "gate": "G2",
+      "tolerance": 1e-06,
+      "unit": "EURm",
+      "justification": "cumul et écrêtage unique ; la règle fautive max(0, B(t-1)+s(t)) produit un écart macroscopique"
+    },
+    {
+      "id": "R-PEAK",
+      "gate": "G2",
+      "tolerance": 1e-06,
+      "unit": "EURm",
+      "justification": "maximum d'une série positive ou nulle ; la date est symbolique et contrôlée à part"
+    },
+    {
+      "id": "R-MONO",
+      "gate": "G2",
+      "tolerance": 1e-06,
+      "unit": "EURm",
+      "justification": "toute décroissance doit être expliquée à l'euro près par des lignes déclarées"
+    },
+    {
+      "id": "R-EGAP",
+      "gate": "G2",
+      "tolerance": 1e-06,
+      "unit": "EURm",
+      "justification": "somme ascendante des contributions récurrentes ; recalculée hors du workbook par le contrôle"
+    },
+    {
+      "id": "R-NPONC",
+      "gate": "G2",
+      "tolerance": 1e-06,
+      "unit": "EURm",
+      "justification": "somme ascendante des contributions ponctuelles ; recalculée hors du workbook par le contrôle"
+    },
+    {
+      "id": "R-RECUR",
+      "gate": "G2",
+      "tolerance": 1e-06,
+      "unit": "EURm",
+      "justification": "contrôle de partition ; il ne porte aucune condition de niveau sur B"
+    },
+    {
+      "id": "R-RESORB",
+      "gate": "G2",
+      "tolerance": "exact",
+      "unit": "exact",
+      "justification": "l'état est l'un de quatre libellés : une tolérance numérique n'aurait pas de sens"
+    },
+    {
+      "id": "R-PK",
+      "gate": "G2",
+      "tolerance": "exact",
+      "unit": "exact",
+      "justification": "Pk est une période ou une absence ; comparaison symbolique"
+    },
+    {
+      "id": "R-STEADY",
+      "gate": "G2",
+      "tolerance": "exact",
+      "unit": "exact",
+      "justification": "date de régime établi ou libellé « non atteint à l'horizon » ; comparaison symbolique"
+    },
+    {
+      "id": "R-SEPCOST",
+      "gate": "G2",
+      "tolerance": 1e-06,
+      "unit": "EURm",
+      "justification": "somme de trois composantes déclarées ; l'exclusion du BFR est contrôlée sur la liste, pas sur l'écart"
+    }
+  ],
+  "expectedFormulaCells": {
+    "note": "Clés du registre de cellules du générateur qui doivent porter une formule et non une constante (G1). Le harnais impose cette liste minimale indépendamment du manifeste.",
+    "keys": [
+      "m1.ebitda",
+      "m1.multiple",
+      "m1.own_sum",
+      "m3.total.P1",
+      "m3.total.P5",
+      "m3.runrate_total",
+      "m4.total.P1",
+      "m5.total.P1",
+      "m6.cash.P1",
+      "m6.cash.P5",
+      "m6.standalone_runrate",
+      "m6.sepcost",
+      "m7.cf_cash.P1",
+      "m7.c.P1",
+      "m7.s.P1",
+      "m7.sCum.P1",
+      "m7.need.P1",
+      "m7.eGap.P1",
+      "m7.nOneOff.P1",
+      "m7.peak.amount",
+      "m7.peak.period",
+      "m7.horizon.delta",
+      "m7.horizon.residualSurplus",
+      "m7.resorb.state"
+    ]
+  },
+  "financialRegistryFields": [
+    "m1.revenue",
+    "m1.margin",
+    "m1.ebitda",
+    "m1.enterpriseValue",
+    "m1.entryMultiple",
+    "m1.ownership.cdr",
+    "m1.ownership.sanofi",
+    "m1.ownership.bpifrance",
+    "m2.rate",
+    "m3.runRateTotal",
+    "m6.standaloneRunRate",
+    "m7.periods[].need",
+    "m7.periods[].eGap",
+    "m7.periods[].nOneOff",
+    "m7.peak.amount",
+    "m7.peak.period",
+    "m7.horizon.delta",
+    "m7.horizon.residualSurplus",
+    "m7.resorb.state",
+    "outputs.O-RUNRATE",
+    "outputs.O-SEPCOST",
+    "outputs.O-PEAK",
+    "outputs.O-STEADY",
+    "outputs.O-RESORB"
+  ],
+  "scenarioLevers": [
+    {
+      "id": "S-COST",
+      "variable": "run-rate par fonction de M3",
+      "states": [
+        "basse",
+        "centrale",
+        "haute"
+      ]
+    },
+    {
+      "id": "S-TSA",
+      "variable": "durée et double run de M4",
+      "states": [
+        "basse",
+        "centrale",
+        "haute"
+      ]
+    },
+    {
+      "id": "S-ONEOFF",
+      "variable": "montants de M5",
+      "states": [
+        "basse",
+        "centrale",
+        "haute"
+      ]
+    },
+    {
+      "id": "S-OPS",
+      "variable": "trajectoire opérationnelle de M1",
+      "states": [
+        "basse",
+        "centrale",
+        "haute"
+      ]
+    }
+  ],
+  "scenarioInvariant": {
+    "levers": [
+      "S-COST",
+      "S-TSA",
+      "S-ONEOFF"
+    ],
+    "rule": "à levier croissant, ni O-SEPCOST ni O-PEAK ne diminuent"
+  },
+  "fundingVectors": {
+    "note": "Les quinze vecteurs normatifs du §6.1.1. Les séries E et N sont déclarées période par période ; s en découle par addition et S par cumul. Aucun terme n'est posé en résidu de l'autre.",
+    "normative": [
+      {
+        "id": "V1",
+        "E": [
+          0,
+          0,
+          0
+        ],
+        "N": [
+          0,
+          0,
+          0
+        ],
+        "state": "résorbé",
+        "pk": "P1",
+        "peak": 0,
+        "peakPeriod": "P1",
+        "traps": "profil nul : classé, pic nul daté P1"
+      },
+      {
+        "id": "V2",
+        "E": [
+          0,
+          0,
+          0,
+          -3
+        ],
+        "N": [
+          3,
+          2,
+          0,
+          0
+        ],
+        "state": "non résorbé à l'horizon",
+        "pk": null,
+        "peak": 5,
+        "peakPeriod": "P2",
+        "traps": "maxima multiples : pic daté à la première occurrence"
+      },
+      {
+        "id": "V3",
+        "E": [
+          0,
+          0,
+          2
+        ],
+        "N": [
+          -4,
+          2,
+          0
+        ],
+        "state": "croissant à l'horizon",
+        "pk": null,
+        "peak": 0,
+        "peakPeriod": "P1",
+        "traps": "besoin nul mais écart récurrent positif ; excédent épuisé à la borne"
+      },
+      {
+        "id": "V4",
+        "E": [
+          0,
+          0,
+          1
+        ],
+        "N": [
+          1,
+          1,
+          -1
+        ],
+        "state": "croissant à l'horizon",
+        "pk": null,
+        "peak": 2,
+        "peakPeriod": "P2",
+        "traps": "faux plateau : récupération ponctuelle compensant un coût récurrent"
+      },
+      {
+        "id": "V5",
+        "E": [
+          1,
+          1,
+          0
+        ],
+        "N": [
+          0,
+          0,
+          0
+        ],
+        "state": "plateau",
+        "pk": "P3",
+        "peak": 2,
+        "peakPeriod": "P2",
+        "traps": "plateau réel ; Pk n'est pas P2 car E(P2) ≠ 0"
+      },
+      {
+        "id": "V6",
+        "E": [
+          0,
+          0,
+          1
+        ],
+        "N": [
+          2,
+          -2,
+          2
+        ],
+        "state": "croissant à l'horizon",
+        "pk": null,
+        "peak": 3,
+        "peakPeriod": "P3",
+        "traps": "sortie puis réapparition du besoin"
+      },
+      {
+        "id": "V7",
+        "E": [
+          5
+        ],
+        "N": [
+          0
+        ],
+        "state": "croissant à l'horizon",
+        "pk": null,
+        "peak": 5,
+        "peakPeriod": "P1",
+        "traps": "horizon d'une période ; Δ défini par S = 0 avant P1"
+      },
+      {
+        "id": "V8",
+        "E": [
+          0
+        ],
+        "N": [
+          5
+        ],
+        "state": "plateau",
+        "pk": "P1",
+        "peak": 5,
+        "peakPeriod": "P1",
+        "traps": "horizon d'une période entièrement ponctuelle"
+      },
+      {
+        "id": "V9",
+        "E": [
+          0,
+          0,
+          0
+        ],
+        "N": [
+          -10,
+          6,
+          6
+        ],
+        "state": "plateau",
+        "pk": "P3",
+        "peak": 2,
+        "peakPeriod": "P3",
+        "traps": "écrêtage non mémorisant : la règle fautive publierait [0, 6, 12]"
+      },
+      {
+        "id": "V10",
+        "E": [
+          0,
+          0,
+          -3
+        ],
+        "N": [
+          10,
+          -3,
+          0
+        ],
+        "state": "non résorbé à l'horizon",
+        "pk": null,
+        "peak": 10,
+        "peakPeriod": "P1",
+        "traps": "décroissance structurelle inachevée, aucune date extrapolée"
+      },
+      {
+        "id": "V11",
+        "E": [
+          0,
+          0,
+          0
+        ],
+        "N": [
+          5,
+          0,
+          -2
+        ],
+        "state": "plateau",
+        "pk": "P3",
+        "peak": 5,
+        "peakPeriod": "P1",
+        "traps": "baisse ponctuelle finale : plateau, pas une décroissance"
+      },
+      {
+        "id": "V12",
+        "E": [
+          0,
+          0,
+          0
+        ],
+        "N": [
+          2,
+          0,
+          2
+        ],
+        "state": "plateau",
+        "pk": "P3",
+        "peak": 4,
+        "peakPeriod": "P3",
+        "traps": "hausse ponctuelle finale : plateau, pas une croissance"
+      },
+      {
+        "id": "V13",
+        "E": [
+          0,
+          0,
+          -2
+        ],
+        "N": [
+          3,
+          -2,
+          -1
+        ],
+        "state": "résorbé",
+        "pk": "P3",
+        "peak": 3,
+        "peakPeriod": "P1",
+        "traps": "résorption structurelle avec excédent résiduel 2 publié",
+        "residualSurplus": 2
+      },
+      {
+        "id": "V14",
+        "E": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "N": [
+          0,
+          2,
+          -2,
+          0
+        ],
+        "state": "résorbé",
+        "pk": "P3",
+        "peak": 2,
+        "peakPeriod": "P2",
+        "traps": "traînée nulle finale : Pk n'est pas P1"
+      },
+      {
+        "id": "V15",
+        "E": [
+          0,
+          0,
+          2
+        ],
+        "N": [
+          4,
+          5,
+          -4
+        ],
+        "state": "croissant à l'horizon",
+        "pk": null,
+        "peak": 9,
+        "peakPeriod": "P2",
+        "traps": "dernier point en baisse, pente structurelle positive"
+      }
+    ],
+    "falsification": [
+      {
+        "id": "X1",
+        "perturbation": "une ligne de l'inventaire sans qualification",
+        "relation": "R-QUAL",
+        "defect": "absorption silencieuse dans un résidu"
+      },
+      {
+        "id": "X2",
+        "perturbation": "ligne qualifiée récurrent dont la fin déclarée est antérieure à H",
+        "relation": "R-QUAL",
+        "defect": "écart récurrent gonflé par une ligne qui s'arrête"
+      },
+      {
+        "id": "X3",
+        "perturbation": "ligne qualifiée ponctuel présente sur toute période jusqu'à H, fin déclarée au-delà de la borne",
+        "relation": "R-QUAL",
+        "defect": "plateau publié sur une charge qui persiste"
+      },
+      {
+        "id": "X4",
+        "perturbation": "eGap décalé d'un pas sans toucher ses lignes",
+        "relation": "R-EGAP",
+        "defect": "E saisi ou lu sur la courbe"
+      },
+      {
+        "id": "X5",
+        "perturbation": "nOneOff remplacé par s − eGap",
+        "relation": "R-NPONC",
+        "defect": "N en résidu, identité rendue vide"
+      },
+      {
+        "id": "X6",
+        "perturbation": "une même ligne comptée dans les deux sous-ensembles",
+        "relation": "R-RECUR",
+        "defect": "partition non disjointe"
+      },
+      {
+        "id": "X7",
+        "perturbation": "cash du contrefactuel distinct de la somme de ses lignes",
+        "relation": "R-CF",
+        "defect": "E indépendant du profil publié"
+      },
+      {
+        "id": "X8",
+        "perturbation": "B calculé par max(0, B(Pt−1) + s(Pt)) sur V9",
+        "relation": "R-FUNDING-CUM",
+        "defect": "écrêtage non mémorisant, besoin publié inexistant"
+      }
+    ],
+    "coverage": {
+      "note": "Vecteurs négatifs des couches calendrier, registres et classement, écrits par la passe financière parce qu'ils sont exécutés par G1 et G2 (§14).",
+      "vectors": [
+        {
+          "id": "X9",
+          "gate": "G2",
+          "perturbation": "prorata 8/12 appliqué à une ligne de TSA de P1",
+          "relation": "§4, règle 1",
+          "defect": "stub appliqué d'office à un flux non proportionnel au temps"
+        },
+        {
+          "id": "X10",
+          "gate": "G1",
+          "perturbation": "un mois contractuel de M4 non affecté : somme des mois < durée",
+          "relation": "R-TSA-CAL",
+          "defect": "TSA perdue à la conversion"
+        },
+        {
+          "id": "X11",
+          "gate": "G2",
+          "perturbation": "horizon tronqué alors qu'un levier repousse le régime établi",
+          "relation": "R-STEADY",
+          "defect": "horizon plafonné, régime établi supposé au lieu d'être daté"
+        },
+        {
+          "id": "X12",
+          "gate": "G2",
+          "perturbation": "grandeur du §6.1 émise pour une période postérieure à maxHorizon",
+          "relation": "§6.1",
+          "defect": "profil prolongé au-delà de la borne"
+        },
+        {
+          "id": "X13",
+          "gate": "G2",
+          "perturbation": "profil M7 publié avec une valeur de B négative",
+          "relation": "R-PEAK",
+          "defect": "besoin rendu comme un solde à interpréter"
+        },
+        {
+          "id": "X14",
+          "gate": "G2",
+          "perturbation": "une ligne du côté cas contribuant pour +montant",
+          "relation": "R-CF",
+          "defect": "règle de signe par ligne inversée"
+        },
+        {
+          "id": "X15",
+          "gate": "G2",
+          "perturbation": "date du pic posée à la dernière période atteignant le maximum, sur V2",
+          "relation": "R-PEAK",
+          "defect": "départage du maximum laissé à l'implémentation"
+        },
+        {
+          "id": "X16",
+          "gate": "G2",
+          "perturbation": "période de flux négatif dont les lignes n'expliquent pas la décroissance",
+          "relation": "R-MONO",
+          "defect": "résidu inexpliqué"
+        },
+        {
+          "id": "X17",
+          "gate": "G2",
+          "perturbation": "Pk non minimal sur un profil résorbé",
+          "relation": "R-PK",
+          "defect": "fenêtre finale ouverte trop tard"
+        },
+        {
+          "id": "X18",
+          "gate": "G2",
+          "perturbation": "Pk de plateau posé sur une période où E n'est pas encore nul, sur V5",
+          "relation": "R-PK",
+          "defect": "fenêtre finale ouverte avant l'annulation de l'écart récurrent"
+        },
+        {
+          "id": "X19",
+          "gate": "G2",
+          "perturbation": "état classé sur le signe de Δ_H, injecté sur V4, V11 et V12",
+          "relation": "R-RESORB",
+          "defect": "dernier point pris pour la trajectoire"
+        },
+        {
+          "id": "X20",
+          "gate": "G2",
+          "perturbation": "O-SEPCOST incluant le BFR de séparation",
+          "relation": "R-SEPCOST",
+          "defect": "coût confondu avec un besoin de trésorerie temporaire"
+        }
+      ]
+    }
+  },
+  "exportContract": {
+    "consumer": "Sidetrade/integrations/opella/",
+    "note": "Le contrôle croisé source TS → bundle appartient à une passe menée depuis le dépôt parent (G8). Aucun artefact n'est copié par cette passe.",
+    "publishable": false,
+    "reason": "les gates G3 à G8 ne sont pas implémentés ; niveau de readiness R0"
+  }
+}

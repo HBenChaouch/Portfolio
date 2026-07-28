@@ -1,9 +1,13 @@
 import assert from "node:assert/strict";
 import { createHash } from "node:crypto";
 import { readFile } from "node:fs/promises";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
 import { portfolioCases } from "../src/data/portfolioCases.js";
+import { listRelativeFiles, readJson } from "./integration-manifest.mjs";
 
 const rootUrl = new URL("../", import.meta.url);
+const rootPath = fileURLToPath(rootUrl);
 const read = (path) => readFile(new URL(path, rootUrl));
 const text = async (path) => (await read(path)).toString("utf8");
 const sha256 = async (path) => createHash("sha256").update(await read(path)).digest("hex").toUpperCase();
@@ -29,6 +33,20 @@ assert.equal(
   "B0D93B0A7BF346C2D02D90DC6F83D23C80D9422D902AF1E95E7CA40D385F8ECD",
 );
 await assert.rejects(() => read("public/Modele_Carveout_Opella.xlsx"), { code: "ENOENT" });
+await assert.rejects(() => read("src/routes/OpellaAnalysisView.jsx"), { code: "ENOENT" });
+
+const publicFiles = await listRelativeFiles(path.join(rootPath, "public"));
+assert.deepEqual(
+  publicFiles.filter((filename) => /opella|carveout/i.test(filename)),
+  [],
+  "No Opella artifact may enter public/",
+);
+
+const opellaBundleManifest = await readJson(path.join(rootPath, "integrations", "opella", "manifest.json"));
+assert.equal(opellaBundleManifest.status, "inactive");
+assert.deepEqual(opellaBundleManifest.downloads, []);
+assert.deepEqual(opellaBundleManifest.presentationFiles, []);
+assert.ok(Object.values(opellaBundleManifest.publicExposure).every((value) => value === false));
 
 for (const file of [
   "public/PR_2025_Results_EN.pdf",
@@ -72,8 +90,10 @@ assert.match(styles, /@media \(max-width: 760px\)[\s\S]*?\.case-grid-item:first-
 const fallbackScript = await text("scripts/create-spa-fallback.mjs");
 assert.match(fallbackScript, /cases\/sidetrade-valuation/);
 assert.match(fallbackScript, /cases\/sidetrade-valuation\/analysis/);
+assert.doesNotMatch(fallbackScript, /opella-carve-out/);
 const sitemap = await text("public/sitemap.xml");
 assert.match(sitemap, /Portfolio\/cases\/real-estate-downside\//);
+assert.doesNotMatch(sitemap, /opella-carve-out/);
 
 const caseShell = await text("src/components/CaseShell.jsx");
 const navigation = await text("src/utils/navigation.js");
@@ -95,11 +115,14 @@ assert.doesNotMatch(caseShell, /setTimeout/, "Anchor preservation must not depen
 
 const analysisView = await text("src/routes/AnalysisView.jsx");
 const portfolioHome = await text("src/routes/PortfolioHome.jsx");
+const app = await text("src/App.jsx");
 const integrationScript = await text("scripts/integrate-real-estate-case.mjs");
 assert.match(portfolioHome, /item\.static/);
 assert.doesNotMatch(portfolioHome, /target="_blank"/);
 assert.match(integrationScript, /dist\/cases\/real-estate-downside/);
 assert.match(integrationScript, /6b8ddfe3dc48d581a4f1282ea2272c06a8d32337/);
+assert.doesNotMatch(app, /opella-carve-out/);
+assert.doesNotMatch(integrationScript, /opella-carve-out/);
 const chapterIndexPosition = analysisView.indexOf('className="desktop-chapter-index"');
 const keyStatsPosition = analysisView.indexOf('className="keystats"');
 assert.ok(

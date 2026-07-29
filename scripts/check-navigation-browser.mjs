@@ -1410,6 +1410,63 @@ try {
       const transaction = document.querySelector('#transaction').getBoundingClientRect();
       const perimeter = document.querySelector('#perimeter').getBoundingClientRect();
       const mobile = innerWidth <= 900;
+      const parseColor = (value) => {
+        const channels = value?.match(/[\\d.]+/g)?.map(Number) ?? [];
+        return {
+          a: channels.length > 3 ? channels[3] : 1,
+          b: channels[2] ?? 0,
+          g: channels[1] ?? 0,
+          r: channels[0] ?? 0,
+        };
+      };
+      const blend = (foreground, background) => ({
+        a: 1,
+        b: foreground.b * foreground.a + background.b * (1 - foreground.a),
+        g: foreground.g * foreground.a + background.g * (1 - foreground.a),
+        r: foreground.r * foreground.a + background.r * (1 - foreground.a),
+      });
+      const luminance = ({ r, g, b }) => {
+        const channels = [r, g, b].map((channel) => {
+          const value = channel / 255;
+          return value <= 0.04045 ? value / 12.92 : ((value + 0.055) / 1.055) ** 2.4;
+        });
+        return 0.2126 * channels[0] + 0.7152 * channels[1] + 0.0722 * channels[2];
+      };
+      const contrast = (first, second) => {
+        const firstLuminance = luminance(first);
+        const secondLuminance = luminance(second);
+        return (Math.max(firstLuminance, secondLuminance) + 0.05)
+          / (Math.min(firstLuminance, secondLuminance) + 0.05);
+      };
+      const effectiveBackground = (element) => {
+        const layers = [];
+        for (let current = element; current; current = current.parentElement) {
+          layers.push(parseColor(getComputedStyle(current).backgroundColor));
+        }
+        return layers.reverse().reduce(
+          (background, layer) => blend(layer, background),
+          { a: 1, b: 255, g: 255, r: 255 },
+        );
+      };
+      const measureContrast = (selector) => {
+        const samples = Array.from(document.querySelectorAll(selector)).map((element) => {
+          const background = effectiveBackground(element);
+          const foreground = parseColor(getComputedStyle(element).color);
+          const rect = element.getBoundingClientRect();
+          return {
+            background: getComputedStyle(element.closest('.model-output')).backgroundColor,
+            color: getComputedStyle(element).color,
+            ratio: contrast(blend(foreground, background), background),
+            visible: rect.width > 0 && rect.height > 0,
+          };
+        });
+        return {
+          count: samples.length,
+          minRatio: samples.length ? Math.min(...samples.map(({ ratio }) => ratio)) : 0,
+          samples,
+          visibleCount: samples.filter(({ visible }) => visible).length,
+        };
+      };
       return {
         controls: controls.length,
         documentOverflow: document.documentElement.scrollWidth - document.documentElement.clientWidth,
@@ -1420,6 +1477,10 @@ try {
         minControlTarget: Math.min(...controls.map((button) => button.getBoundingClientRect().height)),
         minSourceLinkTarget: Math.min(...sourceLinks.map((link) => link.getBoundingClientRect().height)),
         minSourceSummaryTarget: Math.min(...sourceSummaries.map((summary) => summary.getBoundingClientRect().height)),
+        modelContrast: {
+          labels: measureContrast('.model-output .opella-model-cell-label'),
+          outputIds: measureContrast('.model-output > strong'),
+        },
         mobile,
         mobileBridge: getComputedStyle(document.querySelector('.opella-bridge-mobile')).display,
         situationPaired: mobile
@@ -1443,6 +1504,15 @@ try {
         && state.minSourceLinkTarget >= 44
         && state.sourceLinksNamed,
       `Opella finance-first/source accessibility at ${width}x${height}: ${JSON.stringify(state)}`,
+    );
+    assert(
+      state.modelContrast.outputIds.count === 4
+        && state.modelContrast.outputIds.visibleCount === 4
+        && state.modelContrast.outputIds.minRatio >= 4.5
+        && state.modelContrast.labels.count === 4
+        && state.modelContrast.labels.visibleCount === (width <= 900 ? 4 : 0)
+        && state.modelContrast.labels.minRatio >= 4.5,
+      `Opella model text contrast below 4.5:1 at ${width}x${height}: ${JSON.stringify(state.modelContrast)}`,
     );
     assert(state.tableRegionsAccessible, `Opella table region accessibility at ${width}x${height}: ${JSON.stringify(state)}`);
     assert(

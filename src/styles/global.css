@@ -427,7 +427,7 @@
 }
 
 .opella-model-cell.model-output > strong {
-  color: var(--bordeaux-soft);
+  color: var(--bg);
   font-family: var(--mono);
   font-size: 10px;
 }
@@ -458,6 +458,10 @@
 
 .opella-model-cell-label {
   display: none;
+}
+
+.opella-model-cell.model-output .opella-model-cell-label {
+  color: var(--bg);
 }
 
 .evidence-scope-caveat {

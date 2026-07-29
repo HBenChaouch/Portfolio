@@ -365,6 +365,11 @@ try {
       ["O-RUNRATE", "O-SEPCOST", "O-PEAK", "O-STEADY"],
       "The visible construction matrix must trace exactly the four frozen outputs",
     );
+    assert.deepEqual(
+      [...rendered.matchAll(/data-scenario-output-id="([^"]+)"/g)].map((match) => match[1]),
+      ["run-rate", "separation-cost", "funding-peak", "steady-state", "central-p5-ebitda"],
+      "The analytical disclosure must preserve all five scenario outputs",
+    );
     assert.match(
       rendered,
       /<button aria-controls="opella-evidence-panel" aria-expanded="false"[^>]*>/,

@@ -773,6 +773,12 @@ export default function OpellaAnalysisView() {
       label: copy("kpi.steady"),
       value: periodLabel(steady),
     },
+    {
+      formula: copy("evidence.outputFormula.p5Ebitda"),
+      id: "central-p5-ebitda",
+      label: copy("evidence.output.p5Ebitda"),
+      value: formatMoney(centralResult.modules.m1.ebitda.P5, language, { decimals: 0 }),
+    },
   ];
 
   const derivedValuesById = new Map(derivedEvidenceValues.map((item) => [item.id, item]));
@@ -789,7 +795,7 @@ export default function OpellaAnalysisView() {
     { anchor: { ...closingAnchor, value: periodLabel("P1") }, assumption: assumptionsById.get("transition-services"), sourceIds: "S2+S4" },
   ];
   const outputIds = ["O-RUNRATE", "O-SEPCOST", "O-PEAK", "O-STEADY"];
-  const modelConstructionRows = scenarioEvidenceOutputs.map((output, index) => ({
+  const modelConstructionRows = scenarioEvidenceOutputs.slice(0, outputIds.length).map((output, index) => ({
     anchor: { detail: matrixInputs[index].anchor.value, label: matrixInputs[index].anchor.label },
     assumption: { detail: matrixInputs[index].assumption.reason, label: matrixInputs[index].assumption.label },
     formula: { label: output.formula },

@@ -1374,10 +1374,10 @@ try {
   const opellaResponsive = {};
   const opellaVisualAnchors = {
     "360x800": "sources",
-    "390x844": "scenarios",
+    "390x844": "buyer-implications",
     "430x932": "executive",
     "1280x720": "executive",
-    "1920x1080": "sources",
+    "1920x1080": "transaction",
   };
   const opellaVisualLanguages = {
     "360x800": "fr",
@@ -1386,7 +1386,7 @@ try {
     "1280x720": "fr",
     "1920x1080": "en",
   };
-  const opellaReviewDirectory = path.resolve(".agent-logs", "opella-o2-e-visual-review");
+  const opellaReviewDirectory = path.resolve(".agent-logs", "opella-o2-g1-visual-review");
   await mkdir(opellaReviewDirectory, { recursive: true });
   for (const [width, height] of [[360, 800], [390, 844], [430, 932], [1280, 720], [1920, 1080]]) {
     await command("Emulation.setDeviceMetricsOverride", {
@@ -1400,33 +1400,32 @@ try {
     const visualLanguage = opellaVisualLanguages[viewportId];
     await navigate(`${opellaBase}${visualLanguage === "en" ? "?lang=en" : ""}#${visualAnchor}`);
     await waitForStableAnchor(visualAnchor);
-    if (viewportId === "1280x720") {
-      await realPointerClick(
-        "document.querySelector('.opella-evidence-toggle')",
-        "Opella desktop evidence panel capture",
-      );
-      await waitFor(
-        () => evaluate("document.querySelector('.opella-evidence-toggle')?.getAttribute('aria-expanded') === 'true'"),
-        "Opella desktop evidence panel capture open",
-      );
-    }
     const state = await evaluate(`(() => {
       const controls = Array.from(document.querySelectorAll('.opella-lever-options button'));
+      const modelRows = Array.from(document.querySelectorAll('.opella-model-matrix [data-model-path-id]'));
+      const sourceSummaries = Array.from(document.querySelectorAll('.opella-source-registry summary'));
       const sourceLinks = Array.from(document.querySelectorAll('.opella-analysis-view a[data-source-url]'))
         .filter((link) => link.getBoundingClientRect().width > 0 && link.getBoundingClientRect().height > 0);
       const tableRegions = Array.from(document.querySelectorAll('.opella-analysis-view .table-scroll'));
+      const transaction = document.querySelector('#transaction').getBoundingClientRect();
+      const perimeter = document.querySelector('#perimeter').getBoundingClientRect();
       const mobile = innerWidth <= 900;
       return {
         controls: controls.length,
         documentOverflow: document.documentElement.scrollWidth - document.documentElement.clientWidth,
-        evidenceChainVisible: getComputedStyle(document.querySelector('.opella-evidence-chain')).display === 'grid',
-        evidencePanelOpen: document.querySelector('.opella-evidence-toggle')?.getAttribute('aria-expanded') === 'true',
         fundingDesktop: getComputedStyle(document.querySelector('.funding-curve')).display,
         fundingMobile: getComputedStyle(document.querySelector('.funding-mobile-profile')).display,
+        matrixRows: modelRows.length,
+        matrixVisible: getComputedStyle(document.querySelector('.opella-model-matrix')).display !== 'none',
         minControlTarget: Math.min(...controls.map((button) => button.getBoundingClientRect().height)),
         minSourceLinkTarget: Math.min(...sourceLinks.map((link) => link.getBoundingClientRect().height)),
+        minSourceSummaryTarget: Math.min(...sourceSummaries.map((summary) => summary.getBoundingClientRect().height)),
         mobile,
         mobileBridge: getComputedStyle(document.querySelector('.opella-bridge-mobile')).display,
+        situationPaired: mobile
+          ? perimeter.top >= transaction.bottom - 2
+          : Math.abs(transaction.top - perimeter.top) <= 2 && Math.abs(transaction.width - perimeter.width) <= 2,
+        sourceDisclosureCount: sourceSummaries.length,
         sourceLinksNamed: sourceLinks.length > 0 && sourceLinks.every((link) => Boolean(link.getAttribute('aria-label'))),
         tableRegionsAccessible: tableRegions.every((region) => region.tabIndex === 0 && Boolean(region.getAttribute('aria-label'))),
         shellAccessibility: ${shellAccessibilityAuditExpression("#opella-section-navigation")},
@@ -1436,14 +1435,15 @@ try {
     assert(state.documentOverflow === 0, `Opella horizontal overflow at ${width}x${height}: ${JSON.stringify(state)}`);
     assert(state.controls === 12 && state.minControlTarget >= 44, `Opella control targets at ${width}x${height}: ${JSON.stringify(state)}`);
     assert(
-      state.evidenceChainVisible
+      state.matrixVisible
+        && state.matrixRows === 4
+        && state.situationPaired
+        && state.sourceDisclosureCount === 6
+        && state.minSourceSummaryTarget >= 44
         && state.minSourceLinkTarget >= 44
         && state.sourceLinksNamed,
-      `Opella evidence/source accessibility at ${width}x${height}: ${JSON.stringify(state)}`,
+      `Opella finance-first/source accessibility at ${width}x${height}: ${JSON.stringify(state)}`,
     );
-    if (viewportId === "1280x720") {
-      assert(state.evidencePanelOpen, `Opella evidence panel capture must be open: ${JSON.stringify(state)}`);
-    }
     assert(state.tableRegionsAccessible, `Opella table region accessibility at ${width}x${height}: ${JSON.stringify(state)}`);
     assert(
       state.shellAccessibility.minTargetHeight >= 44
@@ -1480,7 +1480,7 @@ try {
     await evaluate(`(() => {
       const target = document.getElementById(${JSON.stringify(visualAnchor)});
       const content = ${JSON.stringify(viewportId)} === "1280x720"
-        ? document.querySelector('#opella-evidence-panel > header')
+        ? document.querySelector('.opella-model-build')
         : target?.querySelector('.opella-section-header, .opella-hero-copy') ?? target;
       if (!content) return;
       const offset = innerWidth <= 900 ? 128 : 96;
@@ -1492,22 +1492,6 @@ try {
       format: "png",
       fromSurface: true,
     };
-    if (viewportId === "1280x720") {
-      const evidenceClip = await evaluate(`(() => {
-        const panel = document.querySelector('#opella-evidence-panel');
-        const rect = panel.getBoundingClientRect();
-        const pageY = scrollY + rect.top;
-        return {
-          height: innerHeight,
-          scale: 1,
-          width: innerWidth,
-          x: 0,
-          y: Math.min(pageY, document.documentElement.scrollHeight - innerHeight),
-        };
-      })()`);
-      screenshotOptions.captureBeyondViewport = true;
-      screenshotOptions.clip = evidenceClip;
-    }
     const screenshot = await command("Page.captureScreenshot", screenshotOptions);
     const screenshotName = `${viewportId}-${visualLanguage}-${visualAnchor}.png`;
     await writeFile(
@@ -1517,7 +1501,7 @@ try {
     opellaResponsive[viewportId] = {
       ...state,
       language: visualLanguage,
-      screenshot: path.join(".agent-logs", "opella-o2-e-visual-review", screenshotName),
+      screenshot: path.join(".agent-logs", "opella-o2-g1-visual-review", screenshotName),
       visualAnchor,
     };
   }

@@ -175,9 +175,9 @@ function SourceReferenceBlock({
   );
 }
 
-function Section({ children, id, kicker, title }) {
+function Section({ children, className = "", id, kicker, title }) {
   return (
-    <section className="opella-section" id={id}>
+    <section className={`opella-section ${className}`.trim()} id={id}>
       <header className="opella-section-header">
         <p className="eyebrow">{kicker}</p>
         <h2>{title}</h2>
@@ -192,6 +192,130 @@ function StatusTag({ copy, status }) {
     <span className={`opella-status status-${status.replace(/\s+/g, "-")}`}>
       {statusLabel(status, copy)}
     </span>
+  );
+}
+
+function ModelConstructionMatrix({ copy, rows }) {
+  const columns = [
+    ["source", "common.source"], ["anchor", "evidence.matrixAnchor"],
+    ["assumption", "evidence.assumptions.title"], ["formula", "evidence.formula"],
+    ["output", "evidence.outputs.title"],
+  ];
+
+  return (
+    <section
+      aria-labelledby="opella-model-matrix-title"
+      className="opella-evidence-chain opella-model-build"
+    >
+      <header>
+        <p className="eyebrow">{copy("evidence.chainLabel")}</p>
+        <h2 id="opella-model-matrix-title">{copy("evidence.panelTitle")}</h2>
+        <p>{copy("evidence.panelIntro")}</p>
+      </header>
+      <div aria-label={copy("evidence.chainLabel")} className="opella-model-matrix" role="table">
+        <div className="opella-model-row opella-model-header" role="row">
+          {columns.map(([, label]) => (
+            <span key={label} role="columnheader">{copy(label)}</span>
+          ))}
+        </div>
+        {rows.map((row) => (
+          <div className="opella-model-row" data-model-path-id={row.outputId} key={row.outputId} role="row">
+            {columns.map(([field, label]) => (
+              <div className={`opella-model-cell model-${field}`} key={field} role="cell">
+                <span className="opella-model-cell-label">{copy(label)}</span>
+                {field === "source" ? (
+                  <span className="opella-model-source">
+                    {sourceIdList(row.sourceIds).map((sourceId) => (
+                      <span data-source-id={sourceId} key={sourceId}>{sourceId}</span>
+                    ))}
+                  </span>
+                ) : (
+                  <>
+                    <strong>{row[field].label}</strong>
+                    {row[field].detail ? <small>{row[field].detail}</small> : null}
+                  </>
+                )}
+              </div>
+            ))}
+          </div>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+function SourceRegistry({ copy, language, snapshot, sourcesById }) {
+  return (
+    <div aria-label={copy("nav.sources")} className="opella-source-registry">
+      {snapshot.sources.map((source) => (
+        <article data-source-registry-id={source.id} key={source.id}>
+          <details>
+            <summary>
+              <div>
+                <span>{source.id}</span>
+                <h3>{copy(`source.${source.id}.label`)}</h3>
+                <p>{copy(`source.${source.id}.coverage`, {
+                  ev: formatBillions(snapshot.m1.enterpriseValue.value, language, 0),
+                  multiple: formatMultiple(snapshot.m1.entryMultiple.value, language, 0),
+                  revenue: source.id === "S5"
+                    ? formatMoney(snapshot.m1.reportedRevenue.value, language, { decimals: 0 })
+                    : formatBillions(snapshot.m1.revenue.value, language, 0),
+                })}</p>
+              </div>
+              <StatusTag copy={copy} status={source.status} />
+              <span aria-hidden="true" className="source-disclosure-mark">+</span>
+            </summary>
+            <div className="source-registry-detail">
+              <dl>
+                <div>
+                  <dt>{copy("sources.document")}</dt>
+                  <dd>{source.id === "S4" ? copy("sources.internalOnly") : source.document}</dd>
+                </div>
+                <div>
+                  <dt>{copy("sources.scope")}</dt>
+                  <dd>{copy(`source.${source.id}.scope`, {
+                    date: formatDate(snapshot.calendar.closing, language),
+                  })}</dd>
+                </div>
+                <div>
+                  <dt>{copy("sources.location")}</dt>
+                  <dd data-source-location={source.id === "S4" ? "internal" : source.location}>
+                    {source.id === "S4" ? copy("sources.internalOnly") : source.location}
+                  </dd>
+                </div>
+                <div>
+                  <dt>{copy("sources.publicationDate")}</dt>
+                  <dd>{source.id === "S4"
+                    ? copy("common.notApplicable")
+                    : source.publication_date === "not-stated"
+                    ? copy("common.notStated")
+                    : formatDate(source.publication_date, language)}</dd>
+                </div>
+                <div>
+                  <dt>{copy("sources.accessed")}</dt>
+                  <dd>{formatDate(source.accessed, language)}</dd>
+                </div>
+                <div>
+                  <dt>{copy("sources.evidenceRole")}</dt>
+                  <dd>{copy(`sources.role.${source.evidence_role}`)}</dd>
+                </div>
+              </dl>
+              {source.references.some(({ url }) => Boolean(url)) ? (
+                <SourceReferenceBlock
+                  copy={copy}
+                  sourceIds={source.id}
+                  sourcesById={sourcesById}
+                />
+              ) : (
+                <p className="source-internal-only" data-source-id="S4">
+                  {copy("sources.internalOnly")}
+                </p>
+              )}
+            </div>
+          </details>
+        </article>
+      ))}
+    </div>
   );
 }
 
@@ -649,13 +773,30 @@ export default function OpellaAnalysisView() {
       label: copy("kpi.steady"),
       value: periodLabel(steady),
     },
-    {
-      formula: copy("evidence.outputFormula.p5Ebitda"),
-      id: "central-p5-ebitda",
-      label: copy("evidence.output.p5Ebitda"),
-      value: formatMoney(centralResult.modules.m1.ebitda.P5, language, { decimals: 0 }),
-    },
   ];
+
+  const derivedValuesById = new Map(derivedEvidenceValues.map((item) => [item.id, item]));
+  const assumptionsById = new Map(illustrativeAssumptions.map((item) => [item.id, item]));
+  const closingAnchor = { label: copy("transaction.closing"), value: formatDate(snapshot.calendar.closing, language) };
+  const matrixInputs = [
+    {
+      anchor: derivedValuesById.get("transaction-implied-ebitda"),
+      assumption: assumptionsById.get("standalone-functions"),
+      sourceIds: `${snapshot.m1.ebitda.source}+S4`,
+    },
+    { anchor: closingAnchor, assumption: assumptionsById.get("transition-services"), sourceIds: "S2+S4" },
+    { anchor: { ...closingAnchor, value: periodLabel("P1") }, assumption: assumptionsById.get("cash-bridge"), sourceIds: "S2+S4" },
+    { anchor: { ...closingAnchor, value: periodLabel("P1") }, assumption: assumptionsById.get("transition-services"), sourceIds: "S2+S4" },
+  ];
+  const outputIds = ["O-RUNRATE", "O-SEPCOST", "O-PEAK", "O-STEADY"];
+  const modelConstructionRows = scenarioEvidenceOutputs.map((output, index) => ({
+    anchor: { detail: matrixInputs[index].anchor.value, label: matrixInputs[index].anchor.label },
+    assumption: { detail: matrixInputs[index].assumption.reason, label: matrixInputs[index].assumption.label },
+    formula: { label: output.formula },
+    output: { detail: output.value, label: outputIds[index] },
+    outputId: outputIds[index],
+    sourceIds: matrixInputs[index].sourceIds,
+  }));
 
   return (
     <article className="opella-analysis-view">
@@ -666,38 +807,50 @@ export default function OpellaAnalysisView() {
           <p>{copy("executive.intro")}</p>
           <span className="opella-illustrative">{copy("common.illustrative")}</span>
         </div>
-        <div aria-label={copy("evidence.chainLabel")} className="opella-evidence-chain">
-          <article className="evidence-stage stage-public">
-            <span>{copy("evidence.public.title")}</span>
-            <p>{copy("evidence.public.text")}</p>
-            <SourceReferenceBlock
-              compact
-              copy={copy}
-              sourceIds="S1+S2+S5+S6"
-              sourcesById={sourcesById}
-            />
-          </article>
-          <article className="evidence-stage stage-derived">
-            <span>{copy("evidence.derived.title")}</span>
-            <p>{copy("evidence.derived.text")}</p>
-            <SourceReferenceBlock
-              compact
-              copy={copy}
-              sourceIds="S1+S5+S6"
-              sourcesById={sourcesById}
-            />
-          </article>
-          <article className="evidence-stage stage-assumptions">
-            <span>{copy("evidence.assumptions.title")}</span>
-            <p>{copy("evidence.assumptions.text")}</p>
-            <small data-source-id="S4">{copy("common.internalAssumption")}</small>
-          </article>
-          <article className="evidence-stage stage-outputs">
-            <span>{copy("evidence.outputs.title")}</span>
-            <p>{copy("evidence.outputs.text")}</p>
-            <small>{copy("common.modelOutput")}</small>
-          </article>
+        <div aria-label={copy("nav.executive")} className="opella-kpi-grid">
+          <MetricTile
+            detail={copy("kpi.runRate.detail")}
+            label={copy("kpi.runRate")}
+            meta={<span className="opella-output-status">{copy("common.modelOutput")}</span>}
+            outputId="O-RUNRATE"
+            tone="neutral"
+            value={formatMoney(runRate, language, { decimals: 0 })}
+          />
+          <MetricTile
+            detail={copy("kpi.separationCost.detail")}
+            label={copy("kpi.separationCost")}
+            meta={(
+              <span className="opella-sepcost-components">
+                <small>{copy("common.modelOutput")}</small>
+                <span>
+                  TSA {formatMoney(separationComponents.tsa, language)} ·
+                  {" "}{copy("nav.oneOffs")} {formatMoney(separationComponents.oneOffs, language)} ·
+                  {" "}Capex {formatMoney(separationComponents.capex, language)}
+                </span>
+              </span>
+            )}
+            outputId="O-SEPCOST"
+            tone="neutral"
+            value={formatMoney(separationCost, language, { decimals: 0 })}
+          />
+          <MetricTile
+            detail={copy("kpi.peak.detail", { period: periodLabel(peak.period) })}
+            label={copy("kpi.peak")}
+            meta={<span className="opella-output-status">{copy("common.modelOutput")}</span>}
+            outputId="O-PEAK"
+            tone="neutral"
+            value={formatMoney(peak.value, language, { decimals: 0 })}
+          />
+          <MetricTile
+            detail={copy("kpi.steady.detail")}
+            label={copy("kpi.steady")}
+            meta={<span className="opella-output-status">{copy("common.modelOutput")}</span>}
+            outputId="O-STEADY"
+            tone="neutral"
+            value={periodLabel(steady)}
+          />
         </div>
+        <ModelConstructionMatrix copy={copy} rows={modelConstructionRows} />
         <button
           aria-controls="opella-evidence-panel"
           aria-expanded={evidenceOpen}
@@ -807,52 +960,10 @@ export default function OpellaAnalysisView() {
             <a href="#diligence">{copy("buyer.link")} ↓</a>
           </div>
         </section>
-        <div aria-label={copy("nav.executive")} className="opella-kpi-grid">
-          <MetricTile
-            detail={copy("kpi.runRate.detail")}
-            label={copy("kpi.runRate")}
-            meta={<span className="opella-output-status">{copy("common.modelOutput")}</span>}
-            outputId="O-RUNRATE"
-            tone="neutral"
-            value={formatMoney(runRate, language, { decimals: 0 })}
-          />
-          <MetricTile
-            detail={copy("kpi.separationCost.detail")}
-            label={copy("kpi.separationCost")}
-            meta={(
-              <span className="opella-sepcost-components">
-                <small>{copy("common.modelOutput")}</small>
-                <span>
-                  TSA {formatMoney(separationComponents.tsa, language)} ·
-                  {" "}{copy("nav.oneOffs")} {formatMoney(separationComponents.oneOffs, language)} ·
-                  {" "}Capex {formatMoney(separationComponents.capex, language)}
-                </span>
-              </span>
-            )}
-            outputId="O-SEPCOST"
-            tone="neutral"
-            value={formatMoney(separationCost, language, { decimals: 0 })}
-          />
-          <MetricTile
-            detail={copy("kpi.peak.detail", { period: periodLabel(peak.period) })}
-            label={copy("kpi.peak")}
-            meta={<span className="opella-output-status">{copy("common.modelOutput")}</span>}
-            outputId="O-PEAK"
-            tone="neutral"
-            value={formatMoney(peak.value, language, { decimals: 0 })}
-          />
-          <MetricTile
-            detail={copy("kpi.steady.detail")}
-            label={copy("kpi.steady")}
-            meta={<span className="opella-output-status">{copy("common.modelOutput")}</span>}
-            outputId="O-STEADY"
-            tone="neutral"
-            value={periodLabel(steady)}
-          />
-        </div>
       </section>
 
       <Section
+        className="opella-situation-part opella-situation-transaction"
         id="transaction"
         kicker={copy("transaction.kicker")}
         title={copy("transaction.title")}
@@ -917,6 +1028,7 @@ export default function OpellaAnalysisView() {
       </Section>
 
       <Section
+        className="opella-situation-part opella-situation-perimeter"
         id="perimeter"
         kicker={copy("perimeter.kicker")}
         title={copy("perimeter.title")}
@@ -1321,14 +1433,24 @@ export default function OpellaAnalysisView() {
         />
       </Section>
 
-      <Section id="buyer-implications" kicker={copy("buyer.kicker")} title={copy("buyer.title")}>
+      <Section
+        className="opella-diligence-buyer"
+        id="buyer-implications"
+        kicker={copy("buyer.kicker")}
+        title={copy("buyer.title")}
+      >
         <aside aria-label={`${copy("buyer.title")} · ${copy("common.illustrative")}`} className="buyer-implications">
           <p>{copy("buyer.qualitative")}</p>
           <a href="#diligence">{copy("buyer.link")} ↓</a>
         </aside>
       </Section>
 
-      <Section id="diligence" kicker={copy("diligence.kicker")} title={copy("diligence.title")}>
+      <Section
+        className="opella-diligence-main"
+        id="diligence"
+        kicker={copy("diligence.kicker")}
+        title={copy("diligence.title")}
+      >
         <p className="opella-section-intro">{copy("diligence.intro")}</p>
         <DataTable
           columns={[copy("diligence.item"), copy("diligence.effect"), copy("common.status")]}
@@ -1346,74 +1468,12 @@ export default function OpellaAnalysisView() {
 
       <Section id="sources" kicker={copy("sources.kicker")} title={copy("sources.title")}>
         <p className="opella-section-intro">{copy("sources.intro")}</p>
-        <div aria-label={copy("nav.sources")} className="opella-source-registry">
-          {snapshot.sources.map((source) => (
-            <article data-source-registry-id={source.id} key={source.id}>
-              <header>
-                <div>
-                  <h3>{copy(`source.${source.id}.label`)}</h3>
-                  <small>{source.id}</small>
-                </div>
-                <StatusTag copy={copy} status={source.status} />
-              </header>
-              <dl>
-                <div>
-                  <dt>{copy("sources.document")}</dt>
-                  <dd>{source.id === "S4" ? copy("sources.internalOnly") : source.document}</dd>
-                </div>
-                <div>
-                  <dt>{copy("sources.fact")}</dt>
-                  <dd>{copy(`source.${source.id}.coverage`, {
-                    ev: formatBillions(snapshot.m1.enterpriseValue.value, language, 0),
-                    multiple: formatMultiple(snapshot.m1.entryMultiple.value, language, 0),
-                    revenue: source.id === "S5"
-                      ? formatMoney(snapshot.m1.reportedRevenue.value, language, { decimals: 0 })
-                      : formatBillions(snapshot.m1.revenue.value, language, 0),
-                  })}</dd>
-                </div>
-                <div>
-                  <dt>{copy("sources.scope")}</dt>
-                  <dd>{copy(`source.${source.id}.scope`, {
-                    date: formatDate(snapshot.calendar.closing, language),
-                  })}</dd>
-                </div>
-                <div>
-                  <dt>{copy("sources.location")}</dt>
-                  <dd data-source-location={source.id === "S4" ? "internal" : source.location}>
-                    {source.id === "S4" ? copy("sources.internalOnly") : source.location}
-                  </dd>
-                </div>
-                <div>
-                  <dt>{copy("sources.publicationDate")}</dt>
-                  <dd>{source.id === "S4"
-                    ? copy("common.notApplicable")
-                    : source.publication_date === "not-stated"
-                    ? copy("common.notStated")
-                    : formatDate(source.publication_date, language)}</dd>
-                </div>
-                <div>
-                  <dt>{copy("sources.accessed")}</dt>
-                  <dd>{formatDate(source.accessed, language)}</dd>
-                </div>
-                <div>
-                  <dt>{copy("sources.evidenceRole")}</dt>
-                  <dd>{copy(`sources.role.${source.evidence_role}`)}</dd>
-                </div>
-              </dl>
-              {source.references.some(({ url }) => Boolean(url)) ? (
-                <SourceReferenceBlock
-                  copy={copy}
-                  sourceIds={source.id}
-                  sourcesById={sourcesById}
-                />
-              ) : (
-                <p className="source-internal-only" data-source-id="S4">
-                  {copy("sources.internalOnly")}
-                </p>
-              )}
-            </article>
-          ))}
-        </div>
+        <SourceRegistry
+          copy={copy}
+          language={language}
+          snapshot={snapshot}
+          sourcesById={sourcesById}
+        />
         <div className="opella-limitations">
           <p>{copy("sources.limit.estimates")}</p>
           <p>{copy("sources.limit.stub")}</p>

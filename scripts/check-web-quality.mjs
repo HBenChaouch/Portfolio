@@ -345,19 +345,47 @@ try {
     const buyerStart = rendered.indexOf('id="buyer-implications"');
     const diligenceStart = rendered.indexOf('id="diligence"');
     const buyerMarkup = rendered.slice(buyerStart, diligenceStart);
+    assert.match(rendered, /class="opella-section opella-diligence-buyer" id="buyer-implications"/);
+    assert.match(rendered, /class="opella-section opella-diligence-main" id="diligence"/);
     assert.doesNotMatch(buyerMarkup, /(?:€|\b\d+(?:[.,]\d+)?\s*(?:%|x|M€|€m))/);
     assert.doesNotMatch(rendered, /\b(?:MOIC|TRI|IRR)\b/i);
     assert.doesNotMatch(rendered, /(?:download=|Modele_Carveout_Opella\.xlsx)/i);
 
+    const modelStart = rendered.indexOf("opella-model-build");
+    const transactionStart = rendered.indexOf('id="transaction"');
+    const outputPositions = ["O-RUNRATE", "O-SEPCOST", "O-PEAK", "O-STEADY"]
+      .map((id) => rendered.indexOf(`data-output-id="${id}"`));
+    assert.ok(
+      outputPositions.every((position) => position > -1 && position < modelStart)
+        && modelStart < transactionStart,
+      "The four headline outputs must precede the visible model construction and all disclosures",
+    );
+    assert.deepEqual(
+      [...rendered.matchAll(/data-model-path-id="([^"]+)"/g)].map((match) => match[1]),
+      ["O-RUNRATE", "O-SEPCOST", "O-PEAK", "O-STEADY"],
+      "The visible construction matrix must trace exactly the four frozen outputs",
+    );
     assert.match(
       rendered,
       /<button aria-controls="opella-evidence-panel" aria-expanded="false"[^>]*>/,
-      "The evidence panel control must expose aria-controls and its collapsed state",
+      "The compact evidence detail must expose aria-controls and its collapsed state",
     );
     assert.match(
       rendered,
       /<section aria-labelledby="opella-evidence-panel-title"[^>]*hidden="" id="opella-evidence-panel">/,
-      "The inline evidence panel must remain in the DOM while collapsed",
+      "The compact evidence detail must remain in the DOM while collapsed",
+    );
+    const sourcesStart = rendered.indexOf('id="sources"');
+    const sourcesMarkup = rendered.slice(sourcesStart);
+    assert.equal(
+      (sourcesMarkup.match(/data-source-registry-id="S[1-6]"/g) ?? []).length,
+      6,
+      "The compact register must preserve S1-S6",
+    );
+    assert.equal(
+      (sourcesMarkup.match(/<summary>/g) ?? []).length,
+      6,
+      "Every source must expose an accessible disclosure",
     );
 
     const declaredSourceIds = new Set(opellaSnapshot.sources.map(({ id }) => id));

@@ -16,7 +16,7 @@ const bundleRoot = path.join(repositoryRoot, "integrations", "opella");
 const defaultSourceRoot = path.resolve(
   process.env.OPELLA_SOURCE ?? path.join(repositoryRoot, "..", "Transaction Services"),
 );
-const parentBaseline = "b9d05bf5cbcde08f05aeb297c839537ad180fdce";
+const parentBaseline = "8ad69b3152d237116e164cc5b4fdffd49b15308b";
 
 export const opellaSourceNames = {
   generator: "build_carveout.py",
@@ -83,7 +83,13 @@ export async function extractOpellaEngineContract(
   return contract;
 }
 
-function bundleManifest(sourceManifest, sourceManifestSha, engineContractSha, attributesSha) {
+function bundleManifest(
+  sourceManifest,
+  sourceManifestSha,
+  engineContractSha,
+  attributesSha,
+  presentationContract = {},
+) {
   const sourceFiles = Object.entries(sourceManifest.sourceFiles).map(([name, sha256]) => ({
     path: `Transaction Services/${name}`,
     sha256,
@@ -95,9 +101,9 @@ function bundleManifest(sourceManifest, sourceManifestSha, engineContractSha, at
 
   return {
     manifest: "opella-sidetrade-inactive-bundle",
-    version: "1.0.0",
+    version: "1.1.0",
     case: "opella-carve-out",
-    pass: "O2-A",
+    pass: "O2-E",
     status: "inactive",
     sourceBaseline: {
       repository: "parent",
@@ -234,6 +240,7 @@ function bundleManifest(sourceManifest, sourceManifestSha, engineContractSha, at
       publicWorkbook: false,
       publicBuildPage: false,
     },
+    ...presentationContract,
   };
 }
 
@@ -255,6 +262,24 @@ export async function integrateOpellaBundle(sourceRoot = defaultSourceRoot) {
   assert.doesNotMatch(engineContractText, /\uFFFD/, "Engine contract must not contain U+FFFD");
   const attributesText = ".gitattributes text eol=lf\n*.json text eol=lf\n";
   const sourceManifestSha = await sha256File(sourceManifestPath);
+  let presentationContract = {};
+  try {
+    const currentManifest = await readJson(path.join(bundleRoot, "manifest.json"));
+    presentationContract = Object.fromEntries(
+      [
+        "downloads",
+        "presentationFiles",
+        "allowedNonFinancialLiterals",
+        "requiredPublicMessages",
+        "forbiddenPublicTerms",
+        "publicExposure",
+      ]
+        .filter((key) => Object.hasOwn(currentManifest, key))
+        .map((key) => [key, currentManifest[key]]),
+    );
+  } catch {
+    // A first integration has no presentation contract to preserve.
+  }
 
   await mkdir(bundleRoot, { recursive: true });
   await copyFile(
@@ -272,6 +297,7 @@ export async function integrateOpellaBundle(sourceRoot = defaultSourceRoot) {
     sourceManifestSha,
     engineContractSha,
     attributesSha,
+    presentationContract,
   );
   await writeFile(path.join(bundleRoot, "manifest.json"), `${JSON.stringify(manifest, null, 2)}\n`, "utf8");
 

@@ -7,18 +7,27 @@
   "sources": [
     {
       "id": "S1",
-      "label": "Communiqué Sanofi du 21/10/2024 — négociations exclusives avec CD&R",
+      "label": "Sanofi — annonce de la transaction Opella",
+      "organization": "Sanofi",
+      "document": "Sanofi and CD&R partner to fuel Opella’s ambitions in consumer healthcare",
+      "publication_date": "2024-10-21",
       "value_date": "2024-10-21",
-      "accessed": "2026-07-28",
+      "accessed": "2026-07-29",
       "status": "public",
+      "evidence_role": "primary",
+      "period_scope": "Annonce de transaction ; EBITDA estimé 2024",
+      "location": "Communiqué, paragraphe « The valuation of Opella… »",
       "references": [
         {
-          "label": "Sanofi — Sanofi and CD&R partner to fuel Opella’s ambitions in consumer healthcare",
+          "organization": "Sanofi",
+          "document": "Sanofi and CD&R partner to fuel Opella’s ambitions in consumer healthcare",
+          "publication_date": "2024-10-21",
+          "location": "Communiqué, paragraphe « The valuation of Opella… »",
           "url": "https://www.sanofi.com/en/media-room/press-releases/2024/2024-10-21-05-30-00-2965875",
-          "accessed": "2026-07-28"
+          "accessed": "2026-07-29"
         }
       ],
-      "fields": "EV c.16 Md€ et multiple c.14x EBITDA 2024e ; ne fournit ni CA ni marge",
+      "fields": "Valeur d’entreprise d’environ 16 Md€ et multiple annoncé d’environ 14x l’EBITDA estimé 2024",
       "cells": {
         "id": "'Lisez-moi'!B15",
         "details": "'Lisez-moi'!C15"
@@ -26,15 +35,24 @@
     },
     {
       "id": "S2",
-      "label": "Communiqué Sanofi du 30/04/2025 — closing de la cession d'Opella",
+      "label": "Sanofi — closing de la transaction Opella",
+      "organization": "Sanofi",
+      "document": "Sanofi and CD&R close Opella transaction, create global consumer healthcare leader",
+      "publication_date": "2025-04-30",
       "value_date": "2025-04-30",
-      "accessed": "2026-07-28",
+      "accessed": "2026-07-29",
       "status": "public",
+      "evidence_role": "primary",
+      "period_scope": "Closing et actionnariat au 30 avril 2025",
+      "location": "Communiqué, premiers paragraphes",
       "references": [
         {
-          "label": "Sanofi — Sanofi and CD&R close Opella transaction, create global consumer healthcare leader",
+          "organization": "Sanofi",
+          "document": "Sanofi and CD&R close Opella transaction, create global consumer healthcare leader",
+          "publication_date": "2025-04-30",
+          "location": "Communiqué, premiers paragraphes",
           "url": "https://www.sanofi.com/en/media-room/press-releases/2025/2025-04-30-11-00-00-3071167",
-          "accessed": "2026-07-28"
+          "accessed": "2026-07-29"
         }
       ],
       "fields": "closing, participations CD&R 50,0 % / Sanofi 48,2 % / Bpifrance 1,8 %, origine du calendrier",
@@ -45,23 +63,35 @@
     },
     {
       "id": "S3",
-      "label": "Presse financière (Transacted, FiercePharma), oct. 2024 à avr. 2025",
+      "label": "Opella et Sanofi — recoupements officiels du closing et du périmètre",
+      "organization": "Opella / Sanofi",
+      "document": "Communiqué Day One et Annual Report on Form 20-F 2024",
+      "publication_date": "2025-04-30",
       "value_date": "2025-04-30",
-      "accessed": "2026-07-28",
+      "accessed": "2026-07-29",
       "status": "recoupement public",
+      "evidence_role": "cross-check",
+      "period_scope": "Closing ; périmètre de reporting et périmètre juridique transféré",
+      "location": "Day One p. 1 ; Form 20-F pp. 32–33, p. 60 et note D.35 pp. F-94–F-95",
       "references": [
         {
-          "label": "Transacted — Sanofi Strikes €16bn Deal with CD&R for Consumer Health Unit",
-          "url": "https://www.transacted.io/sanofi-strikes-e16bn-deal-with-cdr-for-consumer-health-unit",
-          "accessed": "2026-07-28"
+          "organization": "Opella",
+          "document": "Opella devient indépendante pour redéfinir l’avenir de la santé du quotidien",
+          "publication_date": "2025-04-30",
+          "location": "Page 1, paragraphe d’ouverture",
+          "url": "https://www.opella.com/dam/jcr%3A85e538d4-c944-4d64-9298-95fb4882b01e/20250430_Opella_Day%201%20PR_FR.pdf",
+          "accessed": "2026-07-29"
         },
         {
-          "label": "Fierce Pharma — Sanofi in exclusive negotiations to sell 50% stake in €16B Opella",
-          "url": "https://www.fiercepharma.com/pharma/sanofi-exclusive-negotiations-sell-50-stake-eu16b-consumer-health-unit-opella",
-          "accessed": "2026-07-28"
+          "organization": "Sanofi",
+          "document": "Annual Report on Form 20-F 2024",
+          "publication_date": "2025-02-13",
+          "location": "Pages 32–33, page 60 et note D.35, pages F-94–F-95",
+          "url": "https://www.sanofi.com/assets/dotcom/content-app/publications/annual-report-on-form-20-f/2024-01-01-form-20-f-2024-en.pdf",
+          "accessed": "2026-07-29"
         }
       ],
-      "fields": "recoupement de l'EV et du multiple de S1 ; aucune cellule propre",
+      "fields": "Recoupement du closing, de l’actionnariat et des limites de comparabilité ; aucune valeur autonome du modèle",
       "cells": {
         "id": "'Lisez-moi'!B17",
         "details": "'Lisez-moi'!C17"
@@ -69,21 +99,86 @@
     },
     {
       "id": "S4",
-      "label": "Hypothèses du rédacteur",
+      "label": "Modèle Opella — hypothèses illustratives",
+      "organization": "Modèle Opella",
+      "document": "Hypothèses illustratives du générateur canonique",
+      "publication_date": "2026-07-08",
       "value_date": "2026-07-08",
-      "accessed": "2026-07-16",
+      "accessed": "2026-07-29",
       "status": "estimation",
+      "evidence_role": "internal",
+      "period_scope": "Scénario illustratif P0–P5",
+      "location": "Transaction Services/build_carveout.py — paramètres M1 à M7",
       "references": [
         {
-          "label": "Hypothèses internes portées par le générateur canonique",
+          "organization": "Modèle Opella",
+          "document": "Hypothèses internes portées par le générateur canonique",
+          "publication_date": "2026-07-08",
+          "location": "Paramètres M1 à M7",
           "path": "Transaction Services/build_carveout.py",
-          "accessed": "2026-07-16"
+          "accessed": "2026-07-29"
         }
       ],
-      "fields": "CA périmètre, trajectoire, allocations, coûts stand-alone, TSA, one-offs, bridge cash, contrefactuel",
+      "fields": "Trajectoire, allocations, coûts stand-alone, TSA, one-offs, bridge cash et contrefactuel ; aucune publication externe",
       "cells": {
         "id": "'Lisez-moi'!B18",
         "details": "'Lisez-moi'!C18"
+      }
+    },
+    {
+      "id": "S5",
+      "label": "Sanofi — résultats FY2024",
+      "organization": "Sanofi",
+      "document": "Q4 and FY 2024 financial results",
+      "publication_date": "2025-01-30",
+      "value_date": "2024-12-31",
+      "accessed": "2026-07-29",
+      "status": "public",
+      "evidence_role": "primary",
+      "period_scope": "FY2024 ; nouveau périmètre de reporting",
+      "location": "Page 10, paragraphe « Opella »",
+      "references": [
+        {
+          "organization": "Sanofi",
+          "document": "Q4 and FY 2024 financial results",
+          "publication_date": "2025-01-30",
+          "location": "Page 10, paragraphe « Opella »",
+          "url": "https://www.sanofi.com/assets/dotcom/pressreleases/2025/2025-01-30-06-30-00-3017713-en.pdf",
+          "accessed": "2026-07-29"
+        }
+      ],
+      "fields": "Chiffre d’affaires Opella FY2024 de 4 948 M€ selon le nouveau périmètre de reporting",
+      "cells": {
+        "id": "'Lisez-moi'!B19",
+        "details": "'Lisez-moi'!C19"
+      }
+    },
+    {
+      "id": "S6",
+      "label": "Opella — chiffres clés investisseurs",
+      "organization": "Opella",
+      "document": "Investors — Key figures",
+      "publication_date": "not-stated",
+      "value_date": "2024-12-31",
+      "accessed": "2026-07-29",
+      "status": "public",
+      "evidence_role": "primary",
+      "period_scope": "FY2024 ; présentation publique arrondie",
+      "location": "Section « Key figures », chiffre d’affaires 2024 et note 3",
+      "references": [
+        {
+          "organization": "Opella",
+          "document": "Investors — Key figures",
+          "publication_date": "not-stated",
+          "location": "Section « Key figures », chiffre d’affaires 2024 et note 3",
+          "url": "https://www.opella.com/en/investors",
+          "accessed": "2026-07-29"
+        }
+      ],
+      "fields": "Chiffre d’affaires 2024 présenté sous forme arrondie à 5 Md€ ; date de publication non indiquée sur la page",
+      "cells": {
+        "id": "'Lisez-moi'!B20",
+        "details": "'Lisez-moi'!C20"
       }
     }
   ],
@@ -91,7 +186,10 @@
     {
       "id": "LN-L-EBITDA",
       "sourceIds": [
-        "S4"
+        "S1",
+        "S4",
+        "S5",
+        "S6"
       ],
       "assumptions": [
         {
@@ -100,38 +198,37 @@
         },
         {
           "path": "m1.margin",
-          "cell": "Hypothèses!C7"
+          "cell": "Hypothèses!C8"
         }
       ],
       "formulaIds": [
         "R-PERIM"
       ],
       "outputs": [
-        "m1.ebitda @ Hypothèses!C8",
+        "m1.ebitda @ Hypothèses!C9",
         "m7.inventory[L-EBITDA] @ 'M6 Bridge'!H6"
       ]
     },
     {
       "id": "LN-ENTRY-MULTIPLE",
       "sourceIds": [
-        "S1",
-        "S4"
+        "S1"
       ],
       "assumptions": [
         {
           "path": "m1.enterpriseValue",
-          "cell": "Hypothèses!C9"
+          "cell": "Hypothèses!C10"
         },
         {
           "path": "m1.ebitda",
-          "cell": "Hypothèses!C8"
+          "cell": "Hypothèses!C9"
         }
       ],
       "formulaIds": [
         "R-MULT"
       ],
       "outputs": [
-        "m1.entryMultiple @ Hypothèses!C10"
+        "m1.entryMultiple @ Hypothèses!C11"
       ]
     },
     {
@@ -142,22 +239,22 @@
       "assumptions": [
         {
           "path": "m1.ownership.cdr",
-          "cell": "Hypothèses!C11"
-        },
-        {
-          "path": "m1.ownership.sanofi",
           "cell": "Hypothèses!C12"
         },
         {
-          "path": "m1.ownership.bpifrance",
+          "path": "m1.ownership.sanofi",
           "cell": "Hypothèses!C13"
+        },
+        {
+          "path": "m1.ownership.bpifrance",
+          "cell": "Hypothèses!C14"
         }
       ],
       "formulaIds": [
         "R-OWN"
       ],
       "outputs": [
-        "m1.ownership.total @ Hypothèses!C14"
+        "m1.ownership.total @ Hypothèses!C15"
       ]
     },
     {
@@ -693,39 +790,51 @@
     "revenue": {
       "value": 5000.0,
       "formatId": "money-eur-m-0",
-      "status": "estimation",
-      "source": "S4",
-      "cell": "Hypothèses!C6"
+      "status": "public",
+      "source": "S5+S6",
+      "cell": "Hypothèses!C6",
+      "approximate": true
+    },
+    "reportedRevenue": {
+      "value": 4948.0,
+      "formatId": "money-eur-m-0",
+      "status": "public",
+      "source": "S5",
+      "cell": "Hypothèses!C7"
     },
     "margin": {
       "value": 0.2286,
       "formatId": "percent-2",
       "status": "calculé",
-      "source": "S4",
-      "cell": "Hypothèses!C7"
+      "source": "S1+S5+S6",
+      "cell": "Hypothèses!C8",
+      "approximate": true
     },
     "ebitda": {
       "value": 1143.0,
       "formatId": "money-eur-m-0",
       "status": "calculé",
-      "source": "S4",
-      "cell": "Hypothèses!C8",
-      "formulaId": "R-PERIM"
+      "source": "S1",
+      "cell": "Hypothèses!C9",
+      "formulaId": "R-PERIM",
+      "approximate": true
     },
     "enterpriseValue": {
       "value": 16000.0,
       "formatId": "money-eur-m-0",
       "status": "public",
       "source": "S1",
-      "cell": "Hypothèses!C9"
+      "cell": "Hypothèses!C10",
+      "approximate": true
     },
     "entryMultiple": {
       "value": 13.9982502187,
       "formatId": "multiple-1",
-      "status": "calculé",
-      "source": "S1+S4",
-      "cell": "Hypothèses!C10",
-      "formulaId": "R-MULT"
+      "status": "public",
+      "source": "S1",
+      "cell": "Hypothèses!C11",
+      "formulaId": "R-MULT",
+      "approximate": true
     },
     "ownership": {
       "cdr": {
@@ -733,21 +842,21 @@
         "formatId": "percent-1",
         "status": "public",
         "source": "S2",
-        "cell": "Hypothèses!C11"
+        "cell": "Hypothèses!C12"
       },
       "sanofi": {
         "value": 0.482,
         "formatId": "percent-1",
         "status": "public",
         "source": "S2",
-        "cell": "Hypothèses!C12"
+        "cell": "Hypothèses!C13"
       },
       "bpifrance": {
         "value": 0.018,
         "formatId": "percent-1",
         "status": "public",
         "source": "S2",
-        "cell": "Hypothèses!C13"
+        "cell": "Hypothèses!C14"
       }
     }
   },
@@ -757,7 +866,7 @@
       "formatId": "percent-2",
       "status": "estimation",
       "source": "S4",
-      "cell": "Hypothèses!C21"
+      "cell": "Hypothèses!C22"
     },
     "byPeriod": {
       "P1": 54.9333333333,
@@ -1254,21 +1363,21 @@
       "formatId": "percent-1",
       "status": "estimation",
       "source": "S4",
-      "cell": "Hypothèses!C24"
+      "cell": "Hypothèses!C25"
     },
     "capexRate": {
       "value": 0.025,
       "formatId": "percent-1",
       "status": "estimation",
       "source": "S4",
-      "cell": "Hypothèses!C25"
+      "cell": "Hypothèses!C26"
     },
     "wcIntensity": {
       "value": 0.15,
       "formatId": "percent-1",
       "status": "estimation",
       "source": "S4",
-      "cell": "Hypothèses!C26"
+      "cell": "Hypothèses!C27"
     },
     "cash": {
       "P1": 364.9744666667,

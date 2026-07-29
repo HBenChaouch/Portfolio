@@ -1,4 +1,9 @@
-import { useMemo } from "react";
+import {
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import DataTable from "../components/DataTable.jsx";
 import MetricTile from "../components/MetricTile.jsx";
 import WaterfallBridge from "../components/WaterfallBridge.jsx";
@@ -88,6 +93,11 @@ function formatMultiple(value, language, decimals = 1) {
   return `${formatNumber(value, language, decimals)}x`;
 }
 
+function formatBillions(value, language, decimals = 1) {
+  const amount = formatNumber(value / 1000, language, decimals);
+  return language === "en" ? `€${amount}bn` : `${amount} Md€`;
+}
+
 function formatDate(value, language) {
   return new Intl.DateTimeFormat(localeFor(language), {
     day: "numeric",
@@ -108,6 +118,61 @@ function periodDisplay(periods, periodId, language, copy) {
 
 function statusLabel(status, copy) {
   return copy(statusCopyIds[status] ?? "common.toConfirm");
+}
+
+function sourceIdList(sourceIds) {
+  return sourceIds.split("+").filter(Boolean);
+}
+
+function ExternalSourceLink({ copy, reference, sourceId }) {
+  return (
+    <a
+      aria-label={copy("sources.openAccessible", { document: reference.document })}
+      data-source-id={sourceId}
+      data-source-url={reference.url}
+      href={reference.url}
+      rel="noopener noreferrer"
+      target="_blank"
+    >
+      {copy("sources.openOriginal")} ↗
+    </a>
+  );
+}
+
+function SourceReferenceBlock({
+  compact = false,
+  copy,
+  sourceIds,
+  sourcesById,
+}) {
+  return (
+    <div className={compact ? "source-reference-list compact" : "source-reference-list"}>
+      {sourceIdList(sourceIds).map((sourceId) => {
+        const source = sourcesById.get(sourceId);
+        if (!source) return null;
+        return (
+          <div
+            className="source-reference"
+            data-source-id={source.id}
+            data-source-location={source.location}
+            key={source.id}
+          >
+            <strong>{source.organization}</strong>
+            <span>{source.document}</span>
+            <small>{source.location}</small>
+            {source.references.filter(({ url }) => Boolean(url)).map((reference) => (
+              <ExternalSourceLink
+                copy={copy}
+                key={reference.url}
+                reference={reference}
+                sourceId={source.id}
+              />
+            ))}
+          </div>
+        );
+      })}
+    </div>
+  );
 }
 
 function Section({ children, id, kicker, title }) {
@@ -269,6 +334,13 @@ export default function OpellaAnalysisView() {
   } = useOpellaScenario();
   const copy = useMemo(() => createOpellaCopy(language), [language]);
   const snapshot = opellaFinancials.snapshot;
+  const [evidenceOpen, setEvidenceOpen] = useState(false);
+  const evidenceButtonRef = useRef(null);
+  const sourcesById = useMemo(
+    () => new Map(snapshot.sources.map((source) => [source.id, source])),
+    [snapshot.sources],
+  );
+  const centralResult = useMemo(() => calculateOpella(opellaFinancials), []);
   const periods = result.calendar.periods.filter(({ inHorizon }) => inHorizon);
   const horizon = result.calendar.horizon;
   const periodLabel = (id) => periodDisplay(result.calendar.periods, id, language, copy);
@@ -425,7 +497,6 @@ export default function OpellaAnalysisView() {
 
   const leverContracts = opellaFinancials.contracts.engine.levers;
   const comparisonRows = useMemo(() => {
-    const central = calculateOpella(opellaFinancials);
     const sensitivityRows = Object.entries(leverContracts).flatMap(([id, contract]) => (
       ["basse", "haute"].map((leverState) => ({
         id: `${id}-${leverState}`,
@@ -435,26 +506,156 @@ export default function OpellaAnalysisView() {
     ));
     return [
       { id: "active", label: copy("common.currentSelection"), output: result },
-      { id: "central", label: copy("common.centralCase"), output: central },
+      { id: "central", label: copy("common.centralCase"), output: centralResult },
       ...sensitivityRows,
     ];
-  }, [copy, leverContracts, result]);
+  }, [centralResult, copy, leverContracts, result]);
 
-  const sourceRows = snapshot.sources.map((source) => {
-    const publicReference = source.references.find(({ url }) => Boolean(url));
-    return [
-      source.id,
-      copy(`source.${source.id}.label`),
-      formatDate(source.value_date, language),
-      statusLabel(source.status, copy),
-      copy(`source.${source.id}.coverage`),
-      publicReference ? (
-        <a href={publicReference.url} rel="noreferrer" target="_blank">
-          {copy("sources.open")} ↗
-        </a>
-      ) : copy("common.notApplicable"),
-    ];
-  });
+  useEffect(() => {
+    if (!evidenceOpen) return undefined;
+    const closeOnEscape = (event) => {
+      if (event.key !== "Escape") return;
+      setEvidenceOpen(false);
+      evidenceButtonRef.current?.focus();
+    };
+    document.addEventListener("keydown", closeOnEscape);
+    return () => document.removeEventListener("keydown", closeOnEscape);
+  }, [evidenceOpen]);
+
+  const publicEvidenceFacts = [
+    {
+      id: "revenue-rounded",
+      label: copy("evidence.public.revenueRounded"),
+      sourceIds: snapshot.m1.revenue.source,
+      value: `≈ ${formatBillions(snapshot.m1.revenue.value, language, 0)}`,
+    },
+    {
+      id: "revenue-reported",
+      label: copy("evidence.public.revenueReported"),
+      sourceIds: snapshot.m1.reportedRevenue.source,
+      value: formatMoney(snapshot.m1.reportedRevenue.value, language, { decimals: 0 }),
+    },
+    {
+      id: "enterprise-value",
+      label: copy("evidence.public.ev"),
+      sourceIds: snapshot.m1.enterpriseValue.source,
+      value: `≈ ${formatBillions(snapshot.m1.enterpriseValue.value, language, 0)}`,
+    },
+    {
+      id: "entry-multiple",
+      label: copy("evidence.public.multiple"),
+      sourceIds: snapshot.m1.entryMultiple.source,
+      value: `≈ ${formatMultiple(snapshot.m1.entryMultiple.value, language, 0)}`,
+    },
+    {
+      id: "closing-ownership",
+      label: copy("evidence.public.closingOwnership"),
+      sourceIds: "S2",
+      value: copy("evidence.public.closingOwnershipValue", {
+        bpifrance: formatPercent(snapshot.m1.ownership.bpifrance.value, language),
+        cdr: formatPercent(snapshot.m1.ownership.cdr.value, language),
+        date: formatDate(snapshot.calendar.closing, language),
+        sanofi: formatPercent(snapshot.m1.ownership.sanofi.value, language),
+      }),
+    },
+  ];
+
+  const derivedEvidenceValues = [
+    {
+      formula: copy("evidence.derived.ebitdaFormula"),
+      id: "transaction-implied-ebitda",
+      label: copy("evidence.derived.ebitda"),
+      sourceIds: snapshot.m1.ebitda.source,
+      value: `≈ ${formatBillions(snapshot.m1.ebitda.value, language, 2)}`,
+    },
+    {
+      formula: copy("evidence.derived.marginFormula"),
+      id: "implied-margin",
+      label: copy("evidence.derived.margin"),
+      sourceIds: snapshot.m1.margin.source,
+      value: `≈ ${formatPercent(snapshot.m1.margin.value, language, 1)}`,
+    },
+  ];
+
+  const illustrativeAssumptions = [
+    {
+      id: "perimeter-trajectory",
+      label: copy("evidence.assumption.perimeter"),
+      reason: copy("evidence.assumption.perimeterReason"),
+      value: leverValue(
+        "S-OPS",
+        leverContracts["S-OPS"].states[selections["S-OPS"]],
+        language,
+      ),
+    },
+    {
+      id: "seller-allocations",
+      label: copy("evidence.assumption.allocations"),
+      reason: copy("evidence.assumption.allocationsReason"),
+      value: formatPercent(snapshot.m2.rate.value, language, 1),
+    },
+    {
+      id: "standalone-functions",
+      label: copy("evidence.assumption.standalone"),
+      reason: copy("evidence.assumption.standaloneReason"),
+      value: formatMoney(Math.abs(snapshot.m3.runRateTotal), language, { decimals: 0 }),
+    },
+    {
+      id: "transition-services",
+      label: copy("evidence.assumption.tsa"),
+      reason: copy("evidence.assumption.tsaReason"),
+      value: formatMoney(separationComponents.tsa, language, { decimals: 0 }),
+    },
+    {
+      id: "one-offs",
+      label: copy("evidence.assumption.oneOffs"),
+      reason: copy("evidence.assumption.oneOffsReason"),
+      value: formatMoney(separationComponents.oneOffs, language, { decimals: 0 }),
+    },
+    {
+      id: "cash-bridge",
+      label: copy("evidence.assumption.cash"),
+      reason: copy("evidence.assumption.cashReason"),
+      value: [
+        formatPercent(snapshot.m6.taxRate.value, language, 1),
+        formatPercent(snapshot.m6.capexRate.value, language, 1),
+        formatPercent(snapshot.m6.wcIntensity.value, language, 1),
+      ].join(" · "),
+    },
+  ];
+
+  const scenarioEvidenceOutputs = [
+    {
+      formula: copy("evidence.outputFormula.runRate"),
+      id: "run-rate",
+      label: copy("kpi.runRate"),
+      value: formatMoney(runRate, language, { decimals: 0 }),
+    },
+    {
+      formula: copy("evidence.outputFormula.separationCost"),
+      id: "separation-cost",
+      label: copy("kpi.separationCost"),
+      value: formatMoney(separationCost, language, { decimals: 0 }),
+    },
+    {
+      formula: copy("evidence.outputFormula.peak"),
+      id: "funding-peak",
+      label: copy("kpi.peak"),
+      value: `${formatMoney(peak.value, language, { decimals: 0 })} · ${periodLabel(peak.period)}`,
+    },
+    {
+      formula: copy("evidence.outputFormula.steady"),
+      id: "steady-state",
+      label: copy("kpi.steady"),
+      value: periodLabel(steady),
+    },
+    {
+      formula: copy("evidence.outputFormula.p5Ebitda"),
+      id: "central-p5-ebitda",
+      label: copy("evidence.output.p5Ebitda"),
+      value: formatMoney(centralResult.modules.m1.ebitda.P5, language, { decimals: 0 }),
+    },
+  ];
 
   return (
     <article className="opella-analysis-view">
@@ -465,11 +666,152 @@ export default function OpellaAnalysisView() {
           <p>{copy("executive.intro")}</p>
           <span className="opella-illustrative">{copy("common.illustrative")}</span>
         </div>
+        <div aria-label={copy("evidence.chainLabel")} className="opella-evidence-chain">
+          <article className="evidence-stage stage-public">
+            <span>{copy("evidence.public.title")}</span>
+            <p>{copy("evidence.public.text")}</p>
+            <SourceReferenceBlock
+              compact
+              copy={copy}
+              sourceIds="S1+S2+S5+S6"
+              sourcesById={sourcesById}
+            />
+          </article>
+          <article className="evidence-stage stage-derived">
+            <span>{copy("evidence.derived.title")}</span>
+            <p>{copy("evidence.derived.text")}</p>
+            <SourceReferenceBlock
+              compact
+              copy={copy}
+              sourceIds="S1+S5+S6"
+              sourcesById={sourcesById}
+            />
+          </article>
+          <article className="evidence-stage stage-assumptions">
+            <span>{copy("evidence.assumptions.title")}</span>
+            <p>{copy("evidence.assumptions.text")}</p>
+            <small data-source-id="S4">{copy("common.internalAssumption")}</small>
+          </article>
+          <article className="evidence-stage stage-outputs">
+            <span>{copy("evidence.outputs.title")}</span>
+            <p>{copy("evidence.outputs.text")}</p>
+            <small>{copy("common.modelOutput")}</small>
+          </article>
+        </div>
+        <button
+          aria-controls="opella-evidence-panel"
+          aria-expanded={evidenceOpen}
+          className="opella-evidence-toggle"
+          onClick={() => setEvidenceOpen((current) => !current)}
+          ref={evidenceButtonRef}
+          type="button"
+        >
+          {copy("evidence.toggle")}
+          <span aria-hidden="true">{evidenceOpen ? "−" : "+"}</span>
+        </button>
+        <section
+          aria-labelledby="opella-evidence-panel-title"
+          className="opella-evidence-panel"
+          hidden={!evidenceOpen}
+          id="opella-evidence-panel"
+        >
+          <header>
+            <div>
+              <p className="eyebrow">{copy("evidence.chainLabel")}</p>
+              <h2 id="opella-evidence-panel-title">{copy("evidence.panelTitle")}</h2>
+              <p>{copy("evidence.panelIntro")}</p>
+            </div>
+            <button
+              aria-label={copy("evidence.close")}
+              onClick={() => {
+                setEvidenceOpen(false);
+                evidenceButtonRef.current?.focus();
+              }}
+              type="button"
+            >
+              ×
+            </button>
+          </header>
+
+          <div className="evidence-panel-group">
+            <h3>{copy("evidence.publicFacts")}</h3>
+            <div className="evidence-card-grid">
+              {publicEvidenceFacts.map((fact) => (
+                <article
+                  data-public-fact-id={fact.id}
+                  data-source-ids={fact.sourceIds}
+                  key={fact.id}
+                >
+                  <span>{fact.label}</span>
+                  <strong>{fact.value}</strong>
+                  <StatusTag copy={copy} status="public" />
+                  <SourceReferenceBlock
+                    copy={copy}
+                    sourceIds={fact.sourceIds}
+                    sourcesById={sourcesById}
+                  />
+                </article>
+              ))}
+            </div>
+          </div>
+
+          <div className="evidence-panel-group">
+            <h3>{copy("evidence.derivedValues")}</h3>
+            <div className="evidence-card-grid derived">
+              {derivedEvidenceValues.map((fact) => (
+                <article data-derived-value-id={fact.id} key={fact.id}>
+                  <span>{fact.label}</span>
+                  <strong>{fact.value}</strong>
+                  <StatusTag copy={copy} status="calculé" />
+                  <p><b>{copy("evidence.formula")}:</b> {fact.formula}</p>
+                  <p className="evidence-operands">{copy("evidence.operands")}</p>
+                  <SourceReferenceBlock
+                    copy={copy}
+                    sourceIds={fact.sourceIds}
+                    sourcesById={sourcesById}
+                  />
+                </article>
+              ))}
+            </div>
+          </div>
+
+          <div className="evidence-panel-group">
+            <h3>{copy("evidence.assumptionModules")}</h3>
+            <div className="evidence-assumption-list">
+              {illustrativeAssumptions.map((assumption) => (
+                <article data-assumption-key={assumption.id} data-source-id="S4" key={assumption.id}>
+                  <div>
+                    <strong>{assumption.label}</strong>
+                    <p>{assumption.reason}</p>
+                  </div>
+                  <span>{assumption.value}</span>
+                  <small>{copy("common.internalAssumption")}</small>
+                </article>
+              ))}
+            </div>
+          </div>
+
+          <div className="evidence-panel-group">
+            <h3>{copy("evidence.scenarioOutputs")}</h3>
+            <div className="evidence-output-list">
+              {scenarioEvidenceOutputs.map((output) => (
+                <article data-scenario-output-id={output.id} key={output.id}>
+                  <span>{output.label}</span>
+                  <strong>{output.value}</strong>
+                  <p><b>{copy("evidence.formula")}:</b> {output.formula}</p>
+                </article>
+              ))}
+            </div>
+            <p className="evidence-output-caveat">{copy("evidence.outputCaveat")}</p>
+            <p className="evidence-scope-caveat">{copy("evidence.scopeCaveat")}</p>
+            <a href="#diligence">{copy("buyer.link")} ↓</a>
+          </div>
+        </section>
         <div aria-label={copy("nav.executive")} className="opella-kpi-grid">
           <MetricTile
             detail={copy("kpi.runRate.detail")}
             label={copy("kpi.runRate")}
-            meta={<StatusTag copy={copy} status="estimation" />}
+            meta={<span className="opella-output-status">{copy("common.modelOutput")}</span>}
             outputId="O-RUNRATE"
             tone="neutral"
             value={formatMoney(runRate, language, { decimals: 0 })}
@@ -479,9 +821,12 @@ export default function OpellaAnalysisView() {
             label={copy("kpi.separationCost")}
             meta={(
               <span className="opella-sepcost-components">
-                TSA {formatMoney(separationComponents.tsa, language)} ·
-                {" "}{copy("nav.oneOffs")} {formatMoney(separationComponents.oneOffs, language)} ·
-                {" "}Capex {formatMoney(separationComponents.capex, language)}
+                <small>{copy("common.modelOutput")}</small>
+                <span>
+                  TSA {formatMoney(separationComponents.tsa, language)} ·
+                  {" "}{copy("nav.oneOffs")} {formatMoney(separationComponents.oneOffs, language)} ·
+                  {" "}Capex {formatMoney(separationComponents.capex, language)}
+                </span>
               </span>
             )}
             outputId="O-SEPCOST"
@@ -491,7 +836,7 @@ export default function OpellaAnalysisView() {
           <MetricTile
             detail={copy("kpi.peak.detail", { period: periodLabel(peak.period) })}
             label={copy("kpi.peak")}
-            meta={<StatusTag copy={copy} status="calculé" />}
+            meta={<span className="opella-output-status">{copy("common.modelOutput")}</span>}
             outputId="O-PEAK"
             tone="neutral"
             value={formatMoney(peak.value, language, { decimals: 0 })}
@@ -499,7 +844,7 @@ export default function OpellaAnalysisView() {
           <MetricTile
             detail={copy("kpi.steady.detail")}
             label={copy("kpi.steady")}
-            meta={<StatusTag copy={copy} status="calculé" />}
+            meta={<span className="opella-output-status">{copy("common.modelOutput")}</span>}
             outputId="O-STEADY"
             tone="neutral"
             value={periodLabel(steady)}
@@ -514,32 +859,58 @@ export default function OpellaAnalysisView() {
       >
         <p className="opella-section-intro">{copy("transaction.intro")}</p>
         <div className="opella-fact-grid">
-          <article>
+          <article
+            data-public-fact-id="transaction-enterprise-value"
+            data-source-ids={snapshot.m1.enterpriseValue.source}
+          >
             <span>{copy("transaction.ev")}</span>
-            <strong>{formatMoney(snapshot.m1.enterpriseValue.value, language, { decimals: 0 })}</strong>
+            <strong>≈ {formatBillions(snapshot.m1.enterpriseValue.value, language, 0)}</strong>
             <StatusTag copy={copy} status={snapshot.m1.enterpriseValue.status} />
-            <small>{snapshot.m1.enterpriseValue.source}</small>
+            <SourceReferenceBlock
+              compact
+              copy={copy}
+              sourceIds={snapshot.m1.enterpriseValue.source}
+              sourcesById={sourcesById}
+            />
           </article>
-          <article>
+          <article
+            data-public-fact-id="transaction-entry-multiple"
+            data-source-ids={snapshot.m1.entryMultiple.source}
+          >
             <span>{copy("transaction.multiple")}</span>
-            <strong>{formatMultiple(result.modules.m1.entryMultiple, language)}</strong>
+            <strong>≈ {formatMultiple(result.modules.m1.entryMultiple, language, 0)}</strong>
             <StatusTag copy={copy} status={snapshot.m1.entryMultiple.status} />
-            <small>{snapshot.m1.entryMultiple.source}</small>
+            <SourceReferenceBlock
+              compact
+              copy={copy}
+              sourceIds={snapshot.m1.entryMultiple.source}
+              sourcesById={sourcesById}
+            />
           </article>
-          <article>
+          <article data-public-fact-id="transaction-closing" data-source-ids="S2">
             <span>{copy("transaction.closing")}</span>
             <strong>{formatDate(snapshot.calendar.closing, language)}</strong>
             <StatusTag copy={copy} status="public" />
-            <small>S2</small>
+            <SourceReferenceBlock compact copy={copy} sourceIds="S2" sourcesById={sourcesById} />
           </article>
         </div>
         <div className="opella-ownership" aria-label={copy("transaction.ownership")}>
           <h3>{copy("transaction.ownership")}</h3>
           {Object.entries(snapshot.m1.ownership).map(([holder, field]) => (
-            <div key={holder}>
+            <div
+              data-public-fact-id={`transaction-ownership-${holder}`}
+              data-source-ids={field.source}
+              key={holder}
+            >
               <span>{copy(`transaction.holder.${holder}`)}</span>
               <strong>{formatPercent(field.value, language)}</strong>
               <StatusTag copy={copy} status={field.status} />
+              <SourceReferenceBlock
+                compact
+                copy={copy}
+                sourceIds={field.source}
+                sourcesById={sourcesById}
+              />
             </div>
           ))}
         </div>
@@ -552,25 +923,60 @@ export default function OpellaAnalysisView() {
       >
         <p className="opella-section-intro">{copy("perimeter.intro")}</p>
         <div className="opella-fact-grid">
-          <article>
+          <article
+            data-public-fact-id="perimeter-rounded-revenue"
+            data-source-ids={snapshot.m1.revenue.source}
+          >
             <span>{copy("perimeter.revenue")}</span>
-            <strong>{formatMoney(snapshot.m1.revenue.value, language, { decimals: 0 })}</strong>
+            <strong>≈ {formatBillions(snapshot.m1.revenue.value, language, 0)}</strong>
             <StatusTag copy={copy} status={snapshot.m1.revenue.status} />
-            <small>{snapshot.m1.revenue.source}</small>
+            <SourceReferenceBlock
+              compact
+              copy={copy}
+              sourceIds={snapshot.m1.revenue.source}
+              sourcesById={sourcesById}
+            />
           </article>
-          <article>
+          <article
+            data-public-fact-id="perimeter-reported-revenue"
+            data-source-ids={snapshot.m1.reportedRevenue.source}
+          >
+            <span>{copy("perimeter.reportedRevenue")}</span>
+            <strong>{formatMoney(snapshot.m1.reportedRevenue.value, language, { decimals: 0 })}</strong>
+            <StatusTag copy={copy} status={snapshot.m1.reportedRevenue.status} />
+            <SourceReferenceBlock
+              compact
+              copy={copy}
+              sourceIds={snapshot.m1.reportedRevenue.source}
+              sourcesById={sourcesById}
+            />
+          </article>
+          <article data-derived-value-id="perimeter-implied-margin">
             <span>{copy("perimeter.margin")}</span>
-            <strong>{formatPercent(snapshot.m1.margin.value, language, 2)}</strong>
+            <strong>≈ {formatPercent(snapshot.m1.margin.value, language, 1)}</strong>
             <StatusTag copy={copy} status={snapshot.m1.margin.status} />
-            <small>{snapshot.m1.margin.source}</small>
+            <small><b>{copy("evidence.formula")}:</b> {copy("evidence.derived.marginFormula")}</small>
+            <SourceReferenceBlock
+              compact
+              copy={copy}
+              sourceIds={snapshot.m1.margin.source}
+              sourcesById={sourcesById}
+            />
           </article>
-          <article>
+          <article data-derived-value-id="perimeter-transaction-implied-ebitda">
             <span>{copy("perimeter.ebitda")}</span>
-            <strong>{formatMoney(snapshot.m1.ebitda.value, language, { decimals: 0 })}</strong>
+            <strong>≈ {formatBillions(snapshot.m1.ebitda.value, language, 2)}</strong>
             <StatusTag copy={copy} status={snapshot.m1.ebitda.status} />
-            <small>{snapshot.m1.ebitda.formulaId}</small>
+            <small><b>{copy("evidence.formula")}:</b> {copy("evidence.derived.ebitdaFormula")}</small>
+            <SourceReferenceBlock
+              compact
+              copy={copy}
+              sourceIds={snapshot.m1.ebitda.source}
+              sourcesById={sourcesById}
+            />
           </article>
         </div>
+        <p className="evidence-scope-caveat">{copy("evidence.scopeCaveat")}</p>
       </Section>
 
       <Section
@@ -940,21 +1346,74 @@ export default function OpellaAnalysisView() {
 
       <Section id="sources" kicker={copy("sources.kicker")} title={copy("sources.title")}>
         <p className="opella-section-intro">{copy("sources.intro")}</p>
-        <DataTable
-          columns={[
-            "ID",
-            copy("sources.reference"),
-            copy("sources.valueDate"),
-            copy("common.status"),
-            copy("sources.coverage"),
-            copy("common.source"),
-          ]}
-          getRowKey={(row) => row[0]}
-          highlightColumn={null}
-          label={copy("nav.sources")}
-          rowHeaderColumn={0}
-          rows={sourceRows}
-        />
+        <div aria-label={copy("nav.sources")} className="opella-source-registry">
+          {snapshot.sources.map((source) => (
+            <article data-source-registry-id={source.id} key={source.id}>
+              <header>
+                <div>
+                  <h3>{copy(`source.${source.id}.label`)}</h3>
+                  <small>{source.id}</small>
+                </div>
+                <StatusTag copy={copy} status={source.status} />
+              </header>
+              <dl>
+                <div>
+                  <dt>{copy("sources.document")}</dt>
+                  <dd>{source.id === "S4" ? copy("sources.internalOnly") : source.document}</dd>
+                </div>
+                <div>
+                  <dt>{copy("sources.fact")}</dt>
+                  <dd>{copy(`source.${source.id}.coverage`, {
+                    ev: formatBillions(snapshot.m1.enterpriseValue.value, language, 0),
+                    multiple: formatMultiple(snapshot.m1.entryMultiple.value, language, 0),
+                    revenue: source.id === "S5"
+                      ? formatMoney(snapshot.m1.reportedRevenue.value, language, { decimals: 0 })
+                      : formatBillions(snapshot.m1.revenue.value, language, 0),
+                  })}</dd>
+                </div>
+                <div>
+                  <dt>{copy("sources.scope")}</dt>
+                  <dd>{copy(`source.${source.id}.scope`, {
+                    date: formatDate(snapshot.calendar.closing, language),
+                  })}</dd>
+                </div>
+                <div>
+                  <dt>{copy("sources.location")}</dt>
+                  <dd data-source-location={source.id === "S4" ? "internal" : source.location}>
+                    {source.id === "S4" ? copy("sources.internalOnly") : source.location}
+                  </dd>
+                </div>
+                <div>
+                  <dt>{copy("sources.publicationDate")}</dt>
+                  <dd>{source.id === "S4"
+                    ? copy("common.notApplicable")
+                    : source.publication_date === "not-stated"
+                    ? copy("common.notStated")
+                    : formatDate(source.publication_date, language)}</dd>
+                </div>
+                <div>
+                  <dt>{copy("sources.accessed")}</dt>
+                  <dd>{formatDate(source.accessed, language)}</dd>
+                </div>
+                <div>
+                  <dt>{copy("sources.evidenceRole")}</dt>
+                  <dd>{copy(`sources.role.${source.evidence_role}`)}</dd>
+                </div>
+              </dl>
+              {source.references.some(({ url }) => Boolean(url)) ? (
+                <SourceReferenceBlock
+                  copy={copy}
+                  sourceIds={source.id}
+                  sourcesById={sourcesById}
+                />
+              ) : (
+                <p className="source-internal-only" data-source-id="S4">
+                  {copy("sources.internalOnly")}
+                </p>
+              )}
+            </article>
+          ))}
+        </div>
         <div className="opella-limitations">
           <p>{copy("sources.limit.estimates")}</p>
           <p>{copy("sources.limit.stub")}</p>

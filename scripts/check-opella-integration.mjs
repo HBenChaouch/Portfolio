@@ -394,6 +394,11 @@ export async function runOpellaIntegrationChecks({ sourceRoot } = {}) {
     await assertFileSha256(path.join(bundleRoot, file.path), file.sha256, `bundle ${file.path}`);
   }
   assert.deepEqual(bundleManifest.downloads, []);
+  assert.equal(bundleManifest.pass, "O2-E");
+  assert.equal(
+    bundleManifest.sourceBaseline.commit,
+    "8ad69b3152d237116e164cc5b4fdffd49b15308b",
+  );
   assert.deepEqual(bundleManifest.presentationFiles, [
     "src/App.jsx",
     "src/components/OpellaCaseShell.jsx",
@@ -449,6 +454,75 @@ export async function runOpellaIntegrationChecks({ sourceRoot } = {}) {
   assert.doesNotMatch(engineContractText, /\uFFFD/, "Bundled engine contract must not contain U+FFFD");
   assert.doesNotMatch(engineSource, /from\s+["'][^"']*(?:dcfEngine|SidetradeScenario|react)/i);
   assert.doesNotMatch(engineSource, /\b(?:document|window)\./);
+
+  const expectedSourceUrls = {
+    S1: [
+      "https://www.sanofi.com/en/media-room/press-releases/2024/2024-10-21-05-30-00-2965875",
+    ],
+    S2: [
+      "https://www.sanofi.com/en/media-room/press-releases/2025/2025-04-30-11-00-00-3071167",
+    ],
+    S3: [
+      "https://www.opella.com/dam/jcr%3A85e538d4-c944-4d64-9298-95fb4882b01e/20250430_Opella_Day%201%20PR_FR.pdf",
+      "https://www.sanofi.com/assets/dotcom/content-app/publications/annual-report-on-form-20-f/2024-01-01-form-20-f-2024-en.pdf",
+    ],
+    S4: [],
+    S5: [
+      "https://www.sanofi.com/assets/dotcom/pressreleases/2025/2025-01-30-06-30-00-3017713-en.pdf",
+    ],
+    S6: [
+      "https://www.opella.com/en/investors",
+    ],
+  };
+  assert.deepEqual(snapshot.sources.map(({ id }) => id), Object.keys(expectedSourceUrls));
+  for (const source of snapshot.sources) {
+    const urls = source.references.flatMap((reference) => (
+      reference.url ? [reference.url] : []
+    ));
+    assert.deepEqual(urls, expectedSourceUrls[source.id], `${source.id} canonical URL contract`);
+    assert.ok(
+      [
+        "organization",
+        "document",
+        "publication_date",
+        "accessed",
+        "period_scope",
+        "location",
+        "evidence_role",
+      ].every((field) => Boolean(source[field])),
+      `${source.id} must expose the complete evidence metadata`,
+    );
+    for (const url of urls) {
+      assert.ok(
+        ["www.sanofi.com", "www.opella.com"].includes(new URL(url).hostname),
+        `${source.id} must use an official canonical host`,
+      );
+      assert.doesNotMatch(url, /(?:google|bing|yahoo|duckduckgo|reuters|bloomberg)/i);
+    }
+  }
+  assert.equal(snapshot.sources.find(({ id }) => id === "S4").evidence_role, "internal");
+  assert.ok(snapshot.sources.find(({ id }) => id === "S4").references.every(
+    (reference) => !reference.url && Boolean(reference.path),
+  ));
+  assert.deepEqual(
+    {
+      ebitda: [snapshot.m1.ebitda.status, snapshot.m1.ebitda.source],
+      enterpriseValue: [snapshot.m1.enterpriseValue.status, snapshot.m1.enterpriseValue.source],
+      entryMultiple: [snapshot.m1.entryMultiple.status, snapshot.m1.entryMultiple.source],
+      margin: [snapshot.m1.margin.status, snapshot.m1.margin.source],
+      reportedRevenue: [snapshot.m1.reportedRevenue.status, snapshot.m1.reportedRevenue.source],
+      revenue: [snapshot.m1.revenue.status, snapshot.m1.revenue.source],
+    },
+    {
+      ebitda: ["calculé", "S1"],
+      enterpriseValue: ["public", "S1"],
+      entryMultiple: ["public", "S1"],
+      margin: ["calculé", "S1+S5+S6"],
+      reportedRevenue: ["public", "S5"],
+      revenue: ["public", "S5+S6"],
+    },
+    "Public anchors and derived proxies must keep their exact source classification",
+  );
 
   const registry = createOpellaFinancials(snapshot, {
     sourceManifestInput: sourceManifest,

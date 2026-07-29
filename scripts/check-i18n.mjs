@@ -9,6 +9,9 @@ import { dictionaries, languages, translateText } from "../src/data/translations
 
 const root = new URL("../", import.meta.url);
 const read = (path) => readFile(new URL(path, root), "utf8");
+const attributeValues = (markup, attribute) => (
+  [...markup.matchAll(new RegExp(`${attribute}="([^"]*)"`, "g"))].map((match) => match[1])
+);
 
 assert.deepEqual(languages, ["fr", "en"]);
 assert.ok(Object.keys(dictionaries.fr).length > 150, "French dictionary must cover the full public case");
@@ -217,6 +220,20 @@ try {
   const visibleText = (markup) => markup.replace(/<[^>]+>/g, " ").replace(/\s+/g, " ");
   const opellaFrenchText = visibleText(opellaFrenchDom);
   const opellaEnglishText = visibleText(opellaEnglishDom);
+  assert.ok(opellaFrenchText.includes("Voir comment le modèle est construit"));
+  assert.ok(opellaEnglishText.includes("See how the model is built"));
+  assert.ok(opellaFrenchText.includes("Ouvrir la source originale"));
+  assert.ok(opellaEnglishText.includes("Open original source"));
+  assert.deepEqual(
+    attributeValues(opellaFrenchDom, "data-source-url"),
+    attributeValues(opellaEnglishDom, "data-source-url"),
+    "Opella FR/EN source URLs must remain identical",
+  );
+  assert.deepEqual(
+    attributeValues(opellaFrenchDom, "data-source-location"),
+    attributeValues(opellaEnglishDom, "data-source-location"),
+    "Opella FR/EN source locations must remain identical",
+  );
   for (const [outputId, frenchValue, englishValue] of [
     ["O-RUNRATE", "120 M€", "€120m"],
     ["O-SEPCOST", "296 M€", "€296m"],

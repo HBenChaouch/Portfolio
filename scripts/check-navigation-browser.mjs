@@ -1102,7 +1102,7 @@ try {
   const opellaEn = await opellaState();
   assert(opellaEn.tag === "DIV" && opellaEn.href === null && opellaEn.interactiveDescendants === 0 && /in development/i.test(opellaEn.text), `English Opella card mismatch: ${JSON.stringify(opellaEn)}`);
 
-  // O2-B — testable direct route while the Portfolio card remains inactive.
+  // O2-E — testable direct route while the Portfolio card remains inactive.
   await navigate(`${portfolioUrl}cases/opella-carve-out?lang=en&op_cost=high#funding-need`);
   await waitFor(
     () => evaluate("Boolean(document.querySelector('.opella-analysis-view')) && location.pathname.endsWith('/cases/opella-carve-out/analysis/')"),
@@ -1116,7 +1116,10 @@ try {
     `Opella alias must preserve language, scenario and hash: ${JSON.stringify(opellaAlias)}`,
   );
   const opellaInitial = await evaluate(`(() => {
-    const anchorIds = Array.from(document.querySelectorAll('.opella-analysis-view section[id]')).map((section) => section.id);
+    const anchorIds = [
+      ...Array.from(document.querySelectorAll('.opella-analysis-view > section[id]')).map((section) => section.id),
+      document.querySelector('#methodology')?.id,
+    ].filter(Boolean);
     const outputs = Object.fromEntries(Array.from(document.querySelectorAll('.opella-kpi-grid [data-output-id]')).map((tile) => [
       tile.dataset.outputId,
       tile.querySelector('strong')?.textContent,
@@ -1142,9 +1145,28 @@ try {
     const fundingState = tableContract(fundingTables.find(
       (table) => table.querySelector('caption')?.textContent.trim().startsWith('Funding state at the horizon'),
     ));
+    const sourceLinks = Array.from(document.querySelectorAll('.opella-analysis-view a[data-source-url]'));
+    const publicFacts = Array.from(document.querySelectorAll('[data-public-fact-id]'));
+    const evidenceToggle = document.querySelector('.opella-evidence-toggle');
     return {
       anchorIds,
       downloadCount: document.querySelectorAll('.opella-analysis-view [download], .opella-analysis-view a[href$=".xlsx"]').length,
+      evidence: {
+        controls: evidenceToggle?.getAttribute('aria-controls'),
+        expanded: evidenceToggle?.getAttribute('aria-expanded'),
+        publicFactsDeclared: publicFacts.length >= 10 && publicFacts.every((fact) => (
+          fact.getAttribute('data-source-ids')
+            ?.split('+')
+            .every((sourceId) => /^S[12356]$/.test(sourceId))
+        )),
+        s4LinkCount: document.querySelectorAll('a[data-source-id="S4"]').length,
+        sourceLinksNamed: sourceLinks.length > 0 && sourceLinks.every((link) => (
+          /new tab/i.test(link.getAttribute('aria-label') ?? '')
+          && link.getAttribute('target') === '_blank'
+          && link.getAttribute('rel') === 'noopener noreferrer'
+        )),
+        sourceLinkCount: sourceLinks.length,
+      },
       fundingSeries,
       fundingState,
       graphsNamed: graphs.every((graph) => Boolean(graph.getAttribute('aria-label'))),
@@ -1184,6 +1206,14 @@ try {
       && opellaInitial.tableCount >= 10
       && opellaInitial.tablesAccessible,
     `Opella graph/table/download contract mismatch: ${JSON.stringify(opellaInitial)}`,
+  );
+  assert(
+    opellaInitial.evidence.controls === "opella-evidence-panel"
+      && opellaInitial.evidence.expanded === "false"
+      && opellaInitial.evidence.publicFactsDeclared
+      && opellaInitial.evidence.s4LinkCount === 0
+      && opellaInitial.evidence.sourceLinksNamed,
+    `Opella evidence/source contract mismatch: ${JSON.stringify(opellaInitial.evidence)}`,
   );
   assert(
     JSON.stringify(opellaInitial.fundingSeries.columnHeaders) === JSON.stringify([
@@ -1261,13 +1291,93 @@ try {
     "Opella central reset state",
   );
 
+  await command("Emulation.setDeviceMetricsOverride", { width: 1280, height: 720, deviceScaleFactor: 1, mobile: false });
+  await navigate(`${opellaBase}?lang=en#executive`);
+  await waitForStableAnchor("executive");
+  await evaluate("document.querySelector('.opella-evidence-toggle')?.focus()");
+  await command("Input.dispatchKeyEvent", { key: " ", code: "Space", type: "keyDown", windowsVirtualKeyCode: 32 });
+  await command("Input.dispatchKeyEvent", { key: " ", code: "Space", type: "keyUp", windowsVirtualKeyCode: 32 });
+  await waitFor(
+    () => evaluate("document.querySelector('.opella-evidence-toggle')?.getAttribute('aria-expanded') === 'true' && !document.querySelector('#opella-evidence-panel')?.hidden"),
+    "Opella evidence panel keyboard open",
+  );
+  const opellaEvidenceKeyboard = await evaluate(`(() => {
+    const toggle = document.querySelector('.opella-evidence-toggle');
+    const panel = document.querySelector('#opella-evidence-panel');
+    const links = Array.from(panel.querySelectorAll('a[data-source-url]'));
+    links[0]?.focus();
+    return {
+      activeLink: document.activeElement === links[0],
+      ariaControls: toggle.getAttribute('aria-controls'),
+      expanded: toggle.getAttribute('aria-expanded'),
+      linksNamed: links.length > 0 && links.every((link) => (
+        /new tab/i.test(link.getAttribute('aria-label') ?? '')
+        && link.textContent.includes('Open original source')
+      )),
+      minLinkHeight: Math.min(...links.map((link) => link.getBoundingClientRect().height)),
+      panelHidden: panel.hidden,
+      toggleHeight: toggle.getBoundingClientRect().height,
+    };
+  })()`);
+  assert(
+    opellaEvidenceKeyboard.activeLink
+      && opellaEvidenceKeyboard.ariaControls === "opella-evidence-panel"
+      && opellaEvidenceKeyboard.expanded === "true"
+      && opellaEvidenceKeyboard.linksNamed
+      && opellaEvidenceKeyboard.minLinkHeight >= 44
+      && !opellaEvidenceKeyboard.panelHidden
+      && opellaEvidenceKeyboard.toggleHeight >= 44,
+    `Opella evidence keyboard/link accessibility mismatch: ${JSON.stringify(opellaEvidenceKeyboard)}`,
+  );
+  await command("Input.dispatchKeyEvent", { key: "Escape", code: "Escape", type: "keyDown", windowsVirtualKeyCode: 27 });
+  await command("Input.dispatchKeyEvent", { key: "Escape", code: "Escape", type: "keyUp", windowsVirtualKeyCode: 27 });
+  await waitFor(
+    () => evaluate("document.querySelector('.opella-evidence-toggle')?.getAttribute('aria-expanded') === 'false' && document.activeElement === document.querySelector('.opella-evidence-toggle')"),
+    "Opella evidence panel Escape focus return",
+  );
+
+  await command("Emulation.setDeviceMetricsOverride", { width: 390, height: 844, deviceScaleFactor: 1, mobile: true });
+  await navigate(`${opellaBase}#executive`);
+  await waitForStableAnchor("executive");
+  const opellaEvidenceMobilePointer = await realPointerClick(
+    "document.querySelector('.opella-evidence-toggle')",
+    "Opella mobile evidence panel",
+  );
+  await waitFor(
+    () => evaluate("document.querySelector('.opella-evidence-toggle')?.getAttribute('aria-expanded') === 'true' && !document.querySelector('#opella-evidence-panel')?.hidden"),
+    "Opella mobile evidence panel open",
+  );
+  const opellaEvidenceMobile = await evaluate(`(() => {
+    const panel = document.querySelector('#opella-evidence-panel');
+    const toggle = document.querySelector('.opella-evidence-toggle');
+    return {
+      documentOverflow: document.documentElement.scrollWidth - document.documentElement.clientWidth,
+      panelVisible: !panel.hidden && panel.getBoundingClientRect().width > 0,
+      toggleHeight: toggle.getBoundingClientRect().height,
+      toggleWidth: toggle.getBoundingClientRect().width,
+    };
+  })()`);
+  assert(
+    opellaEvidenceMobile.documentOverflow === 0
+      && opellaEvidenceMobile.panelVisible
+      && opellaEvidenceMobile.toggleHeight >= 44
+      && opellaEvidenceMobile.toggleWidth >= 44,
+    `Opella mobile evidence interaction mismatch: ${JSON.stringify(opellaEvidenceMobile)}`,
+  );
+  await command("Input.dispatchKeyEvent", { key: "Escape", code: "Escape", type: "keyDown", windowsVirtualKeyCode: 27 });
+  await command("Input.dispatchKeyEvent", { key: "Escape", code: "Escape", type: "keyUp", windowsVirtualKeyCode: 27 });
+  await waitFor(
+    () => evaluate("document.querySelector('.opella-evidence-toggle')?.getAttribute('aria-expanded') === 'false'"),
+    "Opella mobile evidence panel close",
+  );
+
   const opellaResponsive = {};
   const opellaVisualAnchors = {
-    "360x800": "funding-need",
+    "360x800": "sources",
     "390x844": "scenarios",
     "430x932": "executive",
-    "1280x720": "standalone-build",
-    "1920x1080": "funding-need",
+    "1280x720": "executive",
+    "1920x1080": "sources",
   };
   const opellaVisualLanguages = {
     "360x800": "fr",
@@ -1276,7 +1386,7 @@ try {
     "1280x720": "fr",
     "1920x1080": "en",
   };
-  const opellaReviewDirectory = path.resolve(".agent-logs", "opella-o2-b-visual-review");
+  const opellaReviewDirectory = path.resolve(".agent-logs", "opella-o2-e-visual-review");
   await mkdir(opellaReviewDirectory, { recursive: true });
   for (const [width, height] of [[360, 800], [390, 844], [430, 932], [1280, 720], [1920, 1080]]) {
     await command("Emulation.setDeviceMetricsOverride", {
@@ -1290,18 +1400,34 @@ try {
     const visualLanguage = opellaVisualLanguages[viewportId];
     await navigate(`${opellaBase}${visualLanguage === "en" ? "?lang=en" : ""}#${visualAnchor}`);
     await waitForStableAnchor(visualAnchor);
+    if (viewportId === "1280x720") {
+      await realPointerClick(
+        "document.querySelector('.opella-evidence-toggle')",
+        "Opella desktop evidence panel capture",
+      );
+      await waitFor(
+        () => evaluate("document.querySelector('.opella-evidence-toggle')?.getAttribute('aria-expanded') === 'true'"),
+        "Opella desktop evidence panel capture open",
+      );
+    }
     const state = await evaluate(`(() => {
       const controls = Array.from(document.querySelectorAll('.opella-lever-options button'));
+      const sourceLinks = Array.from(document.querySelectorAll('.opella-analysis-view a[data-source-url]'))
+        .filter((link) => link.getBoundingClientRect().width > 0 && link.getBoundingClientRect().height > 0);
       const tableRegions = Array.from(document.querySelectorAll('.opella-analysis-view .table-scroll'));
       const mobile = innerWidth <= 900;
       return {
         controls: controls.length,
         documentOverflow: document.documentElement.scrollWidth - document.documentElement.clientWidth,
+        evidenceChainVisible: getComputedStyle(document.querySelector('.opella-evidence-chain')).display === 'grid',
+        evidencePanelOpen: document.querySelector('.opella-evidence-toggle')?.getAttribute('aria-expanded') === 'true',
         fundingDesktop: getComputedStyle(document.querySelector('.funding-curve')).display,
         fundingMobile: getComputedStyle(document.querySelector('.funding-mobile-profile')).display,
         minControlTarget: Math.min(...controls.map((button) => button.getBoundingClientRect().height)),
+        minSourceLinkTarget: Math.min(...sourceLinks.map((link) => link.getBoundingClientRect().height)),
         mobile,
         mobileBridge: getComputedStyle(document.querySelector('.opella-bridge-mobile')).display,
+        sourceLinksNamed: sourceLinks.length > 0 && sourceLinks.every((link) => Boolean(link.getAttribute('aria-label'))),
         tableRegionsAccessible: tableRegions.every((region) => region.tabIndex === 0 && Boolean(region.getAttribute('aria-label'))),
         shellAccessibility: ${shellAccessibilityAuditExpression("#opella-section-navigation")},
         wideBridge: getComputedStyle(document.querySelector('.opella-bridge-visual')).display,
@@ -1309,6 +1435,15 @@ try {
     })()`);
     assert(state.documentOverflow === 0, `Opella horizontal overflow at ${width}x${height}: ${JSON.stringify(state)}`);
     assert(state.controls === 12 && state.minControlTarget >= 44, `Opella control targets at ${width}x${height}: ${JSON.stringify(state)}`);
+    assert(
+      state.evidenceChainVisible
+        && state.minSourceLinkTarget >= 44
+        && state.sourceLinksNamed,
+      `Opella evidence/source accessibility at ${width}x${height}: ${JSON.stringify(state)}`,
+    );
+    if (viewportId === "1280x720") {
+      assert(state.evidencePanelOpen, `Opella evidence panel capture must be open: ${JSON.stringify(state)}`);
+    }
     assert(state.tableRegionsAccessible, `Opella table region accessibility at ${width}x${height}: ${JSON.stringify(state)}`);
     assert(
       state.shellAccessibility.minTargetHeight >= 44
@@ -1344,16 +1479,36 @@ try {
     }
     await evaluate(`(() => {
       const target = document.getElementById(${JSON.stringify(visualAnchor)});
-      const content = target?.querySelector('.opella-section-header, .opella-hero-copy') ?? target;
+      const content = ${JSON.stringify(viewportId)} === "1280x720"
+        ? document.querySelector('#opella-evidence-panel > header')
+        : target?.querySelector('.opella-section-header, .opella-hero-copy') ?? target;
       if (!content) return;
       const offset = innerWidth <= 900 ? 128 : 96;
       scrollTo(0, Math.max(0, scrollY + content.getBoundingClientRect().top - offset));
     })()`);
-    const screenshot = await command("Page.captureScreenshot", {
+    await delay(100);
+    const screenshotOptions = {
       captureBeyondViewport: false,
       format: "png",
       fromSurface: true,
-    });
+    };
+    if (viewportId === "1280x720") {
+      const evidenceClip = await evaluate(`(() => {
+        const panel = document.querySelector('#opella-evidence-panel');
+        const rect = panel.getBoundingClientRect();
+        const pageY = scrollY + rect.top;
+        return {
+          height: innerHeight,
+          scale: 1,
+          width: innerWidth,
+          x: 0,
+          y: Math.min(pageY, document.documentElement.scrollHeight - innerHeight),
+        };
+      })()`);
+      screenshotOptions.captureBeyondViewport = true;
+      screenshotOptions.clip = evidenceClip;
+    }
+    const screenshot = await command("Page.captureScreenshot", screenshotOptions);
     const screenshotName = `${viewportId}-${visualLanguage}-${visualAnchor}.png`;
     await writeFile(
       path.join(opellaReviewDirectory, screenshotName),
@@ -1362,7 +1517,7 @@ try {
     opellaResponsive[viewportId] = {
       ...state,
       language: visualLanguage,
-      screenshot: path.join(".agent-logs", "opella-o2-b-visual-review", screenshotName),
+      screenshot: path.join(".agent-logs", "opella-o2-e-visual-review", screenshotName),
       visualAnchor,
     };
   }
@@ -1526,6 +1681,9 @@ try {
     opellaEnglishPointer,
     opellaLeverPointers,
     opellaResetPointer,
+    opellaEvidenceKeyboard,
+    opellaEvidenceMobilePointer,
+    opellaEvidenceMobile,
     opellaResponsive,
     opellaMenuPointer,
     opellaMenuEscape,

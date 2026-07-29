@@ -1,53 +1,53 @@
 {
   "manifest": "opella-sidetrade-inactive-bundle",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "case": "opella-carve-out",
-  "pass": "O2-A",
+  "pass": "O2-E",
   "status": "inactive",
   "sourceBaseline": {
     "repository": "parent",
-    "commit": "b9d05bf5cbcde08f05aeb297c839537ad180fdce",
+    "commit": "8ad69b3152d237116e164cc5b4fdffd49b15308b",
     "note": "Transaction Services is not an autonomous repository; no synthetic commit pin is used."
   },
   "sourceFiles": [
     {
       "path": "Transaction Services/build_carveout.py",
-      "sha256": "65CA9F4DCD2418E057A910C873397FCE8D43B1FEC38EA81A0E7E4092FF3BB818"
+      "sha256": "8D9ED97C1F07C9C5F9E81F0A03A08836FAC71ED59ED88C83F37A2ABBE8A849F9"
     },
     {
       "path": "Transaction Services/Modele_Carveout_Opella.xlsx",
-      "sha256": "8D9D3EA0F81279A254A6E01563228227DF8DF1A93F1210E0BA44C1468CC87874"
+      "sha256": "B0394A59F5EBF553DD32D418EAEA511630F80CA1FCCFCEDA63E63509431B411D"
     },
     {
       "path": "Transaction Services/opella_case_snapshot.json",
-      "sha256": "BAA9B01E9641601AD327B64B8F0BF33639783E27311918BA34AE2C3EA4018921"
+      "sha256": "FA7C24FDEB94A3AAB8E2E49D342B24BEC07AE6CC9719ABAFEC4384B7550CE122"
     },
     {
       "path": "Transaction Services/opella_integration_manifest.json",
-      "sha256": "3491C046A7183BF12DB7EE9F0B0F4CF3089A53ADB747E3E554ABBC3491D6EACE"
+      "sha256": "39C8F4FA1EAC59C05C5FCD3BB17F2458654D2E74A4AD49F3AE40CA36F986C0C7"
     }
   ],
   "snapshotIdentity": {
     "source": "Transaction Services/opella_case_snapshot.json",
     "bundle": "snapshot.json",
-    "sha256": "BAA9B01E9641601AD327B64B8F0BF33639783E27311918BA34AE2C3EA4018921"
+    "sha256": "FA7C24FDEB94A3AAB8E2E49D342B24BEC07AE6CC9719ABAFEC4384B7550CE122"
   },
   "bundleFiles": [
     {
       "path": "snapshot.json",
-      "sha256": "BAA9B01E9641601AD327B64B8F0BF33639783E27311918BA34AE2C3EA4018921",
+      "sha256": "FA7C24FDEB94A3AAB8E2E49D342B24BEC07AE6CC9719ABAFEC4384B7550CE122",
       "mime": "application/json",
       "role": "Byte-identical O1 semantic snapshot and sole carrier of financial values."
     },
     {
       "path": "source-manifest.json",
-      "sha256": "3491C046A7183BF12DB7EE9F0B0F4CF3089A53ADB747E3E554ABBC3491D6EACE",
+      "sha256": "39C8F4FA1EAC59C05C5FCD3BB17F2458654D2E74A4AD49F3AE40CA36F986C0C7",
       "mime": "application/json",
       "role": "Byte-identical O1 chain, relation, tolerance, lineage and vector contract."
     },
     {
       "path": "engine-contract.json",
-      "sha256": "E12659FD00DA51942E8256F7F0AF72CB0B60C0F4AEB2B9E90F71FA16EE091560",
+      "sha256": "DED0E96EE23744DA51DBD14D5C146D3770042AE03246E06013DADF79398A6263",
       "mime": "application/json",
       "role": "Generated extraction of the O1 scenario lever constants required by the JavaScript engine."
     },
@@ -90,7 +90,7 @@
   ],
   "financialRegistryFields": {
     "source": "source-manifest.json#/financialRegistryFields",
-    "count": 24,
+    "count": 25,
     "exposure": "registered-but-not-public"
   },
   "formulas": {
@@ -229,6 +229,12 @@
       "node": "chart view width",
       "value": "920",
       "reason": "Non-financial SVG geometry."
+    },
+    {
+      "file": "src/routes/OpellaAnalysisView.jsx",
+      "node": "billions display conversion",
+      "value": "1000",
+      "reason": "Presentation-only conversion from the canonical EUR million unit to a human-readable EUR billion label."
     }
   ],
   "requiredPublicMessages": {
@@ -240,7 +246,7 @@
       },
       {
         "id": "opella.limit.estimates",
-        "value": "Les hypothèses de périmètre, de trajectoire, de coûts stand-alone, de TSA et de financement ne sont pas des données publiques."
+        "value": "Les hypothèses de trajectoire, d’allocations, de coûts stand-alone, de TSA, de coûts ponctuels et de financement sont illustratives et ne sont pas des données publiques."
       },
       {
         "id": "opella.limit.stub",
@@ -257,6 +263,18 @@
       {
         "id": "opella.limit.buyer",
         "value": "L’analyse ne constitue pas une analyse de rendement acquéreur."
+      },
+      {
+        "id": "opella.source.evidenceToggle",
+        "value": "Voir comment le modèle est construit"
+      },
+      {
+        "id": "opella.source.originalLink",
+        "value": "Ouvrir la source originale"
+      },
+      {
+        "id": "opella.source.forecastCaveat",
+        "value": "Cette valeur est une sortie du scénario central, pas une prévision publiée par Opella."
       }
     ],
     "en": [
@@ -266,7 +284,7 @@
       },
       {
         "id": "opella.limit.estimates",
-        "value": "Perimeter, trajectory, stand-alone cost, TSA and funding assumptions are not public data."
+        "value": "Trajectory, allocation, stand-alone cost, TSA, one-off and funding assumptions are illustrative and are not public data."
       },
       {
         "id": "opella.limit.stub",
@@ -283,6 +301,18 @@
       {
         "id": "opella.limit.buyer",
         "value": "The analysis is not a buyer-return analysis."
+      },
+      {
+        "id": "opella.source.evidenceToggle",
+        "value": "See how the model is built"
+      },
+      {
+        "id": "opella.source.originalLink",
+        "value": "Open original source"
+      },
+      {
+        "id": "opella.source.forecastCaveat",
+        "value": "This value is a central-scenario output, not a forecast published by Opella."
       }
     ]
   },

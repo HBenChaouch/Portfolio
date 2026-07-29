@@ -1,6 +1,6 @@
 {
   "manifest": "opella-transaction-services",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "spec": "docs/agent/08-opella-case.md",
   "note": "Manifeste source côté Transaction Services. Il déclare la chaîne de production, les tolérances des relations du §5.2 et les vecteurs de contrôle. Il ne contient aucune valeur du cas : celles-ci vivent dans le workbook et son export.",
   "chain": {
@@ -20,40 +20,56 @@
     "determinismProof": "les propriétés du document sont figées à BUILD_STAMP ; deux exécutions produisent les mêmes SHA-256 du workbook, du snapshot et du manifeste"
   },
   "sourceFiles": {
-    "build_carveout.py": "65CA9F4DCD2418E057A910C873397FCE8D43B1FEC38EA81A0E7E4092FF3BB818",
-    "Modele_Carveout_Opella.xlsx": "8D9D3EA0F81279A254A6E01563228227DF8DF1A93F1210E0BA44C1468CC87874",
-    "opella_case_snapshot.json": "BAA9B01E9641601AD327B64B8F0BF33639783E27311918BA34AE2C3EA4018921"
+    "build_carveout.py": "8D9ED97C1F07C9C5F9E81F0A03A08836FAC71ED59ED88C83F37A2ABBE8A849F9",
+    "Modele_Carveout_Opella.xlsx": "B0394A59F5EBF553DD32D418EAEA511630F80CA1FCCFCEDA63E63509431B411D",
+    "opella_case_snapshot.json": "FA7C24FDEB94A3AAB8E2E49D342B24BEC07AE6CC9719ABAFEC4384B7550CE122"
   },
   "sourceContract": {
     "requiredIds": [
       "S1",
       "S2",
       "S3",
-      "S4"
+      "S4",
+      "S5",
+      "S6"
     ],
     "requiredFields": [
       "id",
       "label",
+      "organization",
+      "document",
+      "publication_date",
       "value_date",
       "accessed",
       "status",
+      "evidence_role",
+      "period_scope",
+      "location",
       "fields",
       "references"
     ],
     "publicReferenceRequiredFields": [
-      "label",
+      "organization",
+      "document",
+      "publication_date",
+      "location",
       "url",
       "accessed"
     ],
     "internalReferenceRequiredFields": [
-      "label",
+      "organization",
+      "document",
+      "publication_date",
+      "location",
       "path",
       "accessed"
     ],
     "exactUrlRequiredFor": [
       "S1",
       "S2",
-      "S3"
+      "S3",
+      "S5",
+      "S6"
     ],
     "internalAssumptionSource": "S4"
   },
@@ -74,7 +90,7 @@
       "formulaIds",
       "outputs"
     ],
-    "rule": "chaque chaîne relie une source à au moins une hypothèse/cellule, une formule identifiée et un output ; L-EBITDA relève de S4, jamais de S1"
+    "rule": "chaque chaîne relie une source à au moins une hypothèse/cellule, une formule identifiée et un output ; le proxy EBITDA P0 dérive de S1, tandis que sa trajectoire relève de S4"
   },
   "canonicalCarriers": {
     "B_H": {
@@ -297,6 +313,7 @@
   },
   "financialRegistryFields": [
     "m1.revenue",
+    "m1.reportedRevenue",
     "m1.margin",
     "m1.ebitda",
     "m1.enterpriseValue",

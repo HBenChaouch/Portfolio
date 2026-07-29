@@ -23,6 +23,9 @@ const markupText = (markup) => markup
   .replace(/&quot;/g, "\"")
   .replace(/\s+/g, " ")
   .trim();
+const attributeValues = (markup, attribute) => (
+  [...markup.matchAll(new RegExp(`${attribute}="([^"]*)"`, "g"))].map((match) => match[1])
+);
 
 function tableFromCaption(markup, caption) {
   const marker = `<caption class="sr-only">${caption}</caption>`;
@@ -95,6 +98,7 @@ assert.deepEqual(
 );
 
 const opellaBundleManifest = await readJson(path.join(rootPath, "integrations", "opella", "manifest.json"));
+const opellaSnapshot = await readJson(path.join(rootPath, "integrations", "opella", "snapshot.json"));
 assert.equal(opellaBundleManifest.status, "inactive");
 assert.deepEqual(opellaBundleManifest.downloads, []);
 assert.ok(opellaBundleManifest.presentationFiles.includes("src/routes/OpellaAnalysisView.jsx"));
@@ -344,7 +348,71 @@ try {
     assert.doesNotMatch(buyerMarkup, /(?:€|\b\d+(?:[.,]\d+)?\s*(?:%|x|M€|€m))/);
     assert.doesNotMatch(rendered, /\b(?:MOIC|TRI|IRR)\b/i);
     assert.doesNotMatch(rendered, /(?:download=|Modele_Carveout_Opella\.xlsx)/i);
+
+    assert.match(
+      rendered,
+      /<button aria-controls="opella-evidence-panel" aria-expanded="false"[^>]*>/,
+      "The evidence panel control must expose aria-controls and its collapsed state",
+    );
+    assert.match(
+      rendered,
+      /<section aria-labelledby="opella-evidence-panel-title"[^>]*hidden="" id="opella-evidence-panel">/,
+      "The inline evidence panel must remain in the DOM while collapsed",
+    );
+
+    const declaredSourceIds = new Set(opellaSnapshot.sources.map(({ id }) => id));
+    const publicFacts = [...rendered.matchAll(
+      /<article data-public-fact-id="([^"]+)" data-source-ids="([^"]+)"/g,
+    )];
+    assert.ok(publicFacts.length >= 10, "Every public fact rendering must declare its registry sources");
+    for (const [, factId, sourceIds] of publicFacts) {
+      const ids = sourceIds.split("+");
+      assert.ok(ids.length > 0, `${factId} must declare at least one source`);
+      assert.ok(ids.every((id) => declaredSourceIds.has(id) && id !== "S4"), `${factId} has an invalid public source`);
+    }
+
+    const externalLinks = [...rendered.matchAll(/<a [^>]*target="_blank"[^>]*>/g)]
+      .map((match) => match[0]);
+    assert.ok(externalLinks.length > 0, "Opella must render direct official source links");
+    for (const link of externalLinks) {
+      assert.match(link, /aria-label="[^"]*(?:nouvel onglet|new tab)[^"]*"/i);
+      assert.match(link, /rel="noopener noreferrer"/);
+      assert.match(link, /data-source-id="S[12356]"/);
+      assert.doesNotMatch(link, /data-source-id="S4"/);
+      assert.doesNotMatch(link, /(?:google|bing|yahoo|duckduckgo|reuters|bloomberg)/i);
+    }
+
+    const renderedSourceUrls = new Set(attributeValues(rendered, "data-source-url"));
+    for (const source of opellaSnapshot.sources) {
+      for (const reference of source.references.filter(({ url }) => Boolean(url))) {
+        assert.ok(
+          renderedSourceUrls.has(reference.url),
+          `${source.id} rendered link must match its registry entry`,
+        );
+      }
+    }
+    assert.doesNotMatch(rendered, /<a [^>]*data-source-id="S4"/);
+    const s4Registry = rendered.slice(
+      rendered.indexOf('data-source-registry-id="S4"'),
+      rendered.indexOf('data-source-registry-id="S5"'),
+    );
+    assert.doesNotMatch(s4Registry, /<a\b/);
+    assert.match(
+      markupText(s4Registry),
+      /(?:Hypothèse interne|Internal assumption).*(?:Non applicable|Not applicable)/i,
+      "S4 must not look like a published public source",
+    );
   }
+  assert.deepEqual(
+    attributeValues(opellaFr, "data-source-url"),
+    attributeValues(opellaEn, "data-source-url"),
+    "FR and EN must use the same source URLs in the same evidence positions",
+  );
+  assert.deepEqual(
+    attributeValues(opellaFr, "data-source-location"),
+    attributeValues(opellaEn, "data-source-location"),
+    "FR and EN must use the same precise source locations",
+  );
   for (const [language, rendered] of [["fr", opellaFr], ["en", opellaEn]]) {
     for (const message of opellaBundleManifest.requiredPublicMessages[language]) {
       assert.ok(rendered.includes(message.value), `${language} Opella DOM missing ${message.id}`);

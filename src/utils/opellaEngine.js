@@ -443,11 +443,17 @@ export function calculateOpella(financials, selections = {}) {
   }
 
   const oneOffByPeriod = Object.fromEntries(horizon.map((period) => [period, 0]));
+  const oneOffLines = [];
   for (const item of m5.lines) {
     const amounts = Object.fromEntries(horizon.map((period) => [
       period,
       (item.byPeriod[period] ?? 0) * config.oneOffMultiplier,
     ]));
+    oneOffLines.push({
+      id: item.id,
+      amounts,
+      total: sum(Object.values(amounts)),
+    });
     addLine(lines, {
       id: `L-M5-${item.id}`,
       module: "M5",
@@ -611,12 +617,69 @@ export function calculateOpella(financials, selections = {}) {
   const previousCum = fundingPeriods.length === 1 ? 0 : fundingPeriods.at(-2).sCum;
   const runRate = Math.abs(sum(m3.functions.map(({ runRate: value }) => value * config.costMultiplier)));
   const sepCapex = canonicalLine(financials, "L-SEPCAPEX");
-  const separationCost = Math.abs(
-    sum(Object.values(tsaByPeriod))
-    + sum(Object.values(oneOffByPeriod))
-    + sum(horizon.map((period) => sepCapex.amounts[period] ?? 0)),
-  );
+  const separationComponents = {
+    tsa: Math.abs(sum(Object.values(tsaByPeriod))),
+    oneOffs: Math.abs(sum(Object.values(oneOffByPeriod))),
+    capex: Math.abs(sum(horizon.map((period) => sepCapex.amounts[period] ?? 0))),
+  };
+  const separationCost = sum(Object.values(separationComponents));
   const baseEbitda = m1.revenue.value * m1.margin.value;
+  const cash = Object.fromEntries(horizon.map((period) => [
+    period,
+    sum(lines.map((line) => line.amounts[period])),
+  ]));
+  const cashBridgeDefinitions = [
+    ["cash.ebitda", (line) => line.id === "L-EBITDA"],
+    ["cash.allocations", (line) => line.id === "L-ALLOC"],
+    ["cash.standalone", (line) => line.group === "L-M3"],
+    ["cash.tsa", (line) => line.group === "L-M4"],
+    ["cash.oneOffs", (line) => line.group === "L-M5"],
+    ["cash.separation", (line) => line.group === "L-M6SEP"],
+    ["cash.tax", (line) => ["L-TAXREC", "L-TAXPONC"].includes(line.id)],
+    ["cash.currentCapex", (line) => line.id === "L-CAPEX"],
+    ["cash.currentWc", (line) => line.id === "L-WC"],
+    ["cash.other", (line) => line.id === "L-OTHER"],
+  ];
+  const cashBridge = cashBridgeDefinitions.map(([id, predicate]) => ({
+    id,
+    amounts: Object.fromEntries(horizon.map((period) => [
+      period,
+      sum(lines.filter(predicate).map((line) => line.amounts[period])),
+    ])),
+  }));
+  const standalonePerimeter = ebitda[H];
+  const standaloneAllocations = revenue[H] * m2.rate.value;
+  const standaloneRunRate = standalonePerimeter + standaloneAllocations - runRate;
+  const standaloneBridge = [
+    {
+      id: "perimeter",
+      kind: "total",
+      start: 0,
+      end: standalonePerimeter,
+      value: standalonePerimeter,
+    },
+    {
+      id: "allocations",
+      kind: "delta",
+      start: standalonePerimeter,
+      end: standalonePerimeter + standaloneAllocations,
+      value: standaloneAllocations,
+    },
+    {
+      id: "costs",
+      kind: "delta",
+      start: standalonePerimeter + standaloneAllocations,
+      end: standaloneRunRate,
+      value: -runRate,
+    },
+    {
+      id: "output",
+      kind: "total",
+      start: 0,
+      end: standaloneRunRate,
+      value: standaloneRunRate,
+    },
+  ];
 
   return {
     selections: selected,
@@ -651,13 +714,14 @@ export function calculateOpella(financials, selections = {}) {
       },
       m5: {
         byPeriod: oneOffByPeriod,
+        lines: oneOffLines,
       },
       m6: {
-        cash: Object.fromEntries(horizon.map((period) => [
-          period,
-          sum(lines.map((line) => line.amounts[period])),
-        ])),
-        standaloneRunRate: ebitda[H] + revenue[H] * m2.rate.value - runRate,
+        cash,
+        cashBridge,
+        separationComponents,
+        standaloneBridge,
+        standaloneRunRate,
       },
       m7: {
         inventory,
@@ -666,6 +730,7 @@ export function calculateOpella(financials, selections = {}) {
         horizon: {
           period: H,
           delta: last.sCum - previousCum,
+          grossDiffersFromNeed: Math.abs(last.sCum - last.need) > relationTolerance(financials, "R-FUNDING-CUM"),
           residualSurplus: last.sCum < 0 ? -last.sCum : 0,
         },
         resorb,

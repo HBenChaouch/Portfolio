@@ -1217,6 +1217,70 @@
   text-transform: uppercase;
 }
 
+/* O2-G2 analytical blocks */
+.opella-analytical-block { position: relative; }
+.opella-analytical-block::before { background: var(--bordeaux); content: ""; height: 2px; left: 0; position: absolute; top: 0; width: 64px; }
+.opella-bridge-visual { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.opella-bridge-visual li { background: transparent; display: grid; grid-template-rows: 250px auto auto auto; min-height: 0; padding: 0 18px 20px; }
+.opella-bridge-visual li + li::before { display: none; }
+.waterfall-plot { border-bottom: 1px solid var(--line-strong); margin-bottom: 16px; position: relative; }
+.waterfall-bar { background: var(--bordeaux); height: var(--waterfall-bar-height); left: 16%; min-height: 3px; position: absolute; right: 16%; top: var(--waterfall-bar-top); }
+.bridge-negative .waterfall-bar { background: var(--bear); }
+.bridge-total .waterfall-bar { background: var(--navy); }
+.waterfall-connector { border-top: 1px dashed var(--ink-3); left: 84%; position: absolute; top: var(--waterfall-connector-top); width: calc(32% + 1px); }
+.opella-bridge-visual li:last-child .waterfall-connector { display: none; }
+.opella-bridge-visual span { min-height: 30px; }
+.opella-bridge-visual strong { font-size: clamp(24px, 2.2vw, 34px); margin-top: 6px; padding-top: 0; }
+.opella-bridge-visual .bridge-total:last-child { background: var(--navy); }
+.opella-bridge-visual .bridge-total:last-child .waterfall-plot { border-bottom-color: rgba(250, 247, 242, .4); }
+.opella-bridge-visual .bridge-total:last-child :is(span, small) { color: rgba(250, 247, 242, .72); }
+.opella-bridge-visual .bridge-total:last-child strong { color: var(--bg); }
+.cash-bridge-chart { background: var(--paper); border: 1px solid var(--line-strong); margin-top: 34px; padding: 20px 24px 18px; }
+.cash-bridge-heading { align-items: baseline; border-bottom: 1px solid var(--line-strong); display: flex; justify-content: space-between; padding-bottom: 14px; }
+.cash-bridge-heading span { color: var(--ink-3); font: 10px var(--mono); letter-spacing: .06em; text-transform: uppercase; }
+.cash-bridge-heading strong { color: var(--bordeaux); font: 26px var(--serif); }
+.cash-bridge-chart ol { list-style: none; margin: 0; padding: 8px 0 0; }
+.cash-bridge-chart li { align-items: center; display: grid; gap: 16px; grid-template-columns: minmax(170px, .9fr) minmax(240px, 1.6fr) auto; min-height: 42px; }
+.cash-bridge-chart li > span { color: var(--ink-2); font-size: 12px; }
+.cash-bridge-chart li > strong { font: 11px var(--mono); min-width: 84px; text-align: right; }
+.cash-bridge-track { background: linear-gradient(90deg, transparent calc(50% - .5px), var(--line-strong) calc(50% - .5px), var(--line-strong) calc(50% + .5px), transparent calc(50% + .5px)); height: 14px; position: relative; }
+.cash-bridge-track i { background: var(--bordeaux); height: 8px; left: 50%; position: absolute; top: 3px; width: var(--cash-bar-size); }
+.cash-negative .cash-bridge-track i { background: var(--bear); left: auto; right: 50%; }
+.cash-bridge-chart .cash-total { border-top: 1px solid var(--line-strong); margin-top: 8px; min-height: 52px; }
+.cash-bridge-chart .cash-total :is(span, strong) { color: var(--bordeaux); font-weight: 700; }
+.tsa-mobile-list { display: none; }
+
+.opella-complementary-layout { align-items: start; display: grid; gap: 22px; grid-template-columns: minmax(300px, .72fr) minmax(0, 1.28fr); margin-top: 34px; }
+.opella-complementary-layout > :is(.opella-bar-chart, .table-scroll) { margin-top: 0; }
+.opella-complementary-layout .opella-bar-row { gap: 10px; grid-template-columns: minmax(130px, 1fr) auto; }
+.opella-complementary-layout .opella-bar-track { grid-column: 1 / -1; grid-row: 2; }
+.opella-complementary-layout .opella-status { display: none; }
+.funding-overview { display: grid; gap: 18px; grid-template-columns: minmax(0, 1fr) minmax(230px, .3fr); margin-top: 34px; }
+.funding-curve { height: 360px; margin-top: 0; }
+.funding-area-fill { fill: color-mix(in srgb, var(--bordeaux) 10%, transparent); }
+.funding-value-label { fill: var(--ink-2); font: 12px var(--mono); }
+.funding-outcomes { display: grid; gap: 10px; }
+.funding-outcomes article { background: var(--navy); color: var(--bg); display: flex; flex-direction: column; justify-content: flex-end; min-width: 0; padding: 22px; }
+.funding-outcomes :is(span, small) { color: rgba(250, 247, 242, .7); font: 9px var(--mono); letter-spacing: .05em; text-transform: uppercase; }
+.funding-outcomes strong { color: var(--bg); font: 500 clamp(25px, 2.2vw, 34px)/1.05 var(--serif); margin: 12px 0 8px; overflow-wrap: anywhere; }
+.funding-state-card { align-items: start; gap: 14px 28px; grid-template-columns: minmax(230px, .72fr) minmax(0, 1.28fr); margin-top: 22px; padding: clamp(22px, 2.5vw, 34px); }
+.funding-state-card > :not(.table-scroll) { grid-column: 1; }
+.funding-state-card > .table-scroll { grid-column: 2; grid-row: 1 / span 8; }
+.funding-state-heading { padding-bottom: 14px; }
+.funding-state-heading h3 { font-size: clamp(27px, 2.5vw, 38px); }
+.funding-state-card > p, .funding-counterfactual p { font-size: 13px; line-height: 1.52; }
+.funding-counterfactual { margin-top: 4px; }
+.opella-scenario-panel { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.opella-lever { border-bottom: 0; padding: 16px; }
+.opella-lever:nth-child(even) { border-right: 1px solid var(--line-strong); }
+.opella-lever:nth-child(4n) { border-right: 0; }
+.opella-lever legend { font-size: 18px; }
+.opella-lever-options { gap: 5px; margin-top: 12px; }
+.opella-lever-options button { min-height: 52px; padding: 5px; }
+.opella-scenario-summary { border-top: 1px solid var(--line-strong); min-height: 60px; padding: 8px 16px; }
+.opella-scenario-comparison .table-scroll { margin-top: 14px; }
+.opella-scenario-comparison .data-table :is(th, td) { padding-bottom: 9px; padding-top: 9px; }
+
 .opella-diligence-buyer {
   background: var(--bg-alt);
   border: 1px solid var(--line-strong);
@@ -1445,6 +1509,10 @@
   .tsa-timeline-row {
     min-width: 900px;
   }
+
+  .opella-scenario-panel { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .opella-lever:nth-child(2n) { border-right: 0; }
+  .opella-lever:nth-child(-n + 2) { border-bottom: 1px solid var(--line-strong); }
 }
 
 @media (max-width: 900px) {
@@ -1547,6 +1615,9 @@
     border-top: 1px solid var(--line);
   }
 
+  .opella-bridge-mobile .bridge-total:last-child { background: var(--navy); border-left-color: var(--bordeaux-soft); }
+  .opella-bridge-mobile .bridge-total:last-child :is(span, strong, small) { color: var(--bg); }
+
   .opella-bridge-mobile strong {
     color: var(--bordeaux);
     font-family: var(--serif);
@@ -1562,7 +1633,7 @@
   .funding-mobile-profile {
     border: 1px solid var(--line-strong);
     display: grid;
-    margin-top: 28px;
+    margin-top: 0;
   }
 
   .funding-mobile-profile article {
@@ -1594,6 +1665,24 @@
     height: 8px;
   }
 
+  .funding-mobile-profile article.peak { background: var(--bordeaux-bg); }
+  .funding-overview, .funding-state-card, .opella-complementary-layout { grid-template-columns: 1fr; }
+  .funding-outcomes { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .funding-state-card > :not(.table-scroll), .funding-state-card > .table-scroll { grid-column: 1; grid-row: auto; }
+  .tsa-timeline { display: none; }
+  .tsa-mobile-list { border: 1px solid var(--line-strong); display: grid; margin-top: 28px; }
+  .tsa-mobile-list article { padding: 16px; }
+  .tsa-mobile-list article + article { border-top: 1px solid var(--line); }
+  .tsa-mobile-list header { align-items: baseline; display: flex; gap: 12px; justify-content: space-between; }
+  .tsa-mobile-list header strong { font-size: 13px; }
+  .tsa-mobile-list header span { color: var(--bordeaux); font: 10px var(--mono); }
+  .tsa-mobile-list p { font-size: 11px; margin-top: 6px; }
+  .tsa-mobile-list article > div { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 10px; }
+  .tsa-mobile-list article > div span { background: var(--bordeaux-bg); color: var(--bordeaux); font: 9px var(--mono); padding: 5px 7px; }
+  .cash-bridge-chart { padding: 16px; }
+  .cash-bridge-chart li { gap: 5px 12px; grid-template-columns: minmax(0, 1fr) auto; padding: 7px 0; }
+  .cash-bridge-track { grid-column: 1 / -1; grid-row: 2; }
+
   .opella-bar-row {
     grid-template-columns: minmax(130px, 1fr) auto;
     padding: 10px 0;
@@ -1614,7 +1703,12 @@
 
   .opella-lever,
   .opella-lever:nth-child(even) {
+    border-bottom: 1px solid var(--line-strong);
     border-right: 0;
+  }
+
+  .opella-lever:nth-child(4) {
+    border-bottom: 0;
   }
 
   .opella-methodology > div {
@@ -1714,8 +1808,12 @@
   }
 
   .opella-lever-options button {
-    min-height: 72px;
+    min-height: 52px;
     padding: 6px 4px;
+  }
+
+  .funding-outcomes {
+    grid-template-columns: 1fr;
   }
 
   .opella-lever-options button strong {

@@ -1291,6 +1291,31 @@ try {
     "Opella central reset state",
   );
 
+  await navigate(`${opellaBase}?lang=en#scenarios`);
+  await waitForStableAnchor("scenarios");
+  await evaluate(`(() => {
+    const button = Array.from(document.querySelectorAll('.opella-lever-options button'))
+      .find((candidate) => candidate.getAttribute('aria-label')?.startsWith('TSA exit delay · High ·'));
+    button.scrollIntoView({ block: 'center' });
+    button.focus();
+  })()`);
+  const opellaReadingBefore = await evaluate("({ top: document.querySelector('#scenarios').getBoundingClientRect().top, scrollY })");
+  const opellaHorizonPointer = await realPointerClick(
+    "Array.from(document.querySelectorAll('.opella-lever-options button')).find((button) => button.getAttribute('aria-label')?.startsWith('TSA exit delay · High ·'))",
+    "Opella horizon-extending TSA scenario",
+  );
+  await waitFor(
+    () => evaluate("new URLSearchParams(location.search).get('op_tsa') === 'high' && document.querySelectorAll('#funding-need table tbody tr').length >= 6"),
+    "Opella extended horizon render",
+  );
+  const opellaReadingAfter = await evaluate("({ focused: document.activeElement?.getAttribute('aria-label'), overflow: document.documentElement.scrollWidth - document.documentElement.clientWidth, top: document.querySelector('#scenarios').getBoundingClientRect().top, scrollY })");
+  assert(
+    Math.abs(opellaReadingAfter.top - opellaReadingBefore.top) <= 2
+      && opellaReadingAfter.focused?.startsWith("TSA exit delay · High ·")
+      && opellaReadingAfter.overflow === 0,
+    `Opella reading position moved after horizon change: ${JSON.stringify({ before: opellaReadingBefore, after: opellaReadingAfter })}`,
+  );
+
   await command("Emulation.setDeviceMetricsOverride", { width: 1280, height: 720, deviceScaleFactor: 1, mobile: false });
   await navigate(`${opellaBase}?lang=en#executive`);
   await waitForStableAnchor("executive");
@@ -1373,11 +1398,11 @@ try {
 
   const opellaResponsive = {};
   const opellaVisualAnchors = {
-    "360x800": "sources",
-    "390x844": "buyer-implications",
-    "430x932": "executive",
-    "1280x720": "executive",
-    "1920x1080": "transaction",
+    "360x800": "standalone-build",
+    "390x844": "tsa",
+    "430x932": "cash-transition",
+    "1280x720": "scenarios",
+    "1920x1080": "funding-need",
   };
   const opellaVisualLanguages = {
     "360x800": "fr",
@@ -1386,7 +1411,7 @@ try {
     "1280x720": "fr",
     "1920x1080": "en",
   };
-  const opellaReviewDirectory = path.resolve(".agent-logs", "opella-o2-g1-visual-review");
+  const opellaReviewDirectory = path.resolve(".agent-logs", "opella-o2-g2-analytical-review");
   await mkdir(opellaReviewDirectory, { recursive: true });
   for (const [width, height] of [[360, 800], [390, 844], [430, 932], [1280, 720], [1920, 1080]]) {
     await command("Emulation.setDeviceMetricsOverride", {
@@ -1549,9 +1574,7 @@ try {
     }
     await evaluate(`(() => {
       const target = document.getElementById(${JSON.stringify(visualAnchor)});
-      const content = ${JSON.stringify(viewportId)} === "1280x720"
-        ? document.querySelector('.opella-model-build')
-        : target?.querySelector('.opella-section-header, .opella-hero-copy') ?? target;
+      const content = target?.querySelector('.opella-section-header, .opella-hero-copy') ?? target;
       if (!content) return;
       const offset = innerWidth <= 900 ? 128 : 96;
       scrollTo(0, Math.max(0, scrollY + content.getBoundingClientRect().top - offset));
@@ -1571,7 +1594,7 @@ try {
     opellaResponsive[viewportId] = {
       ...state,
       language: visualLanguage,
-      screenshot: path.join(".agent-logs", "opella-o2-g1-visual-review", screenshotName),
+      screenshot: path.join(".agent-logs", "opella-o2-g2-analytical-review", screenshotName),
       visualAnchor,
     };
   }
@@ -1735,6 +1758,7 @@ try {
     opellaEnglishPointer,
     opellaLeverPointers,
     opellaResetPointer,
+    opellaHorizonPointer,
     opellaEvidenceKeyboard,
     opellaEvidenceMobilePointer,
     opellaEvidenceMobile,

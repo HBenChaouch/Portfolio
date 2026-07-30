@@ -1,7 +1,5 @@
 import {
-  useEffect,
   useMemo,
-  useRef,
   useState,
 } from "react";
 import DataTable from "../components/DataTable.jsx";
@@ -13,6 +11,8 @@ import {
   opellaDiligenceItems,
 } from "../data/opellaCase.js";
 import { opellaFinancials } from "../data/opellaFinancials.js";
+
+const ISO_YEAR_TOKEN = "YYYY";
 
 const stateCopyIds = {
   "résorbé": "funding.state.resorbed",
@@ -107,9 +107,18 @@ function periodDisplay(periods, periodId, language, copy) {
   const period = periods.find(({ id }) => id === periodId);
   if (!period) return copy("common.notReached");
   if (period.id === "P1") {
-    return `${period.id} · ${copy("calendar.stub", { year: period.end.slice(0, 4) })}`;
+    return `${period.id} · ${copy("calendar.stub", { year: period.end.slice(0, ISO_YEAR_TOKEN.length) })}`;
   }
   return `${period.id} · ${period.label}`;
+}
+
+function periodCalendarDisplay(periods, periodId, language, copy) {
+  const period = periods.find(({ id }) => id === periodId);
+  if (!period) return copy("common.notReached");
+  if (period.id === "P1") {
+    return copy("calendar.stub", { year: period.end.slice(0, ISO_YEAR_TOKEN.length) });
+  }
+  return period.label;
 }
 
 function statusLabel(status, copy) {
@@ -191,50 +200,150 @@ function StatusTag({ copy, status }) {
   );
 }
 
-function ModelConstructionMatrix({ copy, rows }) {
-  const columns = [
-    ["source", "common.source"], ["anchor", "evidence.matrixAnchor"],
-    ["assumption", "evidence.assumptions.title"], ["formula", "evidence.formula"],
-    ["output", "evidence.outputs.title"],
-  ];
+function MethodTabs({ assumptions, chainSteps, copy, mechanics }) {
+  const tabs = ["proof", "assumptions", "mechanics"];
+  const [activeTab, setActiveTab] = useState(tabs[0]);
+
+  const handleTabKeyDown = (event) => {
+    if (!["ArrowLeft", "ArrowRight", "Home", "End"].includes(event.key)) return;
+    event.preventDefault();
+    const currentIndex = tabs.indexOf(activeTab);
+    const nextIndex = event.key === "Home"
+      ? 0
+      : event.key === "End"
+        ? tabs.length - 1
+        : (currentIndex + (event.key === "ArrowRight" ? 1 : -1) + tabs.length) % tabs.length;
+    const nextTab = tabs[nextIndex];
+    setActiveTab(nextTab);
+    event.currentTarget.parentElement
+      ?.querySelector(`[data-method-tab="${nextTab}"]`)
+      ?.focus();
+  };
 
   return (
-    <section
-      aria-labelledby="opella-model-matrix-title"
-      className="opella-evidence-chain opella-model-build"
-    >
-      <header>
-        <p className="eyebrow">{copy("evidence.chainLabel")}</p>
-        <h2 id="opella-model-matrix-title">{copy("evidence.panelTitle")}</h2>
-        <p>{copy("evidence.panelIntro")}</p>
+    <section aria-labelledby="opella-method-title" className="opella-method">
+      <header className="opella-method-header">
+        <p className="eyebrow">{copy("method.compact.kicker")}</p>
+        <h2 id="opella-method-title">{copy("method.compact.title")}</h2>
       </header>
-      <div aria-label={copy("evidence.chainLabel")} className="opella-model-matrix" role="table">
-        <div className="opella-model-row opella-model-header" role="row">
-          {columns.map(([, label]) => (
-            <span key={label} role="columnheader">{copy(label)}</span>
+
+      <div aria-label={copy("method.compact.tabsLabel")} className="opella-method-tabs" role="tablist">
+        {tabs.map((tab) => (
+          <button
+            aria-controls={`opella-method-panel-${tab}`}
+            aria-selected={activeTab === tab}
+            className={activeTab === tab ? "is-active" : ""}
+            data-method-tab={tab}
+            id={`opella-method-tab-${tab}`}
+            key={tab}
+            onClick={() => setActiveTab(tab)}
+            onKeyDown={handleTabKeyDown}
+            role="tab"
+            tabIndex={activeTab === tab ? 0 : -1}
+            type="button"
+          >
+            {copy(`method.compact.tab.${tab}`)}
+          </button>
+        ))}
+      </div>
+
+      <div
+        aria-labelledby="opella-method-tab-proof"
+        className="opella-method-panel opella-method-proof"
+        hidden={activeTab !== "proof"}
+        id="opella-method-panel-proof"
+        role="tabpanel"
+        tabIndex={0}
+      >
+        <ol className="opella-proof-chain">
+          {chainSteps.map((step, index) => (
+            <li data-proof-step={index + 1} key={step.title}>
+              <span aria-hidden="true">{index + 1}</span>
+              <div>
+                <h3>{step.title}</h3>
+                <p>{step.description}</p>
+                <small>{step.value}</small>
+              </div>
+            </li>
+          ))}
+        </ol>
+        <aside className="opella-method-reading">
+          <h3>{copy("method.compact.reading.title")}</h3>
+          <p>{copy("method.compact.reading.text")}</p>
+        </aside>
+      </div>
+
+      <div
+        aria-labelledby="opella-method-tab-assumptions"
+        className="opella-method-panel"
+        hidden={activeTab !== "assumptions"}
+        id="opella-method-panel-assumptions"
+        role="tabpanel"
+        tabIndex={0}
+      >
+        <div className="opella-assumption-table" role="table">
+          <div className="opella-assumption-row opella-assumption-header" role="row">
+            <span role="columnheader">{copy("method.compact.assumption")}</span>
+            <span role="columnheader">{copy("method.compact.centralValue")}</span>
+            <span role="columnheader">{copy("method.compact.financialConstruction")}</span>
+            <span role="columnheader">{copy("method.compact.mainEffect")}</span>
+          </div>
+          {assumptions.map((assumption) => (
+            <div className="opella-assumption-row" data-assumption-key={assumption.id} key={assumption.id} role="row">
+              <strong role="rowheader">{assumption.label}</strong>
+              <span data-label={copy("method.compact.centralValue")} role="cell">{assumption.value}</span>
+              <span data-label={copy("method.compact.financialConstruction")} role="cell">{assumption.construction}</span>
+              <span data-label={copy("method.compact.mainEffect")} role="cell">{assumption.effect}</span>
+            </div>
           ))}
         </div>
-        {rows.map((row) => (
-          <div className="opella-model-row" data-model-path-id={row.outputId} key={row.outputId} role="row">
-            {columns.map(([field, label]) => (
-              <div className={`opella-model-cell model-${field}`} key={field} role="cell">
-                <span className="opella-model-cell-label">{copy(label)}</span>
-                {field === "source" ? (
-                  <span className="opella-model-source">
-                    {sourceIdList(row.sourceIds).map((sourceId) => (
-                      <span data-source-id={sourceId} key={sourceId}>{sourceId}</span>
-                    ))}
-                  </span>
+      </div>
+
+      <div
+        aria-labelledby="opella-method-tab-mechanics"
+        className="opella-method-panel"
+        hidden={activeTab !== "mechanics"}
+        id="opella-method-panel-mechanics"
+        role="tabpanel"
+        tabIndex={0}
+      >
+        <div className="opella-mechanics-list">
+          {mechanics.map((mechanic) => (
+            <details data-mechanic-key={mechanic.id} key={mechanic.id}>
+              <summary>
+                <strong className="opella-mechanic-title">{mechanic.title}</strong>
+                <b className="opella-mechanic-result">{mechanic.result}</b>
+                <span className="opella-mechanic-toggle">
+                  <span className="when-closed">{copy("method.compact.showCalculation")}</span>
+                  <span className="when-open">{copy("method.compact.hideCalculation")}</span>
+                  <i aria-hidden="true">▾</i>
+                </span>
+              </summary>
+              <div className="opella-mechanic-detail">
+                {mechanic.conditions ? (
+                  <div className="opella-steady-conditions">
+                    <p>{copy("method.compact.steady.intro", { period: mechanic.result })}</p>
+                    <ul>
+                      {mechanic.conditions.map((condition) => (
+                        <li key={condition.label}>
+                          <span>{condition.label}</span>
+                          <strong>{condition.value}</strong>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
                 ) : (
-                  <>
-                    <strong>{row[field].label}</strong>
-                    {row[field].detail ? <small>{row[field].detail}</small> : null}
-                  </>
+                  <strong>{mechanic.equation}</strong>
                 )}
+                <p>{mechanic.explanation}</p>
               </div>
-            ))}
-          </div>
-        ))}
+            </details>
+          ))}
+        </div>
+        <nav aria-label={copy("method.compact.linksLabel")} className="opella-method-links">
+          <a href="#methodology">{copy("method.compact.fullMethodology")} ↓</a>
+          <a href="#sources">{copy("method.compact.sources")} ↓</a>
+        </nav>
       </div>
     </section>
   );
@@ -594,8 +703,6 @@ export default function OpellaAnalysisView() {
   } = useOpellaScenario();
   const copy = useMemo(() => createOpellaCopy(language), [language]);
   const snapshot = opellaFinancials.snapshot;
-  const [evidenceOpen, setEvidenceOpen] = useState(false);
-  const evidenceButtonRef = useRef(null);
   const sourcesById = useMemo(
     () => new Map(snapshot.sources.map((source) => [source.id, source])),
     [snapshot.sources],
@@ -604,6 +711,7 @@ export default function OpellaAnalysisView() {
   const horizon = result.calendar.horizon;
   const centralResult = comparisons.find(({ id }) => id === "central").output;
   const periodLabel = (id) => periodDisplay(result.calendar.periods, id, language, copy);
+  const heroPeriodLabel = (id) => periodCalendarDisplay(result.calendar.periods, id, language, copy);
   const inventoryMetadata = useMemo(
     () => new Map(snapshot.m7.inventory.map((line) => [line.id, line])),
     [snapshot.m7.inventory],
@@ -627,6 +735,11 @@ export default function OpellaAnalysisView() {
       status: "estimation",
     };
   });
+  const runRateBreakdown = result.modules.m3.functions
+    .map((item) => (
+      `${copy(`kpi.runRate.component.${item.id}`)} ${formatMoney(Math.abs(item.runRate), language, { decimals: 0 })}`
+    ))
+    .join(" · ");
 
   const standaloneBridge = result.modules.m6.standaloneBridge.map((item) => ({
     ...item,
@@ -718,174 +831,169 @@ export default function OpellaAnalysisView() {
         : `${copy(`lever.${comparison.leverId}`)} · ${copy(leverStateCopyIds[comparison.state])}`,
   }));
 
-  useEffect(() => {
-    if (!evidenceOpen) return undefined;
-    const closeOnEscape = (event) => {
-      if (event.key !== "Escape") return;
-      setEvidenceOpen(false);
-      evidenceButtonRef.current?.focus();
-    };
-    document.addEventListener("keydown", closeOnEscape);
-    return () => document.removeEventListener("keydown", closeOnEscape);
-  }, [evidenceOpen]);
-
-  const publicEvidenceFacts = [
+  const chainSteps = [
     {
-      id: "revenue-rounded",
-      label: copy("evidence.public.revenueRounded"),
-      sourceIds: snapshot.m1.revenue.source,
-      value: `≈ ${formatBillions(snapshot.m1.revenue.value, language, 0)}`,
-    },
-    {
-      id: "revenue-reported",
-      label: copy("evidence.public.revenueReported"),
-      sourceIds: snapshot.m1.reportedRevenue.source,
-      value: formatMoney(snapshot.m1.reportedRevenue.value, language, { decimals: 0 }),
-    },
-    {
-      id: "enterprise-value",
-      label: copy("evidence.public.ev"),
-      sourceIds: snapshot.m1.enterpriseValue.source,
-      value: `≈ ${formatBillions(snapshot.m1.enterpriseValue.value, language, 0)}`,
-    },
-    {
-      id: "entry-multiple",
-      label: copy("evidence.public.multiple"),
-      sourceIds: snapshot.m1.entryMultiple.source,
-      value: `≈ ${formatMultiple(snapshot.m1.entryMultiple.value, language, 0)}`,
-    },
-    {
-      id: "closing-ownership",
-      label: copy("evidence.public.closingOwnership"),
-      sourceIds: "S2",
-      value: copy("evidence.public.closingOwnershipValue", {
-        bpifrance: formatPercent(snapshot.m1.ownership.bpifrance.value, language),
-        cdr: formatPercent(snapshot.m1.ownership.cdr.value, language),
-        date: formatDate(snapshot.calendar.closing, language),
-        sanofi: formatPercent(snapshot.m1.ownership.sanofi.value, language),
-      }),
-    },
-  ];
-
-  const derivedEvidenceValues = [
-    {
-      formula: copy("evidence.derived.ebitdaFormula"),
-      id: "transaction-implied-ebitda",
-      label: copy("evidence.derived.ebitda"),
-      sourceIds: snapshot.m1.ebitda.source,
-      value: `≈ ${formatBillions(snapshot.m1.ebitda.value, language, 2)}`,
-    },
-    {
-      formula: copy("evidence.derived.marginFormula"),
-      id: "implied-margin",
-      label: copy("evidence.derived.margin"),
-      sourceIds: snapshot.m1.margin.source,
-      value: `≈ ${formatPercent(snapshot.m1.margin.value, language, 1)}`,
-    },
-  ];
-
-  const illustrativeAssumptions = [
-    {
-      id: "perimeter-trajectory",
-      label: copy("evidence.assumption.perimeter"),
-      reason: copy("evidence.assumption.perimeterReason"),
-      value: leverValue(
-        "S-OPS",
-        leverContracts["S-OPS"].states[selections["S-OPS"]],
-        language,
-      ),
-    },
-    {
-      id: "seller-allocations",
-      label: copy("evidence.assumption.allocations"),
-      reason: copy("evidence.assumption.allocationsReason"),
-      value: formatPercent(snapshot.m2.rate.value, language, 1),
-    },
-    {
-      id: "standalone-functions",
-      label: copy("evidence.assumption.standalone"),
-      reason: copy("evidence.assumption.standaloneReason"),
-      value: formatMoney(Math.abs(snapshot.m3.runRateTotal), language, { decimals: 0 }),
-    },
-    {
-      id: "transition-services",
-      label: copy("evidence.assumption.tsa"),
-      reason: copy("evidence.assumption.tsaReason"),
-      value: formatMoney(separationComponents.tsa, language, { decimals: 0 }),
-    },
-    {
-      id: "one-offs",
-      label: copy("evidence.assumption.oneOffs"),
-      reason: copy("evidence.assumption.oneOffsReason"),
-      value: formatMoney(separationComponents.oneOffs, language, { decimals: 0 }),
-    },
-    {
-      id: "cash-bridge",
-      label: copy("evidence.assumption.cash"),
-      reason: copy("evidence.assumption.cashReason"),
+      description: copy("method.compact.proof.public.description"),
+      title: copy("method.compact.proof.public.title"),
       value: [
-        formatPercent(snapshot.m6.taxRate.value, language, 1),
-        formatPercent(snapshot.m6.capexRate.value, language, 1),
-        formatPercent(snapshot.m6.wcIntensity.value, language, 1),
+        `≈ ${formatBillions(snapshot.m1.enterpriseValue.value, language, 0)}`,
+        `≈ ${formatMultiple(snapshot.m1.entryMultiple.value, language, 0)}`,
+        `≈ ${formatBillions(snapshot.m1.revenue.value, language, 0)}`,
+        formatDate(snapshot.calendar.closing, language),
+      ].join(" · "),
+    },
+    {
+      description: copy("method.compact.proof.derived.description"),
+      title: copy("method.compact.proof.derived.title"),
+      value: [
+        `≈ ${formatBillions(snapshot.m1.ebitda.value, language, 2)}`,
+        `≈ ${formatPercent(snapshot.m1.margin.value, language, 1)}`,
+      ].join(" · "),
+    },
+    {
+      description: copy("method.compact.proof.separation.description"),
+      title: copy("method.compact.proof.separation.title"),
+      value: [
+        formatMoney(Math.abs(snapshot.m3.runRateTotal), language, { decimals: 0 }),
+        formatMoney(separationComponents.tsa, language, { decimals: 0 }),
+        formatMoney(separationComponents.oneOffs, language, { decimals: 0 }),
+        formatMoney(peak.value, language, { decimals: 0 }),
+      ].join(" · "),
+    },
+    {
+      description: copy("method.compact.proof.outputs.description"),
+      title: copy("method.compact.proof.outputs.title"),
+      value: [
+        formatMoney(runRate, language, { decimals: 0 }),
+        formatMoney(separationCost, language, { decimals: 0 }),
+        formatMoney(peak.value, language, { decimals: 0 }),
+        heroPeriodLabel(steady),
       ].join(" · "),
     },
   ];
 
-  const scenarioEvidenceOutputs = [
+  const centralOneOffPeriods = centralResult.calendar.periods
+    .filter(({ id }) => Math.abs(centralResult.modules.m5.byPeriod[id] ?? 0) > Number.EPSILON);
+  const fiscalYearLabel = (period) => `FY${period.end.slice(0, ISO_YEAR_TOKEN.length)}`;
+  const keyAssumptions = [
     {
-      formula: copy("evidence.outputFormula.runRate"),
-      id: "run-rate",
-      label: copy("kpi.runRate"),
-      value: formatMoney(runRate, language, { decimals: 0 }),
+      construction: copy("method.compact.construction.standalone", {
+        count: formatNumber(centralResult.modules.m3.functions.length, language, 0),
+      }),
+      effect: copy("method.compact.effect.standalone"),
+      id: "standalone-functions",
+      label: copy("method.compact.assumption.standalone"),
+      value: formatMoney(Math.abs(centralResult.modules.m3.runRateTotal), language, { decimals: 0 }),
     },
     {
-      formula: copy("evidence.outputFormula.separationCost"),
-      id: "separation-cost",
-      label: copy("kpi.separationCost"),
-      value: formatMoney(separationCost, language, { decimals: 0 }),
+      construction: copy("method.compact.construction.tsa", {
+        count: formatNumber(centralResult.modules.m4.services.length, language, 0),
+      }),
+      effect: copy("method.compact.effect.tsa"),
+      id: "tsa",
+      label: copy("method.compact.assumption.tsa"),
+      value: formatMoney(centralResult.modules.m6.separationComponents.tsa, language),
     },
     {
-      formula: copy("evidence.outputFormula.peak"),
-      id: "funding-peak",
-      label: copy("kpi.peak"),
-      value: `${formatMoney(peak.value, language, { decimals: 0 })} · ${periodLabel(peak.period)}`,
+      construction: copy("method.compact.construction.oneOffs", {
+        count: formatNumber(centralResult.modules.m5.lines.length, language, 0),
+        end: fiscalYearLabel(centralOneOffPeriods.at(-1)),
+        start: fiscalYearLabel(centralOneOffPeriods[0]),
+      }),
+      effect: copy("method.compact.effect.oneOffs"),
+      id: "one-offs",
+      label: copy("method.compact.assumption.oneOffs"),
+      value: formatMoney(centralResult.modules.m6.separationComponents.oneOffs, language, { decimals: 0 }),
     },
     {
-      formula: copy("evidence.outputFormula.steady"),
-      id: "steady-state",
-      label: copy("kpi.steady"),
-      value: periodLabel(steady),
+      construction: copy("method.compact.construction.capex"),
+      effect: copy("method.compact.effect.capex"),
+      id: "separation-capex",
+      label: copy("method.compact.assumption.capex"),
+      value: formatMoney(centralResult.modules.m6.separationComponents.capex, language, { decimals: 0 }),
     },
     {
-      formula: copy("evidence.outputFormula.p5Ebitda"),
-      id: "central-p5-ebitda",
-      label: copy("evidence.output.p5Ebitda"),
-      value: formatMoney(centralResult.modules.m1.ebitda.P5, language, { decimals: 0 }),
+      construction: copy("method.compact.construction.tax"),
+      effect: copy("method.compact.effect.tax"),
+      id: "cash-tax",
+      label: copy("method.compact.assumption.tax"),
+      value: formatPercent(snapshot.m6.taxRate.value, language, 0),
+    },
+    {
+      construction: copy("method.compact.construction.workingCapital"),
+      effect: copy("method.compact.effect.workingCapital"),
+      id: "working-capital-intensity",
+      label: copy("method.compact.assumption.workingCapital"),
+      value: formatPercent(snapshot.m6.wcIntensity.value, language, 0),
     },
   ];
 
-  const derivedValuesById = new Map(derivedEvidenceValues.map((item) => [item.id, item]));
-  const assumptionsById = new Map(illustrativeAssumptions.map((item) => [item.id, item]));
-  const closingAnchor = { label: copy("transaction.closing"), value: formatDate(snapshot.calendar.closing, language) };
-  const matrixInputs = [
+  const runRateEquation = copy("method.compact.equation.runRate", {
+    components: result.modules.m3.functions
+      .map(({ runRate: value }) => formatNumber(Math.abs(value), language, 0))
+      .join(" + "),
+    total: formatMoney(runRate, language, { decimals: 0 }),
+  });
+  const separationCostEquation = copy("method.compact.equation.separationCost", {
+    capex: formatNumber(separationComponents.capex, language, 0),
+    exact: formatMoney(separationCost, language),
+    oneOffs: formatNumber(separationComponents.oneOffs, language, 0),
+    rounded: formatMoney(separationCost, language, { decimals: 0 }),
+    tsa: formatNumber(separationComponents.tsa, language),
+  });
+  const peakEquation = copy("method.compact.equation.peak", {
+    amount: formatMoney(peak.value, language),
+    period: heroPeriodLabel(peak.period),
+  });
+  const steadyFunctionLoad = Math.min(...result.modules.m3.functions.map(({ applied, runRate: value }) => (
+    Math.abs(value) <= Number.EPSILON ? 1 : Math.abs((applied[steady] ?? 0) / value)
+  )));
+  const steadyConditions = [
     {
-      anchor: derivedValuesById.get("transaction-implied-ebitda"),
-      assumption: assumptionsById.get("standalone-functions"),
-      sourceIds: `${snapshot.m1.ebitda.source}+S4`,
+      label: copy("method.compact.steady.tsa"),
+      value: formatMoney(Math.abs(result.modules.m4.byPeriod[steady] ?? 0), language, { decimals: 0 }),
     },
-    { anchor: closingAnchor, assumption: assumptionsById.get("transition-services"), sourceIds: "S2+S4" },
-    { anchor: { ...closingAnchor, value: periodLabel("P1") }, assumption: assumptionsById.get("cash-bridge"), sourceIds: "S2+S4" },
-    { anchor: { ...closingAnchor, value: periodLabel("P1") }, assumption: assumptionsById.get("transition-services"), sourceIds: "S2+S4" },
+    {
+      label: copy("method.compact.steady.oneOffs"),
+      value: formatMoney(Math.abs(result.modules.m5.byPeriod[steady] ?? 0), language, { decimals: 0 }),
+    },
+    {
+      label: copy("method.compact.steady.functions"),
+      value: copy("method.compact.steady.runRate", {
+        value: formatPercent(steadyFunctionLoad, language, 0),
+      }),
+    },
   ];
-  const outputIds = ["O-RUNRATE", "O-SEPCOST", "O-PEAK", "O-STEADY"];
-  const modelConstructionRows = scenarioEvidenceOutputs.slice(0, outputIds.length).map((output, index) => ({
-    anchor: { detail: matrixInputs[index].anchor.value, label: matrixInputs[index].anchor.label },
-    assumption: { detail: matrixInputs[index].assumption.reason, label: matrixInputs[index].assumption.label },
-    formula: { label: output.formula },
-    output: { detail: output.value, label: outputIds[index] },
-    outputId: outputIds[index],
-    sourceIds: matrixInputs[index].sourceIds,
-  }));
+  const mechanics = [
+    {
+      equation: runRateEquation,
+      explanation: copy("method.compact.explanation.runRate"),
+      id: "run-rate",
+      result: formatMoney(runRate, language, { decimals: 0 }),
+      title: copy("kpi.runRate"),
+    },
+    {
+      equation: separationCostEquation,
+      explanation: copy("method.compact.explanation.separationCost"),
+      id: "separation-cost",
+      result: formatMoney(separationCost, language, { decimals: 0 }),
+      title: copy("kpi.separationCost"),
+    },
+    {
+      equation: peakEquation,
+      explanation: copy("method.compact.explanation.peak"),
+      id: "funding-peak",
+      result: formatMoney(peak.value, language, { decimals: 0 }),
+      title: copy("kpi.peak"),
+    },
+    {
+      conditions: steadyConditions,
+      explanation: copy("method.compact.explanation.steady"),
+      id: "steady-state",
+      result: heroPeriodLabel(steady),
+      title: copy("kpi.steady"),
+    },
+  ];
 
   return (
     <article className="opella-analysis-view">
@@ -893,162 +1001,54 @@ export default function OpellaAnalysisView() {
         <div className="opella-hero-copy">
           <p className="eyebrow">{copy("executive.eyebrow")}</p>
           <h1>{copy("executive.title")}</h1>
-          <p>{copy("executive.intro")}</p>
-          <span className="opella-illustrative">{copy("common.illustrative")}</span>
+          <p className="opella-hero-question">{copy("executive.question")}</p>
+          <p className="opella-hero-summary">{copy("executive.summary")}</p>
+          <p className="opella-hero-methodology">{copy("executive.methodology")}</p>
         </div>
         <div aria-label={copy("nav.executive")} className="opella-kpi-grid">
           <MetricTile
-            detail={copy("kpi.runRate.detail")}
+            detail={runRateBreakdown}
+            detailClassName="opella-kpi-explanation"
             label={copy("kpi.runRate")}
-            meta={<span className="opella-output-status">{copy("common.modelOutput")}</span>}
             outputId="O-RUNRATE"
             tone="neutral"
             value={formatMoney(runRate, language, { decimals: 0 })}
           />
           <MetricTile
-            detail={copy("kpi.separationCost.detail")}
+            detail={copy("kpi.separationCost.detail", {
+              capex: formatMoney(separationComponents.capex, language, { decimals: 0 }),
+              oneOffs: formatMoney(separationComponents.oneOffs, language, { decimals: 0 }),
+              tsa: formatMoney(separationComponents.tsa, language, { decimals: 0 }),
+            })}
+            detailClassName="opella-kpi-explanation"
             label={copy("kpi.separationCost")}
-            meta={(
-              <span className="opella-sepcost-components">
-                <small>{copy("common.modelOutput")}</small>
-                <span>
-                  TSA {formatMoney(separationComponents.tsa, language)} ·
-                  {" "}{copy("nav.oneOffs")} {formatMoney(separationComponents.oneOffs, language)} ·
-                  {" "}Capex {formatMoney(separationComponents.capex, language)}
-                </span>
-              </span>
-            )}
             outputId="O-SEPCOST"
             tone="neutral"
             value={formatMoney(separationCost, language, { decimals: 0 })}
           />
           <MetricTile
-            detail={copy("kpi.peak.detail", { period: periodLabel(peak.period) })}
+            detail={copy("kpi.peak.detail", { period: heroPeriodLabel(peak.period) })}
+            detailClassName="opella-kpi-explanation"
             label={copy("kpi.peak")}
-            meta={<span className="opella-output-status">{copy("common.modelOutput")}</span>}
             outputId="O-PEAK"
             tone="neutral"
             value={formatMoney(peak.value, language, { decimals: 0 })}
           />
           <MetricTile
             detail={copy("kpi.steady.detail")}
+            detailClassName="opella-kpi-explanation"
             label={copy("kpi.steady")}
-            meta={<span className="opella-output-status">{copy("common.modelOutput")}</span>}
             outputId="O-STEADY"
             tone="neutral"
-            value={periodLabel(steady)}
+            value={heroPeriodLabel(steady)}
           />
         </div>
-        <ModelConstructionMatrix copy={copy} rows={modelConstructionRows} />
-        <button
-          aria-controls="opella-evidence-panel"
-          aria-expanded={evidenceOpen}
-          className="opella-evidence-toggle"
-          onClick={() => setEvidenceOpen((current) => !current)}
-          ref={evidenceButtonRef}
-          type="button"
-        >
-          {copy("evidence.toggle")}
-          <span aria-hidden="true">{evidenceOpen ? "−" : "+"}</span>
-        </button>
-        <section
-          aria-labelledby="opella-evidence-panel-title"
-          className="opella-evidence-panel"
-          hidden={!evidenceOpen}
-          id="opella-evidence-panel"
-        >
-          <header>
-            <div>
-              <p className="eyebrow">{copy("evidence.chainLabel")}</p>
-              <h2 id="opella-evidence-panel-title">{copy("evidence.panelTitle")}</h2>
-              <p>{copy("evidence.panelIntro")}</p>
-            </div>
-            <button
-              aria-label={copy("evidence.close")}
-              onClick={() => {
-                setEvidenceOpen(false);
-                evidenceButtonRef.current?.focus();
-              }}
-              type="button"
-            >
-              ×
-            </button>
-          </header>
-
-          <div className="evidence-panel-group">
-            <h3>{copy("evidence.publicFacts")}</h3>
-            <div className="evidence-card-grid">
-              {publicEvidenceFacts.map((fact) => (
-                <article
-                  data-public-fact-id={fact.id}
-                  data-source-ids={fact.sourceIds}
-                  key={fact.id}
-                >
-                  <span>{fact.label}</span>
-                  <strong>{fact.value}</strong>
-                  <StatusTag copy={copy} status="public" />
-                  <SourceReferenceBlock
-                    copy={copy}
-                    sourceIds={fact.sourceIds}
-                    sourcesById={sourcesById}
-                  />
-                </article>
-              ))}
-            </div>
-          </div>
-
-          <div className="evidence-panel-group">
-            <h3>{copy("evidence.derivedValues")}</h3>
-            <div className="evidence-card-grid derived">
-              {derivedEvidenceValues.map((fact) => (
-                <article data-derived-value-id={fact.id} key={fact.id}>
-                  <span>{fact.label}</span>
-                  <strong>{fact.value}</strong>
-                  <StatusTag copy={copy} status="calculé" />
-                  <p><b>{copy("evidence.formula")}:</b> {fact.formula}</p>
-                  <p className="evidence-operands">{copy("evidence.operands")}</p>
-                  <SourceReferenceBlock
-                    copy={copy}
-                    sourceIds={fact.sourceIds}
-                    sourcesById={sourcesById}
-                  />
-                </article>
-              ))}
-            </div>
-          </div>
-
-          <div className="evidence-panel-group">
-            <h3>{copy("evidence.assumptionModules")}</h3>
-            <div className="evidence-assumption-list">
-              {illustrativeAssumptions.map((assumption) => (
-                <article data-assumption-key={assumption.id} data-source-id="S4" key={assumption.id}>
-                  <div>
-                    <strong>{assumption.label}</strong>
-                    <p>{assumption.reason}</p>
-                  </div>
-                  <span>{assumption.value}</span>
-                  <small>{copy("common.internalAssumption")}</small>
-                </article>
-              ))}
-            </div>
-          </div>
-
-          <div className="evidence-panel-group">
-            <h3>{copy("evidence.scenarioOutputs")}</h3>
-            <div className="evidence-output-list">
-              {scenarioEvidenceOutputs.map((output) => (
-                <article data-scenario-output-id={output.id} key={output.id}>
-                  <span>{output.label}</span>
-                  <strong>{output.value}</strong>
-                  <p><b>{copy("evidence.formula")}:</b> {output.formula}</p>
-                </article>
-              ))}
-            </div>
-            <p className="evidence-output-caveat">{copy("evidence.outputCaveat")}</p>
-            <p className="evidence-scope-caveat">{copy("evidence.scopeCaveat")}</p>
-            <a href="#diligence">{copy("buyer.link")} ↓</a>
-          </div>
-        </section>
+        <MethodTabs
+          assumptions={keyAssumptions}
+          chainSteps={chainSteps}
+          copy={copy}
+          mechanics={mechanics}
+        />
       </section>
 
       <Section

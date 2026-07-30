@@ -218,10 +218,35 @@ try {
   assert.doesNotMatch(englishHome, /Modele_Carveout_Opella\.xlsx|Download the workbook/);
 
   const visibleText = (markup) => markup.replace(/<[^>]+>/g, " ").replace(/\s+/g, " ");
+  const outputValue = (markup, outputId) => {
+    const start = markup.indexOf(`data-output-id="${outputId}"`);
+    const outputMarkup = markup.slice(start, markup.indexOf("</div>", start));
+    return outputMarkup.match(/<strong>([^<]+)<\/strong>/)?.[1];
+  };
   const opellaFrenchText = visibleText(opellaFrenchDom);
   const opellaEnglishText = visibleText(opellaEnglishDom);
-  assert.ok(opellaFrenchText.includes("Voir comment le modèle est construit"));
-  assert.ok(opellaEnglishText.includes("See how the model is built"));
+  for (const expected of [
+    "Opella — modèle de carve-out",
+    "Que faut-il pour rendre Opella autonome — à quel coût, avec quel besoin de cash, dans quel délai et avec quels risques de dérive ?",
+    "Montants arrondis à l’affichage",
+  ]) assert.ok(opellaFrenchText.includes(expected), `French Opella hero missing: ${expected}`);
+  for (const expected of [
+    "Opella carve-out model",
+    "What does it take for Opella to stand on its own — at what cost, with how much cash, on what timeline, and with which execution risks?",
+    "Amounts are rounded for display",
+  ]) assert.ok(opellaEnglishText.includes(expected), `English Opella hero missing: ${expected}`);
+  for (const expected of [
+    "Des faits publics aux quatre résultats",
+    "Chaîne de preuve",
+    "Hypothèses structurantes",
+    "Mécanique de calcul",
+  ]) assert.ok(opellaFrenchText.includes(expected), `French Opella method missing: ${expected}`);
+  for (const expected of [
+    "From public facts to four results",
+    "Evidence chain",
+    "Structural assumptions",
+    "Calculation mechanics",
+  ]) assert.ok(opellaEnglishText.includes(expected), `English Opella method missing: ${expected}`);
   assert.ok(opellaFrenchText.includes("Ouvrir la source originale"));
   assert.ok(opellaEnglishText.includes("Open original source"));
   assert.deepEqual(
@@ -238,12 +263,12 @@ try {
     ["O-RUNRATE", "120 M€", "€120m"],
     ["O-SEPCOST", "296 M€", "€296m"],
     ["O-PEAK", "321 M€", "€321m"],
-    ["O-STEADY", "P4", "P4"],
+    ["O-STEADY", "FY2028", "FY2028"],
   ]) {
     assert.ok(opellaFrenchDom.includes(`data-output-id="${outputId}"`));
     assert.ok(opellaEnglishDom.includes(`data-output-id="${outputId}"`));
-    assert.ok(opellaFrenchText.includes(frenchValue), `French Opella DOM missing ${outputId}`);
-    assert.ok(opellaEnglishText.includes(englishValue), `English Opella DOM missing ${outputId}`);
+    assert.equal(outputValue(opellaFrenchDom, outputId), frenchValue, `French Opella DOM missing ${outputId}`);
+    assert.equal(outputValue(opellaEnglishDom, outputId), englishValue, `English Opella DOM missing ${outputId}`);
   }
   for (const label of [
     "Coûts stand-alone récurrents",

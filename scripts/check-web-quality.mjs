@@ -268,6 +268,51 @@ try {
   );
   const opellaFr = renderRoute("/cases/opella-carve-out/analysis/");
   const opellaEn = renderRoute("/cases/opella-carve-out/analysis/?lang=en");
+  const heroContracts = [
+    {
+      forbidden: /(?:\bP\d+\b|Sortie du scénario sélectionné|Estimation illustrative|Calculé|Headline outputs)/i,
+      markup: opellaFr,
+      required: [
+        "Opella — modèle de carve-out",
+        "Que faut-il pour rendre Opella autonome — à quel coût, avec quel besoin de cash, dans quel délai et avec quels risques de dérive ?",
+        "Le modèle mesure les coûts récurrents et ponctuels de la séparation, puis suit le besoin de financement jusqu’au régime établi.",
+        "Montants arrondis à l’affichage",
+        "IT 40 M€ · Support 30 M€ · Distribution 25 M€ · Qualité et réglementaire 25 M€",
+        "TSA 99 M€ · Coûts ponctuels 152 M€ · Capex de séparation 45 M€",
+        "Besoin cumulé maximal en FY2027",
+        "Première année sans TSA ni coûts ponctuels",
+        "FY2028",
+      ],
+    },
+    {
+      forbidden: /(?:\bP\d+\b|Selected-scenario output|Illustrative estimate|Calculated|Headline outputs)/i,
+      markup: opellaEn,
+      required: [
+        "Opella carve-out model",
+        "What does it take for Opella to stand on its own — at what cost, with how much cash, on what timeline, and with which execution risks?",
+        "The model measures the recurring and one-off costs of separation, then tracks the funding need through to steady state.",
+        "Amounts are rounded for display",
+        "IT €40m · Support €30m · Distribution €25m · Quality &amp; regulatory €25m",
+        "TSA €99m · One-offs €152m · Separation capex €45m",
+        "Maximum cumulative need in FY2027",
+        "First year with no TSA or one-offs",
+        "FY2028",
+      ],
+    },
+  ];
+  for (const contract of heroContracts) {
+    const heroStart = contract.markup.indexOf('class="opella-hero" id="executive"');
+    const heroEnd = contract.markup.indexOf("opella-method", heroStart);
+    const heroMarkup = contract.markup.slice(heroStart, heroEnd);
+    const heroText = markupText(heroMarkup);
+    for (const required of contract.required) {
+      assert.ok(
+        heroMarkup.includes(required) || heroText.includes(required),
+        `Opella hero missing: ${required}`,
+      );
+    }
+    assert.doesNotMatch(heroText, contract.forbidden, "Opella hero contains a forbidden label or period code");
+  }
   const fundingSeriesContracts = [
     {
       caption: "Profil du besoin de financement par période",
@@ -351,35 +396,59 @@ try {
     assert.doesNotMatch(rendered, /\b(?:MOIC|TRI|IRR)\b/i);
     assert.doesNotMatch(rendered, /(?:download=|Modele_Carveout_Opella\.xlsx)/i);
 
-    const modelStart = rendered.indexOf("opella-model-build");
+    const methodStart = rendered.indexOf('class="opella-method"');
     const transactionStart = rendered.indexOf('id="transaction"');
     const outputPositions = ["O-RUNRATE", "O-SEPCOST", "O-PEAK", "O-STEADY"]
       .map((id) => rendered.indexOf(`data-output-id="${id}"`));
     assert.ok(
-      outputPositions.every((position) => position > -1 && position < modelStart)
-        && modelStart < transactionStart,
-      "The four headline outputs must precede the visible model construction and all disclosures",
+      outputPositions.every((position) => position > -1 && position < methodStart)
+        && methodStart < transactionStart,
+      "The four headline outputs must precede the compact method section and all disclosures",
     );
     assert.deepEqual(
-      [...rendered.matchAll(/data-model-path-id="([^"]+)"/g)].map((match) => match[1]),
-      ["O-RUNRATE", "O-SEPCOST", "O-PEAK", "O-STEADY"],
-      "The visible construction matrix must trace exactly the four frozen outputs",
+      [...rendered.matchAll(/data-method-tab="([^"]+)"/g)].map((match) => match[1]),
+      ["proof", "assumptions", "mechanics"],
+      "The compact method section must expose exactly three tabs",
     );
     assert.deepEqual(
-      [...rendered.matchAll(/data-scenario-output-id="([^"]+)"/g)].map((match) => match[1]),
-      ["run-rate", "separation-cost", "funding-peak", "steady-state", "central-p5-ebitda"],
-      "The analytical disclosure must preserve all five scenario outputs",
+      [...rendered.matchAll(/data-proof-step="([^"]+)"/g)].map((match) => match[1]),
+      ["1", "2", "3", "4"],
+      "The default evidence chain must contain four compact steps",
     );
-    assert.match(
-      rendered,
-      /<button aria-controls="opella-evidence-panel" aria-expanded="false"[^>]*>/,
-      "The compact evidence detail must expose aria-controls and its collapsed state",
+    assert.equal(
+      (rendered.match(/data-assumption-key="/g) ?? []).length,
+      6,
+      "The structural-assumptions panel must contain exactly six rows",
     );
-    assert.match(
-      rendered,
-      /<section aria-labelledby="opella-evidence-panel-title"[^>]*hidden="" id="opella-evidence-panel">/,
-      "The compact evidence detail must remain in the DOM while collapsed",
+    assert.deepEqual(
+      [...rendered.matchAll(/data-mechanic-key="([^"]+)"/g)].map((match) => match[1]),
+      ["run-rate", "separation-cost", "funding-peak", "steady-state"],
+      "Calculation mechanics must expose exactly four readable disclosures",
     );
+    const assumptionsMarkup = rendered.slice(
+      rendered.indexOf('id="opella-method-panel-assumptions"'),
+      rendered.indexOf('id="opella-method-panel-mechanics"'),
+    );
+    assert.doesNotMatch(
+      assumptionsMarkup,
+      /(?:reference-revenue|implied-margin|Ancrage public|Valeur dérivée|Hypothèse modélisée|Public anchor|Derived value|Modelled assumption)/,
+      "Structural assumptions must not repeat public anchors, derived values or nature labels",
+    );
+    const mechanicsMarkup = rendered.slice(
+      rendered.indexOf('id="opella-method-panel-mechanics"'),
+      rendered.indexOf('class="opella-method-links"'),
+    );
+    assert.doesNotMatch(
+      markupText(mechanicsMarkup),
+      /\b(?:O-RUNRATE|O-SEPCOST|O-PEAK|O-STEADY|M3|M4|M5|M6|M7|S4)\b/,
+      "Calculation mechanics must not expose internal output, module or source identifiers",
+    );
+    assert.match(rendered, /aria-selected="true"[^>]*data-method-tab="proof"/);
+    assert.match(rendered, /hidden="" id="opella-method-panel-assumptions"/);
+    assert.match(rendered, /hidden="" id="opella-method-panel-mechanics"/);
+    assert.match(rendered, /href="#methodology"/);
+    assert.match(rendered, /href="#sources"/);
+    assert.doesNotMatch(rendered, /opella-evidence-panel|opella-model-matrix|data-scenario-output-id/);
     const sourcesStart = rendered.indexOf('id="sources"');
     const sourcesMarkup = rendered.slice(sourcesStart);
     assert.equal(
@@ -394,11 +463,14 @@ try {
     );
 
     const declaredSourceIds = new Set(opellaSnapshot.sources.map(({ id }) => id));
-    const publicFacts = [...rendered.matchAll(
-      /<article data-public-fact-id="([^"]+)" data-source-ids="([^"]+)"/g,
-    )];
-    assert.ok(publicFacts.length >= 10, "Every public fact rendering must declare its registry sources");
-    for (const [, factId, sourceIds] of publicFacts) {
+    const publicFacts = [...rendered.matchAll(/<(?:article|div)[^>]*data-public-fact-id="[^"]+"[^>]*>/g)]
+      .map(([tag]) => [
+        tag.match(/data-public-fact-id="([^"]+)"/)?.[1],
+        tag.match(/data-source-ids="([^"]+)"/)?.[1],
+      ]);
+    assert.equal(publicFacts.length, 8, "Every remaining public fact rendering must declare its registry sources");
+    for (const [factId, sourceIds] of publicFacts) {
+      assert.ok(sourceIds, `${factId} must declare at least one source`);
       const ids = sourceIds.split("+");
       assert.ok(ids.length > 0, `${factId} must declare at least one source`);
       assert.ok(ids.every((id) => declaredSourceIds.has(id) && id !== "S4"), `${factId} has an invalid public source`);
@@ -447,7 +519,15 @@ try {
     "FR and EN must use the same precise source locations",
   );
   for (const [language, rendered] of [["fr", opellaFr], ["en", opellaEn]]) {
+    const supersededAuditMessages = new Set([
+      "opella.source.evidenceToggle",
+      "opella.source.forecastCaveat",
+    ]);
     for (const message of opellaBundleManifest.requiredPublicMessages[language]) {
+      if (supersededAuditMessages.has(message.id)) {
+        assert.ok(!rendered.includes(message.value), `${language} Opella DOM retains superseded audit message ${message.id}`);
+        continue;
+      }
       assert.ok(rendered.includes(message.value), `${language} Opella DOM missing ${message.id}`);
     }
     for (const term of opellaBundleManifest.forbiddenPublicTerms[language]) {

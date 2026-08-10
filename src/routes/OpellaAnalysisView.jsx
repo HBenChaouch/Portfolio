@@ -9,6 +9,7 @@ import { useOpellaScenario } from "../context/OpellaScenarioContext.jsx";
 import {
   createOpellaCopy,
   opellaDiligenceItems,
+  opellaTransactionScopeEditorial,
 } from "../data/opellaCase.js";
 import { opellaFinancials } from "../data/opellaFinancials.js";
 
@@ -103,6 +104,22 @@ function formatDate(value, language) {
   }).format(new Date(`${value}T00:00:00Z`));
 }
 
+function formatLongDate(value, language) {
+  return new Intl.DateTimeFormat(localeFor(language), {
+    day: "numeric",
+    month: "long",
+    timeZone: "UTC",
+    year: "numeric",
+  }).format(new Date(`${value}T00:00:00Z`));
+}
+
+function formatTextList(values, language) {
+  return new Intl.ListFormat(localeFor(language), {
+    style: "long",
+    type: "conjunction",
+  }).format(values);
+}
+
 function periodDisplay(periods, periodId, language, copy) {
   const period = periods.find(({ id }) => id === periodId);
   if (!period) return copy("common.notReached");
@@ -184,7 +201,7 @@ function Section({ children, className = "", id, kicker, title }) {
   return (
     <section className={`opella-section ${className}`.trim()} id={id}>
       <header className="opella-section-header">
-        <p className="eyebrow">{kicker}</p>
+        {kicker ? <p className="eyebrow">{kicker}</p> : null}
         <h2>{title}</h2>
       </header>
       {children}
@@ -197,6 +214,25 @@ function StatusTag({ copy, status }) {
     <span className={`opella-status status-${status.replace(/\s+/g, "-")}`}>
       {statusLabel(status, copy)}
     </span>
+  );
+}
+
+function AtlasScopeIcon({ type }) {
+  const isIncluded = type === "included";
+  return (
+    <svg
+      aria-hidden="true"
+      className={`opella-atlas-icon ${isIncluded ? "is-included" : "is-excluded"}`}
+      focusable="false"
+      viewBox="0 0 16 16"
+    >
+      <circle cx="8" cy="8" r="6.25" />
+      {isIncluded ? (
+        <path d="m5.15 8.1 1.75 1.75 3.95-4" />
+      ) : (
+        <path d="m5.65 5.65 4.7 4.7m0-4.7-4.7 4.7" />
+      )}
+    </svg>
   );
 }
 
@@ -424,50 +460,42 @@ function SourceRegistry({ copy, language, snapshot, sourcesById }) {
   );
 }
 
-function BarGraphic({ copy, items, label, valueFormatter }) {
-  const maximum = Math.max(...items.map(({ value }) => Math.abs(value)), Number.EPSILON);
-  return (
-    <div aria-label={label} className="opella-bar-chart" role="img">
-      {items.map((item) => (
-        <div className="opella-bar-row" key={item.id}>
-          <span>{item.label}</span>
-          <div aria-hidden="true" className="opella-bar-track">
-            <i style={{ "--bar-size": `${Math.abs(item.value) / maximum * 100}%` }} />
-          </div>
-          <strong>{valueFormatter(item.value)}</strong>
-          {item.status ? <StatusTag copy={copy} status={item.status} /> : null}
-        </div>
-      ))}
-    </div>
-  );
-}
-
 function SignedWaterfall({ ariaLabel, items }) {
-  const bounds = items.flatMap(({ end, start }) => [0, start, end]);
-  const maximum = Math.max(...bounds);
-  const minimum = Math.min(...bounds);
-  const range = Math.max(maximum - minimum, Number.EPSILON);
-  const position = (value) => (maximum - value) / range * 1000 / 5 / 2;
+  const bridgeMaximum = Math.max(...items.flatMap(({ end, start }) => [start, end]));
+  const scaleMaximum = Math.max(1550, bridgeMaximum);
+  const scaleMinimum = 0;
+  const scaleRange = scaleMaximum;
+  const position = (value) => (scaleMaximum - value) / scaleRange * 100;
 
   return (
     <div aria-label={ariaLabel} className="opella-waterfall" role="img">
-      <ol aria-hidden="true" className="opella-bridge-visual">
+      <ol
+        aria-hidden="true"
+        className="opella-bridge-visual"
+        style={{ "--waterfall-count": items.length }}
+      >
         {items.map((item) => (
           <li
             className={`bridge-${item.kind} bridge-${item.value < 0 ? "negative" : "positive"}`}
+            data-waterfall-end={item.end}
+            data-waterfall-id={item.id}
+            data-waterfall-start={item.start}
+            data-waterfall-value={item.value}
             key={item.id}
             style={{
-              "--waterfall-bar-height": `${Math.max(Math.abs(item.end - item.start) / range * 100, 1.5)}%`,
+              "--waterfall-bar-height": `${Math.abs(
+                item.end - (item.kind === "delta" ? item.start : scaleMinimum),
+              ) / scaleRange * 100}%`,
               "--waterfall-bar-top": `${position(Math.max(item.start, item.end))}%`,
               "--waterfall-connector-top": `${position(item.end)}%`,
             }}
           >
             <div className="waterfall-plot">
+              <strong className="waterfall-value">{item.displayValue}</strong>
               <i className="waterfall-bar" />
               <i className="waterfall-connector" />
             </div>
-            <span>{item.label}</span>
-            <strong>{item.displayValue}</strong>
+            <span>{item.axisLabel ?? item.label}</span>
             {item.detail ? <small>{item.detail}</small> : null}
           </li>
         ))}
@@ -535,59 +563,169 @@ function CashBridgeGraphic({
   );
 }
 
-function TsaTimeline({
-  copy,
-  horizon,
-  language,
-  periodLabel,
-  services,
-}) {
+function TsaExitBars({ copy, language, services }) {
+  const maximumDuration = Math.max(...services.map(({ duration }) => duration), Number.EPSILON);
+
   return (
-    <>
-      <div aria-label={copy("tsa.timelineLabel")} className="tsa-timeline" role="img">
-        <div aria-hidden="true" className="tsa-timeline-head">
-          <span>{copy("tsa.service")}</span>
-          {horizon.map((period) => <span key={period}>{period}</span>)}
+    <section aria-label={copy("tsa.timelineLabel")} className="opella-tsa-exit-card">
+      <div className="opella-tsa-card-heading">
+        <h3>{copy("tsa.exitByService")}</h3>
+        <div aria-hidden="true" className="opella-tsa-legend">
+          <span className="is-duration">{copy("tsa.durationExcludingDoubleRun")}</span>
+          <span className="is-double-run">{copy("tsa.doubleRun")}</span>
         </div>
+      </div>
+      <ul className="opella-tsa-exit-list">
         {services.map((service) => (
-          <div aria-hidden="true" className="tsa-timeline-row" key={service.id}>
-            <strong>{copy(`service.${service.id}`)}</strong>
-            {horizon.map((period) => (
-              <span
-                className={(service.monthsByPeriod[period] ?? 0) > 0 ? "active" : ""}
-                key={period}
-              >
-                {(service.monthsByPeriod[period] ?? 0) > 0
-                  ? copy("tsa.months", { value: service.monthsByPeriod[period] })
-                  : "—"}
+          <li key={service.id}>
+            <div className="opella-tsa-exit-copy">
+              <strong>{copy(`service.${service.id}`)}</strong>
+              <small>{copy(`service.${service.id}.strategy`)}</small>
+            </div>
+            <div aria-hidden="true" className="opella-tsa-exit-track">
+              <span style={{ width: `${service.duration / maximumDuration * 100}%` }}>
+                <i style={{ width: `${service.doubleRunMonths / service.duration * 100}%` }} />
               </span>
-            ))}
+            </div>
+            <div className="opella-tsa-exit-values">
+              <strong>{copy("tsa.months", { value: service.duration })}</strong>
+              <span>{copy("tsa.doubleRunShort", { value: service.doubleRunMonths })}</span>
+              <small>
+                {formatMoney(Math.abs(service.monthly), language)} {copy("tsa.perMonth")}
+              </small>
+            </div>
+          </li>
+        ))}
+      </ul>
+    </section>
+  );
+}
+
+function OneOffNatureTable({ copy, items, language, total }) {
+  return (
+    <section className="opella-oneoff-nature-card">
+      <h3>{copy("tsa.oneOffNature")}</h3>
+      <dl>
+        {items.map((item) => (
+          <div key={item.id}>
+            <dt>{item.label}</dt>
+            <dd>{formatMoney(Math.abs(item.value), language)}</dd>
           </div>
         ))}
-      </div>
-      <div aria-label={copy("tsa.timelineLabel")} className="tsa-mobile-list">
-        {services.map((service) => (
-          <article key={service.id}>
-            <header>
-              <strong>{copy(`service.${service.id}`)}</strong>
-              <span>{formatMoney(service.monthly, language, { signed: true })}</span>
-            </header>
-            <p>
-              {copy("tsa.duration")}: {copy("tsa.months", { value: service.duration })}
-              {" · "}
-              {copy("tsa.doubleRun")}: {copy("tsa.months", { value: service.doubleRunMonths })}
-            </p>
-            <div>
-              {horizon.filter((period) => (service.monthsByPeriod[period] ?? 0) > 0).map((period) => (
-                <span key={period}>
-                  {periodLabel(period)} · {copy("tsa.months", { value: service.monthsByPeriod[period] })}
-                </span>
+        <div className="is-total">
+          <dt>{copy("tsa.oneOffTotal")}</dt>
+          <dd>{formatMoney(Math.abs(total), language)}</dd>
+        </div>
+      </dl>
+    </section>
+  );
+}
+
+function OneOffPhasingChart({ copy, language, periods, transitionEconomics }) {
+  const barScaleMaximum = 100;
+  const cumulativeScaleMaximum = 180;
+  const barScaleTicks = [100, 80, 60, 40, 20, 0];
+  const cumulativeScaleTicks = [180, 120, 60, 0];
+  let cumulative = 0;
+  const points = periods.map((period, index) => {
+    cumulative += period.value;
+    return {
+      ...period,
+      cumulative,
+      curveX: (index + .5) / periods.length * 100,
+      curveY: 100 - cumulative / cumulativeScaleMaximum * 100,
+    };
+  });
+  return (
+    <div className="opella-oneoff-phasing-layout" id="one-offs">
+      <figure aria-label={copy("tsa.oneOffPhasing")} className="opella-oneoff-phasing">
+        <div className="opella-tsa-card-heading">
+          <h3>{copy("tsa.oneOffPhasing")}</h3>
+          <div aria-hidden="true" className="opella-oneoff-legend">
+            <span className="is-period">{copy("tsa.periodSpend")}</span>
+            <span className="is-cumulative">{copy("tsa.cumulative")}</span>
+          </div>
+        </div>
+        <div className="opella-oneoff-axis-titles">
+          <span>{copy("tsa.periodAxis")}</span>
+          <span>{copy("tsa.cumulativeAxis")}</span>
+        </div>
+        <div className="opella-oneoff-chart-frame">
+          <div aria-hidden="true" className="opella-oneoff-axis is-bar-axis">
+            {barScaleTicks.map((tick) => (
+              <span key={tick}>{formatNumber(tick, language, 0)}</span>
+            ))}
+          </div>
+          <div className="opella-oneoff-phasing-plot">
+            <svg aria-hidden="true" preserveAspectRatio="none" viewBox="0 0 100 100">
+              {barScaleTicks.map((tick) => (
+                <line
+                  className="opella-oneoff-gridline"
+                  key={tick}
+                  x1="0"
+                  x2="100"
+                  y1={100 - tick / barScaleMaximum * 100}
+                  y2={100 - tick / barScaleMaximum * 100}
+                />
               ))}
-            </div>
-          </article>
-        ))}
-      </div>
-    </>
+              <polyline points={points.map(({ curveX, curveY }) => `${curveX},${curveY}`).join(" ")} />
+            </svg>
+            <ol style={{ "--oneoff-period-count": periods.length }}>
+              {points.map((point, index) => (
+                <li
+                  key={point.id}
+                  style={{
+                    "--oneoff-bar-height": `${point.value / barScaleMaximum * 100}%`,
+                    "--oneoff-curve-y": `${point.curveY}%`,
+                  }}
+                >
+                  <span aria-hidden="true" className="opella-oneoff-curve-point" />
+                  {index > 0 ? (
+                    <span className="opella-oneoff-cumulative-value">
+                      {formatMoney(point.cumulative, language, { decimals: 0 })}
+                    </span>
+                  ) : null}
+                  <span className={`opella-oneoff-period-value${point.value >= barScaleMaximum / 5 ? " is-inside" : ""}`}>
+                    {formatMoney(point.value, language, { decimals: 0 })}
+                  </span>
+                  <i aria-hidden="true" />
+                  <strong>{point.label}</strong>
+                </li>
+              ))}
+            </ol>
+          </div>
+          <div aria-hidden="true" className="opella-oneoff-axis is-cumulative-axis">
+            {cumulativeScaleTicks.map((tick) => (
+              <span key={tick}>{formatNumber(tick, language, 0)}</span>
+            ))}
+          </div>
+        </div>
+      </figure>
+      <aside className="opella-oneoff-reading">
+        <h3>{copy("tsa.transitionEconomics")}</h3>
+        <ul>
+          <li>
+            <strong>{formatMoney(transitionEconomics.total, language)}</strong>
+            <span>{copy("tsa.transitionEconomics.total")}</span>
+          </li>
+          <li>
+            <strong>{formatPercent(transitionEconomics.concentration, language, 0)}</strong>
+            <span>{copy("tsa.transitionEconomics.concentration", {
+              committed: formatMoney(transitionEconomics.committed, language),
+              total: formatMoney(transitionEconomics.total, language),
+            })}</span>
+          </li>
+          <li>
+            <strong>{copy("tsa.transitionEconomics.monthlyValue", {
+              value: formatMoney(transitionEconomics.tailMonthlyCost, language),
+            })}</strong>
+            <span>{copy("tsa.transitionEconomics.tail", {
+              services: formatTextList(transitionEconomics.tailServices, language),
+            })}</span>
+          </li>
+        </ul>
+      </aside>
+    </div>
   );
 }
 
@@ -703,6 +841,7 @@ export default function OpellaAnalysisView() {
   } = useOpellaScenario();
   const copy = useMemo(() => createOpellaCopy(language), [language]);
   const snapshot = opellaFinancials.snapshot;
+  const publicProfile = opellaTransactionScopeEditorial;
   const sourcesById = useMemo(
     () => new Map(snapshot.sources.map((source) => [source.id, source])),
     [snapshot.sources],
@@ -741,15 +880,166 @@ export default function OpellaAnalysisView() {
     ))
     .join(" · ");
 
-  const standaloneBridge = result.modules.m6.standaloneBridge.map((item) => ({
+  const engineStandaloneBridge = result.modules.m6.standaloneBridge;
+  const perimeterBridgeStep = engineStandaloneBridge.find(({ id }) => id === "perimeter");
+  const allocationBridgeStep = engineStandaloneBridge.find(({ id }) => id === "allocations");
+  const costBridgeStep = engineStandaloneBridge.find(({ id }) => id === "costs");
+  const outputBridgeStep = engineStandaloneBridge.find(({ id }) => id === "output");
+  const baseRevenue = snapshot.m1.revenue.value;
+  const baseMargin = snapshot.m1.margin.value;
+  const transactionEbitda = snapshot.m1.ebitda.value;
+  const horizonRevenue = result.modules.m1.revenue[result.calendar.maxHorizon];
+  const horizonMargin = result.modules.m1.margin[result.calendar.maxHorizon];
+  const revenueGrowthContribution = (horizonRevenue - baseRevenue) * baseMargin;
+  const marginExpansionContribution = horizonRevenue * (horizonMargin - baseMargin);
+  const formatBridgeNumber = (value, signed = false) => {
+    const formatted = formatNumber(Math.abs(value), language, 1);
+    if (value < 0) return `(${formatted})`;
+    return signed && value > 0 ? `+${formatted}` : formatted;
+  };
+  const transactionStep = {
+    axisLabel: copy("standalone.axis.transactionEbitda"),
+    detail: null,
+    displayValue: formatBridgeNumber(transactionEbitda),
+    end: transactionEbitda,
+    id: "transaction-ebitda",
+    kind: "total",
+    label: copy("standalone.transactionEbitda"),
+    start: 0,
+    value: transactionEbitda,
+  };
+  const revenueGrowthStep = {
+    axisLabel: copy("standalone.axis.revenueGrowth"),
+    detail: null,
+    displayValue: formatBridgeNumber(revenueGrowthContribution, true),
+    end: transactionEbitda + revenueGrowthContribution,
+    id: "revenue-growth",
+    kind: "delta",
+    label: copy("standalone.revenueGrowth"),
+    start: transactionEbitda,
+    value: revenueGrowthContribution,
+  };
+  const marginExpansionStep = {
+    axisLabel: copy("standalone.axis.marginExpansion"),
+    detail: null,
+    displayValue: formatBridgeNumber(marginExpansionContribution, true),
+    end: perimeterBridgeStep.value,
+    id: "margin-expansion",
+    kind: "delta",
+    label: copy("standalone.marginExpansion"),
+    start: revenueGrowthStep.end,
+    value: marginExpansionContribution,
+  };
+  const perimeterSubtotalStep = {
+    ...perimeterBridgeStep,
+    axisLabel: copy("standalone.axis.perimeterSubtotal"),
+    detail: null,
+    displayValue: formatBridgeNumber(perimeterBridgeStep.value),
+    id: "perimeter-subtotal",
+    kind: "subtotal",
+    label: copy("standalone.perimeterSubtotal"),
+  };
+  const allocationStep = {
+    ...allocationBridgeStep,
+    axisLabel: copy("standalone.axis.sellerAllocations"),
+    detail: null,
+    displayValue: formatBridgeNumber(allocationBridgeStep.value, true),
+    label: copy("standalone.sellerAllocations"),
+  };
+  let standaloneCostCursor = costBridgeStep.start;
+  const standaloneFunctionSteps = functionItems.map((item) => {
+    const start = standaloneCostCursor;
+    standaloneCostCursor -= Math.abs(item.value);
+    return {
+      ...item,
+      detail: null,
+      displayValue: formatBridgeNumber(-Math.abs(item.value)),
+      end: standaloneCostCursor,
+      id: `standalone-${item.id}`,
+      kind: "delta",
+      label: copy(`kpi.runRate.component.${item.id}`),
+      start,
+      value: -Math.abs(item.value),
+    };
+  });
+  const outputStep = {
+    ...outputBridgeStep,
+    axisLabel: copy("standalone.axis.output"),
+    detail: null,
+    displayValue: formatBridgeNumber(outputBridgeStep.value),
+    label: copy("standalone.output"),
+  };
+  const standaloneWaterfallItems = [
+    transactionStep,
+    revenueGrowthStep,
+    marginExpansionStep,
+    perimeterSubtotalStep,
+    allocationStep,
+    ...standaloneFunctionSteps,
+    outputStep,
+  ];
+  const standaloneSummaryItems = [
+    {
+      ...transactionStep,
+      commentary: copy("standalone.summary.transaction"),
+    },
+    {
+      ...revenueGrowthStep,
+      commentary: copy("standalone.summary.revenueGrowth"),
+    },
+    {
+      ...marginExpansionStep,
+      commentary: copy("standalone.summary.marginExpansion"),
+    },
+    {
+      ...perimeterSubtotalStep,
+      commentary: copy("standalone.summary.perimeterSubtotal"),
+    },
+    {
+      ...allocationStep,
+      commentary: copy("standalone.summary.allocations"),
+    },
+    ...functionItems.map((item) => ({
+      commentary: item.driver,
+      displayValue: `(${formatNumber(Math.abs(item.value), language, 1)})`,
+      id: item.id,
+      label: item.label,
+    })),
+    {
+      ...outputStep,
+      commentary: copy("standalone.summary.output"),
+    },
+  ].map((item) => ({
     ...item,
-    detail: item.id === "perimeter" ? periodLabel(result.calendar.maxHorizon) : null,
-    displayValue: formatMoney(item.value, language, {
-      decimals: item.id === "perimeter" ? 0 : 1,
-      signed: item.kind === "delta",
-    }),
-    label: copy(`standalone.${item.id === "perimeter" ? "perimeterEbitda" : item.id === "allocations" ? "sellerAllocations" : item.id}`),
+    displayValue: item.id.startsWith("F-")
+      ? item.displayValue
+      : formatBridgeNumber(item.value, item.kind === "delta"),
   }));
+  const standaloneTakeaways = [
+    {
+      body: copy("standalone.takeaway.perimeter", {
+        growth: formatBridgeNumber(revenueGrowthContribution, true),
+        margin: formatBridgeNumber(marginExpansionContribution, true),
+      }),
+      headline: formatMoney(perimeterBridgeStep.value, language),
+      id: "perimeter",
+    },
+    {
+      body: copy("standalone.takeaway.allocations", {
+        costs: formatMoney(Math.abs(costBridgeStep.value), language),
+      }),
+      headline: formatMoney(allocationBridgeStep.value, language, { signed: true }),
+      id: "allocations",
+    },
+    {
+      body: copy("standalone.takeaway.output", {
+        period: periodLabel(result.calendar.maxHorizon),
+      }),
+      headline: formatMoney(outputBridgeStep.value, language),
+      id: "output",
+    },
+  ];
+  const standaloneChartTitle = copy("standalone.chartTitle");
 
   const oneOffItems = result.modules.m5.lines.map((engineLine) => {
     const source = snapshot.m5.lines.find(({ id }) => id === engineLine.id);
@@ -761,6 +1051,29 @@ export default function OpellaAnalysisView() {
       values: engineLine.amounts,
     };
   });
+  const oneOffPhasingPeriods = horizon
+    .map((period) => ({
+      id: period,
+      label: heroPeriodLabel(period),
+      value: Math.abs(result.modules.m5.byPeriod[period] ?? 0),
+    }))
+    .filter(({ value }) => value > Number.EPSILON);
+  const throughFy2026 = horizon.slice(0, horizon.indexOf("P2") + 1);
+  const transitionTotal = Math.abs(separationComponents.tsa) + Math.abs(separationComponents.oneOffs);
+  const transitionCommitted = throughFy2026.reduce(
+    (sum, period) => sum
+      + Math.abs(result.modules.m4.byPeriod[period] ?? 0)
+      + Math.abs(result.modules.m5.byPeriod[period] ?? 0),
+    0,
+  );
+  const tailServices = result.modules.m4.services.filter(({ duration }) => duration > 18);
+  const transitionEconomics = {
+    committed: transitionCommitted,
+    concentration: transitionCommitted / transitionTotal,
+    tailMonthlyCost: tailServices.reduce((sum, { monthly }) => sum + Math.abs(monthly), 0),
+    tailServices: tailServices.map(({ id }) => copy(`service.${id}.tail`)),
+    total: transitionTotal,
+  };
 
   const cashRows = result.modules.m6.cashBridge.map((row) => ({
     id: row.id,
@@ -1052,132 +1365,216 @@ export default function OpellaAnalysisView() {
       </section>
 
       <Section
-        className="opella-situation-part opella-situation-transaction"
+        className="opella-transaction-scope"
         id="transaction"
-        kicker={copy("transaction.kicker")}
-        title={copy("transaction.title")}
+        title={copy("transactionScope.title")}
       >
-        <p className="opella-section-intro">{copy("transaction.intro")}</p>
-        <div className="opella-fact-grid">
-          <article
-            data-public-fact-id="transaction-enterprise-value"
-            data-source-ids={snapshot.m1.enterpriseValue.source}
-          >
-            <span>{copy("transaction.ev")}</span>
-            <strong>≈ {formatBillions(snapshot.m1.enterpriseValue.value, language, 0)}</strong>
-            <StatusTag copy={copy} status={snapshot.m1.enterpriseValue.status} />
-            <SourceReferenceBlock
-              compact
-              copy={copy}
-              sourceIds={snapshot.m1.enterpriseValue.source}
-              sourcesById={sourcesById}
-            />
+        <div className="opella-transaction-scope-grid">
+          <article className="opella-transaction-scope-column">
+            <h3>{copy("transactionScope.snapshot")}</h3>
+            <dl className="opella-transaction-snapshot">
+              <div
+                data-public-fact-id="transaction-seller"
+                data-source-ids={publicProfile.transaction.seller.source}
+              >
+                <dt>{copy("transactionScope.snapshot.seller")}</dt>
+                <dd>{publicProfile.transaction.seller.value}</dd>
+              </div>
+              <div
+                data-public-fact-id="transaction-buyer"
+                data-source-ids={publicProfile.transaction.buyer.source}
+              >
+                <dt>{copy("transactionScope.snapshot.buyer")}</dt>
+                <dd>{publicProfile.transaction.buyer.value}</dd>
+              </div>
+              <div data-public-fact-id="transaction-closing" data-source-ids="S2">
+                <dt>{copy("transactionScope.snapshot.closing")}</dt>
+                <dd>{formatLongDate(snapshot.calendar.closing, language)}</dd>
+              </div>
+              <div
+                data-public-fact-id="transaction-enterprise-value"
+                data-source-ids={snapshot.m1.enterpriseValue.source}
+              >
+                <dt>{copy("transactionScope.snapshot.enterpriseValue")}</dt>
+                <dd>≈ {formatBillions(snapshot.m1.enterpriseValue.value, language, 0)}</dd>
+              </div>
+              <div
+                data-public-fact-id="transaction-entry-multiple"
+                data-source-ids={snapshot.m1.entryMultiple.source}
+              >
+                <dt>{copy("transactionScope.snapshot.entryMultiple")}</dt>
+                <dd>≈ {formatMultiple(snapshot.m1.entryMultiple.value, language, 0)}</dd>
+              </div>
+              <div
+                data-public-fact-id="transaction-reported-revenue"
+                data-source-ids={snapshot.m1.reportedRevenue.source}
+              >
+                <dt>{copy("transactionScope.snapshot.reportedRevenue", {
+                  period: publicProfile.transaction.reportedRevenuePeriod.value,
+                })}</dt>
+                <dd>{formatMoney(snapshot.m1.reportedRevenue.value, language, { decimals: 0 })}</dd>
+              </div>
+              <div
+                data-derived-value-id="transaction-implied-ebitda"
+                data-source-ids={snapshot.m1.ebitda.source}
+              >
+                <dt>{copy("transactionScope.snapshot.impliedEbitda")}</dt>
+                <dd>≈ {formatBillions(snapshot.m1.ebitda.value, language, 2)}</dd>
+              </div>
+              <div
+                data-derived-value-id="transaction-implied-margin"
+                data-source-ids={snapshot.m1.margin.source}
+              >
+                <dt>{copy("transactionScope.snapshot.impliedMargin")}</dt>
+                <dd>≈ {formatPercent(snapshot.m1.margin.value, language, 1)}</dd>
+              </div>
+              <div
+                data-public-fact-id="transaction-ownership"
+                data-source-ids={snapshot.m1.ownership.cdr.source}
+                className="opella-transaction-ownership-row"
+              >
+                <dt>{copy("transactionScope.snapshot.ownership")}</dt>
+                <dd>{Object.entries(snapshot.m1.ownership).map(([holder, field]) => (
+                  `${publicProfile.transaction.ownershipHolders.value[holder]} ${formatPercent(field.value, language, 1)}`
+                )).join(" · ")}</dd>
+              </div>
+            </dl>
           </article>
-          <article
-            data-public-fact-id="transaction-entry-multiple"
-            data-source-ids={snapshot.m1.entryMultiple.source}
-          >
-            <span>{copy("transaction.multiple")}</span>
-            <strong>≈ {formatMultiple(result.modules.m1.entryMultiple, language, 0)}</strong>
-            <StatusTag copy={copy} status={snapshot.m1.entryMultiple.status} />
-            <SourceReferenceBlock
-              compact
-              copy={copy}
-              sourceIds={snapshot.m1.entryMultiple.source}
-              sourcesById={sourcesById}
-            />
-          </article>
-          <article data-public-fact-id="transaction-closing" data-source-ids="S2">
-            <span>{copy("transaction.closing")}</span>
-            <strong>{formatDate(snapshot.calendar.closing, language)}</strong>
-            <StatusTag copy={copy} status="public" />
-            <SourceReferenceBlock compact copy={copy} sourceIds="S2" sourcesById={sourcesById} />
-          </article>
-        </div>
-        <div className="opella-ownership" aria-label={copy("transaction.ownership")}>
-          <h3>{copy("transaction.ownership")}</h3>
-          {Object.entries(snapshot.m1.ownership).map(([holder, field]) => (
-            <div
-              data-public-fact-id={`transaction-ownership-${holder}`}
-              data-source-ids={field.source}
-              key={holder}
-            >
-              <span>{copy(`transaction.holder.${holder}`)}</span>
-              <strong>{formatPercent(field.value, language)}</strong>
-              <StatusTag copy={copy} status={field.status} />
-              <SourceReferenceBlock
-                compact
-                copy={copy}
-                sourceIds={field.source}
-                sourcesById={sourcesById}
-              />
-            </div>
-          ))}
-        </div>
-      </Section>
 
-      <Section
-        className="opella-situation-part opella-situation-perimeter"
-        id="perimeter"
-        kicker={copy("perimeter.kicker")}
-        title={copy("perimeter.title")}
-      >
-        <p className="opella-section-intro">{copy("perimeter.intro")}</p>
-        <div className="opella-fact-grid">
-          <article
-            data-public-fact-id="perimeter-rounded-revenue"
-            data-source-ids={snapshot.m1.revenue.source}
-          >
-            <span>{copy("perimeter.revenue")}</span>
-            <strong>≈ {formatBillions(snapshot.m1.revenue.value, language, 0)}</strong>
-            <StatusTag copy={copy} status={snapshot.m1.revenue.status} />
-            <SourceReferenceBlock
-              compact
-              copy={copy}
-              sourceIds={snapshot.m1.revenue.source}
-              sourcesById={sourcesById}
-            />
+          <article className="opella-transaction-scope-column">
+            <h3>{copy("transactionScope.scope")}</h3>
+            <h4>{copy("transactionScope.scope.in")}</h4>
+            <ul className="opella-atlas-list is-in-scope">
+              <li
+                data-public-fact-id="scope-market"
+                data-source-ids={publicProfile.scope.market.source}
+              >
+                <AtlasScopeIcon type="included" />
+                <span>{copy(`transactionScope.scope.market.${publicProfile.scope.market.value}`)}</span>
+              </li>
+              <li
+                data-public-fact-id="scope-brand-count"
+                data-source-ids={publicProfile.scope.brandCount.source}
+              >
+                <AtlasScopeIcon type="included" />
+                <span>{copy("transactionScope.scope.brandCount", {
+                  value: formatNumber(publicProfile.scope.brandCount.value, language, 0),
+                })}</span>
+              </li>
+              <li
+                data-public-fact-id="scope-brands"
+                data-source-ids={publicProfile.scope.brands.source}
+              >
+                <AtlasScopeIcon type="included" />
+                <span>{formatTextList(publicProfile.scope.brands.value, language)}</span>
+              </li>
+              <li
+                data-public-fact-id="scope-employees"
+                data-source-ids={publicProfile.scope.employees.source}
+              >
+                <AtlasScopeIcon type="included" />
+                <span>{copy("transactionScope.scope.employees", {
+                  value: formatNumber(publicProfile.scope.employees.value, language, 0),
+                })}</span>
+              </li>
+            </ul>
+            <h4>{copy("transactionScope.scope.out")}</h4>
+            <ul className="opella-atlas-list is-out-of-scope">
+              {publicProfile.scope.outOfScope.value.map((item) => (
+                <li
+                  data-public-fact-id={`scope-out-${item}`}
+                  data-source-ids={publicProfile.scope.outOfScope.source}
+                  key={item}
+                >
+                  <AtlasScopeIcon type="excluded" />
+                  <span>{copy(`transactionScope.scope.out.${item}`)}</span>
+                </li>
+              ))}
+            </ul>
           </article>
-          <article
-            data-public-fact-id="perimeter-reported-revenue"
-            data-source-ids={snapshot.m1.reportedRevenue.source}
-          >
-            <span>{copy("perimeter.reportedRevenue")}</span>
-            <strong>{formatMoney(snapshot.m1.reportedRevenue.value, language, { decimals: 0 })}</strong>
-            <StatusTag copy={copy} status={snapshot.m1.reportedRevenue.status} />
-            <SourceReferenceBlock
-              compact
-              copy={copy}
-              sourceIds={snapshot.m1.reportedRevenue.source}
-              sourcesById={sourcesById}
-            />
+
+          <article className="opella-transaction-scope-column">
+            <h3>{copy("transactionScope.geography")}</h3>
+            <p className="opella-footprint-summary">
+              <span
+                data-public-fact-id="geography-directCountries"
+                data-source-ids={publicProfile.geography.directCountries.source}
+              >
+                {copy("transactionScope.geography.directCountries", {
+                  value: formatNumber(publicProfile.geography.directCountries.value, language, 0),
+                })}
+              </span>
+              {" ; "}
+              <span
+                data-public-fact-id="geography-indirectCountries"
+                data-source-ids={publicProfile.geography.indirectCountries.source}
+              >
+                {copy("transactionScope.geography.indirectCountries", {
+                  value: formatNumber(publicProfile.geography.indirectCountries.value, language, 0),
+                })}
+              </span>
+              .
+            </p>
+            <dl className="opella-atlas-metrics">
+              <div
+                data-public-fact-id="geography-nationalities"
+                data-source-ids={publicProfile.geography.nationalities.source}
+              >
+                <dt>{copy("transactionScope.geography.nationalities")}</dt>
+                <dd>{copy("transactionScope.value.minimum", {
+                  value: formatNumber(publicProfile.geography.nationalities.value, language, 0),
+                })}</dd>
+              </div>
+              <div
+                data-public-fact-id="geography-consumers"
+                data-source-ids={publicProfile.geography.consumers.source}
+              >
+                <dt>{copy("transactionScope.geography.consumers")}</dt>
+                <dd>{copy("transactionScope.value.approxMillions", {
+                  value: formatNumber(publicProfile.geography.consumers.value, language, 0),
+                })}</dd>
+              </div>
+            </dl>
           </article>
-          <article data-derived-value-id="perimeter-implied-margin">
-            <span>{copy("perimeter.margin")}</span>
-            <strong>≈ {formatPercent(snapshot.m1.margin.value, language, 1)}</strong>
-            <StatusTag copy={copy} status={snapshot.m1.margin.status} />
-            <small><b>{copy("evidence.formula")}:</b> {copy("evidence.derived.marginFormula")}</small>
-            <SourceReferenceBlock
-              compact
-              copy={copy}
-              sourceIds={snapshot.m1.margin.source}
-              sourcesById={sourcesById}
-            />
-          </article>
-          <article data-derived-value-id="perimeter-transaction-implied-ebitda">
-            <span>{copy("perimeter.ebitda")}</span>
-            <strong>≈ {formatBillions(snapshot.m1.ebitda.value, language, 2)}</strong>
-            <StatusTag copy={copy} status={snapshot.m1.ebitda.status} />
-            <small><b>{copy("evidence.formula")}:</b> {copy("evidence.derived.ebitdaFormula")}</small>
-            <SourceReferenceBlock
-              compact
-              copy={copy}
-              sourceIds={snapshot.m1.ebitda.source}
-              sourcesById={sourcesById}
-            />
+
+          <article className="opella-transaction-scope-column">
+            <h3>{copy("transactionScope.industry")}</h3>
+            <p
+              className="opella-footprint-summary"
+              data-public-fact-id="industry-summary"
+              data-source-ids={publicProfile.industry.summary.source}
+            >
+              {copy(`transactionScope.industry.summary.${publicProfile.industry.summary.value}`)}
+            </p>
+            <dl className="opella-atlas-metrics">
+              {[
+                "manufacturingSites",
+                "innovationCenters",
+                "manufacturingProfessionals",
+              ].map((fieldName) => {
+                const field = publicProfile.industry[fieldName];
+                return (
+                  <div
+                    data-public-fact-id={`industry-${fieldName}`}
+                    data-source-ids={field.source}
+                    key={fieldName}
+                  >
+                    <dt>{copy(`transactionScope.industry.${fieldName}`)}</dt>
+                    <dd>{fieldName === "manufacturingProfessionals"
+                      ? copy("transactionScope.value.minimum", {
+                        value: formatNumber(field.value, language, 0),
+                      })
+                      : formatNumber(field.value, language, 0)}</dd>
+                  </div>
+                );
+              })}
+            </dl>
           </article>
         </div>
-        <p className="evidence-scope-caveat">{copy("evidence.scopeCaveat")}</p>
+        <div className="opella-transaction-scope-footer">
+          <p>{copy("transactionScope.caveat")}</p>
+          <a href="#sources">{copy("transactionScope.sources")} ↓</a>
+        </div>
       </Section>
 
       <Section
@@ -1187,43 +1584,45 @@ export default function OpellaAnalysisView() {
         title={copy("standalone.title")}
       >
         <p className="opella-section-intro">{copy("standalone.intro")}</p>
-        <SignedWaterfall ariaLabel={copy("standalone.bridgeLabel")} items={standaloneBridge} />
-        <DataTable
-          columns={[copy("cash.line"), copy("common.value"), copy("common.status")]}
-          getRowKey={(row) => row[0]}
-          highlightColumn={1}
-          label={copy("standalone.bridgeLabel")}
-          rowHeaderColumn={0}
-          rows={standaloneBridge.map((item) => [
-            item.label,
-            item.displayValue,
-            item.id === "output" ? copy("common.calculated") : copy("common.estimated"),
-          ])}
-        />
-        <BarGraphic
-          copy={copy}
-          items={functionItems}
-          label={copy("standalone.functionsLabel")}
-          valueFormatter={(value) => formatMoney(Math.abs(value), language)}
-        />
-        <DataTable
-          columns={[
-            copy("standalone.function"),
-            copy("common.value"),
-            copy("standalone.driver"),
-            copy("common.status"),
-          ]}
-          getRowKey={(row) => row[0]}
-          highlightColumn={1}
-          label={copy("standalone.functionsLabel")}
-          rowHeaderColumn={0}
-          rows={functionItems.map((item) => [
-            item.label,
-            formatMoney(Math.abs(item.value), language),
-            item.driver,
-            statusLabel(item.status, copy),
-          ])}
-        />
+        <div className="opella-standalone-layout">
+          <div className="opella-standalone-main">
+            <div className="opella-standalone-chart">
+              <h3>{standaloneChartTitle}</h3>
+              <SignedWaterfall
+                ariaLabel={standaloneChartTitle}
+                items={standaloneWaterfallItems}
+              />
+            </div>
+            <div className="opella-standalone-summary">
+              <div className="opella-standalone-summary-heading">
+                <h3>{copy("standalone.summary")}</h3>
+                <span>{copy("standalone.summary.value")}</span>
+                <span>{copy("standalone.summary.commentary")}</span>
+              </div>
+              {standaloneSummaryItems.map((item) => (
+                <div
+                  className={`opella-standalone-summary-row${item.id === "perimeter-subtotal" ? " is-subtotal" : ""}${item.id === "output" ? " is-output" : ""}`}
+                  key={item.id}
+                >
+                  <strong>{item.label}</strong>
+                  <span>{item.displayValue}</span>
+                  <p>{item.commentary}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+          <aside className="opella-standalone-takeaways">
+            <h3>{copy("standalone.takeaways")}</h3>
+            <ul>
+              {standaloneTakeaways.map((takeaway) => (
+                <li key={takeaway.id}>
+                  <strong>{takeaway.headline}</strong>
+                  <p>{takeaway.body}</p>
+                </li>
+              ))}
+            </ul>
+          </aside>
+        </div>
       </Section>
 
       <Section
@@ -1233,68 +1632,23 @@ export default function OpellaAnalysisView() {
         title={copy("tsa.title")}
       >
         <p className="opella-section-intro">{copy("tsa.intro")}</p>
-        <TsaTimeline
-          copy={copy}
-          horizon={horizon}
-          language={language}
-          periodLabel={periodLabel}
-          services={result.modules.m4.services}
-        />
-        <DataTable
-          columns={[
-            copy("tsa.service"),
-            copy("tsa.monthly"),
-            copy("tsa.duration"),
-            copy("tsa.doubleRun"),
-            ...horizon,
-            copy("tsa.strategy"),
-          ]}
-          getRowKey={(row) => row[0]}
-          highlightColumn={null}
-          label={copy("tsa.timelineLabel")}
-          rowHeaderColumn={0}
-          rows={result.modules.m4.services.map((service) => [
-            copy(`service.${service.id}`),
-            formatMoney(service.monthly, language, { signed: true }),
-            copy("tsa.months", { value: service.duration }),
-            copy("tsa.months", { value: service.doubleRunMonths }),
-            ...horizon.map((period) => formatMoney(service.costByPeriod[period] ?? 0, language, { signed: true })),
-            copy(`service.${service.id}.strategy`),
-          ])}
-        />
-      </Section>
-
-      <Section
-        className="opella-analytical-block opella-one-offs-block"
-        id="one-offs"
-        kicker={copy("oneOffs.kicker")}
-        title={copy("oneOffs.title")}
-      >
-        <p className="opella-section-intro">{copy("oneOffs.intro")}</p>
-        <div className="opella-complementary-layout">
-          <BarGraphic
+        <div className="opella-tsa-atlas-layout">
+          <TsaExitBars
+            copy={copy}
+            language={language}
+            services={result.modules.m4.services}
+          />
+          <OneOffNatureTable
             copy={copy}
             items={oneOffItems}
-            label={copy("oneOffs.chartLabel")}
-            valueFormatter={(value) => formatMoney(value, language, { signed: true })}
+            language={language}
+            total={separationComponents.oneOffs}
           />
-          <DataTable
-            columns={[
-              copy("oneOffs.nature"),
-              ...horizon,
-              copy("common.total"),
-              copy("common.status"),
-            ]}
-            getRowKey={(row) => row[0]}
-            highlightColumn={horizon.length + 1}
-            label={copy("oneOffs.chartLabel")}
-            rowHeaderColumn={0}
-            rows={oneOffItems.map((item) => [
-              item.label,
-              ...horizon.map((period) => formatMoney(item.values[period], language, { signed: true })),
-              formatMoney(item.value, language, { signed: true }),
-              statusLabel(item.status, copy),
-            ])}
+          <OneOffPhasingChart
+            copy={copy}
+            language={language}
+            periods={oneOffPhasingPeriods}
+            transitionEconomics={transitionEconomics}
           />
         </div>
       </Section>

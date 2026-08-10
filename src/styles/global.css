@@ -55,7 +55,7 @@
   margin: 0 auto;
   max-width: 1420px;
   min-width: 0;
-  padding: 0 clamp(20px, 3.5vw, 54px) 56px;
+  padding: 0 clamp(20px, 2.5vw, 36px) 56px;
 }
 
 .opella-analysis-view > * {
@@ -457,6 +457,37 @@
   font-variant-numeric: tabular-nums;
 }
 
+@media (min-width: 621px) {
+  .opella-proof-chain small,
+  .opella-assumption-row > span:nth-child(2),
+  .opella-mechanic-detail > strong {
+    font-family: var(--mono);
+    font-size: 13px;
+    font-weight: 400;
+    line-height: 1.55;
+  }
+
+  .opella-proof-chain small {
+    box-sizing: border-box;
+    height: calc(3 * 1.55em + 14px);
+  }
+
+  .opella-mechanics-list summary b {
+    font-family: var(--serif);
+    font-size: 20px;
+    font-weight: 600;
+  }
+
+  .opella-steady-conditions li strong {
+    font-family: var(--mono);
+    font-weight: 400;
+  }
+
+  .opella-steady-conditions li strong {
+    font-size: 14px;
+  }
+}
+
 .opella-method-links {
   display: flex;
   gap: 32px;
@@ -580,61 +611,267 @@
   padding: clamp(60px, 7vw, 96px) 0;
 }
 
-.opella-situation-part {
-  flex-basis: 50%;
+.opella-transaction-scope {
+  flex-basis: 100%;
   padding-bottom: clamp(44px, 5vw, 66px);
   padding-top: clamp(44px, 5vw, 66px);
 }
 
-.opella-situation-transaction {
-  padding-right: clamp(22px, 3vw, 42px);
+.opella-transaction-scope .opella-section-header {
+  align-items: baseline;
+  display: flex;
+  gap: 12px;
+  margin-bottom: 22px;
+  max-width: none;
 }
 
-.opella-situation-perimeter {
-  border-left: 1px solid var(--line-strong);
-  padding-left: clamp(22px, 3vw, 42px);
-}
-
-.opella-situation-part .opella-section-header h2 {
-  font-size: clamp(28px, 2.6vw, 40px);
-}
-
-.opella-situation-part .opella-section-intro {
-  font-size: 14px;
-}
-
-.opella-situation-part .opella-fact-grid {
-  grid-template-columns: 1fr;
-  margin-top: 24px;
-}
-
-.opella-situation-part .opella-fact-grid article {
-  display: grid;
-  gap: 5px 16px;
-  grid-template-columns: minmax(0, 1fr) auto;
-  min-height: 0;
-  padding: 15px 16px;
-}
-
-.opella-situation-part .opella-fact-grid article > strong {
-  font-size: clamp(22px, 2vw, 30px);
-  font-variant-numeric: tabular-nums;
-  grid-column: 2;
-  grid-row: 1 / 3;
+.opella-transaction-scope .opella-section-header h2 {
+  font-size: clamp(27px, 2.4vw, 38px);
   margin: 0;
+  max-width: none;
+}
+
+.opella-transaction-scope-grid {
+  border: 1px solid var(--line-strong);
+  display: grid;
+  grid-template-columns: minmax(0, 1.14fr) minmax(0, 1.06fr) minmax(0, 0.92fr) minmax(0, 0.88fr);
+}
+
+.opella-transaction-scope-column {
+  min-width: 0;
+  padding: 18px clamp(14px, 1.45vw, 22px) 20px;
+}
+
+.opella-transaction-scope-column:not(:last-child) {
+  border-right: 1px solid var(--line-strong);
+}
+
+.opella-transaction-scope-column h3 {
+  font-family: var(--serif);
+  font-size: 16px;
+  line-height: 1.25;
+  margin: 0 0 14px;
+}
+
+.opella-transaction-scope-column h4 {
+  color: var(--red);
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: .06em;
+  margin: 18px 0 8px;
+  text-transform: uppercase;
+}
+
+.opella-atlas-list {
+  display: grid;
+  gap: 7px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.opella-atlas-list li {
+  align-items: start;
+  color: var(--ink-2);
+  display: grid;
+  font-size: 13px;
+  gap: 8px;
+  grid-template-columns: 16px minmax(0, 1fr);
+  line-height: 1.45;
+  padding: 0;
+}
+
+.opella-atlas-icon {
+  fill: none;
+  height: 14px;
+  justify-self: center;
+  margin-top: 2px;
+  overflow: visible;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 1.55;
+  width: 14px;
+}
+
+.opella-atlas-icon.is-included {
+  color: #3f7758;
+}
+
+.opella-atlas-icon.is-excluded {
+  color: #a85058;
+}
+
+.opella-transaction-snapshot {
+  margin: 0;
+}
+
+.opella-transaction-snapshot > div {
+  align-items: baseline;
+  border-bottom: 1px solid var(--line);
+  display: grid;
+  gap: 10px;
+  grid-template-columns: minmax(0, 1fr) auto;
+  padding: 6px 0;
+}
+
+.opella-transaction-snapshot > div:last-child {
+  border-bottom: 0;
+  gap: 3px;
+  grid-template-columns: 1fr;
+}
+
+.opella-transaction-snapshot > .opella-transaction-ownership-row {
+  margin-top: 10px;
+  padding-top: 10px;
+}
+
+.opella-transaction-snapshot dt,
+.opella-transaction-snapshot dd {
+  font-size: 12px;
+  line-height: 1.4;
+  margin: 0;
+}
+
+.opella-transaction-snapshot dt {
+  color: var(--ink-3);
+}
+
+.opella-transaction-snapshot dd {
+  color: var(--ink);
+  font-variant-numeric: tabular-nums;
   text-align: right;
 }
 
-.opella-situation-part .opella-fact-grid article > .source-reference-list,
-.opella-situation-part .opella-fact-grid article > small {
-  grid-column: 1 / -1;
+.opella-transaction-snapshot > div:last-child dd {
+  max-width: none;
+  text-align: left;
 }
 
-.opella-situation-part .source-reference > strong {
-  font-family: var(--mono);
-  font-size: 9px;
+.opella-footprint-summary {
+  color: var(--ink-2);
+  font-size: 13px;
+  line-height: 1.5;
+  margin: 0 0 17px;
+}
+
+.opella-atlas-metrics {
   margin: 0;
-  text-align: left;
+}
+
+.opella-atlas-metrics > div {
+  align-items: baseline;
+  border-bottom: 1px solid var(--line);
+  display: grid;
+  gap: 12px;
+  grid-template-columns: minmax(0, 1fr) auto;
+  padding: 7px 0;
+}
+
+.opella-atlas-metrics dt,
+.opella-atlas-metrics dd {
+  font-size: 12px;
+  line-height: 1.4;
+  margin: 0;
+}
+
+.opella-atlas-metrics dt {
+  color: var(--ink-3);
+}
+
+.opella-atlas-metrics dd {
+  color: var(--ink);
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+  white-space: nowrap;
+}
+
+.opella-transaction-scope-footer {
+  align-items: start;
+  display: grid;
+  gap: 20px;
+  grid-template-columns: minmax(0, 1fr) auto;
+  margin-top: 14px;
+}
+
+.opella-transaction-scope-footer p {
+  border-left: 2px solid var(--red);
+  color: var(--ink-3);
+  font-size: 11px;
+  line-height: 1.5;
+  margin: 0;
+  max-width: 86ch;
+  padding-left: 11px;
+}
+
+.opella-transaction-scope-footer a {
+  color: var(--red);
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: .02em;
+  text-transform: uppercase;
+}
+
+@media (min-width: 1600px) {
+  .opella-hero-methodology {
+    font-size: 14px;
+  }
+
+  .opella-kpi-grid .metric-tile > span:first-child {
+    font-size: 11.5px;
+  }
+
+  .opella-kpi-grid .opella-kpi-explanation {
+    font-size: 12px;
+  }
+
+  .opella-method-tabs button {
+    font-size: 13px;
+  }
+
+  .opella-proof-chain h3,
+  .opella-mechanics-list summary strong {
+    font-size: 14px;
+  }
+
+  .opella-proof-chain p,
+  .opella-mechanic-detail p {
+    font-size: 13.5px;
+  }
+
+  .opella-proof-chain small,
+  .opella-assumption-row > span:nth-child(2),
+  .opella-mechanic-detail > strong {
+    font-size: 14px;
+  }
+
+  .opella-method-reading p {
+    font-size: 13px;
+  }
+
+  .opella-assumption-row > * {
+    font-size: 14px;
+  }
+
+  .opella-assumption-header > span {
+    font-size: 12px;
+  }
+
+  .opella-atlas-list li,
+  .opella-footprint-summary {
+    font-size: 14px;
+  }
+
+  .opella-transaction-snapshot dt,
+  .opella-transaction-snapshot dd,
+  .opella-atlas-metrics dt,
+  .opella-atlas-metrics dd {
+    font-size: 13.5px;
+  }
+
+  .opella-transaction-scope-footer p {
+    font-size: 12.5px;
+  }
 }
 
 .opella-section-header {
@@ -927,55 +1164,410 @@
   width: var(--bar-size);
 }
 
-.tsa-timeline {
+.opella-tsa-atlas-layout {
+  align-items: stretch;
+  display: grid;
+  gap: 22px;
+  grid-template-columns: minmax(0, 1.45fr) minmax(300px, .75fr);
+  margin-top: 30px;
+}
+
+.opella-tsa-exit-card,
+.opella-oneoff-nature-card,
+.opella-oneoff-phasing {
   background: var(--paper);
   border: 1px solid var(--line-strong);
-  margin-top: 34px;
-  overflow: hidden;
+  margin: 0;
+  min-width: 0;
 }
 
-.tsa-timeline-head,
-.tsa-timeline-row {
-  display: grid;
-  grid-template-columns: minmax(210px, 1.2fr) repeat(6, minmax(70px, 1fr));
+.opella-tsa-exit-card,
+.opella-oneoff-nature-card {
+  padding: 18px 20px;
 }
 
-.tsa-timeline-head {
-  background: var(--bg-alt);
+.opella-tsa-card-heading {
+  align-items: center;
+  display: flex;
+  gap: 18px;
+  justify-content: space-between;
+}
+
+.opella-tsa-card-heading h3,
+.opella-oneoff-nature-card h3 {
+  font-family: var(--serif);
+  font-size: 15px;
+  line-height: 1.3;
+  margin: 0;
+}
+
+.opella-tsa-legend,
+.opella-oneoff-legend {
+  align-items: center;
   color: var(--ink-3);
-  font-family: var(--mono);
-  font-size: 10px;
-  letter-spacing: .08em;
+  display: flex;
+  flex-wrap: wrap;
+  font: 9px/1.3 var(--mono);
+  gap: 8px 14px;
   text-transform: uppercase;
 }
 
-.tsa-timeline :is(.tsa-timeline-head, .tsa-timeline-row) > * {
+.opella-tsa-legend span,
+.opella-oneoff-legend span {
+  align-items: center;
+  display: inline-flex;
+  gap: 6px;
+  white-space: nowrap;
+}
+
+.opella-tsa-legend span::before,
+.opella-oneoff-legend span::before {
+  background: var(--navy);
+  content: "";
+  display: block;
+  height: 7px;
+  width: 18px;
+}
+
+.opella-tsa-legend .is-double-run::before,
+.opella-oneoff-legend .is-period::before {
+  background: var(--bordeaux);
+}
+
+.opella-oneoff-legend .is-cumulative::before {
+  background: linear-gradient(var(--navy), var(--navy)) center / 100% 1px no-repeat;
+}
+
+.opella-oneoff-legend {
+  font-size: 10px;
+}
+
+.opella-tsa-exit-list {
+  list-style: none;
+  margin: 14px 0 0;
+  padding: 0;
+}
+
+.opella-tsa-exit-list li {
   align-items: center;
   border-bottom: 1px solid var(--line);
-  border-right: 1px solid var(--line);
-  display: flex;
+  display: grid;
+  gap: 12px;
+  grid-template-columns: minmax(175px, 1fr) minmax(170px, 1.35fr) 118px;
+  min-height: 56px;
+  padding: 8px 0;
+}
+
+.opella-tsa-exit-copy {
+  min-width: 0;
+}
+
+.opella-tsa-exit-copy strong,
+.opella-tsa-exit-copy small {
+  display: block;
+}
+
+.opella-tsa-exit-copy strong {
+  font-size: 11.5px;
+  line-height: 1.35;
+}
+
+.opella-tsa-exit-copy small {
+  color: var(--ink-3);
+  font-size: 9.5px;
+  line-height: 1.35;
+  margin-top: 3px;
+}
+
+.opella-tsa-exit-track {
+  background: var(--bg-alt);
+  height: 9px;
+  position: relative;
+}
+
+.opella-tsa-exit-track > span {
+  background: var(--navy);
+  display: block;
+  height: 100%;
+  position: relative;
+}
+
+.opella-tsa-exit-track i {
+  background: var(--bordeaux);
+  bottom: 0;
+  position: absolute;
+  right: 0;
+  top: 0;
+}
+
+.opella-tsa-exit-values {
+  text-align: right;
+}
+
+.opella-tsa-exit-values :is(strong, span, small) {
+  display: block;
+}
+
+.opella-tsa-exit-values strong {
+  color: var(--bordeaux);
+  font: 600 11px var(--mono);
+}
+
+.opella-tsa-exit-values span,
+.opella-tsa-exit-values small {
+  color: var(--ink-3);
+  font-size: 8.5px;
+  line-height: 1.35;
+}
+
+.opella-oneoff-nature-card dl {
+  margin: 14px 0 0;
+}
+
+.opella-oneoff-nature-card dl > div {
+  align-items: baseline;
+  border-bottom: 1px solid var(--line);
+  display: grid;
+  gap: 12px;
+  grid-template-columns: minmax(0, 1fr) auto;
+  padding: 7px 0;
+}
+
+.opella-oneoff-nature-card :is(dt, dd) {
+  font-size: 10.5px;
+  line-height: 1.35;
+  margin: 0;
+}
+
+.opella-oneoff-nature-card dt {
+  color: var(--ink-2);
+}
+
+.opella-oneoff-nature-card dd {
+  color: var(--bordeaux);
+  font: 600 10.5px var(--mono);
+  white-space: nowrap;
+}
+
+.opella-oneoff-nature-card .is-total {
+  border-bottom-color: var(--line-strong);
+  border-top: 1px solid var(--line-strong);
+  margin-top: 8px;
+  padding: 10px 0;
+}
+
+.opella-oneoff-nature-card .is-total :is(dt, dd) {
+  color: var(--ink);
+  font-weight: 700;
+}
+
+.opella-oneoff-phasing-layout {
+  display: grid;
+  gap: 22px;
+  grid-column: 1 / -1;
+  grid-template-columns: minmax(0, 3fr) minmax(220px, 1fr);
+}
+
+.opella-oneoff-phasing {
+  padding: 18px 20px 14px;
+}
+
+.opella-oneoff-chart-frame {
+  display: grid;
+  grid-template-columns: 34px minmax(0, 620px) 34px;
   justify-content: center;
-  min-height: 48px;
-  padding: 8px;
+  margin: 6px auto 0;
+  max-width: 700px;
+}
+
+.opella-oneoff-axis-titles {
+  color: var(--ink-3);
+  display: flex;
+  font: 11px/1.3 var(--mono);
+  justify-content: space-between;
+  margin: 14px auto 0;
+  max-width: 688px;
+}
+
+.opella-oneoff-phasing-plot {
+  border-bottom: 1px solid var(--line);
+  border-top: 1px solid var(--line);
+  height: 310px;
+  position: relative;
+}
+
+.opella-oneoff-phasing-plot :is(svg, ol) {
+  bottom: 52px;
+  left: 0;
+  position: absolute;
+  right: 0;
+  top: 20px;
+}
+
+.opella-oneoff-phasing-plot svg {
+  height: calc(100% - 72px);
+  overflow: visible;
+  width: 100%;
+  z-index: 2;
+}
+
+.opella-oneoff-phasing-plot polyline {
+  fill: none;
+  stroke: var(--navy);
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 2.25;
+  vector-effect: non-scaling-stroke;
+}
+
+.opella-oneoff-gridline {
+  stroke: var(--line);
+  stroke-width: 1;
+  vector-effect: non-scaling-stroke;
+}
+
+.opella-oneoff-phasing-plot ol {
+  display: grid;
+  grid-template-columns: repeat(var(--oneoff-period-count, 3), minmax(0, 1fr));
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.opella-oneoff-phasing-plot li {
+  border-bottom: 1px solid var(--line-strong);
+  min-width: 0;
+  position: relative;
+}
+
+.opella-oneoff-phasing-plot li > i {
+  background: var(--bordeaux);
+  bottom: 0;
+  height: var(--oneoff-bar-height);
+  left: 50%;
+  position: absolute;
+  transform: translateX(-50%);
+  width: 52px;
+  z-index: 1;
+}
+
+.opella-oneoff-phasing-plot li > strong {
+  bottom: -38px;
+  color: var(--ink-3);
+  font: 9.5px/1.25 var(--mono);
+  left: 0;
+  position: absolute;
+  right: 0;
   text-align: center;
 }
 
-.tsa-timeline-row strong {
-  font-size: 12px;
-  justify-content: flex-start;
+.opella-oneoff-period-value,
+.opella-oneoff-cumulative-value {
+  font: 600 10.5px var(--mono);
+  left: 0;
+  position: absolute;
+  right: 0;
+  text-align: center;
+  white-space: nowrap;
+  z-index: 3;
+}
+
+.opella-oneoff-period-value {
+  bottom: calc(var(--oneoff-bar-height) + 7px);
+  color: var(--bordeaux);
+}
+
+.opella-oneoff-period-value.is-inside {
+  bottom: calc(var(--oneoff-bar-height) - 18px);
+  color: var(--paper);
+}
+
+.opella-oneoff-cumulative-value {
+  background: var(--paper);
+  color: var(--navy);
+  left: 50%;
+  padding: 1px 3px;
+  right: auto;
+  top: var(--oneoff-curve-y);
+  transform: translate(-50%, -135%);
+}
+
+.opella-oneoff-phasing-plot li:nth-child(2) .opella-oneoff-cumulative-value {
+  left: calc(50% - 48px);
+}
+
+.opella-oneoff-curve-point {
+  background: var(--navy);
+  border: 1px solid var(--paper);
+  border-radius: 50%;
+  height: 8px;
+  left: 50%;
+  position: absolute;
+  top: var(--oneoff-curve-y);
+  transform: translate(-50%, -50%);
+  width: 8px;
+  z-index: 4;
+}
+
+.opella-oneoff-axis {
+  color: var(--ink-3);
+  display: flex;
+  flex-direction: column;
+  font: 11px var(--mono);
+  height: 310px;
+  justify-content: space-between;
+  padding: 17px 5px 50px;
+}
+
+.opella-oneoff-axis.is-bar-axis {
+  text-align: right;
+}
+
+.opella-oneoff-axis.is-cumulative-axis {
   text-align: left;
 }
 
-.tsa-timeline-row span {
-  color: var(--ink-3);
-  font-family: var(--mono);
-  font-size: 9px;
+.opella-oneoff-reading {
+  background: var(--bg-alt);
+  border: 1px solid var(--line-strong);
+  padding: 18px 20px;
 }
 
-.tsa-timeline-row span.active {
-  background: var(--bordeaux-bg);
+.opella-oneoff-reading h3 {
+  font-family: var(--serif);
+  font-size: 15px;
+  margin: 0;
+}
+
+.opella-oneoff-reading ul {
+  list-style: none;
+  margin: 14px 0 0;
+  padding: 0;
+}
+
+.opella-oneoff-reading li {
+  padding: 17px 0;
+}
+
+.opella-oneoff-reading li + li {
+  border-top: 1px solid var(--line);
+}
+
+.opella-oneoff-reading strong,
+.opella-oneoff-reading span {
+  display: block;
+}
+
+.opella-oneoff-reading strong {
   color: var(--bordeaux);
-  font-weight: 700;
+  font: 500 23px/1 var(--serif);
+}
+
+.opella-oneoff-reading span {
+  color: var(--ink-2);
+  font-size: 10.5px;
+  line-height: 1.45;
+  margin-top: 7px;
 }
 
 .funding-curve {
@@ -1216,21 +1808,59 @@
 /* O2-G2 analytical blocks */
 .opella-analytical-block { position: relative; }
 .opella-analytical-block::before { background: var(--bordeaux); content: ""; height: 2px; left: 0; position: absolute; top: 0; width: 64px; }
-.opella-bridge-visual { grid-template-columns: repeat(4, minmax(0, 1fr)); }
-.opella-bridge-visual li { background: transparent; display: grid; grid-template-rows: 250px auto auto auto; min-height: 0; padding: 0 18px 20px; }
+.opella-standalone-layout { align-items: start; display: grid; gap: 22px; grid-template-columns: minmax(0, 3.35fr) minmax(230px, .8fr); margin-top: 28px; }
+.opella-standalone-main { min-width: 0; }
+.opella-standalone-chart { border: 1px solid var(--line-strong); padding: 18px 18px 10px; }
+.opella-standalone-chart > h3,
+.opella-standalone-summary h3,
+.opella-standalone-takeaways h3 { font-family: var(--serif); font-size: 15px; margin: 0; }
+.opella-standalone-chart > h3 { margin-bottom: 18px; }
+.opella-standalone-chart .opella-waterfall { margin-top: 0; }
+.opella-bridge-visual { border: 0; grid-template-columns: repeat(var(--waterfall-count), minmax(0, 1fr)); }
+.opella-bridge-visual li { background: transparent; display: grid; grid-template-rows: 380px minmax(52px, auto) auto; min-height: 0; padding: 0 0 14px; }
+.opella-bridge-visual li + li { border-left: 0; }
 .opella-bridge-visual li + li::before { display: none; }
-.waterfall-plot { border-bottom: 1px solid var(--line-strong); margin-bottom: 16px; position: relative; }
-.waterfall-bar { background: var(--bordeaux); height: var(--waterfall-bar-height); left: 16%; min-height: 3px; position: absolute; right: 16%; top: var(--waterfall-bar-top); }
-.bridge-negative .waterfall-bar { background: var(--bear); }
+.opella-bridge-visual .bridge-negative { background: transparent; }
+.waterfall-plot { border-bottom: 1px solid var(--line-strong); margin-bottom: 12px; position: relative; }
+.waterfall-bar { background: var(--bordeaux); height: var(--waterfall-bar-height); left: 18%; position: absolute; right: 18%; top: var(--waterfall-bar-top); }
+.opella-bridge-visual .bridge-negative .waterfall-bar { background: var(--bordeaux); opacity: .72; }
 .bridge-total .waterfall-bar { background: var(--navy); }
-.waterfall-connector { border-top: 1px dashed var(--ink-3); left: 84%; position: absolute; top: var(--waterfall-connector-top); width: calc(32% + 1px); }
+.bridge-subtotal .waterfall-bar { background: var(--ink-3); }
+.waterfall-connector { border-top: 1px solid var(--ink-3); left: 82%; position: absolute; top: var(--waterfall-connector-top); width: calc(36% + 2px); }
+.opella-bridge-visual .waterfall-value { color: var(--bordeaux); font: 600 9.5px/1 var(--mono); left: 0; margin: 0; padding: 0; position: absolute; right: 0; text-align: center; top: max(0px, calc(var(--waterfall-bar-top) - 18px)); white-space: nowrap; }
+.opella-bridge-visual .bridge-total .waterfall-value { color: var(--navy); }
+.opella-bridge-visual .bridge-subtotal .waterfall-value { color: var(--ink-2); }
 .opella-bridge-visual li:last-child .waterfall-connector { display: none; }
-.opella-bridge-visual span { min-height: 30px; }
-.opella-bridge-visual strong { font-size: clamp(24px, 2.2vw, 34px); margin-top: 6px; padding-top: 0; }
-.opella-bridge-visual .bridge-total:last-child { background: var(--navy); }
-.opella-bridge-visual .bridge-total:last-child .waterfall-plot { border-bottom-color: rgba(250, 247, 242, .4); }
-.opella-bridge-visual .bridge-total:last-child :is(span, small) { color: rgba(250, 247, 242, .72); }
-.opella-bridge-visual .bridge-total:last-child strong { color: var(--bg); }
+.opella-bridge-visual > li > span { align-items: flex-start; color: var(--ink-3); display: flex; font: 8.5px/1.35 var(--mono); justify-content: center; min-height: 52px; padding: 13px 6px 0; position: relative; text-align: center; text-transform: uppercase; text-wrap: balance; }
+.opella-bridge-visual > li > span::before { border-left: 1px solid var(--line-strong); content: ""; height: 7px; left: 50%; position: absolute; top: 0; }
+.opella-bridge-visual .bridge-total:last-child { background: transparent; }
+.opella-bridge-visual .bridge-total:last-child .waterfall-plot { border-bottom-color: var(--line-strong); }
+.opella-bridge-visual .bridge-total:last-child :is(span, small) { color: var(--ink-3); }
+.opella-bridge-visual .bridge-total:last-child strong { color: var(--ink); }
+.opella-standalone-summary { border: 1px solid var(--line-strong); border-top: 0; }
+.opella-standalone-summary-heading,
+.opella-standalone-summary-row { display: grid; gap: 0; grid-template-columns: minmax(170px, 1.18fr) 92px minmax(220px, 1.42fr); }
+.opella-standalone-summary-heading { align-items: stretch; background: var(--bg-alt); padding: 0; }
+.opella-standalone-summary-heading > * { align-items: center; display: flex; padding: 9px 12px; }
+.opella-standalone-summary-heading span { color: var(--ink-3); font: 9px var(--mono); letter-spacing: .06em; text-transform: uppercase; }
+.opella-standalone-summary-heading span:nth-child(2) { justify-content: flex-end; }
+.opella-standalone-summary-row { align-items: stretch; border-top: 1px solid var(--line); min-height: 35px; padding: 0; }
+.opella-standalone-summary-row > * { align-items: center; display: flex; padding: 7px 12px; }
+.opella-standalone-summary :is(.opella-standalone-summary-heading, .opella-standalone-summary-row) > :nth-child(n + 2) { border-left: 1px solid var(--line); }
+.opella-standalone-summary-row strong { font-size: 11px; font-weight: 600; }
+.opella-standalone-summary-row span { color: var(--bordeaux); font: 600 11px var(--mono); justify-content: flex-end; white-space: nowrap; }
+.opella-standalone-summary-row p { color: var(--ink-3); font-size: 10.5px; line-height: 1.35; margin: 0; }
+.opella-standalone-summary-row.is-subtotal { background: var(--bg-alt); border-top-color: var(--line-strong); }
+.opella-standalone-summary-row.is-subtotal :is(strong, span) { font-weight: 700; }
+.opella-standalone-summary-row.is-output { background: color-mix(in srgb, var(--bordeaux) 5%, var(--paper)); border-top: 2px solid var(--bordeaux-soft); }
+.opella-standalone-summary-row.is-output strong { font-family: var(--serif); font-size: 12.5px; }
+.opella-standalone-summary-row.is-output span { font-family: var(--serif); font-size: 14px; font-weight: 700; }
+.opella-standalone-takeaways { background: var(--bg-alt); border: 1px solid var(--line-strong); padding: 20px; }
+.opella-standalone-takeaways ul { list-style: none; margin: 12px 0 0; padding: 0; }
+.opella-standalone-takeaways li { padding: 16px 0; }
+.opella-standalone-takeaways li + li { border-top: 1px solid var(--line); }
+.opella-standalone-takeaways li strong { color: var(--bordeaux); display: block; font: 500 18px/1.15 var(--serif); margin-bottom: 6px; }
+.opella-standalone-takeaways p { color: var(--ink-2); font-size: 10.5px; line-height: 1.5; margin: 0; }
 .cash-bridge-chart { background: var(--paper); border: 1px solid var(--line-strong); margin-top: 34px; padding: 20px 24px 18px; }
 .cash-bridge-heading { align-items: baseline; border-bottom: 1px solid var(--line-strong); display: flex; justify-content: space-between; padding-bottom: 14px; }
 .cash-bridge-heading span { color: var(--ink-3); font: 10px var(--mono); letter-spacing: .06em; text-transform: uppercase; }
@@ -1489,15 +2119,6 @@
 
 @media (max-width: 1180px) {
 
-  .tsa-timeline {
-    overflow-x: auto;
-  }
-
-  .tsa-timeline-head,
-  .tsa-timeline-row {
-    min-width: 900px;
-  }
-
   .opella-scenario-panel { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .opella-lever:nth-child(2n) { border-right: 0; }
   .opella-lever:nth-child(-n + 2) { border-bottom: 1px solid var(--line-strong); }
@@ -1531,14 +2152,16 @@
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
-  .opella-situation-part {
-    flex-basis: 100%;
-    padding-left: 0;
-    padding-right: 0;
+  .opella-transaction-scope-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
-  .opella-situation-perimeter {
-    border-left: 0;
+  .opella-transaction-scope-column:nth-child(2) {
+    border-right: 0;
+  }
+
+  .opella-transaction-scope-column:nth-child(-n + 2) {
+    border-bottom: 1px solid var(--line-strong);
   }
 
   .opella-method-proof {
@@ -1558,9 +2181,32 @@
     display: none;
   }
 
-  .opella-bridge-mobile {
-    border: 1px solid var(--line-strong);
+  .opella-standalone-layout {
+    gap: 16px;
+    grid-template-columns: minmax(0, 1fr);
+    margin-top: 22px;
+  }
+
+  .opella-standalone-chart {
+    padding: 16px;
+  }
+
+  .opella-standalone-chart .opella-waterfall {
+    overflow-x: auto;
+  }
+
+  .opella-bridge-visual {
     display: grid;
+    min-width: 1050px;
+  }
+
+  .opella-bridge-visual li {
+    grid-template-rows: 390px minmax(52px, auto) auto;
+  }
+
+  .opella-bridge-mobile {
+    border: 0;
+    display: none;
     list-style: none;
     margin: 0;
     padding: 0;
@@ -1592,6 +2238,40 @@
     color: var(--ink-3);
     font-size: 10px;
     grid-column: 1 / -1;
+  }
+
+  .opella-standalone-summary-heading {
+    display: block;
+    padding: 10px 14px;
+  }
+
+  .opella-standalone-summary-heading > h3 {
+    padding: 0;
+  }
+
+  .opella-standalone-summary-heading span {
+    display: none;
+  }
+
+  .opella-standalone-summary-row {
+    gap: 0;
+    grid-template-columns: minmax(0, 1fr) auto;
+    padding: 0;
+  }
+
+  .opella-standalone-summary-row > :is(strong, span) {
+    padding: 10px 12px;
+  }
+
+  .opella-standalone-summary-row p {
+    border-left: 0;
+    border-top: 1px solid var(--line);
+    grid-column: 1 / -1;
+    padding: 7px 12px;
+  }
+
+  .opella-standalone-takeaways {
+    padding: 18px;
   }
 
   .funding-mobile-profile {
@@ -1633,16 +2313,11 @@
   .funding-overview, .funding-state-card, .opella-complementary-layout { grid-template-columns: 1fr; }
   .funding-outcomes { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .funding-state-card > :not(.table-scroll), .funding-state-card > .table-scroll { grid-column: 1; grid-row: auto; }
-  .tsa-timeline { display: none; }
-  .tsa-mobile-list { border: 1px solid var(--line-strong); display: grid; margin-top: 28px; }
-  .tsa-mobile-list article { padding: 16px; }
-  .tsa-mobile-list article + article { border-top: 1px solid var(--line); }
-  .tsa-mobile-list header { align-items: baseline; display: flex; gap: 12px; justify-content: space-between; }
-  .tsa-mobile-list header strong { font-size: 13px; }
-  .tsa-mobile-list header span { color: var(--bordeaux); font: 10px var(--mono); }
-  .tsa-mobile-list p { font-size: 11px; margin-top: 6px; }
-  .tsa-mobile-list article > div { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 10px; }
-  .tsa-mobile-list article > div span { background: var(--bordeaux-bg); color: var(--bordeaux); font: 9px var(--mono); padding: 5px 7px; }
+  .opella-tsa-atlas-layout { grid-template-columns: minmax(0, 1fr); }
+  .opella-oneoff-phasing-layout { grid-column: 1; grid-template-columns: minmax(0, 1fr); }
+  .opella-tsa-exit-list li { grid-template-columns: minmax(0, 1fr) auto; }
+  .opella-tsa-exit-track { grid-column: 1 / -1; grid-row: 2; }
+  .opella-tsa-exit-values { grid-column: 2; grid-row: 1; }
   .cash-bridge-chart { padding: 16px; }
   .cash-bridge-chart li { gap: 5px 12px; grid-template-columns: minmax(0, 1fr) auto; padding: 7px 0; }
   .cash-bridge-track { grid-column: 1 / -1; grid-row: 2; }
@@ -1693,6 +2368,74 @@
   .opella-fact-grid,
   .source-reference-list.compact {
     grid-template-columns: 1fr;
+  }
+
+  .opella-transaction-scope-column {
+    padding-left: 11px;
+    padding-right: 11px;
+  }
+
+  .opella-transaction-scope-column h3 {
+    font-size: 15px;
+  }
+
+  .opella-transaction-scope-footer {
+    grid-template-columns: 1fr;
+  }
+
+  .opella-tsa-atlas-layout {
+    gap: 14px;
+    margin-top: 22px;
+  }
+
+  .opella-tsa-exit-card,
+  .opella-oneoff-nature-card,
+  .opella-oneoff-phasing,
+  .opella-oneoff-reading {
+    padding: 14px;
+  }
+
+  .opella-tsa-card-heading {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 9px;
+  }
+
+  .opella-tsa-exit-list li {
+    gap: 8px 12px;
+    min-height: 0;
+    padding: 11px 0;
+  }
+
+  .opella-tsa-exit-copy strong {
+    font-size: 11px;
+  }
+
+  .opella-tsa-exit-copy small {
+    font-size: 9px;
+  }
+
+  .opella-oneoff-phasing-plot {
+    height: 270px;
+  }
+
+  .opella-oneoff-chart-frame {
+    grid-template-columns: 24px minmax(0, 1fr) 24px;
+  }
+
+  .opella-oneoff-axis {
+    font-size: 9.5px;
+    height: 270px;
+    padding-left: 3px;
+    padding-right: 3px;
+  }
+
+  .opella-oneoff-axis-titles {
+    font-size: 9.5px;
+  }
+
+  .opella-oneoff-phasing-plot li > i {
+    width: 48px;
   }
 
   .opella-kpi-grid .metric-tile {

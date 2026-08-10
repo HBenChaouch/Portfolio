@@ -369,6 +369,52 @@ try {
     );
   }
 
+  const standaloneBridgeContracts = [
+    {
+      markup: opellaFr,
+      title: "De l’EBITDA transactionnel au run-rate stand-alone — FY2024 à FY2029 (M€)",
+    },
+    {
+      markup: opellaEn,
+      title: "From transaction EBITDA to the stand-alone run-rate — FY2024 to FY2029 (€m)",
+    },
+  ];
+  for (const contract of standaloneBridgeContracts) {
+    const sectionStart = contract.markup.indexOf('id="standalone-build"');
+    const sectionEnd = contract.markup.indexOf('id="tsa"', sectionStart);
+    const bridgeMarkup = contract.markup.slice(sectionStart, sectionEnd);
+    const ids = attributeValues(bridgeMarkup, "data-waterfall-id");
+    const values = attributeValues(bridgeMarkup, "data-waterfall-value").map(Number);
+    assert.match(markupText(bridgeMarkup), new RegExp(contract.title.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")));
+    assert.deepEqual(ids, [
+      "transaction-ebitda",
+      "revenue-growth",
+      "margin-expansion",
+      "perimeter-subtotal",
+      "allocations",
+      "standalone-F-IT",
+      "standalone-F-SUP",
+      "standalone-F-DIS",
+      "standalone-F-QUA",
+      "output",
+    ]);
+    const bridgeValues = Object.fromEntries(ids.map((id, index) => [id, values[index]]));
+    const perimeterReconciliation = bridgeValues["transaction-ebitda"]
+      + bridgeValues["revenue-growth"]
+      + bridgeValues["margin-expansion"];
+    const outputReconciliation = perimeterReconciliation
+      + bridgeValues.allocations
+      + bridgeValues["standalone-F-IT"]
+      + bridgeValues["standalone-F-SUP"]
+      + bridgeValues["standalone-F-DIS"]
+      + bridgeValues["standalone-F-QUA"];
+    assert.ok(Math.abs(bridgeValues["revenue-growth"] - 182.0502669249) < 1e-9);
+    assert.ok(Math.abs(bridgeValues["margin-expansion"] - 86.9455555725) < 1e-9);
+    assert.ok(Math.abs(perimeterReconciliation - bridgeValues["perimeter-subtotal"]) < 1e-9);
+    assert.ok(Math.abs(outputReconciliation - bridgeValues.output) < 1e-9);
+    assert.ok(Math.abs(bridgeValues.output - 1384.7377484414) < 1e-9);
+  }
+
   for (const rendered of [opellaFr, opellaEn]) {
     let previous = -1;
     for (const anchor of opellaPrimaryAnchors) {
@@ -398,6 +444,24 @@ try {
 
     const methodStart = rendered.indexOf('class="opella-method"');
     const transactionStart = rendered.indexOf('id="transaction"');
+    const transactionEnd = rendered.indexOf('id="standalone-build"', transactionStart);
+    const transactionScopeMarkup = rendered.slice(transactionStart, transactionEnd);
+    assert.equal(rendered.indexOf('id="perimeter"'), -1, "The former perimeter section must be removed");
+    assert.equal(
+      (transactionScopeMarkup.match(/class="opella-transaction-scope-column"/g) ?? []).length,
+      4,
+      "Transaction & scope must expose exactly four Atlas-style columns",
+    );
+    assert.equal(
+      (transactionScopeMarkup.match(/href="#sources"/g) ?? []).length,
+      1,
+      "Transaction & scope must keep one compact full-sources reference",
+    );
+    assert.doesNotMatch(
+      transactionScopeMarkup,
+      /source-reference-list|source-reference-block/,
+      "Transaction & scope must not repeat source cards under individual values",
+    );
     const outputPositions = ["O-RUNRATE", "O-SEPCOST", "O-PEAK", "O-STEADY"]
       .map((id) => rendered.indexOf(`data-output-id="${id}"`));
     assert.ok(
@@ -463,12 +527,12 @@ try {
     );
 
     const declaredSourceIds = new Set(opellaSnapshot.sources.map(({ id }) => id));
-    const publicFacts = [...rendered.matchAll(/<(?:article|div)[^>]*data-public-fact-id="[^"]+"[^>]*>/g)]
+    const publicFacts = [...rendered.matchAll(/<(?:article|div|li|p|span)[^>]*data-public-fact-id="[^"]+"[^>]*>/g)]
       .map(([tag]) => [
         tag.match(/data-public-fact-id="([^"]+)"/)?.[1],
         tag.match(/data-source-ids="([^"]+)"/)?.[1],
       ]);
-    assert.equal(publicFacts.length, 8, "Every remaining public fact rendering must declare its registry sources");
+    assert.equal(publicFacts.length, 21, "Every remaining public fact rendering must declare its registry sources");
     for (const [factId, sourceIds] of publicFacts) {
       assert.ok(sourceIds, `${factId} must declare at least one source`);
       const ids = sourceIds.split("+");

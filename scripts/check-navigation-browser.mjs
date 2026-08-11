@@ -1215,7 +1215,7 @@ try {
     `Opella headline outputs or O-RESORB rendering mismatch: ${JSON.stringify(opellaInitial)}`,
   );
   assert(
-    opellaInitial.downloads.length === 2
+    opellaInitial.downloads.length === 3
       && opellaInitial.downloads.every((link) => (
         link.download === "Opella-Carveout-Model.xlsx"
         && link.href?.endsWith("/downloads/opella/Opella-Carveout-Model.xlsx")

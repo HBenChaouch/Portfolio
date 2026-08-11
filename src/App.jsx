@@ -32,7 +32,11 @@ function RouteMetadata() {
   useEffect(() => {
     const title = t(titleKey);
     const description = t(descriptionKey);
-    const canonicalPath = isSidetrade ? "/cases/sidetrade-valuation/analysis" : "/";
+    const canonicalPath = isSidetrade
+      ? "/cases/sidetrade-valuation/analysis"
+      : isOpella
+        ? "/cases/opella-carve-out/analysis"
+        : "/";
     const languageQuery = language === "en" ? "?lang=en" : "";
 
     document.title = title;

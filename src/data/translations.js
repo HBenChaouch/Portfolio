@@ -488,6 +488,7 @@ const fr = {
   "A carve-out case focused on the standalone perimeter, TSA unwind, stranded costs and separation mechanics.": "Un cas de carve-out centré sur le périmètre stand-alone, la sortie des TSA, les coûts échoués et la mécanique de séparation.",
   "Workbook case": "Cas workbook",
   "Download the workbook": "Télécharger le workbook",
+  "Open the analysis": "Ouvrir l’analyse",
   "Standalone bridge": "Bridge stand-alone",
   "TSA unwind": "Sortie des TSA",
   "Separation costs": "Coûts de séparation",

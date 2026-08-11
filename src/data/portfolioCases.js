@@ -22,11 +22,11 @@ export const portfolioCases = [
     title: "Opella",
     category: "Carve-out & TSA",
     description:
-      "A carve-out case focused on the standalone perimeter, TSA unwind, stranded costs and separation mechanics. Currently in development.",
-    status: "In development",
-    cta: "Case in development",
-    available: false,
-    metrics: ["Standalone perimeter", "TSA unwind", "Stranded costs"],
+      "A carve-out case focused on the standalone perimeter, TSA unwind, stranded costs and separation mechanics.",
+    status: "Transaction Services",
+    href: "/cases/opella-carve-out/analysis/",
+    cta: "Open the analysis",
+    metrics: ["Standalone bridge", "TSA unwind", "Separation costs"],
   },
   {
     slug: "real-estate-downside",

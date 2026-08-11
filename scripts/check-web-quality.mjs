@@ -74,9 +74,9 @@ assert.deepEqual(portfolioCases.map(({ slug }) => slug), [
 ]);
 assert.equal(portfolioCases[0].priority, "flagship");
 assert.equal(portfolioCases[0].status, "Flagship case");
-assert.equal(portfolioCases[1].status, "In development");
-assert.equal(portfolioCases[1].available, false);
-assert.equal(portfolioCases[1].href, undefined);
+assert.equal(portfolioCases[1].status, "Transaction Services");
+assert.equal(portfolioCases[1].available, undefined);
+assert.equal(portfolioCases[1].href, "/cases/opella-carve-out/analysis/");
 assert.equal(portfolioCases[1].download, undefined);
 assert.equal(portfolioCases[2].status, "Operational cockpit");
 assert.equal(portfolioCases[2].href, "/cases/real-estate-downside/");
@@ -176,10 +176,11 @@ assert.match(styles, /@media \(max-width: 760px\)[\s\S]*?\.case-grid-item:first-
 const fallbackScript = await text("scripts/create-spa-fallback.mjs");
 assert.match(fallbackScript, /cases\/sidetrade-valuation/);
 assert.match(fallbackScript, /cases\/sidetrade-valuation\/analysis/);
-assert.doesNotMatch(fallbackScript, /opella-carve-out/);
+assert.match(fallbackScript, /cases\/opella-carve-out/);
+assert.match(fallbackScript, /cases\/opella-carve-out\/analysis/);
 const sitemap = await text("public/sitemap.xml");
 assert.match(sitemap, /Portfolio\/cases\/real-estate-downside\//);
-assert.doesNotMatch(sitemap, /opella-carve-out/);
+assert.match(sitemap, /Portfolio\/cases\/opella-carve-out\/analysis\//);
 
 const caseShell = await text("src/components/CaseShell.jsx");
 const portfolioCaseShell = await text("src/components/PortfolioCaseShell.jsx");

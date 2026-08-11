@@ -1097,13 +1097,13 @@ try {
   }
 
   const opellaFr = await opellaState();
-  assert(opellaFr.tag === "DIV" && opellaFr.href === null && opellaFr.interactiveDescendants === 0 && /en développement/i.test(opellaFr.text), `French Opella card mismatch: ${JSON.stringify(opellaFr)}`);
+  assert(opellaFr.tag === "A" && opellaFr.href?.endsWith("/cases/opella-carve-out/analysis/") && /ouvrir l’analyse/i.test(opellaFr.text), `French Opella card mismatch: ${JSON.stringify(opellaFr)}`);
   await navigate(`${portfolioUrl}?lang=en`);
   await waitFor(() => evaluate("document.documentElement.lang === 'en' && document.body.innerText.includes('Opella')"), "English Portfolio home");
   const opellaEn = await opellaState();
-  assert(opellaEn.tag === "DIV" && opellaEn.href === null && opellaEn.interactiveDescendants === 0 && /in development/i.test(opellaEn.text), `English Opella card mismatch: ${JSON.stringify(opellaEn)}`);
+  assert(opellaEn.tag === "A" && opellaEn.href?.endsWith("/cases/opella-carve-out/analysis/?lang=en") && /open the analysis/i.test(opellaEn.text), `English Opella card mismatch: ${JSON.stringify(opellaEn)}`);
 
-  // O2-E — testable direct route while the Portfolio card remains inactive.
+  // O2-E — direct alias and canonical route remain testable from the active Portfolio card.
   await navigate(`${portfolioUrl}cases/opella-carve-out?lang=en&op_cost=high#funding-need`);
   await waitFor(
     () => evaluate("Boolean(document.querySelector('.opella-analysis-view')) && location.pathname.endsWith('/cases/opella-carve-out/analysis/')"),

@@ -104,7 +104,7 @@ await fs.writeFile(`${outDir}/secondary_source_log.json`, JSON.stringify({ retri
 
 // SEC company facts are archived as primary-source support for peer capital structures.
 const secHeaders = {
-  "User-Agent": "Sidetrade beta research / OpenAI Codex",
+  "User-Agent": "HBenChaouch portfolio research (github.com/HBenChaouch)",
   "Accept-Encoding": "gzip, deflate",
 };
 const tickersResponse = await fetch("https://www.sec.gov/files/company_tickers.json", { headers: secHeaders });

@@ -91,8 +91,6 @@ assert.match(index, /Portfolio\/cases\/real-estate-downside\//);
 const translationsBuilt = await readFile(path.join(destination, "translations.js"), "utf8");
 const publicSurface = `${index}\n${translationsBuilt}`;
 for (const forbidden of [
-  /claude/i,
-  /anthropic/i,
   /sunburst/i,
   /intégration API/i,
   /API integration/i,

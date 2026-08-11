@@ -23,6 +23,7 @@ assert.equal(translateText("DCF", "fr"), "DCF");
 assert.equal(translateText("Choose a project", "fr"), "Choisir un projet");
 assert.equal(translateText("Choose a project", "en"), "Choose a project");
 const forbiddenFinancialLiteral = /[€$%]|\b\d+(?:[.,]\d+)?x\b/i;
+const forbiddenOpellaFinancialLiteral = /(?:\b\d+(?:[.,]\d+)?\s*(?:M|Md|bn|m)?\s*[€$]|[€$]\s*\d+(?:[.,]\d+)?|%|\b\d+(?:[.,]\d+)?x\b)/i;
 for (const [language, dictionary] of Object.entries(dictionaries)) {
   for (const [key, value] of Object.entries(dictionary)) {
     assert.doesNotMatch(key, forbiddenFinancialLiteral, `${language} dictionary key duplicates a financial literal: ${key}`);
@@ -77,7 +78,7 @@ for (const [language, dictionary] of Object.entries(opellaCopyDictionaries)) {
   for (const [key, value] of Object.entries(dictionary)) {
     assert.doesNotMatch(
       value,
-      forbiddenFinancialLiteral,
+      forbiddenOpellaFinancialLiteral,
       `${language} Opella dictionary carries a financial literal: ${key}`,
     );
     const peer = opellaCopyDictionaries[language === "fr" ? "en" : "fr"][key];
@@ -249,6 +250,29 @@ try {
   ]) assert.ok(opellaEnglishText.includes(expected), `English Opella method missing: ${expected}`);
   assert.ok(opellaFrenchText.includes("Ouvrir la source originale"));
   assert.ok(opellaEnglishText.includes("Open original source"));
+  for (const phrase of [
+    "Télécharger le modèle",
+    "Modèle Excel complet",
+    "Télécharger le modèle Excel",
+  ]) assert.ok(opellaFrenchText.includes(phrase), `French Opella download copy missing: ${phrase}`);
+  for (const phrase of [
+    "Download the model",
+    "Complete Excel model",
+    "Download the Excel model",
+  ]) assert.ok(opellaEnglishText.includes(phrase), `English Opella download copy missing: ${phrase}`);
+  assert.ok(
+    opellaEnglishText.includes("including 1 month of double run"),
+    "English Opella TSA copy must use the singular double-run form",
+  );
+  assert.deepEqual(
+    attributeValues(opellaFrenchDom, "download"),
+    ["Opella-Carveout-Model.xlsx", "Opella-Carveout-Model.xlsx"],
+  );
+  assert.deepEqual(
+    attributeValues(opellaFrenchDom, "download"),
+    attributeValues(opellaEnglishDom, "download"),
+    "Opella FR/EN downloads must expose the same filename",
+  );
   assert.deepEqual(
     attributeValues(opellaFrenchDom, "data-source-url"),
     attributeValues(opellaEnglishDom, "data-source-url"),
@@ -272,13 +296,13 @@ try {
   }
   for (const label of [
     "Coûts stand-alone récurrents",
-    "Retard de sortie de TSA",
+    "Décalage de sortie des TSA",
     "Coûts ponctuels",
     "Croissance et marge",
   ]) assert.ok(opellaFrenchText.includes(label), `French Opella lever missing: ${label}`);
   for (const label of [
     "Recurring stand-alone costs",
-    "TSA exit delay",
+    "TSA exit shift",
     "One-offs",
     "Growth and margin",
   ]) assert.ok(opellaEnglishText.includes(label), `English Opella lever missing: ${label}`);

@@ -185,13 +185,14 @@ async function anchorState(anchor) {
   })()`);
 }
 
-async function waitForStableAnchor(anchor) {
+async function waitForStableAnchor(anchor, navigationAnchor = anchor) {
   let previous;
   let stableSamples = 0;
   let current;
   await waitFor(async () => {
     current = await anchorState(anchor);
-    const correctIdentity = current.hash === `#${anchor}` && current.active?.endsWith(`#${anchor}`);
+    const correctIdentity = current.hash === `#${anchor}`
+      && (!navigationAnchor || current.active?.endsWith(`#${navigationAnchor}`));
     const stableGeometry = previous
       && Math.abs(current.top - previous.top) < 0.5
       && current.documentHeight === previous.documentHeight;
@@ -1108,7 +1109,7 @@ try {
     () => evaluate("Boolean(document.querySelector('.opella-analysis-view')) && location.pathname.endsWith('/cases/opella-carve-out/analysis/')"),
     "Opella alias redirect and direct view",
   );
-  const opellaAlias = await waitForStableAnchor("funding-need");
+  const opellaAlias = await waitForStableAnchor("funding-need", null);
   assert(
     opellaAlias.lang === "en"
       && opellaAlias.hash === "#funding-need"
@@ -1124,7 +1125,7 @@ try {
       tile.dataset.outputId,
       tile.querySelector('strong')?.textContent,
     ]));
-    const tables = Array.from(document.querySelectorAll('.opella-analysis-view .table-scroll'));
+    const tables = Array.from(document.querySelectorAll('.opella-analysis-view table.data-table'));
     const graphs = Array.from(document.querySelectorAll('.opella-analysis-view [role="img"]'));
     const fundingTables = Array.from(document.querySelectorAll('#funding-need table'));
     const tableContract = (table) => ({
@@ -1140,11 +1141,9 @@ try {
         .map((header) => header.textContent.trim()),
     });
     const fundingSeries = tableContract(fundingTables.find(
-      (table) => table.querySelector('caption')?.textContent.trim() === 'Funding-need profile by period',
+      (table) => table.querySelector('caption')?.textContent.trim() === 'Funding requirement evolution',
     ));
-    const fundingState = tableContract(fundingTables.find(
-      (table) => table.querySelector('caption')?.textContent.trim().startsWith('Funding state at the horizon'),
-    ));
+    const fundingState = document.querySelector('[data-content-id="opella.funding.state"]')?.textContent ?? '';
     const sourceLinks = Array.from(document.querySelectorAll('.opella-analysis-view a[data-source-url]'));
     const publicFacts = Array.from(document.querySelectorAll('[data-public-fact-id]'));
     const methodTabs = Array.from(document.querySelectorAll('.opella-method-tabs [role="tab"]'));
@@ -1152,12 +1151,15 @@ try {
     const hero = document.querySelector('.opella-hero');
     return {
       anchorIds,
-      downloadCount: document.querySelectorAll('.opella-analysis-view [download], .opella-analysis-view a[href$=".xlsx"]').length,
+      downloads: Array.from(document.querySelectorAll('.opella-shell-download, .opella-analysis-view a[href$=".xlsx"]')).map((link) => ({
+        download: link.getAttribute('download'),
+        href: link.getAttribute('href'),
+      })),
       method: {
         activeTab: methodTabs.find((tab) => tab.getAttribute('aria-selected') === 'true')?.dataset.methodTab,
         panelCount: methodPanels.length,
         proofSteps: document.querySelectorAll('.opella-proof-chain [data-proof-step]').length,
-        publicFactsDeclared: publicFacts.length === 8 && publicFacts.every((fact) => (
+        publicFactsDeclared: publicFacts.length === 21 && publicFacts.every((fact) => (
           fact.getAttribute('data-source-ids')
             ?.split('+')
             .every((sourceId) => /^S[12356]$/.test(sourceId))
@@ -1182,22 +1184,23 @@ try {
       outputs,
       stateRenderCount: document.querySelectorAll('[data-content-id="opella.funding.state"]').length,
       tableCount: tables.length,
-      tablesAccessible: tables.every((table) => table.tabIndex === 0 && Boolean(table.getAttribute('aria-label'))),
+      tablesAccessible: tables.every((table) => {
+        const region = table.closest('.table-scroll');
+        return Boolean(table.querySelector('caption'))
+          && region?.tabIndex === 0
+          && Boolean(region.getAttribute('aria-label'));
+      }),
     };
   })()`);
   assert(
     JSON.stringify(opellaInitial.anchorIds) === JSON.stringify([
       "executive",
       "transaction",
-      "perimeter",
       "standalone-build",
       "tsa",
-      "one-offs",
       "cash-transition",
-      "funding-need",
       "scenarios",
       "buyer-implications",
-      "diligence",
       "sources",
       "methodology",
     ]),
@@ -1212,9 +1215,13 @@ try {
     `Opella headline outputs or O-RESORB rendering mismatch: ${JSON.stringify(opellaInitial)}`,
   );
   assert(
-    opellaInitial.downloadCount === 0
+    opellaInitial.downloads.length === 2
+      && opellaInitial.downloads.every((link) => (
+        link.download === "Opella-Carveout-Model.xlsx"
+        && link.href?.endsWith("/downloads/opella/Opella-Carveout-Model.xlsx")
+      ))
       && opellaInitial.graphsNamed
-      && opellaInitial.tableCount >= 10
+      && opellaInitial.tableCount === 3
       && opellaInitial.tablesAccessible,
     `Opella graph/table/download contract mismatch: ${JSON.stringify(opellaInitial)}`,
   );
@@ -1237,20 +1244,27 @@ try {
       "Recurring gap",
       "One-off component",
     ])
-      && JSON.stringify(opellaInitial.fundingSeries.rowHeaders.map((header) => header.match(/^P[1-5]\b/)?.[0])) === JSON.stringify(["P1", "P2", "P3", "P4", "P5"])
+      && JSON.stringify(opellaInitial.fundingSeries.rowHeaders) === JSON.stringify([
+        "May–Dec. 2025",
+        "FY2026",
+        "FY2027",
+        "FY2028",
+        "FY2029",
+      ])
       && !/at the horizon/i.test(opellaInitial.fundingSeries.columnHeaders.join(" "))
       && opellaInitial.fundingSeries.consistentRows,
     `Opella funding period table semantics mismatch: ${JSON.stringify(opellaInitial.fundingSeries)}`,
   );
   assert(
-    JSON.stringify(opellaInitial.fundingState.columnHeaders) === JSON.stringify([
-      "Indicator",
-      "Value",
-      "Reference",
-    ])
-      && opellaInitial.fundingState.rowHeaders.length >= 6
-      && opellaInitial.fundingState.consistentRows
-      && opellaInitial.fundingState.rowHeaders[0] === "Funding state at the horizon",
+    [
+      "Requirement at the end of FY2029",
+      "Change versus FY2028",
+      "Uncovered stand-alone costs",
+      "Offsetting tax effect",
+      "Net recurring gap",
+      "Remaining one-off component",
+    ].every((label) => opellaInitial.fundingState.includes(label))
+      && !opellaInitial.fundingState.includes("Reference"),
     `Opella funding state table semantics mismatch: ${JSON.stringify(opellaInitial.fundingState)}`,
   );
 
@@ -1259,9 +1273,9 @@ try {
     () => evaluate("document.documentElement.lang === 'fr' && location.search === '?op_cost=high' && location.hash === '#funding-need'"),
     "Opella FR language preservation",
   );
-  await waitForStableAnchor("funding-need");
+  await waitForStableAnchor("funding-need", null);
   const opellaLowCostPointer = await realPointerClick(
-    "Array.from(document.querySelectorAll('.opella-lever-options button')).find((button) => button.getAttribute('aria-label')?.startsWith('Coûts stand-alone récurrents · Basse ·'))",
+    "Array.from(document.querySelectorAll('.opella-lever-options button')).find((button) => button.getAttribute('aria-label')?.startsWith('Coûts stand-alone récurrents · Bas ·'))",
     "Opella low stand-alone cost",
   );
   await waitFor(
@@ -1273,12 +1287,12 @@ try {
     () => evaluate("document.documentElement.lang === 'en' && location.search.includes('lang=en') && location.search.includes('op_cost=low') && location.hash === '#funding-need'"),
     "Opella EN language preservation",
   );
-  await waitForStableAnchor("funding-need");
+  await waitForStableAnchor("funding-need", null);
 
   const opellaLeverPointers = [];
   for (const [label, parameter, state] of [
     ["Recurring stand-alone costs · High ·", "op_cost", "high"],
-    ["TSA exit delay · High ·", "op_tsa", "high"],
+    ["TSA exit shift · Later ·", "op_tsa", "high"],
     ["One-offs · High ·", "op_oneoff", "high"],
     ["Growth and margin · Low ·", "op_ops", "low"],
   ]) {
@@ -1291,13 +1305,25 @@ try {
       () => evaluate(`new URLSearchParams(location.search).get(${JSON.stringify(parameter)}) === ${JSON.stringify(state)}`),
       `Opella URL state ${parameter}`,
     );
-    await waitForStableAnchor("funding-need");
+    await waitForStableAnchor("funding-need", null);
     const after = await evaluate("Array.from(document.querySelectorAll('.opella-kpi-grid [data-output-id] strong')).map((node) => node.textContent).join('|')");
     assert(before !== after, `${parameter} must recompute at least one headline KPI`);
     opellaLeverPointers.push({ parameter, pointer, state });
   }
+  const opellaResetTarget = await evaluate(`(() => {
+    const button = Array.from(document.querySelectorAll('.opella-scenario-top-action button'))
+      .find((candidate) => /central case/i.test(candidate.textContent));
+    const rect = button?.getBoundingClientRect();
+    return { height: rect?.height ?? 0, mobile: innerWidth <= 430, width: rect?.width ?? 0 };
+  })()`);
+  assert(
+    opellaResetTarget.mobile
+      && opellaResetTarget.height >= 44
+      && opellaResetTarget.width >= 44,
+    `Opella mobile reset target below 44x44: ${JSON.stringify(opellaResetTarget)}`,
+  );
   const opellaResetPointer = await realPointerClick(
-    "Array.from(document.querySelectorAll('.opella-scenario-summary button')).find((button) => /central case/i.test(button.textContent))",
+    "Array.from(document.querySelectorAll('.opella-scenario-top-action button')).find((button) => /central case/i.test(button.textContent))",
     "Opella central reset",
   );
   await waitFor(
@@ -1309,13 +1335,13 @@ try {
   await waitForStableAnchor("scenarios");
   await evaluate(`(() => {
     const button = Array.from(document.querySelectorAll('.opella-lever-options button'))
-      .find((candidate) => candidate.getAttribute('aria-label')?.startsWith('TSA exit delay · High ·'));
+      .find((candidate) => candidate.getAttribute('aria-label')?.startsWith('TSA exit shift · Later ·'));
     button.scrollIntoView({ block: 'center' });
     button.focus();
   })()`);
   const opellaReadingBefore = await evaluate("({ top: document.querySelector('#scenarios').getBoundingClientRect().top, scrollY })");
   const opellaHorizonPointer = await realPointerClick(
-    "Array.from(document.querySelectorAll('.opella-lever-options button')).find((button) => button.getAttribute('aria-label')?.startsWith('TSA exit delay · High ·'))",
+    "Array.from(document.querySelectorAll('.opella-lever-options button')).find((button) => button.getAttribute('aria-label')?.startsWith('TSA exit shift · Later ·'))",
     "Opella horizon-extending TSA scenario",
   );
   await waitFor(
@@ -1325,7 +1351,7 @@ try {
   const opellaReadingAfter = await evaluate("({ focused: document.activeElement?.getAttribute('aria-label'), overflow: document.documentElement.scrollWidth - document.documentElement.clientWidth, top: document.querySelector('#scenarios').getBoundingClientRect().top, scrollY })");
   assert(
     Math.abs(opellaReadingAfter.top - opellaReadingBefore.top) <= 2
-      && opellaReadingAfter.focused?.startsWith("TSA exit delay · High ·")
+      && opellaReadingAfter.focused?.startsWith("TSA exit shift · Later ·")
       && opellaReadingAfter.overflow === 0,
     `Opella reading position moved after horizon change: ${JSON.stringify({ before: opellaReadingBefore, after: opellaReadingAfter })}`,
   );
@@ -1434,7 +1460,8 @@ try {
       const sourceSummaries = Array.from(document.querySelectorAll('.opella-source-registry summary'));
       const sourceLinks = Array.from(document.querySelectorAll('.opella-analysis-view a[data-source-url]'))
         .filter((link) => link.getBoundingClientRect().width > 0 && link.getBoundingClientRect().height > 0);
-      const tableRegions = Array.from(document.querySelectorAll('.opella-analysis-view .table-scroll'));
+      const tableRegions = Array.from(document.querySelectorAll('.opella-analysis-view table.data-table'))
+        .map((table) => table.closest('.table-scroll'));
       const hero = document.querySelector('.opella-hero');
       const heroCopy = hero.querySelector('.opella-hero-copy');
       const heroKpis = hero.querySelector('.opella-kpi-grid');
@@ -1442,8 +1469,7 @@ try {
       const heroQuestion = hero.querySelector('.opella-hero-question');
       const heroMethodology = hero.querySelector('.opella-hero-methodology');
       const kpiCards = Array.from(heroKpis.querySelectorAll('.metric-tile'));
-      const transaction = document.querySelector('#transaction').getBoundingClientRect();
-      const perimeter = document.querySelector('#perimeter').getBoundingClientRect();
+      const scopeCards = Array.from(document.querySelectorAll('#transaction .opella-transaction-scope-column'));
       const mobile = innerWidth <= 900;
       const lineCount = (element) => {
         const lineHeight = parseFloat(getComputedStyle(element).lineHeight);
@@ -1478,9 +1504,10 @@ try {
         minSourceSummaryTarget: Math.min(...sourceSummaries.map((summary) => summary.getBoundingClientRect().height)),
         mobile,
         mobileBridge: getComputedStyle(document.querySelector('.opella-bridge-mobile')).display,
-        situationPaired: mobile
-          ? perimeter.top >= transaction.bottom - 2
-          : Math.abs(transaction.top - perimeter.top) <= 2 && Math.abs(transaction.width - perimeter.width) <= 2,
+        scopeGrid: {
+          columns: new Set(scopeCards.map((card) => Math.round(card.getBoundingClientRect().left))).size,
+          rows: new Set(scopeCards.map((card) => Math.round(card.getBoundingClientRect().top))).size,
+        },
         sourceDisclosureCount: sourceSummaries.length,
         sourceLinksNamed: sourceLinks.length > 0 && sourceLinks.every((link) => Boolean(link.getAttribute('aria-label'))),
         tableRegionsAccessible: tableRegions.every((region) => region.tabIndex === 0 && Boolean(region.getAttribute('aria-label'))),
@@ -1496,7 +1523,7 @@ try {
     );
     if (width === 1920) {
       assert(
-        state.hero.sideBySide
+        !state.hero.sideBySide
           && state.hero.cardRows === 1
           && state.hero.titleLines <= 1.1
           && state.hero.questionLines <= 2.1
@@ -1505,23 +1532,24 @@ try {
       );
     } else if (width === 1280) {
       assert(
-        !state.hero.sideBySide && state.hero.cardRows === 2,
-        `Opella 1280 hero must use a 2x2 KPI grid: ${JSON.stringify(state.hero)}`,
+        !state.hero.sideBySide && state.hero.cardRows === 1,
+        `Opella 1280 hero must keep the four KPI cards on one row: ${JSON.stringify(state.hero)}`,
       );
     } else if (width <= 430) {
       assert(
-        !state.hero.sideBySide && state.hero.cardRows === 4,
-        `Opella mobile hero must stack the four KPI cards: ${JSON.stringify(state.hero)}`,
+        !state.hero.sideBySide && state.hero.cardRows === 2,
+        `Opella mobile hero must use a readable 2x2 KPI grid: ${JSON.stringify(state.hero)}`,
       );
     }
     assert(state.controls === 12 && state.minControlTarget >= 44, `Opella control targets at ${width}x${height}: ${JSON.stringify(state)}`);
     assert(
-      state.method.activeTab === "proof"
-        && state.method.minTabTarget >= 44
+      state.method.minTabTarget >= 44
         && state.method.proofSteps === 4
         && state.method.tabCount === 3
         && state.method.visiblePanels === 1
-        && state.situationPaired
+        && (state.mobile
+          ? state.scopeGrid.columns === 2 && state.scopeGrid.rows === 2
+          : state.scopeGrid.columns === 4 && state.scopeGrid.rows === 1)
         && state.sourceDisclosureCount === 6
         && state.minSourceSummaryTarget >= 44
         && state.minSourceLinkTarget >= 44
@@ -1554,8 +1582,8 @@ try {
     }
     if (width <= 900) {
       assert(
-        state.mobileBridge === "grid"
-          && state.wideBridge === "none"
+        state.mobileBridge === "none"
+          && state.wideBridge === "grid"
           && state.fundingMobile === "grid"
           && state.fundingDesktop === "none",
         `Opella dedicated mobile visuals missing at ${width}x${height}: ${JSON.stringify(state)}`,
@@ -1746,11 +1774,14 @@ try {
     opellaLowCostPointer,
     opellaEnglishPointer,
     opellaLeverPointers,
+    opellaResetTarget,
     opellaResetPointer,
     opellaHorizonPointer,
-    opellaEvidenceKeyboard,
-    opellaEvidenceMobilePointer,
-    opellaEvidenceMobile,
+    opellaReadingBefore,
+    opellaReadingAfter,
+    opellaMethodKeyboard,
+    opellaMethodMobilePointer,
+    opellaMethodMobile,
     opellaResponsive,
     opellaMenuPointer,
     opellaMenuEscape,

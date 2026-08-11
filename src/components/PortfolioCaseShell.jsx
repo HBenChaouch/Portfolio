@@ -111,7 +111,7 @@ export default function PortfolioCaseShell({
       window.cancelAnimationFrame(anchorFrame);
       layoutObserver?.disconnect();
     };
-  }, [isAnalysis, location.hash, location.search]);
+  }, [isAnalysis, language, location.hash]);
 
   useEffect(() => {
     if (!isAnalysis) return undefined;
@@ -136,6 +136,16 @@ export default function PortfolioCaseShell({
       }
     }
 
+    function releaseKeptAnchorOnInteraction(event) {
+      if (!(event.target instanceof Element)) return;
+      if (!event.target.closest("#main-content button, #main-content input, #main-content select, #main-content textarea")) return;
+      keptAnchorRef.current = "";
+    }
+
+    function releaseKeptAnchor() {
+      keptAnchorRef.current = "";
+    }
+
     function endUserScrollIntent() {
       userScrollIntentRef.current = false;
     }
@@ -144,6 +154,9 @@ export default function PortfolioCaseShell({
     window.addEventListener("touchmove", beginUserScrollIntent, { passive: true });
     window.addEventListener("keydown", handleScrollKey);
     window.addEventListener("pointerdown", handleScrollbarPointer);
+    window.addEventListener("pointerdown", releaseKeptAnchorOnInteraction, { capture: true });
+    window.addEventListener("click", releaseKeptAnchorOnInteraction, { capture: true });
+    window.addEventListener("portfolio:content-interaction", releaseKeptAnchor);
     window.addEventListener("scrollend", endUserScrollIntent, { capture: true });
 
     return () => {
@@ -151,6 +164,9 @@ export default function PortfolioCaseShell({
       window.removeEventListener("touchmove", beginUserScrollIntent);
       window.removeEventListener("keydown", handleScrollKey);
       window.removeEventListener("pointerdown", handleScrollbarPointer);
+      window.removeEventListener("pointerdown", releaseKeptAnchorOnInteraction, { capture: true });
+      window.removeEventListener("click", releaseKeptAnchorOnInteraction, { capture: true });
+      window.removeEventListener("portfolio:content-interaction", releaseKeptAnchor);
       window.removeEventListener("scrollend", endUserScrollIntent, { capture: true });
     };
   }, [isAnalysis]);

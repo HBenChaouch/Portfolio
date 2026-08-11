@@ -4,8 +4,10 @@ import { copyFile, mkdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import {
+  assertCanonicalLfTextFileSha256,
   assertFileSha256,
   assertUnique,
+  readCanonicalLfText,
   readJson,
   sha256File,
 } from "./integration-manifest.mjs";
@@ -16,7 +18,9 @@ const bundleRoot = path.join(repositoryRoot, "integrations", "opella");
 const defaultSourceRoot = path.resolve(
   process.env.OPELLA_SOURCE ?? path.join(repositoryRoot, "..", "Transaction Services"),
 );
-const parentBaseline = "8ad69b3152d237116e164cc5b4fdffd49b15308b";
+const parentBaseline = "0145062d416640714888e1b672a0a81950bc8d9f";
+const publicWorkbookPath = "public/downloads/opella/Opella-Carveout-Model.xlsx";
+const publicWorkbookHref = "downloads/opella/Opella-Carveout-Model.xlsx";
 
 export const opellaSourceNames = {
   generator: "build_carveout.py",
@@ -101,9 +105,9 @@ function bundleManifest(
 
   return {
     manifest: "opella-sidetrade-inactive-bundle",
-    version: "1.1.0",
+    version: "1.2.0",
     case: "opella-carve-out",
-    pass: "O2-E",
+    pass: "OP-OPella-PUBLIC-MODEL-01",
     status: "inactive",
     sourceBaseline: {
       repository: "parent",
@@ -244,7 +248,10 @@ function bundleManifest(
   };
 }
 
-export async function integrateOpellaBundle(sourceRoot = defaultSourceRoot) {
+export async function integrateOpellaBundle(
+  sourceRoot = defaultSourceRoot,
+  { refreshPublicWorkbook = false } = {},
+) {
   const sourceManifestPath = path.join(sourceRoot, opellaSourceNames.manifest);
   const sourceManifest = await readJson(sourceManifestPath);
   assert.equal(sourceManifest.manifest, "opella-transaction-services");
@@ -252,7 +259,12 @@ export async function integrateOpellaBundle(sourceRoot = defaultSourceRoot) {
   assertUnique(sourceManifest.relations.map(({ id }) => id), "O1 relations");
 
   for (const [name, expected] of Object.entries(sourceManifest.sourceFiles)) {
-    await assertFileSha256(path.join(sourceRoot, name), expected, `O1 source ${name}`);
+    const sourcePath = path.join(sourceRoot, name);
+    if (name === opellaSourceNames.snapshot) {
+      await assertCanonicalLfTextFileSha256(sourcePath, expected, `O1 source ${name}`);
+    } else {
+      await assertFileSha256(sourcePath, expected, `O1 source ${name}`);
+    }
   }
 
   const engineContract = await extractOpellaEngineContract(
@@ -281,10 +293,32 @@ export async function integrateOpellaBundle(sourceRoot = defaultSourceRoot) {
     // A first integration has no presentation contract to preserve.
   }
 
+  if (presentationContract.downloads?.length) {
+    assert.equal(presentationContract.downloads.length, 1);
+    const [download] = presentationContract.downloads;
+    assert.equal(download.path, publicWorkbookPath);
+    assert.equal(download.href, publicWorkbookHref);
+    if (refreshPublicWorkbook) {
+      download.sourceSha256 = sourceManifest.sourceFiles[opellaSourceNames.workbook];
+      download.sha256 = await sha256File(path.join(repositoryRoot, download.path));
+    }
+    assert.equal(
+      download.sourceSha256,
+      sourceManifest.sourceFiles[opellaSourceNames.workbook],
+      "Public workbook provenance must reference the current canonical workbook",
+    );
+    await assertFileSha256(
+      path.join(repositoryRoot, download.path),
+      download.sha256,
+      "public Opella workbook",
+    );
+  }
+
   await mkdir(bundleRoot, { recursive: true });
-  await copyFile(
-    path.join(sourceRoot, opellaSourceNames.snapshot),
+  await writeFile(
     path.join(bundleRoot, "snapshot.json"),
+    await readCanonicalLfText(path.join(sourceRoot, opellaSourceNames.snapshot)),
+    "utf8",
   );
   await copyFile(sourceManifestPath, path.join(bundleRoot, "source-manifest.json"));
   await writeFile(path.join(bundleRoot, "engine-contract.json"), engineContractText, "utf8");
@@ -302,9 +336,9 @@ export async function integrateOpellaBundle(sourceRoot = defaultSourceRoot) {
   await writeFile(path.join(bundleRoot, "manifest.json"), `${JSON.stringify(manifest, null, 2)}\n`, "utf8");
 
   assert.equal(
-    await readFile(path.join(sourceRoot, opellaSourceNames.snapshot), "utf8"),
+    await readCanonicalLfText(path.join(sourceRoot, opellaSourceNames.snapshot)),
     await readFile(path.join(bundleRoot, "snapshot.json"), "utf8"),
-    "Integrated snapshot must remain byte-identical",
+    "Integrated snapshot must remain canonical-LF identical",
   );
   assert.equal(
     await readFile(sourceManifestPath, "utf8"),
@@ -316,5 +350,7 @@ export async function integrateOpellaBundle(sourceRoot = defaultSourceRoot) {
 }
 
 if (path.resolve(process.argv[1] ?? "") === fileURLToPath(import.meta.url)) {
-  await integrateOpellaBundle();
+  await integrateOpellaBundle(defaultSourceRoot, {
+    refreshPublicWorkbook: process.argv.includes("--refresh-public-workbook"),
+  });
 }

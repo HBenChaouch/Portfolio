@@ -155,27 +155,43 @@
     },
     {
       "id": "S6",
-      "label": "Opella — chiffres clés investisseurs",
+      "label": "Opella — périmètre opérationnel et marques",
       "organization": "Opella",
-      "document": "Investors — Key figures",
+      "document": "Official Opella evidence bundle — operational footprint and brands",
       "publication_date": "not-stated",
-      "value_date": "2024-12-31",
-      "accessed": "2026-07-29",
+      "value_date": "2026-08-11",
+      "accessed": "2026-08-11",
       "status": "public",
       "evidence_role": "primary",
-      "period_scope": "FY2024 ; présentation publique arrondie",
-      "location": "Section « Key figures », chiffre d’affaires 2024 et note 3",
+      "period_scope": "Périmètre opérationnel et portefeuille de marques au 11/08/2026",
+      "location": "Investors — “Who we are” and “Key figures”; Meet Opella — “Our leaders” > “Rafik Amrane”; 7 July 2026 press release — “About Opella”",
       "references": [
         {
           "organization": "Opella",
           "document": "Investors — Key figures",
           "publication_date": "not-stated",
-          "location": "Section « Key figures », chiffre d’affaires 2024 et note 3",
+          "location": "Sections “Who we are” and “Key figures”",
           "url": "https://www.opella.com/en/investors",
-          "accessed": "2026-07-29"
+          "accessed": "2026-08-11"
+        },
+        {
+          "organization": "Opella",
+          "document": "Meet Opella",
+          "publication_date": "not-stated",
+          "location": "Section “Our leaders”, profile “Rafik Amrane”",
+          "url": "https://www.opella.com/en/meet-opella",
+          "accessed": "2026-08-11"
+        },
+        {
+          "organization": "Opella",
+          "document": "Experts call for earlier recognition of fatty liver disease in people living with obesity",
+          "publication_date": "2026-07-07",
+          "location": "Section “About Opella”, second paragraph",
+          "url": "https://www.opella.com/en/making-headlines/breaking-news/2026-essentiale-economics-obesity-metabolic-health-summit",
+          "accessed": "2026-08-11"
         }
       ],
-      "fields": "Chiffre d’affaires 2024 présenté sous forme arrondie à 5 Md€ ; date de publication non indiquée sur la page",
+      "fields": "Environ 100 marques ; 500 millions de consommateurs ; 11 000+ salariés ; 90+ nationalités ; 38 pays en direct ; environ 110 pays servis indirectement ; 13 sites industriels ; 4 centres spécialisés ; 5 000+ professionnels Manufacturing & Supply ; marques Allegra, Buscopan, Doliprane, Dulcolax, Enterogermina, Essentiale et Mucosolvan",
       "cells": {
         "id": "'Lisez-moi'!B20",
         "details": "'Lisez-moi'!C20"
@@ -188,8 +204,7 @@
       "sourceIds": [
         "S1",
         "S4",
-        "S5",
-        "S6"
+        "S5"
       ],
       "assumptions": [
         {
@@ -790,8 +805,8 @@
     "revenue": {
       "value": 5000.0,
       "formatId": "money-eur-m-0",
-      "status": "public",
-      "source": "S5+S6",
+      "status": "calculé",
+      "source": "S5",
       "cell": "Hypothèses!C6",
       "approximate": true
     },
@@ -806,7 +821,7 @@
       "value": 0.2286,
       "formatId": "percent-2",
       "status": "calculé",
-      "source": "S1+S5+S6",
+      "source": "S1+S5",
       "cell": "Hypothèses!C8",
       "approximate": true
     },

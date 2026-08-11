@@ -7,6 +7,17 @@ export async function sha256File(filename) {
   return createHash("sha256").update(await readFile(filename)).digest("hex").toUpperCase();
 }
 
+export async function readCanonicalLfText(filename) {
+  return (await readFile(filename, "utf8")).replace(/\r\n/g, "\n");
+}
+
+export async function sha256CanonicalLfTextFile(filename) {
+  return createHash("sha256")
+    .update(await readCanonicalLfText(filename), "utf8")
+    .digest("hex")
+    .toUpperCase();
+}
+
 export async function readJson(filename) {
   return JSON.parse(await readFile(filename, "utf8"));
 }
@@ -14,6 +25,12 @@ export async function readJson(filename) {
 export async function assertFileSha256(filename, expected, label = filename) {
   const actual = await sha256File(filename);
   assert.equal(actual, expected, `${label} SHA-256 mismatch`);
+  return actual;
+}
+
+export async function assertCanonicalLfTextFileSha256(filename, expected, label = filename) {
+  const actual = await sha256CanonicalLfTextFile(filename);
+  assert.equal(actual, expected, `${label} canonical LF SHA-256 mismatch`);
   return actual;
 }
 

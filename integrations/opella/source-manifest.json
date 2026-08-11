@@ -20,9 +20,9 @@
     "determinismProof": "les propriétés du document sont figées à BUILD_STAMP ; deux exécutions produisent les mêmes SHA-256 du workbook, du snapshot et du manifeste"
   },
   "sourceFiles": {
-    "build_carveout.py": "8D9ED97C1F07C9C5F9E81F0A03A08836FAC71ED59ED88C83F37A2ABBE8A849F9",
-    "Modele_Carveout_Opella.xlsx": "B0394A59F5EBF553DD32D418EAEA511630F80CA1FCCFCEDA63E63509431B411D",
-    "opella_case_snapshot.json": "FA7C24FDEB94A3AAB8E2E49D342B24BEC07AE6CC9719ABAFEC4384B7550CE122"
+    "build_carveout.py": "1326555BEAD88D6626585174242BEC4AA613F50870FCB27F93D439BAE93B1788",
+    "Modele_Carveout_Opella.xlsx": "EB7F9BB678A79BC827C60D4E773F9398D2CA3999CAB3F251D1C9CFA1C5D5F1FF",
+    "opella_case_snapshot.json": "17FDD4392282DCC5498505BDF87512FCAD59D052D21ADDE50436DC61C7BE12EC"
   },
   "sourceContract": {
     "requiredIds": [

@@ -88,19 +88,38 @@ assert.equal(
   "B0D93B0A7BF346C2D02D90DC6F83D23C80D9422D902AF1E95E7CA40D385F8ECD",
 );
 await assert.rejects(() => read("public/Modele_Carveout_Opella.xlsx"), { code: "ENOENT" });
+assert.equal(
+  await sha256("public/downloads/opella/Opella-Carveout-Model.xlsx"),
+  "88BA625D017DE59DEEE6DA281D87D68DCC2F853E467046C8E03E5D0B9366EF8C",
+);
+assert.equal(
+  (await read("public/downloads/opella/Opella-Carveout-Model.xlsx")).subarray(0, 4).toString("hex"),
+  "504b0304",
+  "Public Opella workbook must remain an XLSX package",
+);
 assert.match(await text("src/routes/OpellaAnalysisView.jsx"), /export default function OpellaAnalysisView/);
 
 const publicFiles = await listRelativeFiles(path.join(rootPath, "public"));
 assert.deepEqual(
   publicFiles.filter((filename) => /opella|carveout/i.test(filename)),
-  [],
-  "No Opella artifact may enter public/",
+  ["downloads/opella/Opella-Carveout-Model.xlsx"],
+  "Only the authorised Opella workbook may enter public/",
 );
 
 const opellaBundleManifest = await readJson(path.join(rootPath, "integrations", "opella", "manifest.json"));
 const opellaSnapshot = await readJson(path.join(rootPath, "integrations", "opella", "snapshot.json"));
 assert.equal(opellaBundleManifest.status, "inactive");
-assert.deepEqual(opellaBundleManifest.downloads, []);
+assert.equal(opellaBundleManifest.downloads.length, 1);
+assert.deepEqual(opellaBundleManifest.downloads[0], {
+  path: "public/downloads/opella/Opella-Carveout-Model.xlsx",
+  href: "downloads/opella/Opella-Carveout-Model.xlsx",
+  filename: "Opella-Carveout-Model.xlsx",
+  mime: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+  sha256: "88BA625D017DE59DEEE6DA281D87D68DCC2F853E467046C8E03E5D0B9366EF8C",
+  sourcePath: "Transaction Services/Modele_Carveout_Opella.xlsx",
+  sourceSha256: "EB7F9BB678A79BC827C60D4E773F9398D2CA3999CAB3F251D1C9CFA1C5D5F1FF",
+  role: "Microsoft Excel-recalculated public copy of the complete Opella model.",
+});
 assert.ok(opellaBundleManifest.presentationFiles.includes("src/routes/OpellaAnalysisView.jsx"));
 assert.deepEqual(opellaBundleManifest.publicExposure, {
   cardAvailable: false,
@@ -110,8 +129,8 @@ assert.deepEqual(opellaBundleManifest.publicExposure, {
   canonical: false,
   sitemap: false,
   fallback: false,
-  download: false,
-  publicWorkbook: false,
+  download: true,
+  publicWorkbook: true,
   publicBuildPage: true,
 });
 
@@ -315,16 +334,18 @@ try {
   }
   const fundingSeriesContracts = [
     {
-      caption: "Profil du besoin de financement par période",
+      caption: "Évolution du besoin de financement",
       columns: ["Période", "Besoin cumulé", "Variation", "Écart récurrent", "Composante ponctuelle"],
       forbiddenBoundary: /(?:à la borne|à l’horizon)/i,
       markup: opellaFr,
+      periods: ["Mai–déc. 2025", "FY2026", "FY2027", "FY2028", "FY2029"],
     },
     {
-      caption: "Funding-need profile by period",
+      caption: "Funding requirement evolution",
       columns: ["Period", "Cumulative need", "Change", "Recurring gap", "One-off component"],
       forbiddenBoundary: /at the horizon/i,
       markup: opellaEn,
+      periods: ["May–Dec. 2025", "FY2026", "FY2027", "FY2028", "FY2029"],
     },
   ];
   for (const contract of fundingSeriesContracts) {
@@ -336,37 +357,42 @@ try {
       `${contract.caption} must not apply a horizon label to P1-P4`,
     );
     const periodRowHeaders = scopedHeaders(fundingSeries, "row");
-    assert.deepEqual(
-      periodRowHeaders.map((header) => header.match(/^P[1-5]\b/)?.[0]),
-      ["P1", "P2", "P3", "P4", "P5"],
-      `${contract.caption} must preserve every snapshot period identifier`,
-    );
+    assert.deepEqual(periodRowHeaders, contract.periods, `${contract.caption} must use calendar labels`);
   }
 
   const fundingStateContracts = [
     {
-      columns: ["Indicateur", "Valeur", "Référence"],
-      end: 'class="funding-counterfactual"',
-      horizonReference: /H = P5\b/,
+      required: [
+        "Besoin à fin FY2029",
+        "Variation par rapport à FY2028",
+        "Coûts stand-alone non couverts",
+        "Effet fiscal compensatoire",
+        "Écart récurrent net",
+        "Composante ponctuelle restante",
+      ],
       markup: opellaFr,
       start: 'data-content-id="opella.funding.state"',
     },
     {
-      columns: ["Indicator", "Value", "Reference"],
-      end: 'class="funding-counterfactual"',
-      horizonReference: /H = P5\b/,
+      required: [
+        "Requirement at the end of FY2029",
+        "Change versus FY2028",
+        "Uncovered stand-alone costs",
+        "Offsetting tax effect",
+        "Net recurring gap",
+        "Remaining one-off component",
+      ],
       markup: opellaEn,
       start: 'data-content-id="opella.funding.state"',
     },
   ];
   for (const contract of fundingStateContracts) {
-    const fundingState = firstTableWithin(contract.markup, contract.start, contract.end);
-    assertSimpleTableSemantics(fundingState, contract.columns, contract.columns.join(" | "));
-    assert.match(
-      markupText(fundingState),
-      contract.horizonReference,
-      "The state summary must reserve its horizon reference for H=P5",
-    );
+    const start = contract.markup.indexOf(contract.start);
+    const end = contract.markup.indexOf("</section>", start);
+    const fundingState = markupText(contract.markup.slice(start, end));
+    for (const required of contract.required) {
+      assert.match(fundingState, new RegExp(required), `Funding-state summary missing: ${required}`);
+    }
   }
 
   const standaloneBridgeContracts = [
@@ -416,6 +442,7 @@ try {
   }
 
   for (const rendered of [opellaFr, opellaEn]) {
+    const language = rendered === opellaFr ? "fr" : "en";
     let previous = -1;
     for (const anchor of opellaPrimaryAnchors) {
       const position = rendered.indexOf(`id="${anchor}"`);
@@ -435,12 +462,24 @@ try {
     );
     const buyerStart = rendered.indexOf('id="buyer-implications"');
     const diligenceStart = rendered.indexOf('id="diligence"');
-    const buyerMarkup = rendered.slice(buyerStart, diligenceStart);
-    assert.match(rendered, /class="opella-section opella-diligence-buyer" id="buyer-implications"/);
-    assert.match(rendered, /class="opella-section opella-diligence-main" id="diligence"/);
+    const decisionSectionEnd = rendered.indexOf('id="sources"');
+    const buyerMarkup = rendered.slice(buyerStart, decisionSectionEnd);
+    assert.match(rendered, /class="opella-section opella-decision-diligence" id="buyer-implications"/);
+    assert.ok(
+      diligenceStart > buyerStart && diligenceStart < decisionSectionEnd,
+      "The diligence compatibility anchor must remain inside the merged implications section",
+    );
     assert.doesNotMatch(buyerMarkup, /(?:€|\b\d+(?:[.,]\d+)?\s*(?:%|x|M€|€m))/);
     assert.doesNotMatch(rendered, /\b(?:MOIC|TRI|IRR)\b/i);
-    assert.doesNotMatch(rendered, /(?:download=|Modele_Carveout_Opella\.xlsx)/i);
+    const opellaWorkbookLinks = [...rendered.matchAll(/<a\b[^>]*>/g)]
+      .map((match) => match[0])
+      .filter((tag) => tag.includes("downloads/opella/Opella-Carveout-Model.xlsx"));
+    assert.equal(opellaWorkbookLinks.length, 2, `${language} must expose two Opella workbook links`);
+    assert.ok(opellaWorkbookLinks.every((tag) => (
+      tag.includes('download="Opella-Carveout-Model.xlsx"')
+    )), `${language} Opella workbook links must force the public filename`);
+    assert.doesNotMatch(rendered, /Modele_Carveout_Opella\.xlsx/i);
+    assert.doesNotMatch(rendered, /Aucun fichier Opella|No Opella file is offered/i);
 
     const methodStart = rendered.indexOf('class="opella-method"');
     const transactionStart = rendered.indexOf('id="transaction"');
@@ -517,8 +556,8 @@ try {
     const sourcesMarkup = rendered.slice(sourcesStart);
     assert.equal(
       (sourcesMarkup.match(/data-source-registry-id="S[1-6]"/g) ?? []).length,
-      6,
-      "The compact register must preserve S1-S6",
+      0,
+      "The public source register must not expose internal S1-S6 identifiers",
     );
     assert.equal(
       (sourcesMarkup.match(/<summary>/g) ?? []).length,
@@ -561,14 +600,15 @@ try {
       }
     }
     assert.doesNotMatch(rendered, /<a [^>]*data-source-id="S4"/);
-    const s4Registry = rendered.slice(
-      rendered.indexOf('data-source-registry-id="S4"'),
-      rendered.indexOf('data-source-registry-id="S5"'),
-    );
+    const internalModelLabel = language === "fr"
+      ? "Modèle Opella — hypothèses illustratives"
+      : "Opella model — illustrative assumptions";
+    const internalModelStart = rendered.indexOf(internalModelLabel);
+    const s4Registry = rendered.slice(internalModelStart, rendered.indexOf("</article>", internalModelStart));
     assert.doesNotMatch(s4Registry, /<a\b/);
     assert.match(
       markupText(s4Registry),
-      /(?:Hypothèse interne|Internal assumption).*(?:Non applicable|Not applicable)/i,
+      /(?:hypothèses internes illustratives|illustrative internal assumptions).*(?:Source externe|External source).*(?:Aucune|None)/i,
       "S4 must not look like a published public source",
     );
   }
@@ -600,9 +640,9 @@ try {
         ? `\\b${escaped}\\b`
         : escaped;
       assert.doesNotMatch(
-        rendered,
+        markupText(rendered),
         new RegExp(pattern, "i"),
-        `${language} Opella DOM contains forbidden public term ${term}`,
+        `${language} Opella public copy contains forbidden term ${term}`,
       );
     }
   }
@@ -612,5 +652,5 @@ try {
 
 console.log("Web quality registry: OK");
 console.log("Portfolio projects: Sidetrade / Opella / Real Estate");
-console.log("Downloads: 1 workbook + 3 PDFs verified; Opella downloads remain disabled");
+console.log("Downloads: Sidetrade workbook, Opella workbook and 3 PDFs verified");
 console.log("GitHub Pages metadata and SPA fallback: configured");

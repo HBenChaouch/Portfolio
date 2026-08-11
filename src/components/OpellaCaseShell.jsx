@@ -4,6 +4,7 @@ import { useOpellaScenario } from "../context/OpellaScenarioContext.jsx";
 import {
   createOpellaCopy,
   opellaNavigation,
+  opellaPublicWorkbook,
 } from "../data/opellaCase.js";
 import {
   buildOpellaAnalysisLocation,
@@ -23,6 +24,13 @@ export default function OpellaCaseShell() {
   const controls = (
     <>
       <span className="opella-model-status">{copy("shell.status")}</span>
+      <a
+        className="opella-shell-download"
+        download={opellaPublicWorkbook.file}
+        href={opellaPublicWorkbook.href}
+      >
+        {copy("shell.download")}
+      </a>
       <button
         className="opella-shell-reset"
         disabled={isCentral}

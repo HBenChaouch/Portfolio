@@ -9,6 +9,7 @@ import { useOpellaScenario } from "../context/OpellaScenarioContext.jsx";
 import {
   createOpellaCopy,
   opellaDiligenceItems,
+  opellaPublicWorkbook,
   opellaTransactionScopeEditorial,
 } from "../data/opellaCase.js";
 import { opellaFinancials } from "../data/opellaFinancials.js";
@@ -22,11 +23,11 @@ const stateCopyIds = {
   "croissant à l'horizon": "funding.state.growing",
 };
 
-const stateMessageIds = {
-  "résorbé": "funding.message.resorbed",
-  plateau: "funding.message.plateau",
-  "non résorbé à l'horizon": "funding.message.nonResorbed",
-  "croissant à l'horizon": "funding.message.growing",
+const stateSummaryIds = {
+  "résorbé": "funding.summary.resorbed",
+  plateau: "funding.summary.plateau",
+  "non résorbé à l'horizon": "funding.summary.nonResorbed",
+  "croissant à l'horizon": "funding.summary.growing",
 };
 
 const statusCopyIds = {
@@ -41,13 +42,6 @@ const leverStateCopyIds = {
   basse: "common.low",
   centrale: "common.central",
   haute: "common.high",
-};
-
-const leverUnitCopyIds = {
-  "S-COST": "lever.unit.multiplierRunRate",
-  "S-TSA": "lever.unit.months",
-  "S-ONEOFF": "lever.unit.multiplierAmount",
-  "S-OPS": "lever.unit.ops",
 };
 
 function localeFor(language) {
@@ -75,6 +69,19 @@ function formatNumber(value, language, decimals = 1, signed = false) {
 
 function formatMoney(value, language, { decimals = 1, signed = false } = {}) {
   const amount = formatNumber(value, language, decimals, signed);
+  return language === "en" ? `€${amount}m` : `${amount} M€`;
+}
+
+function formatAccountingAmount(value, language, { decimals = 2, positiveSign = false } = {}) {
+  const amount = formatNumber(Math.abs(value), language, decimals);
+  if (value < 0) return `(${amount})`;
+  return positiveSign && value > 0 ? `+${amount}` : amount;
+}
+
+function formatAccountingMoney(value, language, { decimals = 1, positiveSign = false } = {}) {
+  const amount = formatNumber(Math.abs(value), language, decimals);
+  if (value < 0) return language === "en" ? `(€${amount}m)` : `(${amount} M€)`;
+  if (positiveSign && value > 0) return language === "en" ? `+€${amount}m` : `+${amount} M€`;
   return language === "en" ? `€${amount}m` : `${amount} M€`;
 }
 
@@ -120,15 +127,6 @@ function formatTextList(values, language) {
   }).format(values);
 }
 
-function periodDisplay(periods, periodId, language, copy) {
-  const period = periods.find(({ id }) => id === periodId);
-  if (!period) return copy("common.notReached");
-  if (period.id === "P1") {
-    return `${period.id} · ${copy("calendar.stub", { year: period.end.slice(0, ISO_YEAR_TOKEN.length) })}`;
-  }
-  return `${period.id} · ${period.label}`;
-}
-
 function periodCalendarDisplay(periods, periodId, language, copy) {
   const period = periods.find(({ id }) => id === periodId);
   if (!period) return copy("common.notReached");
@@ -151,6 +149,7 @@ function ExternalSourceLink({ copy, reference, sourceId }) {
     <a
       aria-label={copy("sources.openAccessible", { document: reference.document })}
       data-source-id={sourceId}
+      data-source-location={reference.location}
       data-source-url={reference.url}
       href={reference.url}
       rel="noopener noreferrer"
@@ -206,6 +205,21 @@ function Section({ children, className = "", id, kicker, title }) {
       </header>
       {children}
     </section>
+  );
+}
+
+function ScenarioRange({ formatValue, maximum, minimum, value }) {
+  const position = maximum === minimum
+    ? 50
+    : ((value - minimum) / (maximum - minimum)) * 100;
+  return (
+    <div className="opella-scenario-range">
+      <span>{formatValue(minimum)}</span>
+      <span aria-hidden="true" className="opella-scenario-range-track">
+        <i style={{ "--scenario-position": `${Math.max(0, Math.min(100, position))}%` }} />
+      </span>
+      <span>{formatValue(maximum)}</span>
+    </div>
   );
 }
 
@@ -389,69 +403,82 @@ function SourceRegistry({ copy, language, snapshot, sourcesById }) {
   return (
     <div aria-label={copy("nav.sources")} className="opella-source-registry">
       {snapshot.sources.map((source) => (
-        <article data-source-registry-id={source.id} key={source.id}>
+        <article key={source.id}>
           <details>
             <summary>
               <div>
-                <span>{source.id}</span>
                 <h3>{copy(`source.${source.id}.label`)}</h3>
                 <p>{copy(`source.${source.id}.coverage`, {
                   ev: formatBillions(snapshot.m1.enterpriseValue.value, language, 0),
                   multiple: formatMultiple(snapshot.m1.entryMultiple.value, language, 0),
-                  revenue: source.id === "S5"
-                    ? formatMoney(snapshot.m1.reportedRevenue.value, language, { decimals: 0 })
-                    : formatBillions(snapshot.m1.revenue.value, language, 0),
+                  reportedRevenue: formatMoney(snapshot.m1.reportedRevenue.value, language, { decimals: 0 }),
+                  roundedRevenue: formatBillions(snapshot.m1.revenue.value, language, 0),
                 })}</p>
               </div>
-              <StatusTag copy={copy} status={source.status} />
+              <span className="source-category">{copy(`sources.role.${source.evidence_role}`)}</span>
               <span aria-hidden="true" className="source-disclosure-mark">+</span>
             </summary>
             <div className="source-registry-detail">
               <dl>
-                <div>
-                  <dt>{copy("sources.document")}</dt>
-                  <dd>{source.id === "S4" ? copy("sources.internalOnly") : source.document}</dd>
-                </div>
-                <div>
-                  <dt>{copy("sources.scope")}</dt>
-                  <dd>{copy(`source.${source.id}.scope`, {
-                    date: formatDate(snapshot.calendar.closing, language),
-                  })}</dd>
-                </div>
-                <div>
-                  <dt>{copy("sources.location")}</dt>
-                  <dd data-source-location={source.id === "S4" ? "internal" : source.location}>
-                    {source.id === "S4" ? copy("sources.internalOnly") : source.location}
-                  </dd>
-                </div>
-                <div>
-                  <dt>{copy("sources.publicationDate")}</dt>
-                  <dd>{source.id === "S4"
-                    ? copy("common.notApplicable")
-                    : source.publication_date === "not-stated"
-                    ? copy("common.notStated")
-                    : formatDate(source.publication_date, language)}</dd>
-                </div>
-                <div>
-                  <dt>{copy("sources.accessed")}</dt>
-                  <dd>{formatDate(source.accessed, language)}</dd>
-                </div>
-                <div>
-                  <dt>{copy("sources.evidenceRole")}</dt>
-                  <dd>{copy(`sources.role.${source.evidence_role}`)}</dd>
-                </div>
+                {source.id === "S4" ? (
+                  <>
+                    <div>
+                      <dt>{copy("sources.internal.natureLabel")}</dt>
+                      <dd>{copy("sources.internal.nature")}</dd>
+                    </div>
+                    <div>
+                      <dt>{copy("sources.internal.scopeLabel")}</dt>
+                      <dd>{copy("sources.internal.scope")}</dd>
+                    </div>
+                    <div>
+                      <dt>{copy("sources.internal.horizonLabel")}</dt>
+                      <dd>{copy("sources.internal.horizon")}</dd>
+                    </div>
+                    <div>
+                      <dt>{copy("sources.internal.externalLabel")}</dt>
+                      <dd>{copy("sources.internal.external")}</dd>
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    <div>
+                      <dt>{copy("sources.document")}</dt>
+                      <dd>{source.document}</dd>
+                    </div>
+                    <div>
+                      <dt>{copy("sources.scope")}</dt>
+                      <dd>{copy(`source.${source.id}.scope`, {
+                        date: formatDate(snapshot.calendar.closing, language),
+                      })}</dd>
+                    </div>
+                    <div>
+                      <dt>{copy("sources.location")}</dt>
+                      <dd data-source-location={source.location}>{source.location}</dd>
+                    </div>
+                    <div>
+                      <dt>{copy("sources.publicationDate")}</dt>
+                      <dd>{source.publication_date === "not-stated"
+                        ? copy("common.notStated")
+                        : formatDate(source.publication_date, language)}</dd>
+                    </div>
+                    <div>
+                      <dt>{copy("sources.accessed")}</dt>
+                      <dd>{formatDate(source.accessed, language)}</dd>
+                    </div>
+                    <div>
+                      <dt>{copy("sources.evidenceRole")}</dt>
+                      <dd>{copy(`sources.role.${source.evidence_role}`)}</dd>
+                    </div>
+                  </>
+                )}
               </dl>
-              {source.references.some(({ url }) => Boolean(url)) ? (
+              {source.id !== "S4" && source.references.some(({ url }) => Boolean(url)) ? (
                 <SourceReferenceBlock
                   copy={copy}
                   sourceIds={source.id}
                   sourcesById={sourcesById}
                 />
-              ) : (
-                <p className="source-internal-only" data-source-id="S4">
-                  {copy("sources.internalOnly")}
-                </p>
-              )}
+              ) : null}
             </div>
           </details>
         </article>
@@ -515,51 +542,47 @@ function SignedWaterfall({ ariaLabel, items }) {
 
 function CashBridgeGraphic({
   ariaLabel,
+  copy,
   items,
   language,
   period,
   periodLabel,
+  reconciliations,
   total,
 }) {
-  const maximum = Math.max(
-    ...items.map(({ values }) => Math.abs(values[period])),
-    Math.abs(total),
-    Number.EPSILON,
-  );
-  const chartRows = [
-    ...items,
-    {
-      id: "cash-total",
-      label: periodLabel(period),
-      total: true,
-      values: { [period]: total },
-    },
-  ];
-
   return (
-    <div aria-label={ariaLabel} className="cash-bridge-chart" role="img">
-      <div aria-hidden="true" className="cash-bridge-heading">
-        <span>{periodLabel(period)}</span>
-        <strong>{formatMoney(total, language, { signed: true })}</strong>
+    <section aria-label={ariaLabel} className="cash-bridge-chart">
+      <div className="cash-bridge-title">
+        <h3>{copy("cash.bridgeTitle")}</h3>
+        <span>{copy("cash.bridgeUnit", { period: periodLabel(period) })}</span>
       </div>
-      <ol aria-hidden="true">
-        {chartRows.map((item) => {
-          const value = item.values[period];
-          return (
-            <li
-              className={`${value < 0 ? "cash-negative" : "cash-positive"}${item.total ? " cash-total" : ""}`}
-              key={item.id}
-            >
-              <span>{item.label}</span>
-              <div className="cash-bridge-track">
-                <i style={{ "--cash-bar-size": `${Math.abs(value) / maximum * 50}%` }} />
-              </div>
-              <strong>{formatMoney(value, language, { signed: true })}</strong>
-            </li>
-          );
-        })}
-      </ol>
-    </div>
+      <div className="cash-bridge-heading">
+        <span>{copy("cash.headline")}</span>
+        <strong>{formatMoney(total, language)}</strong>
+      </div>
+      <dl className="cash-bridge-lines">
+        {items.map((item) => (
+          <div key={item.id}>
+            <dt>{item.label}</dt>
+            <dd>{formatAccountingAmount(item.value, language, {
+              positiveSign: item.id === "cash.allocations",
+            })}</dd>
+          </div>
+        ))}
+        <div className="cash-total">
+          <dt>{copy("cash.generated", { period: periodLabel(period) })}</dt>
+          <dd>{formatAccountingAmount(total, language)}</dd>
+        </div>
+      </dl>
+      <div className="cash-bridge-reconciliations">
+        {reconciliations.map((item) => (
+          <p key={item.id}>
+            <strong>{item.label}</strong>
+            <span>{item.formula}</span>
+          </p>
+        ))}
+      </div>
+    </section>
   );
 }
 
@@ -589,7 +612,10 @@ function TsaExitBars({ copy, language, services }) {
             </div>
             <div className="opella-tsa-exit-values">
               <strong>{copy("tsa.months", { value: service.duration })}</strong>
-              <span>{copy("tsa.doubleRunShort", { value: service.doubleRunMonths })}</span>
+              <span>{copy(
+                `tsa.doubleRunShort.${service.doubleRunMonths === 1 ? "one" : "other"}`,
+                { value: service.doubleRunMonths },
+              )}</span>
               <small>
                 {formatMoney(Math.abs(service.monthly), language)} {copy("tsa.perMonth")}
               </small>
@@ -730,20 +756,20 @@ function OneOffPhasingChart({ copy, language, periods, transitionEconomics }) {
 }
 
 function FundingCurve({
+  annotation,
   copy,
   language,
   peak,
   periodLabel,
   periods,
   stateLabel,
-  terminal,
 }) {
-  const width = 920;
-  const height = 300;
-  const left = 52;
-  const right = 24;
-  const top = 28;
-  const bottom = 56;
+  const width = 700;
+  const height = 260;
+  const left = 82;
+  const right = 60;
+  const top = 24;
+  const bottom = 48;
   const maximum = Math.max(...periods.map(({ need }) => need), Number.EPSILON);
   const usableWidth = width - left - right;
   const usableHeight = height - top - bottom;
@@ -753,8 +779,11 @@ function FundingCurve({
   const areaPoints = `${left},${top + usableHeight} ${points} ${width - right},${top + usableHeight}`;
 
   return (
-    <div className="funding-overview">
-      <div className="funding-visual">
+    <div className="funding-visual">
+      <div className="funding-chart-heading">
+        <h3>{copy("funding.profileTitle")}</h3>
+        <span>{copy("funding.profileUnit")}</span>
+      </div>
         <div
           aria-label={copy("funding.chartLabel", { state: stateLabel })}
           className="funding-curve"
@@ -770,14 +799,19 @@ function FundingCurve({
                   className={row.period === peak.period ? "funding-point peak" : "funding-point"}
                   cx={xFor(index)}
                   cy={yFor(row.need)}
-                  r={row.period === peak.period ? 7 : 5}
+                  r={row.period === peak.period ? 6 : 4}
                 />
-              <text className="funding-value-label" textAnchor="middle" x={xFor(index)} y={Math.max(20 - 2, yFor(row.need) - 12 - 2)}>
+                <text className="funding-value-label" textAnchor="middle" x={xFor(index)} y={Math.max(20 - 2, yFor(row.need) - 12 - 2)}>
                   {formatMoney(row.need, language)}
                 </text>
                 <text className="funding-period-label" textAnchor="middle" x={xFor(index)} y={height - 20}>
-                  {row.period}
+                  {periodLabel(row.period)}
                 </text>
+                {row.period === peak.period ? (
+                  <text className="funding-peak-label" textAnchor="middle" x={xFor(index)} y={Math.max(34, yFor(row.need) + 24)}>
+                    {copy("funding.peakShort")}
+                  </text>
+                ) : null}
               </g>
             ))}
           </svg>
@@ -791,53 +825,66 @@ function FundingCurve({
             </article>
           ))}
         </div>
-      </div>
-      <div className="funding-outcomes">
-        <article>
-          <span>{copy("kpi.peak")}</span>
-          <strong>{formatMoney(peak.value, language)}</strong>
-          <small>{periodLabel(peak.period)}</small>
-        </article>
-        <article>
-          <span>{copy("funding.stateTitle")}</span>
-          <strong>{stateLabel}</strong>
-          <small>{periodLabel(terminal.period)} · {formatMoney(terminal.need, language)}</small>
-        </article>
-      </div>
+        <div className="funding-chart-annotation">
+          <div>
+            <span>{copy("funding.stateTitle")}</span>
+            <strong>{stateLabel}</strong>
+          </div>
+          <p>{annotation.summary}</p>
+          <p className="funding-chart-peak">
+            <span>{copy("kpi.peak")}</span>
+            <strong>{formatMoney(annotation.peak.value, language)} · {periodLabel(annotation.peak.period)}</strong>
+          </p>
+        </div>
     </div>
   );
 }
 
-function leverValue(id, value, language) {
+function FundingAssumptions({ assumptions, copy }) {
+  return (
+    <aside className="funding-assumptions">
+      <h3>{copy("funding.assumptionsTitle")}</h3>
+      <dl>
+        {assumptions.map((item) => (
+          <div key={item.id}>
+            <dt>{item.label}</dt>
+            <dd>{item.value}</dd>
+          </div>
+        ))}
+      </dl>
+    </aside>
+  );
+}
+
+function leverStateLabel(id, state, copy) {
+  return id === "S-TSA"
+    ? copy(`scenarios.tsaState.${state}`)
+    : copy(leverStateCopyIds[state]);
+}
+
+function leverValue(id, value, language, copy) {
   if (id === "S-OPS") {
     return `${formatPercent(value[0], language, 1)} / ${formatNumber(value[1] * 100, language, 1)} pt`;
   }
-  if (id === "S-TSA") return `${formatNumber(value, language, 0, true)} m`;
-  return `${formatNumber(value, language, 2)}x`;
-}
-
-function leverStep(id, states, language) {
-  const values = Object.values(states);
-  if (id === "S-OPS") {
-    const growth = Math.abs(values[1][0] - values[0][0]);
-    const margin = Math.abs(values[1][1] - values[0][1]);
-    return `${formatNumber(growth * 100, language, 1)} pt / ${formatNumber(margin * 100, language, 1)} pt`;
+  if (id === "S-TSA") {
+    return copy("scenarios.monthValue", {
+      value: formatNumber(value, language, 0, true).replace("-", "−"),
+    });
   }
-  const first = Math.abs(values[1] - values[0]);
-  const second = Math.abs(values[2] - values[1]);
-  const suffix = id === "S-TSA" ? " m" : "x";
-  return `${formatNumber(first, language, 2)}${suffix} / ${formatNumber(second, language, 2)}${suffix}`;
+  return `${formatNumber(value, language, 2)}x`;
 }
 
 export default function OpellaAnalysisView() {
   const { language } = useLanguage();
   const {
-    comparisons,
+    centralResult,
     isCentral,
     reset,
     result,
+    scenarioUniverse,
     selections,
     setLever,
+    setScenario,
   } = useOpellaScenario();
   const copy = useMemo(() => createOpellaCopy(language), [language]);
   const snapshot = opellaFinancials.snapshot;
@@ -848,14 +895,8 @@ export default function OpellaAnalysisView() {
   );
   const periods = result.calendar.periods.filter(({ inHorizon }) => inHorizon);
   const horizon = result.calendar.horizon;
-  const centralResult = comparisons.find(({ id }) => id === "central").output;
-  const periodLabel = (id) => periodDisplay(result.calendar.periods, id, language, copy);
-  const heroPeriodLabel = (id) => periodCalendarDisplay(result.calendar.periods, id, language, copy);
-  const inventoryMetadata = useMemo(
-    () => new Map(snapshot.m7.inventory.map((line) => [line.id, line])),
-    [snapshot.m7.inventory],
-  );
-  const inventory = result.modules.m7.inventory;
+  const periodLabel = (id) => periodCalendarDisplay(result.calendar.periods, id, language, copy);
+  const heroPeriodLabel = periodLabel;
   const separationComponents = result.modules.m6.separationComponents;
 
   const kpis = result.outputs;
@@ -1080,69 +1121,226 @@ export default function OpellaAnalysisView() {
     label: copy(row.id),
     values: row.amounts,
   }));
+  const firstPeriod = horizon[0];
+  const cashValue = (id, period = firstPeriod) => (
+    cashRows.find((row) => row.id === id)?.values[period] ?? 0
+  );
+  const separationCash = cashValue("cash.tsa")
+    + cashValue("cash.oneOffs")
+    + cashValue("cash.separation");
+  const taxAndReinvestment = cashValue("cash.tax")
+    + cashValue("cash.currentCapex")
+    + cashValue("cash.currentWc");
+  const cashOverviewRows = [
+    "cash.ebitda",
+    "cash.allocations",
+    "cash.standalone",
+  ].map((id) => ({ id, label: copy(id), value: cashValue(id) }));
+  cashOverviewRows.push(
+    { id: "cash.separationUses", label: copy("cash.separationUses"), value: separationCash },
+    { id: "cash.taxReinvestment", label: copy("cash.taxReinvestment"), value: taxAndReinvestment },
+  );
+  const cashReconciliations = [
+    {
+      formula: ["cash.tsa", "cash.oneOffs", "cash.separation"]
+        .map((id) => formatNumber(Math.abs(cashValue(id)), language, 2))
+        .join(" + ") + ` = ${formatMoney(Math.abs(separationCash), language, { decimals: 2 })}`,
+      id: "separation",
+      label: copy("cash.reconciliation.separation"),
+    },
+    {
+      formula: ["cash.tax", "cash.currentCapex", "cash.currentWc"]
+        .map((id) => formatNumber(Math.abs(cashValue(id)), language, 2))
+        .join(" + ") + ` = ${formatMoney(Math.abs(taxAndReinvestment), language, { decimals: 2 })}`,
+      id: "reinvestment",
+      label: copy("cash.reconciliation.reinvestment"),
+    },
+  ];
 
   const fundingRows = result.modules.m7.periods;
   const fundingLast = fundingRows.at(-1);
+  const fundingPrevious = fundingRows.at(-2);
   const state = result.modules.m7.resorb.state;
   const stateLabel = copy(stateCopyIds[state]);
   const pk = result.modules.m7.resorb.pk;
-  const tolerance = opellaFinancials.contracts.relations.find(
-    ({ id }) => id === "R-FUNDING-CUM",
-  ).tolerance;
-  const grossDiffersFromNeed = result.modules.m7.horizon.grossDiffersFromNeed;
-  const residualSurplus = result.modules.m7.horizon.residualSurplus;
+  const horizonPeriod = result.calendar.maxHorizon;
+  const horizonContribution = (predicate) => result.modules.m7.inventory
+    .filter(predicate)
+    .reduce((sum, line) => sum + line.contribution[horizonPeriod], 0);
+  const uncoveredStandaloneCosts = horizonContribution(
+    ({ module }) => module === "M2" || module === "M3",
+  );
+  const compensatingTaxEffect = horizonContribution(
+    ({ id }) => id === "L-TAXREC" || id === "L-CF-TAX",
+  );
+  const horizonMovement = result.modules.m7.horizon.delta;
+  const horizonExplanationTitle = horizonMovement > 0
+    ? copy("funding.horizonExplanation.rising", { period: periodLabel(horizonPeriod) })
+    : horizonMovement < 0
+      ? copy("funding.horizonExplanation.falling", { period: periodLabel(horizonPeriod) })
+      : copy("funding.horizonExplanation.stable", { period: periodLabel(horizonPeriod) });
 
-  const stateSlots = {
-    horizon: periodLabel(result.calendar.maxHorizon),
+  const selectedOps = opellaFinancials.contracts.engine.levers["S-OPS"]
+    .states[result.selections["S-OPS"]];
+  const weightedTsaExit = result.modules.m4.services.reduce(
+    (sum, service) => sum + Math.abs(service.monthly) * service.duration,
+    0,
+  ) / result.modules.m4.services.reduce(
+    (sum, service) => sum + Math.abs(service.monthly),
+    0,
+  );
+  const fundingAssumptions = [
+    {
+      id: "growth",
+      label: copy("funding.assumption.growth"),
+      value: formatPercent(selectedOps[0], language, 1),
+    },
+    {
+      id: "margin",
+      label: copy("funding.assumption.margin"),
+      value: copy("funding.assumption.marginValue", {
+        value: formatNumber(selectedOps[1] * 100, language, 1, true),
+      }),
+    },
+    {
+      id: "tax",
+      label: copy("funding.assumption.tax"),
+      value: formatPercent(snapshot.m6.taxRate.value, language, 0),
+    },
+    {
+      id: "capex",
+      label: copy("funding.assumption.capex"),
+      value: formatPercent(snapshot.m6.capexRate.value, language, 1),
+    },
+    {
+      id: "working-capital",
+      label: copy("funding.assumption.workingCapital"),
+      value: formatPercent(snapshot.m6.wcIntensity.value, language, 0),
+    },
+    {
+      id: "tsa-exit",
+      label: copy("funding.assumption.tsaExit"),
+      value: copy("funding.assumption.months", {
+        value: formatNumber(weightedTsaExit, language, 1),
+      }),
+    },
+  ];
+
+  const fundingSummary = copy(stateSummaryIds[state], {
+    amount: formatMoney(fundingLast.need, language),
+    horizon: periodLabel(fundingLast.period),
     pk: pk ? periodLabel(pk) : copy("common.notApplicable"),
-  };
-  const horizonReferenceSlots = { period: stateSlots.horizon };
-  const horizonReference = copy("funding.reference.horizon", horizonReferenceSlots);
-  const stateReference = copy("funding.reference.state", horizonReferenceSlots);
-  const finalWindowReference = copy("funding.reference.finalWindow", horizonReferenceSlots);
-  const conditionalMessages = [];
-  if (state === "résorbé" && peak.value <= tolerance) {
-    conditionalMessages.push(copy("funding.conditional.noNeed", stateSlots));
-  }
-  if (state === "résorbé" && peak.value > tolerance && pk === result.calendar.maxHorizon) {
-    conditionalMessages.push(copy("funding.conditional.boundaryZero"));
-  }
-  if (state === "plateau" && pk === result.calendar.maxHorizon) {
-    conditionalMessages.push(copy("funding.conditional.boundaryPlateau"));
-  }
-  if (state === "résorbé" && fundingLast.sCum < -tolerance) {
-    conditionalMessages.push(copy("funding.conditional.surplus", {
-      surplus: formatMoney(residualSurplus, language),
-    }));
-  }
-  if (state === "croissant à l'horizon" && fundingLast.need <= tolerance) {
-    conditionalMessages.push(copy("funding.conditional.zeroButGrowing", {
-      surplus: formatMoney(residualSurplus, language),
-    }));
-  }
-
-  const recurringLines = inventory
-    .filter(({ qualification }) => qualification === "récurrent")
-    .map((line) => {
-      const metadata = inventoryMetadata.get(line.id);
-      return {
-        ...line,
-        declaredEnd: metadata?.declaredEnd,
-        label: copy(`line.${line.id}`),
-        source: metadata?.source,
-        status: metadata?.status,
-      };
-    });
-
+  });
   const leverContracts = opellaFinancials.contracts.engine.levers;
-  const comparisonRows = comparisons.map((comparison) => ({
-    ...comparison,
-    label: comparison.id === "active"
-      ? copy("common.currentSelection")
-      : comparison.id === "central"
-        ? copy("common.centralCase")
-        : `${copy(`lever.${comparison.leverId}`)} · ${copy(leverStateCopyIds[comparison.state])}`,
-  }));
+  const leverOrder = ["S-COST", "S-ONEOFF", "S-OPS", "S-TSA"];
+  const scenarioPresets = [
+    {
+      id: "prudent",
+      selections: {
+        "S-COST": "haute",
+        "S-ONEOFF": "haute",
+        "S-OPS": "basse",
+        "S-TSA": "haute",
+      },
+    },
+    {
+      id: "central",
+      selections: Object.fromEntries(leverOrder.map((id) => [id, "centrale"])),
+    },
+    {
+      id: "favorable",
+      selections: {
+        "S-COST": "basse",
+        "S-ONEOFF": "basse",
+        "S-OPS": "haute",
+        "S-TSA": "basse",
+      },
+    },
+  ];
+  const selectionMatches = (candidate) => leverOrder.every(
+    (id) => selections[id] === candidate[id],
+  );
+  const activePreset = scenarioPresets.find(({ selections: candidate }) => (
+    selectionMatches(candidate)
+  ))?.id ?? "custom";
+  const centralOutputs = centralResult.outputs;
+  const activeOutputs = result.outputs;
+  const scenarioPeriod = (output, id) => periodCalendarDisplay(
+    output.calendar.periods,
+    id,
+    language,
+    copy,
+  );
+  const steadyDifference = Number(activeOutputs["O-STEADY"].value.slice(1))
+    - Number(centralOutputs["O-STEADY"].value.slice(1));
+  const scenarioMetricDefinitions = [
+    {
+      id: "O-RUNRATE",
+      active: formatMoney(activeOutputs["O-RUNRATE"].value, language),
+      central: formatMoney(centralOutputs["O-RUNRATE"].value, language),
+      delta: formatAccountingMoney(
+        activeOutputs["O-RUNRATE"].value - centralOutputs["O-RUNRATE"].value,
+        language,
+        { positiveSign: true },
+      ),
+      formatRange: (value) => formatMoney(value, language),
+      getRangeValue: (output) => output.outputs["O-RUNRATE"].value,
+      label: copy("kpi.runRate"),
+    },
+    {
+      id: "O-SEPCOST",
+      active: formatMoney(activeOutputs["O-SEPCOST"].value, language),
+      central: formatMoney(centralOutputs["O-SEPCOST"].value, language),
+      delta: formatAccountingMoney(
+        activeOutputs["O-SEPCOST"].value - centralOutputs["O-SEPCOST"].value,
+        language,
+        { positiveSign: true },
+      ),
+      formatRange: (value) => formatMoney(value, language),
+      getRangeValue: (output) => output.outputs["O-SEPCOST"].value,
+      label: copy("kpi.separationCost"),
+    },
+    {
+      id: "O-PEAK",
+      active: formatMoney(activeOutputs["O-PEAK"].value, language),
+      central: formatMoney(centralOutputs["O-PEAK"].value, language),
+      delta: formatAccountingMoney(
+        activeOutputs["O-PEAK"].value - centralOutputs["O-PEAK"].value,
+        language,
+        { positiveSign: true },
+      ),
+      formatRange: (value) => formatMoney(value, language),
+      getRangeValue: (output) => output.outputs["O-PEAK"].value,
+      label: copy("kpi.peak"),
+    },
+    {
+      id: "O-STEADY",
+      active: scenarioPeriod(result, activeOutputs["O-STEADY"].value),
+      central: scenarioPeriod(centralResult, centralOutputs["O-STEADY"].value),
+      delta: steadyDifference === 0
+        ? copy("common.noChange")
+        : copy("scenarios.yearDelta", {
+          value: formatNumber(steadyDifference, language, 0, true),
+        }),
+      formatRange: (value) => scenarioPeriod(
+        scenarioUniverse.find(({ output }) => Number(output.outputs["O-STEADY"].value.slice(1)) === value)?.output
+          ?? result,
+        `P${value}`,
+      ),
+      getRangeValue: (output) => Number(output.outputs["O-STEADY"].value.slice(1)),
+      description: copy("scenarios.steadyExplanation"),
+      label: copy("scenarios.steadyIndicator"),
+    },
+  ];
+  const scenarioComparisonRows = scenarioMetricDefinitions.map((definition) => {
+    const rangeValues = scenarioUniverse.map(({ output }) => definition.getRangeValue(output));
+    return {
+      ...definition,
+      maximum: Math.max(...rangeValues),
+      minimum: Math.min(...rangeValues),
+      value: definition.getRangeValue(result),
+    };
+  });
 
   const chainSteps = [
     {
@@ -1660,270 +1858,251 @@ export default function OpellaAnalysisView() {
         title={copy("cash.title")}
       >
         <p className="opella-section-intro">{copy("cash.intro")}</p>
-        <CashBridgeGraphic
-          ariaLabel={`${copy("cash.chartLabel")} · ${periodLabel(horizon[0])}`}
-          items={cashRows}
-          language={language}
-          period={horizon[0]}
-          periodLabel={periodLabel}
-          total={result.modules.m6.cash[horizon[0]]}
-        />
-        <DataTable
-          columns={[copy("cash.line"), ...horizon]}
-          getRowKey={(row) => row[0]}
-          highlightColumn={null}
-          label={copy("cash.chartLabel")}
-          rowHeaderColumn={0}
-          rows={[
-            ...cashRows.map((row) => [
-              row.label,
-              ...horizon.map((period) => formatMoney(row.values[period], language, { signed: true })),
-            ]),
-            [
-              copy("common.total"),
-              ...horizon.map((period) => formatMoney(result.modules.m6.cash[period], language, { signed: true })),
-            ],
-          ]}
-        />
-      </Section>
-
-      <Section
-        className="opella-analytical-block opella-funding-block"
-        id="funding-need"
-        kicker={copy("funding.kicker")}
-        title={copy("funding.title")}
-      >
-        <p className="opella-section-intro">{copy("funding.intro")}</p>
-        <FundingCurve
-          copy={copy}
-          language={language}
-          peak={peak}
-          periodLabel={periodLabel}
-          periods={fundingRows}
-          stateLabel={stateLabel}
-          terminal={fundingLast}
-        />
-        <DataTable
-          columns={[
-            copy("common.period"),
-            copy("funding.periodNeed"),
-            copy("funding.periodChange"),
-            copy("funding.periodRecurringGap"),
-            copy("funding.periodOneOffGap"),
-          ]}
-          getRowKey={(row) => row[0]}
-          highlightColumn={1}
-          label={copy("funding.periodTable")}
-          rowHeaderColumn={0}
-          rows={fundingRows.map((row) => [
-            periodLabel(row.period),
-            formatMoney(row.need, language),
-            formatMoney(row.s, language, { signed: true }),
-            formatMoney(row.eGap, language, { signed: true }),
-            formatMoney(row.nOneOff, language, { signed: true }),
-          ])}
-        />
-
-        <aside
-          aria-labelledby="opella-funding-state-title"
-          className="funding-state-card"
-          data-content-id="opella.funding.state"
-        >
-          <div className="funding-state-heading">
-            <span>{copy("funding.stateTitle")}</span>
-            <h3 id="opella-funding-state-title">{stateLabel}</h3>
+        <div className="cash-funding-content" id="funding-need">
+          <div className="cash-funding-grid">
+            <CashBridgeGraphic
+              ariaLabel={`${copy("cash.chartLabel")} · ${periodLabel(firstPeriod)}`}
+              copy={copy}
+              items={cashOverviewRows}
+              language={language}
+              period={firstPeriod}
+              periodLabel={periodLabel}
+              reconciliations={cashReconciliations}
+              total={result.modules.m6.cash[firstPeriod]}
+            />
+            <FundingCurve
+              annotation={{ peak, summary: fundingSummary }}
+              copy={copy}
+              language={language}
+              peak={peak}
+              periodLabel={periodLabel}
+              periods={fundingRows}
+              stateLabel={stateLabel}
+            />
+            <FundingAssumptions assumptions={fundingAssumptions} copy={copy} />
           </div>
-          <p>{copy(stateMessageIds[state], stateSlots)}</p>
-          {conditionalMessages.map((message) => <p key={message}>{message}</p>)}
-          <p>{copy("funding.notDebt")}</p>
-          <DataTable
-            columns={[
-              copy("common.indicator"),
-              copy("common.value"),
-              copy("common.reference"),
-            ]}
-            getRowKey={(row) => row[0]}
-            highlightColumn={1}
-            label={`${copy("funding.stateTitle")} · ${stateLabel}`}
-            rowHeaderColumn={0}
-            rows={[
-              [copy("funding.stateTitle"), stateLabel, stateReference],
-              [
-                state === "plateau"
-                  ? copy("funding.plateauAtHorizon")
-                  : state === "non résorbé à l'horizon"
-                    ? copy("funding.residualNeed")
-                    : copy("funding.needAtHorizon"),
-                formatMoney(fundingLast.need, language),
-                horizonReference,
-              ],
-              [
-                copy("funding.delta"),
-                formatMoney(result.modules.m7.horizon.delta, language, { signed: true }),
-                horizonReference,
-              ],
-              [
-                copy("funding.recurringGap"),
-                formatMoney(fundingLast.eGap, language, { signed: true }),
-                horizonReference,
-              ],
-              [
-                copy("funding.oneOffGap"),
-                formatMoney(fundingLast.nOneOff, language, { signed: true }),
-                horizonReference,
-              ],
-              ...(grossDiffersFromNeed ? [[
-                copy("funding.grossBalance"),
-                formatMoney(fundingLast.sCum, language, { signed: true }),
-                horizonReference,
-              ]] : []),
-              ...(state === "résorbé" && fundingLast.sCum < -tolerance
-                ? [[
-                  copy("funding.residualSurplus"),
-                  formatMoney(residualSurplus, language),
-                  horizonReference,
-                ]]
-                : []),
-              [
-                copy("funding.pk"),
-                pk ? periodLabel(pk) : copy("common.notApplicable"),
-                finalWindowReference,
-              ],
-            ]}
-          />
-          <div className="funding-counterfactual">
-            <strong>{copy("funding.counterfactual")}</strong>
-            <p>{copy("funding.counterfactualText")}</p>
-          </div>
-        </aside>
 
-        <h3 className="opella-subtitle">{copy("funding.recurringLines")}</h3>
-        <DataTable
-          columns={[
-            copy("cash.line"),
-            copy("common.value"),
-            copy("common.recurring"),
-            copy("common.declaredEnd"),
-            copy("common.status"),
-            copy("common.source"),
-          ]}
-          getRowKey={(row) => row[0]}
-          highlightColumn={1}
-          label={copy("funding.recurringLines")}
-          rowHeaderColumn={0}
-          rows={recurringLines.map((line) => [
-            line.label,
-            formatMoney(line.contribution[result.calendar.maxHorizon], language, { signed: true }),
-            copy("common.recurring"),
-            line.declaredEnd ? periodLabel(line.declaredEnd) : copy("common.noDeclaredEnd"),
-            statusLabel(line.status, copy),
-            line.source,
-          ])}
-        />
+          <details className="cash-funding-details">
+            <summary>{copy("cash.detailsSummary")}</summary>
+            <div className="cash-funding-details-body">
+              <h3>{copy("cash.matrixTitle")}</h3>
+              <DataTable
+                columns={[copy("cash.line"), ...horizon.map(periodLabel)]}
+                getRowKey={(row) => row[0]}
+                highlightColumn={null}
+                label={copy("cash.chartLabel")}
+                rowHeaderColumn={0}
+                rows={[
+                  ...cashRows.map((row) => [
+                    row.label,
+                    ...horizon.map((period) => formatMoney(row.values[period], language, { signed: true })),
+                  ]),
+                  [
+                    copy("common.total"),
+                    ...horizon.map((period) => formatMoney(result.modules.m6.cash[period], language, { signed: true })),
+                  ],
+                ]}
+              />
+
+              <h3>{copy("funding.periodTable")}</h3>
+              <DataTable
+                columns={[
+                  copy("common.period"),
+                  copy("funding.periodNeed"),
+                  copy("funding.periodChange"),
+                  copy("funding.periodRecurringGap"),
+                  copy("funding.periodOneOffGap"),
+                ]}
+                getRowKey={(row) => row[0]}
+                highlightColumn={1}
+                label={copy("funding.periodTable")}
+                rowHeaderColumn={0}
+                rows={fundingRows.map((row) => [
+                  periodLabel(row.period),
+                  formatMoney(row.need, language),
+                  formatMoney(row.s, language, { signed: true }),
+                  formatMoney(row.eGap, language, { signed: true }),
+                  formatMoney(row.nOneOff, language, { signed: true }),
+                ])}
+              />
+
+              <section
+                aria-labelledby="opella-funding-state-title"
+                className="funding-horizon-explanation"
+                data-content-id="opella.funding.state"
+              >
+                <h3 id="opella-funding-state-title">{horizonExplanationTitle}</h3>
+                <dl>
+                  <div>
+                    <dt>{copy("funding.horizonExplanation.need", { period: periodLabel(horizonPeriod) })}</dt>
+                    <dd>{formatAccountingMoney(fundingLast.need, language)}</dd>
+                  </div>
+                  <div>
+                    <dt>{copy("funding.horizonExplanation.change", { period: periodLabel(fundingPrevious.period) })}</dt>
+                    <dd>{formatAccountingMoney(horizonMovement, language, { positiveSign: true })}</dd>
+                  </div>
+                  <div>
+                    <dt>{copy("funding.horizonExplanation.uncoveredStandalone")}</dt>
+                    <dd>{formatAccountingMoney(uncoveredStandaloneCosts, language, { positiveSign: true })}</dd>
+                  </div>
+                  <div>
+                    <dt>{copy("funding.horizonExplanation.taxOffset")}</dt>
+                    <dd>{formatAccountingMoney(compensatingTaxEffect, language)}</dd>
+                  </div>
+                  <div className="is-net">
+                    <dt>{copy("funding.horizonExplanation.netRecurring")}</dt>
+                    <dd>{formatAccountingMoney(fundingLast.eGap, language, { positiveSign: true })}</dd>
+                  </div>
+                  <div>
+                    <dt>{copy("funding.horizonExplanation.remainingOneOff")}</dt>
+                    <dd>{formatAccountingMoney(fundingLast.nOneOff, language)}</dd>
+                  </div>
+                </dl>
+                <p>{copy(`funding.horizonExplanation.conclusion.${stateCopyIds[state].split(".").at(-1)}`)}</p>
+              </section>
+            </div>
+          </details>
+        </div>
       </Section>
 
       <Section
         className="opella-analytical-block opella-scenarios-block"
         id="scenarios"
-        kicker={copy("scenarios.kicker")}
         title={copy("scenarios.title")}
       >
-        <p className="opella-section-intro">{copy("scenarios.intro")}</p>
+        <div aria-live="polite" className="opella-scenario-top-action">
+          {isCentral
+            ? <span>{copy("scenarios.centralActive")}</span>
+            : <button onClick={reset} type="button">{copy("scenarios.reset")}</button>}
+        </div>
+
+        <div className="opella-scenario-presets">
+          <div className="opella-scenario-presets-intro">
+            <h3>{copy("scenarios.presets")}</h3>
+            <p>{copy("scenarios.presetsIntro")}</p>
+          </div>
+          {scenarioPresets.map((preset) => (
+            <button
+              aria-pressed={activePreset === preset.id}
+              className="opella-scenario-preset"
+              key={preset.id}
+              onClick={() => setScenario(preset.selections)}
+              type="button"
+            >
+              <strong>{copy(`scenarios.preset.${preset.id}`)}</strong>
+              <span>
+                {leverOrder.map((id) => (
+                  <span key={id}>
+                    {id === "S-TSA" ? copy("scenarios.tsaPresetLabel") : copy(`lever.${id}`)} : {leverStateLabel(id, preset.selections[id], copy)}
+                  </span>
+                ))}
+              </span>
+            </button>
+          ))}
+          <div className={`opella-scenario-preset is-custom${activePreset === "custom" ? " is-active" : ""}`}>
+            <strong>{copy("scenarios.preset.custom")}</strong>
+            <p>{copy("scenarios.preset.customText")}</p>
+          </div>
+        </div>
+
         <div aria-label={copy("scenarios.panelLabel")} className="opella-scenario-panel" role="group">
-          {Object.entries(leverContracts).map(([id, contract]) => (
-            <fieldset className="opella-lever" key={id}>
-              <legend>{copy(`lever.${id}`)}</legend>
-              <div className="opella-lever-meta">
-                <span>{copy("scenarios.unit", { unit: copy(leverUnitCopyIds[id]) })}</span>
-                <span>{copy("scenarios.step", { step: leverStep(id, contract.states, language) })}</span>
-              </div>
+          {leverOrder.map((id) => {
+            const contract = leverContracts[id];
+            const headingId = `opella-lever-${id.toLowerCase()}`;
+            return (
+            <div aria-labelledby={headingId} className="opella-lever" key={id} role="group">
+              <h3 id={headingId}>
+                <span>{leverOrder.indexOf(id) + 1}.</span> {copy(`lever.${id}`)}
+              </h3>
               <div className="opella-lever-options">
                 {Object.entries(contract.states).map(([leverState, value]) => (
                   <button
-                    aria-label={`${copy(`lever.${id}`)} · ${copy(leverStateCopyIds[leverState])} · ${leverValue(id, value, language)}`}
+                    aria-label={`${copy(`lever.${id}`)} · ${leverStateLabel(id, leverState, copy)} · ${leverValue(id, value, language, copy)}`}
                     aria-pressed={selections[id] === leverState}
                     key={leverState}
                     onClick={() => setLever(id, leverState)}
                     type="button"
                   >
-                    <span>{copy(leverStateCopyIds[leverState])}</span>
-                    <strong>{leverValue(id, value, language)}</strong>
+                    <span>{leverStateLabel(id, leverState, copy)}</span>
+                    <strong>{leverValue(id, value, language, copy)}</strong>
                   </button>
                 ))}
               </div>
-            </fieldset>
-          ))}
-          <div aria-live="polite" className="opella-scenario-summary">
-            <span>{isCentral ? copy("common.centralCase") : copy("common.currentSelection")}</span>
-            <button disabled={isCentral} onClick={reset} type="button">
-              {copy("scenarios.reset")}
-            </button>
-          </div>
+            </div>
+            );
+          })}
         </div>
-        <h3 className="opella-subtitle">{copy("scenarios.comparison")}</h3>
+
         <div className="opella-scenario-comparison">
-          <DataTable
-            columns={[
-              copy("scenarios.combination"),
-              copy("kpi.runRate"),
-              copy("kpi.separationCost"),
-              copy("kpi.peak"),
-              copy("kpi.steady"),
-            ]}
-            getRowKey={(row) => row[0]}
-            highlightColumn={null}
-            label={copy("scenarios.comparison")}
-            rowHeaderColumn={0}
-            rows={comparisonRows.map(({ label, output }) => [
-              label,
-              formatMoney(output.outputs["O-RUNRATE"].value, language),
-              formatMoney(output.outputs["O-SEPCOST"].value, language),
-              `${formatMoney(output.outputs["O-PEAK"].value, language)} · ${periodDisplay(
-                output.calendar.periods,
-                output.outputs["O-PEAK"].period,
-                language,
-                copy,
-              )}`,
-              periodDisplay(
-                output.calendar.periods,
-                output.outputs["O-STEADY"].value,
-                language,
-                copy,
-              ),
-            ])}
-          />
+          <div className="opella-scenario-comparison-heading">
+            <h3>{copy("scenarios.comparison")}</h3>
+            <p>{copy("scenarios.impactsIntro")}</p>
+          </div>
+          <div className="table-scroll" tabIndex="0">
+            <table className="opella-scenario-impact-table">
+              <caption className="sr-only">{copy("scenarios.comparison")}</caption>
+              <thead>
+                <tr>
+                  <th scope="col">{copy("common.indicator")}</th>
+                  <th scope="col">{copy("scenarios.range")}</th>
+                  <th scope="col">{copy("common.centralCase")}</th>
+                  <th className="is-current" scope="col">{copy("common.currentSelection")}</th>
+                  <th scope="col">{copy("scenarios.delta")}</th>
+                </tr>
+              </thead>
+              <tbody>
+                {scenarioComparisonRows.map((row) => (
+                  <tr key={row.id}>
+                    <th scope="row">
+                      <span>{row.label}</span>
+                      {row.description ? <small>{row.description}</small> : null}
+                    </th>
+                    <td>
+                      <ScenarioRange
+                        formatValue={row.formatRange}
+                        maximum={row.maximum}
+                        minimum={row.minimum}
+                        value={row.value}
+                      />
+                    </td>
+                    <td>{row.central}</td>
+                    <td className="is-current">{row.active}</td>
+                    <td>{row.delta}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
       </Section>
 
       <Section
-        className="opella-diligence-buyer"
+        className="opella-decision-diligence"
         id="buyer-implications"
         kicker={copy("buyer.kicker")}
         title={copy("buyer.title")}
       >
-        <aside aria-label={`${copy("buyer.title")} · ${copy("common.illustrative")}`} className="buyer-implications">
-          <p>{copy("buyer.qualitative")}</p>
-          <a href="#diligence">{copy("buyer.link")} ↓</a>
-        </aside>
-      </Section>
-
-      <Section
-        className="opella-diligence-main"
-        id="diligence"
-        kicker={copy("diligence.kicker")}
-        title={copy("diligence.title")}
-      >
+        <span aria-hidden="true" className="anchor-alias" id="diligence" />
+        <div className="opella-implications-summary">
+          <h3>{copy("buyer.implicationsTitle")}</h3>
+          <ul>
+            {["autonomy", "tsa", "separation", "funding", "persistence"].map((id) => (
+              <li key={id}>{copy(`buyer.implication.${id}`)}</li>
+            ))}
+          </ul>
+        </div>
+        <h3 className="opella-diligence-title">{copy("diligence.title")}</h3>
         <p className="opella-section-intro">{copy("diligence.intro")}</p>
         <DataTable
-          columns={[copy("diligence.item"), copy("diligence.effect"), copy("common.status")]}
+          columns={[copy("diligence.item"), copy("diligence.why"), copy("diligence.effect")]}
           getRowKey={(row) => row[0]}
           highlightColumn={null}
           label={copy("nav.diligence")}
           rowHeaderColumn={0}
           rows={opellaDiligenceItems.map((id) => [
             copy(id),
+            copy(`${id}.why`),
             copy(`${id}.effect`),
-            copy("common.toConfirm"),
           ])}
         />
       </Section>
@@ -1936,25 +2115,36 @@ export default function OpellaAnalysisView() {
           snapshot={snapshot}
           sourcesById={sourcesById}
         />
-        <div className="opella-limitations">
-          <p>{copy("sources.limit.estimates")}</p>
-          <p>{copy("sources.limit.stub")}</p>
-          <p>{copy("sources.limit.noFullCashflow")}</p>
-          <p>{copy("sources.limit.noUnderwriting")}</p>
-          <p className="opella-no-download">{copy("sources.noDownload")}</p>
+        <div className="opella-source-footnotes">
+          <section id="methodology">
+            <h3>{copy("sources.conventionsTitle")}</h3>
+            <ul>
+              {["stub", "steady", "signs", "separationCost", "counterfactual"].map((id) => (
+                <li key={id}>{copy(`methodology.${id}`)}</li>
+              ))}
+            </ul>
+          </section>
+          <section>
+            <h3>{copy("sources.limitationsTitle")}</h3>
+            <ul>
+              {["estimates", "stub", "noFullCashflow", "noUnderwriting"].map((id) => (
+                <li key={id}>{copy(`sources.limit.${id}`)}</li>
+              ))}
+            </ul>
+          </section>
+          <aside className="opella-model-download">
+            <div>
+              <h3>{copy("sources.download.title")}</h3>
+              <p>{copy("sources.download.text")}</p>
+            </div>
+            <a
+              download={opellaPublicWorkbook.file}
+              href={opellaPublicWorkbook.href}
+            >
+              {copy("sources.download.button")}
+            </a>
+          </aside>
         </div>
-
-        <section className="opella-methodology" id="methodology">
-          <p className="eyebrow">{copy("methodology.kicker")}</p>
-          <h3>{copy("methodology.title")}</h3>
-          <div>
-            <p>{copy("methodology.stub")}</p>
-            <p>{copy("methodology.steady")}</p>
-            <p>{copy("methodology.signs")}</p>
-            <p>{copy("methodology.separationCost")}</p>
-            <p>{copy("methodology.counterfactual")}</p>
-          </div>
-        </section>
       </Section>
     </article>
   );

@@ -23,6 +23,8 @@ const ENGINE_TO_URL_STATE = Object.freeze({
 });
 
 const CENTRAL_STATE = "centrale";
+const READING_POSITION_STABILIZATION_FRAMES = Object.keys(OPELLA_SCENARIO_PARAMS).length;
+const READING_POSITION_TOLERANCE_PX = 1 / 2;
 
 function selectionsFromSearch(search) {
   const params = new URLSearchParams(search);
@@ -45,27 +47,30 @@ export function OpellaScenarioProvider({ children }) {
     [selections],
   );
   const centralResult = useMemo(() => calculateOpella(opellaFinancials), []);
-  const comparisons = useMemo(() => [
-    { id: "active", output: result },
-    { id: "central", output: centralResult },
-    ...Object.entries(opellaFinancials.contracts.engine.levers).flatMap(([id]) => (
-      ["basse", "haute"].map((state) => ({
-        id: `${id}-${state}`,
-        leverId: id,
-        output: calculateOpella(opellaFinancials, { [id]: state }),
-        state,
-      }))
-    )),
-  ], [centralResult, result]);
+  const scenarioUniverse = useMemo(() => {
+    const leverEntries = Object.entries(opellaFinancials.contracts.engine.levers);
+    const combinations = leverEntries.reduce((items, [id, contract]) => (
+      items.flatMap((item) => Object.keys(contract.states).map((state) => ({
+        ...item,
+        [id]: state,
+      })))
+    ), [{}]);
+    return combinations.map((combination) => ({
+      output: calculateOpella(opellaFinancials, combination),
+      selections: combination,
+    }));
+  }, []);
 
   const captureReadingPosition = () => {
+    const activeControl = document.activeElement?.closest?.("button, input, select, textarea");
     const activeAnchor = document.activeElement?.closest?.("section[id]");
     const hashAnchor = location.hash ? document.querySelector(location.hash) : null;
-    const anchor = activeAnchor ?? hashAnchor;
-    if (!anchor?.id) return;
+    const target = activeControl ?? activeAnchor ?? hashAnchor;
+    if (!target) return;
     readingPositionRef.current = {
-      id: anchor.id,
-      top: anchor.getBoundingClientRect().top,
+      element: target,
+      id: target.id,
+      top: target.getBoundingClientRect().top,
     };
   };
 
@@ -73,15 +78,33 @@ export function OpellaScenarioProvider({ children }) {
     const readingPosition = readingPositionRef.current;
     if (!readingPosition) return;
     readingPositionRef.current = null;
-    const anchor = document.getElementById(readingPosition.id);
-    if (!anchor) return;
-    window.scrollBy(0, anchor.getBoundingClientRect().top - readingPosition.top);
+    let frame;
+    let framesRemaining = READING_POSITION_STABILIZATION_FRAMES;
+
+    function preserveReadingPosition() {
+      const target = readingPosition.element?.isConnected
+        ? readingPosition.element
+        : readingPosition.id
+          ? document.getElementById(readingPosition.id)
+          : null;
+      if (!target) return;
+      const delta = target.getBoundingClientRect().top - readingPosition.top;
+      if (Math.abs(delta) > READING_POSITION_TOLERANCE_PX) {
+        window.scrollBy({ behavior: "instant", left: 0, top: delta });
+      }
+      framesRemaining -= 1;
+      if (framesRemaining > 0) frame = window.requestAnimationFrame(preserveReadingPosition);
+    }
+
+    frame = window.requestAnimationFrame(preserveReadingPosition);
+    return () => window.cancelAnimationFrame(frame);
   }, [location.search]);
 
   const value = useMemo(() => ({
-    comparisons,
+    centralResult,
     isCentral: Object.values(selections).every((state) => state === CENTRAL_STATE),
     reset() {
+      window.dispatchEvent(new Event("portfolio:content-interaction"));
       captureReadingPosition();
       const params = new URLSearchParams(location.search);
       Object.values(OPELLA_SCENARIO_PARAMS).forEach((parameter) => params.delete(parameter));
@@ -96,10 +119,31 @@ export function OpellaScenarioProvider({ children }) {
       });
     },
     result,
+    scenarioUniverse,
     selections,
+    setScenario(nextSelections) {
+      window.dispatchEvent(new Event("portfolio:content-interaction"));
+      captureReadingPosition();
+      const params = new URLSearchParams(location.search);
+      Object.entries(OPELLA_SCENARIO_PARAMS).forEach(([id, parameter]) => {
+        const encoded = ENGINE_TO_URL_STATE[nextSelections[id]];
+        if (encoded) params.set(parameter, encoded);
+        else params.delete(parameter);
+      });
+      const search = params.toString();
+      navigate({
+        pathname: location.pathname,
+        search: search ? `?${search}` : "",
+        hash: location.hash,
+      }, {
+        preventScrollReset: true,
+        replace: true,
+      });
+    },
     setLever(id, state) {
       const parameter = OPELLA_SCENARIO_PARAMS[id];
       if (!parameter) return;
+      window.dispatchEvent(new Event("portfolio:content-interaction"));
       captureReadingPosition();
       const params = new URLSearchParams(location.search);
       const encoded = ENGINE_TO_URL_STATE[state];
@@ -116,12 +160,13 @@ export function OpellaScenarioProvider({ children }) {
       });
     },
   }), [
-    comparisons,
+    centralResult,
     location.hash,
     location.pathname,
     location.search,
     navigate,
     result,
+    scenarioUniverse,
     selections,
   ]);
 

@@ -12,10 +12,12 @@ import {
   runOpellaFundingVector,
 } from "../src/utils/opellaEngine.js";
 import {
+  assertCanonicalLfTextFileSha256,
   assertClosedDirectory,
   assertFileSha256,
   assertNoUnapprovedNumericLiterals,
   assertUnique,
+  readCanonicalLfText,
   readJson,
 } from "./integration-manifest.mjs";
 import {
@@ -323,13 +325,21 @@ function executeOpellaFalsifications(snapshot, sourceManifest, tolerance) {
 async function verifySourceBoundary(sourceRoot, bundleManifest, bundledEngineContract) {
   for (const source of bundleManifest.sourceFiles) {
     const relative = source.path.replace(/^Transaction Services\//, "");
-    await assertFileSha256(path.join(sourceRoot, relative), source.sha256, source.path);
+    if (relative === opellaSourceNames.snapshot) {
+      await assertCanonicalLfTextFileSha256(
+        path.join(sourceRoot, relative),
+        source.sha256,
+        source.path,
+      );
+    } else {
+      await assertFileSha256(path.join(sourceRoot, relative), source.sha256, source.path);
+    }
   }
 
   assert.equal(
-    await readFile(path.join(sourceRoot, opellaSourceNames.snapshot), "utf8"),
+    await readCanonicalLfText(path.join(sourceRoot, opellaSourceNames.snapshot)),
     await readFile(path.join(bundleRoot, "snapshot.json"), "utf8"),
-    "TS snapshot and integrated snapshot must be byte-identical",
+    "TS snapshot and integrated snapshot must be canonical-LF identical",
   );
   assert.equal(
     await readFile(path.join(sourceRoot, opellaSourceNames.manifest), "utf8"),
@@ -393,11 +403,27 @@ export async function runOpellaIntegrationChecks({ sourceRoot } = {}) {
     assert.equal(file.mime, expectedMime, `${file.path} has an unexpected bundle MIME`);
     await assertFileSha256(path.join(bundleRoot, file.path), file.sha256, `bundle ${file.path}`);
   }
-  assert.deepEqual(bundleManifest.downloads, []);
-  assert.equal(bundleManifest.pass, "O2-E");
+  assert.deepEqual(bundleManifest.downloads, [
+    {
+      path: "public/downloads/opella/Opella-Carveout-Model.xlsx",
+      href: "downloads/opella/Opella-Carveout-Model.xlsx",
+      filename: "Opella-Carveout-Model.xlsx",
+      mime: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      sha256: "88BA625D017DE59DEEE6DA281D87D68DCC2F853E467046C8E03E5D0B9366EF8C",
+      sourcePath: "Transaction Services/Modele_Carveout_Opella.xlsx",
+      sourceSha256: "EB7F9BB678A79BC827C60D4E773F9398D2CA3999CAB3F251D1C9CFA1C5D5F1FF",
+      role: "Microsoft Excel-recalculated public copy of the complete Opella model.",
+    },
+  ]);
+  await assertFileSha256(
+    path.join(repositoryRoot, bundleManifest.downloads[0].path),
+    bundleManifest.downloads[0].sha256,
+    "public Opella workbook",
+  );
+  assert.equal(bundleManifest.pass, "OP-OPella-PUBLIC-MODEL-01");
   assert.equal(
     bundleManifest.sourceBaseline.commit,
-    "8ad69b3152d237116e164cc5b4fdffd49b15308b",
+    "0145062d416640714888e1b672a0a81950bc8d9f",
   );
   assert.deepEqual(bundleManifest.presentationFiles, [
     "src/App.jsx",
@@ -426,8 +452,8 @@ export async function runOpellaIntegrationChecks({ sourceRoot } = {}) {
     canonical: false,
     sitemap: false,
     fallback: false,
-    download: false,
-    publicWorkbook: false,
+    download: true,
+    publicWorkbook: true,
     publicBuildPage: true,
   });
   assert.equal(bundleManifest.financialRegistryFields.count, sourceManifest.financialRegistryFields.length);
@@ -472,6 +498,25 @@ export async function runOpellaIntegrationChecks({ sourceRoot } = {}) {
     ],
     S6: [
       "https://www.opella.com/en/investors",
+      "https://www.opella.com/en/meet-opella",
+      "https://www.opella.com/en/making-headlines/breaking-news/2026-essentiale-economics-obesity-metabolic-health-summit",
+    ],
+  };
+  const expectedS6ReferenceMetadata = {
+    "https://www.opella.com/en/investors": [
+      "Investors — Key figures",
+      "Sections “Who we are” and “Key figures”",
+      "not-stated",
+    ],
+    "https://www.opella.com/en/meet-opella": [
+      "Meet Opella",
+      "Section “Our leaders”, profile “Rafik Amrane”",
+      "not-stated",
+    ],
+    "https://www.opella.com/en/making-headlines/breaking-news/2026-essentiale-economics-obesity-metabolic-health-summit": [
+      "Experts call for earlier recognition of fatty liver disease in people living with obesity",
+      "Section “About Opella”, second paragraph",
+      "2026-07-07",
     ],
   };
   assert.deepEqual(snapshot.sources.map(({ id }) => id), Object.keys(expectedSourceUrls));
@@ -504,6 +549,27 @@ export async function runOpellaIntegrationChecks({ sourceRoot } = {}) {
   assert.ok(snapshot.sources.find(({ id }) => id === "S4").references.every(
     (reference) => !reference.url && Boolean(reference.path),
   ));
+  const s6 = snapshot.sources.find(({ id }) => id === "S6");
+  for (const reference of s6.references) {
+    assert.deepEqual(
+      [reference.document, reference.location, reference.publication_date],
+      expectedS6ReferenceMetadata[reference.url],
+      `${reference.url} must keep its precise S6 evidence location`,
+    );
+  }
+  assert.doesNotMatch(
+    [s6.document, s6.period_scope, s6.location, s6.fields].join(" "),
+    /FY\s*2024|chiffre d.affaires|\brevenus?\b|\brevenue\b|5\s*(?:Md€|bn)/i,
+    "S6 must not carry any FY2024 or revenue attribution",
+  );
+  for (const fact of [
+    "100 marques", "500 millions de consommateurs", "11 000+ salariés", "90+ nationalités",
+    "38 pays en direct", "110 pays servis indirectement", "13 sites industriels",
+    "4 centres spécialisés", "5 000+ professionnels Manufacturing & Supply",
+    "Allegra", "Buscopan", "Doliprane", "Dulcolax", "Enterogermina", "Essentiale", "Mucosolvan",
+  ]) {
+    assert.match(s6.fields, new RegExp(fact.replace(/[+]/g, "\\+")), `S6 must retain ${fact}`);
+  }
   assert.deepEqual(
     {
       ebitda: [snapshot.m1.ebitda.status, snapshot.m1.ebitda.source],
@@ -517,11 +583,23 @@ export async function runOpellaIntegrationChecks({ sourceRoot } = {}) {
       ebitda: ["calculé", "S1"],
       enterpriseValue: ["public", "S1"],
       entryMultiple: ["public", "S1"],
-      margin: ["calculé", "S1+S5+S6"],
+      margin: ["calculé", "S1+S5"],
       reportedRevenue: ["public", "S5"],
-      revenue: ["public", "S5+S6"],
+      revenue: ["calculé", "S5"],
     },
     "Public anchors and derived proxies must keep their exact source classification",
+  );
+  assert.equal(snapshot.m1.reportedRevenue.value, 4948);
+  assert.equal(snapshot.m1.revenue.value, 5000);
+  assert.equal(
+    snapshot.m1.revenue.value,
+    Math.round(snapshot.m1.reportedRevenue.value / 1000) * 1000,
+    "The €5,000m anchor must be derived by rounding S5 to the nearest €bn",
+  );
+  assert.ok(
+    Object.values(snapshot.m1).filter((field) => field && typeof field.source === "string")
+      .every((field) => !field.source.split("+").includes("S6")),
+    "S6 must not feed any M1 financial value",
   );
 
   const registry = createOpellaFinancials(snapshot, {
@@ -715,12 +793,12 @@ export async function runOpellaIntegrationChecks({ sourceRoot } = {}) {
     );
   }
 
-  const presentationApprovedNumbers = new Set(
-    bundleManifest.allowedNonFinancialLiterals
-      .filter(({ file, value }) => file === "src/routes/OpellaAnalysisView.jsx" && /^\d+(?:\.\d+)?$/.test(value))
-      .map(({ value }) => value),
-  );
   for (const filename of bundleManifest.presentationFiles) {
+    const presentationApprovedNumbers = new Set(
+      bundleManifest.allowedNonFinancialLiterals
+        .filter(({ file, value }) => file === filename && /^\d+(?:\.\d+)?$/.test(value))
+        .map(({ value }) => value),
+    );
     await assertNoUnapprovedNumericLiterals(
       path.join(repositoryRoot, filename),
       presentationApprovedNumbers,
@@ -742,10 +820,10 @@ export async function runOpellaIntegrationChecks({ sourceRoot } = {}) {
   );
   assert.doesNotMatch(
     opellaCopySource,
-    /:\s*["'`][^"'`\n]*(?:€|\b\d+(?:[.,]\d+)?\s*(?:%|x|M€|€m))[^"'`\n]*["'`]/,
+    /:\s*["'`][^"'`\n]*(?:\b\d+(?:[.,]\d+)?\s*(?:%|x|M€|€m)|€\s*\d+(?:[.,]\d+)?)[^"'`\n]*["'`]/,
     "G3: Opella dictionaries must not carry financial values",
   );
-  assert.match(opellaViewSource, /line\.contribution\[result\.calendar\.maxHorizon\]/);
+  assert.match(opellaViewSource, /line\.contribution\[horizonPeriod\]/);
   assert.match(opellaViewSource, /snapshot\.outputs\["O-SEPCOST"\]|kpis\["O-SEPCOST"\]/);
   assert.match(opellaCopySource, /hors BFR de séparation/);
   assert.match(opellaCopySource, /excluding separation working capital/);

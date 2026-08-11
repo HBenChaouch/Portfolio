@@ -1,53 +1,53 @@
 {
   "manifest": "opella-sidetrade-inactive-bundle",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "case": "opella-carve-out",
-  "pass": "O2-E",
+  "pass": "OP-OPella-PUBLIC-MODEL-01",
   "status": "inactive",
   "sourceBaseline": {
     "repository": "parent",
-    "commit": "8ad69b3152d237116e164cc5b4fdffd49b15308b",
+    "commit": "0145062d416640714888e1b672a0a81950bc8d9f",
     "note": "Transaction Services is not an autonomous repository; no synthetic commit pin is used."
   },
   "sourceFiles": [
     {
       "path": "Transaction Services/build_carveout.py",
-      "sha256": "8D9ED97C1F07C9C5F9E81F0A03A08836FAC71ED59ED88C83F37A2ABBE8A849F9"
+      "sha256": "1326555BEAD88D6626585174242BEC4AA613F50870FCB27F93D439BAE93B1788"
     },
     {
       "path": "Transaction Services/Modele_Carveout_Opella.xlsx",
-      "sha256": "B0394A59F5EBF553DD32D418EAEA511630F80CA1FCCFCEDA63E63509431B411D"
+      "sha256": "EB7F9BB678A79BC827C60D4E773F9398D2CA3999CAB3F251D1C9CFA1C5D5F1FF"
     },
     {
       "path": "Transaction Services/opella_case_snapshot.json",
-      "sha256": "FA7C24FDEB94A3AAB8E2E49D342B24BEC07AE6CC9719ABAFEC4384B7550CE122"
+      "sha256": "17FDD4392282DCC5498505BDF87512FCAD59D052D21ADDE50436DC61C7BE12EC"
     },
     {
       "path": "Transaction Services/opella_integration_manifest.json",
-      "sha256": "39C8F4FA1EAC59C05C5FCD3BB17F2458654D2E74A4AD49F3AE40CA36F986C0C7"
+      "sha256": "AD6290DE060D556E6A6C54BA2FE6AF5C89C004112D411B68C5567006FE7CF464"
     }
   ],
   "snapshotIdentity": {
     "source": "Transaction Services/opella_case_snapshot.json",
     "bundle": "snapshot.json",
-    "sha256": "FA7C24FDEB94A3AAB8E2E49D342B24BEC07AE6CC9719ABAFEC4384B7550CE122"
+    "sha256": "17FDD4392282DCC5498505BDF87512FCAD59D052D21ADDE50436DC61C7BE12EC"
   },
   "bundleFiles": [
     {
       "path": "snapshot.json",
-      "sha256": "FA7C24FDEB94A3AAB8E2E49D342B24BEC07AE6CC9719ABAFEC4384B7550CE122",
+      "sha256": "17FDD4392282DCC5498505BDF87512FCAD59D052D21ADDE50436DC61C7BE12EC",
       "mime": "application/json",
       "role": "Byte-identical O1 semantic snapshot and sole carrier of financial values."
     },
     {
       "path": "source-manifest.json",
-      "sha256": "39C8F4FA1EAC59C05C5FCD3BB17F2458654D2E74A4AD49F3AE40CA36F986C0C7",
+      "sha256": "AD6290DE060D556E6A6C54BA2FE6AF5C89C004112D411B68C5567006FE7CF464",
       "mime": "application/json",
       "role": "Byte-identical O1 chain, relation, tolerance, lineage and vector contract."
     },
     {
       "path": "engine-contract.json",
-      "sha256": "DED0E96EE23744DA51DBD14D5C146D3770042AE03246E06013DADF79398A6263",
+      "sha256": "F0A0D9E5E4FDE6680E10B76103497EA542AE78921AF67EAD4CFA43012426F222",
       "mime": "application/json",
       "role": "Generated extraction of the O1 scenario lever constants required by the JavaScript engine."
     },
@@ -80,7 +80,18 @@
       "role": "serialization-contract"
     }
   ],
-  "downloads": [],
+  "downloads": [
+    {
+      "path": "public/downloads/opella/Opella-Carveout-Model.xlsx",
+      "href": "downloads/opella/Opella-Carveout-Model.xlsx",
+      "filename": "Opella-Carveout-Model.xlsx",
+      "mime": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      "sha256": "88BA625D017DE59DEEE6DA281D87D68DCC2F853E467046C8E03E5D0B9366EF8C",
+      "sourcePath": "Transaction Services/Modele_Carveout_Opella.xlsx",
+      "sourceSha256": "EB7F9BB678A79BC827C60D4E773F9398D2CA3999CAB3F251D1C9CFA1C5D5F1FF",
+      "role": "Microsoft Excel-recalculated public copy of the complete Opella model."
+    }
+  ],
   "presentationFiles": [
     "src/App.jsx",
     "src/components/OpellaCaseShell.jsx",
@@ -151,6 +162,174 @@
       "node": "executive.eyebrow",
       "value": "carve-out readiness",
       "reason": "Public positioning phrase, distinct from internal process terminology."
+    },
+    {
+      "file": "src/data/opellaCase.js",
+      "node": "publicProfile descriptive facts",
+      "value": "4",
+      "reason": "Sourced public descriptive fact; not a financial engine input."
+    },
+    {
+      "file": "src/data/opellaCase.js",
+      "node": "publicProfile descriptive facts",
+      "value": "13",
+      "reason": "Sourced public descriptive fact; not a financial engine input."
+    },
+    {
+      "file": "src/data/opellaCase.js",
+      "node": "publicProfile descriptive facts",
+      "value": "38",
+      "reason": "Sourced public descriptive fact; not a financial engine input."
+    },
+    {
+      "file": "src/data/opellaCase.js",
+      "node": "publicProfile descriptive facts",
+      "value": "90",
+      "reason": "Sourced public descriptive fact; not a financial engine input."
+    },
+    {
+      "file": "src/data/opellaCase.js",
+      "node": "publicProfile descriptive facts",
+      "value": "100",
+      "reason": "Sourced public descriptive fact; not a financial engine input."
+    },
+    {
+      "file": "src/data/opellaCase.js",
+      "node": "publicProfile descriptive facts",
+      "value": "110",
+      "reason": "Sourced public descriptive fact; not a financial engine input."
+    },
+    {
+      "file": "src/data/opellaCase.js",
+      "node": "publicProfile descriptive facts",
+      "value": "500",
+      "reason": "Sourced public descriptive fact; not a financial engine input."
+    },
+    {
+      "file": "src/data/opellaCase.js",
+      "node": "publicProfile descriptive facts",
+      "value": "5000",
+      "reason": "Sourced public descriptive fact; not a financial engine input."
+    },
+    {
+      "file": "src/data/opellaCase.js",
+      "node": "publicProfile descriptive facts",
+      "value": "11000",
+      "reason": "Sourced public descriptive fact; not a financial engine input."
+    },
+    {
+      "file": "src/context/OpellaScenarioContext.jsx",
+      "node": "reading-position geometry",
+      "value": "0",
+      "reason": "Structural scroll origin only."
+    },
+    {
+      "file": "src/context/OpellaScenarioContext.jsx",
+      "node": "reading-position tolerance",
+      "value": "1",
+      "reason": "Numerator used to derive the named half-pixel tolerance."
+    },
+    {
+      "file": "src/context/OpellaScenarioContext.jsx",
+      "node": "reading-position tolerance",
+      "value": "2",
+      "reason": "Denominator used to derive the named half-pixel tolerance."
+    },
+    {
+      "file": "src/routes/OpellaAnalysisView.jsx",
+      "node": "chart point radius",
+      "value": "4",
+      "reason": "Non-financial SVG geometry."
+    },
+    {
+      "file": "src/routes/OpellaAnalysisView.jsx",
+      "node": "peak point radius",
+      "value": "6",
+      "reason": "Non-financial SVG geometry."
+    },
+    {
+      "file": "src/routes/OpellaAnalysisView.jsx",
+      "node": "transition tail threshold",
+      "value": "18",
+      "reason": "Presentation-only threshold for the post-M18 TSA tail."
+    },
+    {
+      "file": "src/routes/OpellaAnalysisView.jsx",
+      "node": "chart label clearance",
+      "value": "34",
+      "reason": "Non-financial SVG geometry."
+    },
+    {
+      "file": "src/routes/OpellaAnalysisView.jsx",
+      "node": "one-off chart scale tick",
+      "value": "40",
+      "reason": "Non-financial chart geometry."
+    },
+    {
+      "file": "src/routes/OpellaAnalysisView.jsx",
+      "node": "chart bottom inset",
+      "value": "48",
+      "reason": "Non-financial SVG geometry."
+    },
+    {
+      "file": "src/routes/OpellaAnalysisView.jsx",
+      "node": "scenario range midpoint",
+      "value": "50",
+      "reason": "Non-financial range geometry."
+    },
+    {
+      "file": "src/routes/OpellaAnalysisView.jsx",
+      "node": "chart scale and inset",
+      "value": "60",
+      "reason": "Non-financial SVG geometry."
+    },
+    {
+      "file": "src/routes/OpellaAnalysisView.jsx",
+      "node": "one-off chart scale tick",
+      "value": "80",
+      "reason": "Non-financial chart geometry."
+    },
+    {
+      "file": "src/routes/OpellaAnalysisView.jsx",
+      "node": "chart left inset",
+      "value": "82",
+      "reason": "Non-financial SVG geometry."
+    },
+    {
+      "file": "src/routes/OpellaAnalysisView.jsx",
+      "node": "percentage and chart coordinate scale",
+      "value": "100",
+      "reason": "Non-financial display geometry."
+    },
+    {
+      "file": "src/routes/OpellaAnalysisView.jsx",
+      "node": "cumulative chart scale tick",
+      "value": "120",
+      "reason": "Non-financial chart geometry."
+    },
+    {
+      "file": "src/routes/OpellaAnalysisView.jsx",
+      "node": "cumulative chart scale maximum",
+      "value": "180",
+      "reason": "Non-financial chart geometry."
+    },
+    {
+      "file": "src/routes/OpellaAnalysisView.jsx",
+      "node": "chart view height",
+      "value": "260",
+      "reason": "Non-financial SVG geometry."
+    },
+    {
+      "file": "src/routes/OpellaAnalysisView.jsx",
+      "node": "chart view width",
+      "value": "700",
+      "reason": "Non-financial SVG geometry."
+    },
+    {
+      "file": "src/routes/OpellaAnalysisView.jsx",
+      "node": "waterfall display-domain ceiling",
+      "value": "1550",
+      "reason": "Presentation-only chart domain; no engine result is derived from it."
     },
     {
       "file": "src/routes/OpellaAnalysisView.jsx",
@@ -349,8 +528,8 @@
     "canonical": false,
     "sitemap": false,
     "fallback": false,
-    "download": false,
-    "publicWorkbook": false,
+    "download": true,
+    "publicWorkbook": true,
     "publicBuildPage": true
   }
 }

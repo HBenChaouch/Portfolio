@@ -742,7 +742,7 @@ try {
     }, `stable English Cockpit #${anchor}`);
     assert(JSON.stringify(englishState.values) === JSON.stringify(before), `Financial values changed on Cockpit language toggle #${anchor}: ${JSON.stringify({ before, after: englishState.values })}`);
     await command("Page.reload", { ignoreCache: true });
-    await waitFor(() => evaluate(`document.documentElement.lang === 'en' && location.search === '?lang=en' && location.hash === '#${anchor}' && document.querySelector('#cockpit-section-navigation a[aria-current="location"]')?.hash === '#${anchor}'`), `English Cockpit #${anchor} refresh`);
+    await waitFor(() => evaluate(`document.documentElement?.lang === 'en' && location.search === '?lang=en' && location.hash === '#${anchor}' && document.querySelector('#cockpit-section-navigation a[aria-current="location"]')?.hash === '#${anchor}'`), `English Cockpit #${anchor} refresh`);
     const frenchPointer = await realPointerClick("document.querySelector('[data-language=\"fr\"]')", `Cockpit FR on #${anchor}`);
     await waitFor(() => evaluate(`document.documentElement.lang === 'fr' && location.search === '' && location.hash === '#${anchor}' && document.querySelector('#cockpit-section-navigation a[aria-current="location"]')?.hash === '#${anchor}'`), `restored French Cockpit #${anchor}`);
     cockpitLanguageTransitions.push({ anchor, englishPointer, englishState, frenchPointer });

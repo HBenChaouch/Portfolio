@@ -251,12 +251,12 @@ try {
   assert.ok(opellaFrenchText.includes("Ouvrir la source originale"));
   assert.ok(opellaEnglishText.includes("Open original source"));
   for (const phrase of [
-    "Télécharger le modèle",
+    "Modèle Excel ↓",
     "Modèle Excel complet",
     "Télécharger le modèle Excel",
   ]) assert.ok(opellaFrenchText.includes(phrase), `French Opella download copy missing: ${phrase}`);
   for (const phrase of [
-    "Download the model",
+    "Excel model ↓",
     "Complete Excel model",
     "Download the Excel model",
   ]) assert.ok(opellaEnglishText.includes(phrase), `English Opella download copy missing: ${phrase}`);
@@ -266,7 +266,7 @@ try {
   );
   assert.deepEqual(
     attributeValues(opellaFrenchDom, "download"),
-    ["Opella-Carveout-Model.xlsx", "Opella-Carveout-Model.xlsx"],
+    ["Opella-Carveout-Model.xlsx", "Opella-Carveout-Model.xlsx", "Opella-Carveout-Model.xlsx"],
   );
   assert.deepEqual(
     attributeValues(opellaFrenchDom, "download"),

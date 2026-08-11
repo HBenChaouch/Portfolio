@@ -1515,6 +1515,15 @@ export default function OpellaAnalysisView() {
           <p className="opella-hero-question">{copy("executive.question")}</p>
           <p className="opella-hero-summary">{copy("executive.summary")}</p>
           <p className="opella-hero-methodology">{copy("executive.methodology")}</p>
+          <div className="opella-hero-download">
+            <a
+              download={opellaPublicWorkbook.file}
+              href={opellaPublicWorkbook.href}
+            >
+              {copy("executive.download.button")}
+            </a>
+            <p>{copy("executive.download.description")}</p>
+          </div>
         </div>
         <div aria-label={copy("nav.executive")} className="opella-kpi-grid">
           <MetricTile

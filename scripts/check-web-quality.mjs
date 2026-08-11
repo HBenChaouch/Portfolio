@@ -295,7 +295,7 @@ try {
       required: [
         "Opella — modèle de carve-out",
         "Que faut-il pour rendre Opella autonome — à quel coût, avec quel besoin de cash, dans quel délai et avec quels risques de dérive ?",
-        "Le modèle mesure les coûts récurrents et ponctuels de la séparation, puis suit le besoin de financement jusqu’au régime établi.",
+        "Le modèle mesure les coûts récurrents et ponctuels de la séparation, puis suit le besoin de financement jusqu’au premier exercice en régime autonome.",
         "Montants arrondis à l’affichage",
         "IT 40 M€ · Support 30 M€ · Distribution 25 M€ · Qualité et réglementaire 25 M€",
         "TSA 99 M€ · Coûts ponctuels 152 M€ · Capex de séparation 45 M€",
@@ -310,7 +310,7 @@ try {
       required: [
         "Opella carve-out model",
         "What does it take for Opella to stand on its own — at what cost, with how much cash, on what timeline, and with which execution risks?",
-        "The model measures the recurring and one-off costs of separation, then tracks the funding need through to steady state.",
+        "The model measures the recurring and one-off costs of separation, then tracks the funding need through to the first autonomous run-rate year.",
         "Amounts are rounded for display",
         "IT €40m · Support €30m · Distribution €25m · Quality &amp; regulatory €25m",
         "TSA €99m · One-offs €152m · Separation capex €45m",
@@ -475,7 +475,7 @@ try {
     const opellaWorkbookLinks = [...rendered.matchAll(/<a\b[^>]*>/g)]
       .map((match) => match[0])
       .filter((tag) => tag.includes("downloads/opella/Opella-Carveout-Model.xlsx"));
-    assert.equal(opellaWorkbookLinks.length, 2, `${language} must expose two Opella workbook links`);
+    assert.equal(opellaWorkbookLinks.length, 3, `${language} must expose three Opella workbook links`);
     assert.ok(opellaWorkbookLinks.every((tag) => (
       tag.includes('download="Opella-Carveout-Model.xlsx"')
     )), `${language} Opella workbook links must force the public filename`);

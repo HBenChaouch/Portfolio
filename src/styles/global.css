@@ -152,6 +152,34 @@
   padding: 2px 0 2px 14px;
 }
 
+.opella-hero-download {
+  align-items: flex-start;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 20px;
+}
+
+.opella-hero-download a {
+  align-items: center;
+  background: var(--bordeaux);
+  color: var(--bg);
+  display: inline-flex;
+  font: 700 11px var(--mono);
+  justify-content: center;
+  letter-spacing: .04em;
+  min-height: 44px;
+  padding: 0 18px;
+  text-decoration: none;
+  text-transform: uppercase;
+}
+
+.opella-hero-download p {
+  color: var(--ink-3);
+  font: 10px/1.5 var(--mono);
+  margin: 0;
+}
+
 .opella-hero > .opella-method {
   grid-column: 1 / -1;
 }

@@ -73,7 +73,7 @@ assert.deepEqual(portfolioCases.map(({ slug }) => slug), [
   "real-estate-downside",
 ]);
 assert.equal(portfolioCases[0].priority, "flagship");
-assert.equal(portfolioCases[0].status, "Flagship case");
+assert.equal(portfolioCases[0].status, "Valuation analysis");
 assert.equal(portfolioCases[1].status, "Transaction Services");
 assert.equal(portfolioCases[1].available, undefined);
 assert.equal(portfolioCases[1].href, "/cases/opella-carve-out/analysis/");

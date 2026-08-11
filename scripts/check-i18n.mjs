@@ -209,10 +209,10 @@ try {
   assert.ok(englishDom.includes("€222.5m · IRR target 25%"), "English football field must preserve LBO money and percentage typography");
   assert.ok(englishDom.includes("€241.9m · IRR target 22.5%"), "English football field must preserve the Base LBO reading");
   assert.equal(translateText("Revenue at €174/share", "fr"), "Chiffre d’affaires à €174 par action");
-  for (const label of ["Cas principal", "Transaction Services", "Cockpit opérationnel", "Ouvrir l’analyse"]) {
+  for (const label of ["Travaux en finance et analytics.", "Projets", "Analyse de valorisation", "Transaction Services", "Cockpit opérationnel", "Ouvrir l’analyse"]) {
     assert.ok(frenchHome.includes(label), `French home missing honest status: ${label}`);
   }
-  for (const label of ["Flagship case", "Transaction Services", "Operational cockpit", "Open the analysis"]) {
+  for (const label of ["Finance and analytics work.", "Projects", "Valuation analysis", "Transaction Services", "Operational cockpit", "Open the analysis"]) {
     assert.ok(englishHome.includes(label), `English home missing honest status: ${label}`);
   }
   assert.doesNotMatch(frenchHome, /Modele_Carveout_Opella\.xlsx|Télécharger le workbook/);

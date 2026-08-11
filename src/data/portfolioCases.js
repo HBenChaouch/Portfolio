@@ -7,7 +7,7 @@ export const portfolioCases = [
     category: "Public SaaS valuation",
     description:
       "QoE, cash conversion, three DCF scenarios, comparables, LBO affordability and the full EV-to-equity bridge.",
-    status: "Flagship case",
+    status: "Valuation analysis",
     href: "/cases/sidetrade-valuation",
     cta: "Open the full case",
     priority: "flagship",

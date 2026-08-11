@@ -21,16 +21,15 @@ export default function PortfolioHome() {
       </header>
       <section className="home-hero">
         <div>
-          <p className="eyebrow">Finance and analytics portfolio</p>
-          <h1>Finance cases, built for decisions.</h1>
+          <p className="eyebrow">Portfolio · Finance &amp; Analytics</p>
+          <h1>Finance and analytics work.</h1>
         </div>
-        <p>Three finance cases built for three decisions: public-company valuation, transaction services and downside-oriented fund controlling.</p>
+        <p>This portfolio presents three projects: a public-company valuation, a carve-out model and a real-estate downside monitoring cockpit.</p>
       </section>
 
       <section className="home-selection" aria-label="Portfolio cases">
         <header className="home-selection-head">
-          <p className="eyebrow">Selected work</p>
-          <p>One flagship case, supported by two complementary finance projects.</p>
+          <p className="eyebrow">Projects</p>
         </header>
         <div className="case-grid">
           {portfolioCases.map((item, index) => {

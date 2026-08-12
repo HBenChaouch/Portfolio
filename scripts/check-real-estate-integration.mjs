@@ -33,7 +33,7 @@ const EDITORIAL_FORBIDDEN = [
   /pedagogical/i,
 ];
 
-const expectedCommit = "6b8ddfe3dc48d581a4f1282ea2272c06a8d32337";
+const expectedCommit = "cffddcf705b8e6c60f89baa6683e4c45a77fc5c4";
 const sourceCandidates = [process.env.REAL_ESTATE_SOURCE, ".cockpit-source", "../Real Estate/cockpit"]
   .filter(Boolean)
   .map((candidate) => path.resolve(candidate));
@@ -89,7 +89,37 @@ assert.match(index, /Portfolio\/cases\/real-estate-downside\//);
 
 // Public editorial hygiene on the produced bundle (interface + text registry).
 const translationsBuilt = await readFile(path.join(destination, "translations.js"), "utf8");
-const publicSurface = `${index}\n${translationsBuilt}`;
+const appBuilt = await readFile(path.join(destination, "app.js"), "utf8");
+const publicSurface = `${index}\n${translationsBuilt}\n${appBuilt}`;
+for (const required of [
+  /Convention simplifiée : tout état de breach suspend l’ensemble des distributions prévues sur l’horizon/i,
+  /Simplified convention: any breach state suspends all distributions scheduled over the horizon/i,
+  /Points de bascule \(vérifiés par calcul\)/,
+  /Tipping points \(calculation-verified\)/,
+  /prélevés sur la trésorerie d’ouverture/,
+  /drawn from opening cash/,
+  /Dépassement du repère/,
+  /Reference exceeded/,
+  /Écart du NOI de base vs BP — statique/,
+  /Point de repère prime bureaux IDF/,
+  /M€ à refinancer en 2027 — date exacte non modélisée/,
+  /Bear · taux stressé dérivé/,
+  /Valeur du plus gros actif \/ GAV/,
+  /Pont NAV Base : .* d’autres passifs = .* de NAV/,
+  /Base NAV bridge: .* other liabilities = .* NAV/,
+]) {
+  assert.match(publicSurface, required, `Real Estate clarity sentinel must remain: ${required}`);
+}
+for (const ambiguous of [
+  /cash trap probable/i,
+  /cash trap is likely/i,
+  /prochaine date de test/i,
+  /next test date/i,
+  /calibré pour faire casser la LTV/i,
+  /calibrated combination that breaches LTV/i,
+]) {
+  assert.doesNotMatch(publicSurface, ambiguous, `Real Estate clarity ambiguity must remain absent: ${ambiguous}`);
+}
 for (const forbidden of [
   /sunburst/i,
   /intégration API/i,

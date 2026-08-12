@@ -668,7 +668,7 @@ try {
       title: document.title,
     };
   })()`);
-  assert(cockpitInitial.passed === 13 && cockpitInitial.total === 13, `Cockpit self-tests mismatch: ${JSON.stringify(cockpitInitial)}`);
+  assert(cockpitInitial.passed === 14 && cockpitInitial.total === 14, `Cockpit self-tests mismatch: ${JSON.stringify(cockpitInitial)}`);
   assert(cockpitInitial.backHref === portfolioUrl && cockpitInitial.backTarget === null, `Cockpit return mismatch: ${JSON.stringify(cockpitInitial)}`);
   assert(cockpitInitial.downloads.length === 3 && cockpitInitial.downloads.every((link) => link.download && link.target === null), `Cockpit downloads mismatch: ${JSON.stringify(cockpitInitial.downloads)}`);
   assert(!cockpitInitial.oldDomainPresent && cockpitInitial.overflow === 0, `Cockpit public integration mismatch: ${JSON.stringify(cockpitInitial)}`);
@@ -868,7 +868,7 @@ try {
       && cockpitBearState.search === "?scenario=bear"
       && cockpitBearState.global === "Scénario actif : Bear"
       && cockpitBearState.segment === "bear"
-      && /suspendues/i.test(cockpitBearState.note)
+      && /tout état de breach suspend l’ensemble des distributions prévues/i.test(cockpitBearState.note)
       && /0,00/.test(cockpitBearState.treasury)
       && /11,70/.test(cockpitBearState.treasury);
   }, "Cockpit Bear scenario from treasury");
@@ -916,7 +916,7 @@ try {
   await command("Page.reload", { ignoreCache: true });
   await waitFor(() => evaluate("document.readyState === 'complete' && document.querySelector('#scenario-bear')?.getAttribute('aria-pressed') === 'true' && location.search === '?scenario=bear' && location.hash === '#tresorerie'"), "Cockpit Bear scenario refresh");
   const cockpitAfterRefresh = await evaluate("(() => { const tests = window.__COCKPIT__.runSelfTests(); return { href: location.href, scenario: document.querySelector('.scenario-segment')?.getAttribute('data-scenario'), passed: tests.passed, total: tests.total }; })()");
-  assert(cockpitAfterRefresh.scenario === "bear" && cockpitAfterRefresh.passed === 13 && cockpitAfterRefresh.total === 13, `Cockpit refresh mismatch: ${JSON.stringify(cockpitAfterRefresh)}`);
+  assert(cockpitAfterRefresh.scenario === "bear" && cockpitAfterRefresh.passed === 14 && cockpitAfterRefresh.total === 14, `Cockpit refresh mismatch: ${JSON.stringify(cockpitAfterRefresh)}`);
 
   const cockpitMobileLayouts = [];
   for (const [width, height] of [[360, 800], [390, 844], [430, 932]]) {
@@ -1008,7 +1008,7 @@ try {
       total: tests.total,
     };
   })()`);
-  assert(cockpitMobile.overflow === 0 && cockpitMobile.backVisible && cockpitMobile.backHeight >= 44 && cockpitMobile.toggleHeight >= 44 && cockpitMobile.passed === 13 && cockpitMobile.total === 13, `Mobile cockpit mismatch: ${JSON.stringify(cockpitMobile)}`);
+  assert(cockpitMobile.overflow === 0 && cockpitMobile.backVisible && cockpitMobile.backHeight >= 44 && cockpitMobile.toggleHeight >= 44 && cockpitMobile.passed === 14 && cockpitMobile.total === 14, `Mobile cockpit mismatch: ${JSON.stringify(cockpitMobile)}`);
 
   const cockpitMenuPointer = await realPointerClick("document.querySelector('.cockpit-nav-toggle')", "Cockpit mobile contents");
   const cockpitMenuOpen = await evaluate(`(() => {
@@ -1141,7 +1141,7 @@ try {
         .map((header) => header.textContent.trim()),
     });
     const fundingSeries = tableContract(fundingTables.find(
-      (table) => table.querySelector('caption')?.textContent.trim() === 'Funding requirement evolution',
+      (table) => table.querySelector('caption')?.textContent.trim() === 'Cumulative separation-related cash-gap evolution',
     ));
     const fundingState = document.querySelector('[data-content-id="opella.funding.state"]')?.textContent ?? '';
     const sourceLinks = Array.from(document.querySelectorAll('.opella-analysis-view a[data-source-url]'));
@@ -1240,7 +1240,7 @@ try {
   assert(
     JSON.stringify(opellaInitial.fundingSeries.columnHeaders) === JSON.stringify([
       "Period",
-      "Cumulative need",
+      "Cumulative cash gap",
       "Change",
       "Recurring gap",
       "One-off component",
@@ -1540,8 +1540,8 @@ try {
       );
     } else if (width <= 430) {
       assert(
-        !state.hero.sideBySide && state.hero.cardRows === 2,
-        `Opella mobile hero must use a readable 2x2 KPI grid: ${JSON.stringify(state.hero)}`,
+        !state.hero.sideBySide && state.hero.cardRows === 3,
+        `Opella mobile hero must use a readable 2+2+1 KPI grid: ${JSON.stringify(state.hero)}`,
       );
     }
     assert(state.controls === 12 && state.minControlTarget >= 44, `Opella control targets at ${width}x${height}: ${JSON.stringify(state)}`);

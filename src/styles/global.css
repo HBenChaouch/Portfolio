@@ -611,7 +611,7 @@
   border-left: 1px solid var(--line-strong);
   border-top: 1px solid var(--line-strong);
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(5, minmax(0, 1fr));
   width: 100%;
 }
 
@@ -783,6 +783,16 @@
   color: var(--ink);
   font-variant-numeric: tabular-nums;
   text-align: right;
+}
+
+.opella-transaction-snapshot [data-derived-value-id="transaction-implied-margin"] dd small {
+  color: var(--ink-3);
+  display: block;
+  font-size: 10px;
+  font-variant-numeric: normal;
+  line-height: 1.35;
+  margin-top: 3px;
+  max-width: 32ch;
 }
 
 .opella-transaction-snapshot > div:last-child dd {
@@ -2671,6 +2681,10 @@ button.opella-scenario-preset { cursor: pointer; }
 
   .opella-kpi-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .opella-kpi-grid .metric-tile:last-child {
+    grid-column: 1 / -1;
   }
 
   .opella-transaction-scope-grid {

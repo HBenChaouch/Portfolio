@@ -237,13 +237,13 @@ try {
     "Amounts are rounded for display",
   ]) assert.ok(opellaEnglishText.includes(expected), `English Opella hero missing: ${expected}`);
   for (const expected of [
-    "Des faits publics aux quatre résultats",
+    "Des faits publics aux cinq lectures clés",
     "Chaîne de preuve",
     "Hypothèses structurantes",
     "Mécanique de calcul",
   ]) assert.ok(opellaFrenchText.includes(expected), `French Opella method missing: ${expected}`);
   for (const expected of [
-    "From public facts to four results",
+    "From public facts to five key readings",
     "Evidence chain",
     "Structural assumptions",
     "Calculation mechanics",
@@ -284,11 +284,21 @@ try {
     "Opella FR/EN source locations must remain identical",
   );
   const opellaSnapshot = JSON.parse(await read("integrations/opella/snapshot.json"));
-  const roundedPeak = Math.round(opellaSnapshot.outputs["O-PEAK"].value);
+  const roundedPeak = opellaSnapshot.outputs["O-PEAK"].value.toFixed(1);
+  const horizon = opellaSnapshot.calendar.maxHorizon;
+  const horizonRow = opellaSnapshot.m7.periods.find(({ period }) => period === horizon);
+  const reinstatedAllocations = opellaSnapshot.m7.inventory
+    .find(({ id }) => id === "L-ALLOC").amounts[horizon];
+  const recurringEbitdaImpact = opellaSnapshot.m3.runRateTotal + reinstatedAllocations;
+  const oneDecimal = (value, locale, signed = false) => new Intl.NumberFormat(locale, {
+    maximumFractionDigits: 1,
+    minimumFractionDigits: 1,
+    signDisplay: signed ? "exceptZero" : "auto",
+  }).format(value);
   for (const [outputId, frenchValue, englishValue] of [
     ["O-RUNRATE", "120 M€", "€120m"],
     ["O-SEPCOST", "296 M€", "€296m"],
-    ["O-PEAK", `${roundedPeak} M€`, `€${roundedPeak}m`],
+    ["O-PEAK", `${roundedPeak.replace(".", ",")} M€`, `€${roundedPeak}m`],
     ["O-STEADY", "FY2028", "FY2028"],
   ]) {
     assert.ok(opellaFrenchDom.includes(`data-output-id="${outputId}"`));
@@ -296,6 +306,36 @@ try {
     assert.equal(outputValue(opellaFrenchDom, outputId), frenchValue, `French Opella DOM missing ${outputId}`);
     assert.equal(outputValue(opellaEnglishDom, outputId), englishValue, `English Opella DOM missing ${outputId}`);
   }
+  for (const expected of [
+    `${oneDecimal(opellaSnapshot.outputs["O-PEAK"].value, "fr-FR")} M€ en FY2027`,
+    `${oneDecimal(horizonRow.need, "fr-FR")} M€`,
+    `+${oneDecimal(horizonRow.eGap, "fr-FR")} M€ / an`,
+    `${oneDecimal(recurringEbitdaImpact, "fr-FR")} M€ en FY2029`,
+    `${oneDecimal(Math.abs(opellaSnapshot.m3.runRateTotal), "fr-FR")} M€ de fonctions autonomes, compensés par ${oneDecimal(reinstatedAllocations, "fr-FR")} M€ d’allocations vendeur réintégrées`,
+  ]) assert.ok(opellaFrenchText.includes(expected), `French Opella engine-derived economic value missing: ${expected}`);
+  for (const expected of [
+    `€${oneDecimal(opellaSnapshot.outputs["O-PEAK"].value, "en-GB")}m in FY2027`,
+    `€${oneDecimal(horizonRow.need, "en-GB")}m`,
+    `+€${oneDecimal(horizonRow.eGap, "en-GB")}m / year`,
+    `€${oneDecimal(recurringEbitdaImpact, "en-GB")}m in FY2029`,
+    `€${oneDecimal(Math.abs(opellaSnapshot.m3.runRateTotal), "en-GB")}m of autonomous functions, offset by €${oneDecimal(reinstatedAllocations, "en-GB")}m of reinstated seller allocations`,
+  ]) assert.ok(opellaEnglishText.includes(expected), `English Opella engine-derived economic value missing: ${expected}`);
+  for (const phrase of [
+    "Écart cumulé de cash lié à la séparation",
+    "Impact EBITDA récurrent net",
+    "Dépenses brutes de transition et de séparation",
+    "Hypothèses illustratives par fonction",
+    "M€ cumulés à fin de période",
+    "Marge proxy indicative",
+  ]) assert.ok(opellaFrenchText.includes(phrase), `French Opella economic copy missing: ${phrase}`);
+  for (const phrase of [
+    "Cumulative separation-related cash gap",
+    "Net recurring EBITDA impact",
+    "Gross transition and separation expenditure",
+    "Illustrative assumptions by function",
+    "Cumulative €m at period end",
+    "Indicative proxy margin",
+  ]) assert.ok(opellaEnglishText.includes(phrase), `English Opella economic copy missing: ${phrase}`);
   for (const label of [
     "Coûts stand-alone récurrents",
     "Décalage de sortie des TSA",

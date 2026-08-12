@@ -312,11 +312,12 @@ try {
       required: [
         "Opella — modèle de carve-out",
         "Que faut-il pour rendre Opella autonome — à quel coût, avec quel besoin de cash, dans quel délai et avec quels risques de dérive ?",
-        "Le modèle mesure les coûts récurrents et ponctuels de la séparation, puis suit le besoin de financement jusqu’au premier exercice d’autonomie opérationnelle.",
+        "l’écart cumulé de cash lié à la séparation, mesuré par rapport au maintien dans le périmètre vendeur",
         "Montants arrondis à l’affichage",
         "IT 40 M€ · Support 30 M€ · Distribution 25 M€ · Qualité et réglementaire 25 M€",
         "TSA 99 M€ · Coûts ponctuels 152 M€ · Capex de séparation 45 M€",
-        "Maximum sur l’horizon en FY2027",
+        "Point haut observé sur l’horizon modélisé",
+        "Impact EBITDA récurrent net",
         "Première année sans TSA ni coûts ponctuels",
         "FY2028",
       ],
@@ -327,11 +328,12 @@ try {
       required: [
         "Opella carve-out model",
         "What does it take for Opella to stand on its own — at what cost, with how much cash, on what timeline, and with which execution risks?",
-        "The model measures the recurring and one-off costs of separation, then tracks the funding need through the first year of operational autonomy.",
+        "cumulative separation-related cash gap, measured against continued inclusion in the seller perimeter",
         "Amounts are rounded for display",
         "IT €40m · Support €30m · Distribution €25m · Quality &amp; regulatory €25m",
         "TSA €99m · One-offs €152m · Separation capex €45m",
-        "Maximum over the horizon in FY2027",
+        "High point observed over the model horizon",
+        "Net recurring EBITDA impact",
         "First year with no TSA or one-offs",
         "FY2028",
       ],
@@ -350,17 +352,31 @@ try {
     }
     assert.doesNotMatch(heroText, contract.forbidden, "Opella hero contains a forbidden label or period code");
   }
+  assert.doesNotMatch(markupText(opellaFr), /besoin de financement|coût total de séparation|somme bottom-up|plafond|maximum terminal|pic transitoire/i);
+  assert.doesNotMatch(markupText(opellaEn), /funding need|funding requirement|total separation cost|bottom-up sum|ceiling|terminal maximum|transient peak/i);
+  for (const required of [
+    "Le double run correspond à la coexistence de la facture TSA et des fonctions autonomes montées en charge ; aucune troisième charge n’est ajoutée.",
+    "Marge proxy indicative",
+    "La comparabilité entre le périmètre de transaction et le périmètre de reporting n’est pas démontrée.",
+    "M€ cumulés à fin de période",
+  ]) assert.ok(markupText(opellaFr).includes(required), `French Opella economic label missing: ${required}`);
+  for (const required of [
+    "Double run is the coexistence of the TSA invoice and autonomous functions ramping up; no third charge is added.",
+    "Indicative proxy margin",
+    "Comparability between the transaction perimeter and the reporting perimeter has not been demonstrated.",
+    "Cumulative €m at period end",
+  ]) assert.ok(markupText(opellaEn).includes(required), `English Opella economic label missing: ${required}`);
   const fundingSeriesContracts = [
     {
-      caption: "Évolution du besoin de financement",
-      columns: ["Période", "Besoin cumulé", "Variation", "Écart récurrent", "Composante ponctuelle"],
+      caption: "Évolution de l’écart cumulé de cash lié à la séparation",
+      columns: ["Période", "Écart cumulé de cash", "Variation", "Écart récurrent", "Composante ponctuelle"],
       forbiddenBoundary: /(?:à la borne|à l’horizon)/i,
       markup: opellaFr,
       periods: ["Mai–déc. 2025", "FY2026", "FY2027", "FY2028", "FY2029"],
     },
     {
-      caption: "Funding requirement evolution",
-      columns: ["Period", "Cumulative need", "Change", "Recurring gap", "One-off component"],
+      caption: "Cumulative separation-related cash-gap evolution",
+      columns: ["Period", "Cumulative cash gap", "Change", "Recurring gap", "One-off component"],
       forbiddenBoundary: /at the horizon/i,
       markup: opellaEn,
       periods: ["May–Dec. 2025", "FY2026", "FY2027", "FY2028", "FY2029"],

@@ -1159,6 +1159,7 @@ export default function OpellaAnalysisView() {
   const fundingRows = result.modules.m7.periods;
   const fundingLast = fundingRows.at(-1);
   const fundingPrevious = fundingRows.at(-2);
+  const recurringEbitdaImpact = allocationBridgeStep.value + costBridgeStep.value;
   const state = result.modules.m7.resorb.state;
   const stateLabel = copy(stateCopyIds[state]);
   const pk = result.modules.m7.resorb.pk;
@@ -1377,6 +1378,7 @@ export default function OpellaAnalysisView() {
         formatMoney(runRate, language, { decimals: 0 }),
         formatMoney(separationCost, language, { decimals: 0 }),
         formatMoney(peak.value, language, { decimals: 0 }),
+        formatMoney(recurringEbitdaImpact, language),
         heroPeriodLabel(steady),
       ].join(" · "),
     },
@@ -1546,12 +1548,31 @@ export default function OpellaAnalysisView() {
             value={formatMoney(separationCost, language, { decimals: 0 })}
           />
           <MetricTile
-            detail={copy("kpi.peak.detail", { period: heroPeriodLabel(peak.period) })}
+            detail={copy("kpi.peak.detail", {
+              horizon: formatMoney(fundingLast.need, language),
+              horizonPeriod: periodLabel(fundingLast.period),
+              peak: formatMoney(peak.value, language),
+              peakPeriod: heroPeriodLabel(peak.period),
+              recurring: formatAccountingMoney(fundingLast.eGap, language, { positiveSign: true }),
+            })}
             detailClassName="opella-kpi-explanation"
             label={copy("kpi.peak")}
             outputId="O-PEAK"
             tone="neutral"
-            value={formatMoney(peak.value, language, { decimals: 0 })}
+            value={formatMoney(peak.value, language)}
+          />
+          <MetricTile
+            detail={copy("kpi.recurringEbitdaImpact.detail", {
+              allocations: formatMoney(allocationBridgeStep.value, language),
+              standalone: formatMoney(Math.abs(costBridgeStep.value), language),
+            })}
+            detailClassName="opella-kpi-explanation"
+            label={copy("kpi.recurringEbitdaImpact")}
+            tone="neutral"
+            value={copy("kpi.recurringEbitdaImpact.value", {
+              period: periodLabel(horizonPeriod),
+              value: formatMoney(recurringEbitdaImpact, language),
+            })}
           />
           <MetricTile
             detail={copy("kpi.steady.detail")}
@@ -1632,7 +1653,10 @@ export default function OpellaAnalysisView() {
                 data-source-ids={snapshot.m1.margin.source}
               >
                 <dt>{copy("transactionScope.snapshot.impliedMargin")}</dt>
-                <dd>≈ {formatPercent(snapshot.m1.margin.value, language, 1)}</dd>
+                <dd>
+                  ≈ {formatPercent(snapshot.m1.margin.value, language, 1)}
+                  <small>{copy("evidence.scopeCaveat")}</small>
+                </dd>
               </div>
               <div
                 data-public-fact-id="transaction-ownership"

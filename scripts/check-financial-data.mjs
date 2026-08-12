@@ -34,6 +34,11 @@ close(NET_DEBT.grossFinancialDebt - NET_DEBT.cash - NET_DEBT.marketableSecuritie
 close(QOE.publishedEbitdaInclCir - QOE.cirReported, QOE.publishedEbitdaExCir);
 close(QOE.publishedEbitdaExCir + QOE.adjustmentsEstimate, QOE.adjustedEbitdaExCir);
 close(QOE.adjustedEbitdaExCir + QOE.cirReported, QOE.adjustedEbitdaInclCir);
+close(
+  Object.values(QOE.adjustmentComponents).reduce((sum, value) => sum + value, 0),
+  QOE.adjustmentsEstimate,
+);
+close((QOE.proFormaRange.high - QOE.proFormaRange.low) / 2, QOE.ezyCollectSensitivity);
 close(VALUATION_CONTEXT.marketCap, 267.40146, 1e-6);
 close(VALUATION_CONTEXT.marketEv, 282.05546, 1e-6);
 close(
@@ -155,7 +160,11 @@ const analysisSource = await readFile(
   "utf8"
 );
 assert.match(analysisSource, /VALUATION_CONTEXT\.controlEquityUpside/);
-assert.match(analysisSource, /DISPLAY_VALUES\.grossFinancialDebt/);
+assert.match(analysisSource, /NET_DEBT\.grossFinancialDebt/);
+assert.match(analysisSource, /NET_DEBT\.cash \+ NET_DEBT\.marketableSecurities/);
+assert.match(analysisSource, /QOE\.adjustmentComponents\.transactionCosts/);
+assert.match(analysisSource, /Shareholder potential \/ implied share price vs control scenario/);
+assert.doesNotMatch(analysisSource, /Exit sensitivity range/);
 assert.match(analysisSource, /SOURCES\.engine\.status/);
 
 await runOpellaIntegrationChecks();

@@ -13,7 +13,6 @@ import {
   equityBridge,
   buildTrajectory,
   sensitivityWaccG,
-  sensitivityWaccExit,
   FY25,
   SCENARIOS,
   VALUATION_CONTEXT,
@@ -35,7 +34,6 @@ const FF_MIN = 100;
 const FF_MAX = 600;
 const WACCS = [0.085, 0.09, 0.095, 0.1, 0.105];
 const GS = [0.035, 0.03, 0.025, 0.02, 0.015];
-const EXIT_MULTIPLES = [13, 14, 15, 16, 17];
 const SCENARIO_IDS = ["bear", "base", "bull"];
 const APP_BASE = import.meta.env.BASE_URL.replace(/\/$/, "");
 const ANALYSIS_BASE = `${APP_BASE}${SIDETRADE_ANALYSIS_ROUTE}`;
@@ -81,6 +79,16 @@ function fmtLocalizedPct(value, decimals, language) {
   const formatted = (value * 100).toFixed(decimals);
   const localized = language === "fr" ? formatted.replace(".", ",") : formatted;
   return `${localized}${language === "fr" ? " %" : "%"}`;
+}
+
+function fmtDisplayM(value, decimals, language) {
+  const formatted = value.toFixed(decimals);
+  return language === "fr" ? `${formatted.replace(".", ",")} M€` : `${EURO}${formatted}m`;
+}
+
+function fmtBridgeNumber(value, language) {
+  const formatted = value.toFixed(1);
+  return language === "fr" ? formatted.replace(".", ",") : formatted;
 }
 
 function fmtNumber(value, decimals = 1) {
@@ -289,6 +297,8 @@ function TrajectoryChart({ activeScenario }) {
 
 function SensitivityHeatmap({ activeScenario }) {
   const values = sensitivityWaccG(activeScenario, WACCS, GS);
+  const activeAssumptions = SCENARIOS[activeScenario];
+  const activeScenarioLabel = scenarioCopy[activeScenario].tag;
   const flat = values.flat();
   const min = Math.min(...flat);
   const max = Math.max(...flat);
@@ -306,9 +316,9 @@ function SensitivityHeatmap({ activeScenario }) {
       <div className="sensi-head">
         <div className="left">
           <h3>Sensitivity · WACC × Terminal growth</h3>
-          <div className="sub">DCF EV in €m, Base case FCF profile held constant. Recomputed on the fly — center cell is the Base case input.</div>
+          <div className="sub">DCF EV in €m, <strong>{activeScenarioLabel}</strong> scenario FCF profile held constant. Recomputed on the fly — center cell uses the active WACC and terminal growth.</div>
         </div>
-        <div className="right">FCF 2026–2030 · Base case</div>
+        <div className="right">FCF 2026–2030 · <strong>{activeScenarioLabel}</strong> scenario</div>
       </div>
       <div aria-label="DCF sensitivity table" className="table-scroll" role="region" tabIndex="0">
         <table className="sensi" id="sensi-table">
@@ -337,7 +347,7 @@ function SensitivityHeatmap({ activeScenario }) {
         </table>
       </div>
       <p style={{ fontSize: 11.5, color: "var(--ink-4)", fontStyle: "italic", marginTop: 10 }}>
-        Cells shaded by intensity (darker = higher EV). The Base case at WACC 9.5% / g 2.5% is highlighted bordeaux and reconciles with the live DCF output.
+        Cells shaded by intensity (darker = higher EV). The active <strong>{activeScenarioLabel}</strong> scenario at WACC {fmtPct(activeAssumptions.wacc)} / g {fmtPct(activeAssumptions.g)} is highlighted bordeaux and reconciles with the live DCF output.
       </p>
     </div></Localized>
   );
@@ -422,8 +432,9 @@ function FootballField({ activeScenario, language, scenarioResults }) {
   );
 }
 
-function WaterfallBridge({ activeScenario }) {
+function WaterfallBridge({ activeScenario, language }) {
   const bridge = equityBridge(activeScenario);
+  const exactNetDebtBridge = `${fmtBridgeNumber(NET_DEBT.grossFinancialDebt, language)} − ${fmtBridgeNumber(NET_DEBT.cash + NET_DEBT.marketableSecurities, language)} = ${fmtBridgeNumber(NET_DEBT.strict, language)} ${language === "fr" ? "M€" : "€m"}`;
   const baseline = 230;
   const maxV = 560;
   const maxH = 175;
@@ -450,7 +461,7 @@ function WaterfallBridge({ activeScenario }) {
         <text className="wf-label" x={bar2X + barW / 2} y={equityTop - 30} textAnchor="middle">Equity Value</text>
         <text className="wf-value accent" x={bar2X + barW / 2} y={equityTop - 10} textAnchor="middle">{fmtM(bridge.equity)}</text>
         <text className="wf-sub" x={bar1X + barW / 2} y={baseline + 20} textAnchor="middle">EV · DCF + comps central case</text>
-        <text className="wf-sub" x={(bar1X + bar2X + barW) / 2} y={baseline + 36} textAnchor="middle">{fmtM(DISPLAY_VALUES.grossFinancialDebt, 1)} debt − {fmtM(DISPLAY_VALUES.cashAndMarketableSecurities, 1)} cash = {fmtM(NET_DEBT.strict, 1)} net debt</text>
+        <text className="wf-sub" x={(bar1X + bar2X + barW) / 2} y={baseline + 36} textAnchor="middle">{exactNetDebtBridge} net debt</text>
         <line x1="600" x2="600" y1="50" y2="240" stroke="var(--line)" strokeWidth="1" strokeDasharray="2 4" />
         <path className="wf-arrow" d="M 620 145 L 700 145" />
         <path className="wf-arrow" d="M 692 139 L 702 145 L 692 151" />
@@ -462,7 +473,7 @@ function WaterfallBridge({ activeScenario }) {
       </svg>
       <ol className="waterfall-mobile" aria-label="Enterprise value to share price bridge">
         <li><span>Enterprise Value</span><strong>{fmtM(bridge.ev)}</strong><small>DCF + comps central case</small></li>
-        <li className="deduction"><span>(−) Net debt</span><strong>{fmtM(bridge.netDebt, 1)}</strong><small>{fmtM(DISPLAY_VALUES.grossFinancialDebt, 1)} debt − {fmtM(DISPLAY_VALUES.cashAndMarketableSecurities, 1)} cash</small></li>
+        <li className="deduction"><span>(−) Net debt</span><strong>{fmtM(bridge.netDebt, 1)}</strong><small>{exactNetDebtBridge}</small></li>
         <li><span>Equity Value</span><strong>{fmtM(bridge.equity)}</strong><small>After strict net debt</small></li>
         <li className="final"><span>Implied share price</span><strong>{EURO}{bridge.sharePrice.toFixed(0)}</strong><small>{FY25.dilutedShares.toLocaleString("en-GB")} diluted shares</small></li>
       </ol>
@@ -482,7 +493,6 @@ export default function AnalysisView() {
   }), []);
   const active = scenarioResults[activeScenario];
   const cagr = Math.pow(active.rev / FY25.revenue, 1 / 5) - 1;
-  const waccExit = sensitivityWaccExit(activeScenario, WACCS, EXIT_MULTIPLES);
   const analysisHref = `${ANALYSIS_BASE}${language === "en" ? "?lang=en" : ""}`;
 
   function handleChapterClick(event, hash) {
@@ -620,7 +630,12 @@ export default function AnalysisView() {
             <div className="qoe-node adjusted"><span>Adjusted EBITDA</span><strong>≈{fmtM(QOE.adjustedEbitdaInclCir, 1)}</strong><small>including CIR · estimated</small></div>
           </div>
         </div>
-        <p className="qoe-source">The estimated {fmtM(QOE.adjustmentsEstimate, 1)} adjustment bridges published ex-CIR EBITDA to the adjusted ex-CIR reference. Its components require supporting evidence; adding back FY25 CIR then reconciles to the {fmtM(QOE.adjustedEbitdaInclCir, 1)} adjusted EBITDA reference. Pro forma adjusted EBITDA including CIR is estimated between {fmtM(QOE.proFormaRange.low, 1)} and {fmtM(QOE.proFormaRange.high, 1)}, subject to integration evidence and data-room confirmation.</p>
+        <ul className="qoe-component-list">
+          <li>Transaction costs: <strong>+{fmtDisplayM(QOE.adjustmentComponents.transactionCosts, 1, language)}</strong> — assumption to be confirmed.</li>
+          <li>Integration costs: <strong>+{fmtDisplayM(QOE.adjustmentComponents.integrationCosts, 1, language)}</strong> — assumption to be confirmed.</li>
+          <li>Capitalised R&amp;D: <strong>({fmtDisplayM(Math.abs(QOE.adjustmentComponents.capitalisedResearchAndDevelopment), 1, language)})</strong> — published amount, analytical deduction.</li>
+        </ul>
+        <p className="qoe-source">The estimated {fmtM(QOE.adjustmentsEstimate, 1)} adjustment bridges published ex-CIR EBITDA to the adjusted ex-CIR reference. Adding back FY25 CIR then reconciles to the {fmtM(QOE.adjustedEbitdaInclCir, 1)} adjusted EBITDA reference. Pro forma adjusted EBITDA including CIR is estimated between {fmtM(QOE.proFormaRange.low, 1)} and {fmtM(QOE.proFormaRange.high, 1)}, subject to integration evidence and data-room confirmation. The ezyCollect sensitivity of ±{fmtDisplayM(QOE.ezyCollectSensitivity, 1, language)} is an illustrative assumption.</p>
         <div className="qoe-evidence-grid">
           <div><span>Revenue quality</span><strong>87%</strong><p>Subscription mix, with 92% subscription gross margin.</p></div>
           <div><span>OCF communicated</span><strong>{fmtM(CASH_CONVERSION.managementOcfExCirTiming, 1)}</strong><p>Excluding the timing impact of the Research Tax Credit.</p></div>
@@ -680,8 +695,8 @@ export default function AnalysisView() {
             <div className="cell"><div className="k">Current share price</div><div className="v">€{VALUATION_CONTEXT.sharePriceRef.toFixed(2)}</div></div>
             <div className="cell"><div className="k">Market cap</div><div className="v">{fmtM(VALUATION_CONTEXT.marketCap)}</div></div>
             <div className="cell"><div className="k">Implied EV</div><div className="v">{fmtM(VALUATION_CONTEXT.marketEv)}</div></div>
-            <div className="cell"><div className="k">Upside to fair value ({fmtM(VALUATION_CONTEXT.fairValueEv)} EV, DCF)</div><div className="v upside">+{(VALUATION_CONTEXT.fairValueEquityUpside * 100).toFixed(0)}%</div></div>
-            <div className="cell"><div className="k">Upside to control case ({fmtM(VALUATION_CONTEXT.controlEv)} EV)</div><div className="v upside">+{(VALUATION_CONTEXT.controlEquityUpside * 100).toFixed(0)}%</div></div>
+            <div className="cell"><div className="k">Shareholder potential / implied share price vs central Base reference — fixed ({fmtM(VALUATION_CONTEXT.fairValueEv)} EV, DCF)</div><div className="v upside">+{(VALUATION_CONTEXT.fairValueEquityUpside * 100).toFixed(0)}%</div></div>
+            <div className="cell"><div className="k">Shareholder potential / implied share price vs control scenario ({fmtM(VALUATION_CONTEXT.controlEv)} EV)</div><div className="v upside">+{(VALUATION_CONTEXT.controlEquityUpside * 100).toFixed(0)}%</div></div>
           </div>
           <p className="note">The dotted vertical line on the football field below mirrors the current market reference. Market reference filled as of {VALUATION_DATES.marketMedium}: €{VALUATION_CONTEXT.sharePriceRef.toFixed(2)}/share × {(FY25.dilutedShares / 1_000_000).toFixed(3)}m diluted shares + {fmtM(NET_DEBT.strict, 1)} strict net debt ≈ {fmtM(VALUATION_CONTEXT.marketEv)} EV.</p>
         </div>
@@ -763,9 +778,9 @@ FCF  = EBIT × (1 − tax) + D&A − Capex − ΔWC`}</pre>
             <tr><td><Tip k="CFO adjacency" body="Reporting / compliance SaaS — Office-of-CFO adjacency, not direct O2C." v={`FY+1 EV/Sales ~2.8x (${VALUATION_DATES.marketMedium})`}><strong>Workiva</strong></Tip></td><td>Reporting / compliance SaaS</td><td className="num">~2.8x</td><td>US</td></tr>
           </tbody>
         </table>
-        <cite>Ranges as of {VALUATION_DATES.marketLong} (prices {VALUATION_DATES.marketIso}, May-2026 guidances, EUR/USD 1.1424) · {SOURCES.market.status}. BlackLine / BILL / nCino / Workiva refreshed; Esker is the pre-buyout historical reference; Q2 Holdings and SPS Commerce indicative (H1-2025, not refreshed). Multiples are forward FY+1. EV/EBITDA tiers marked * use non-GAAP operating income as proxy (not a true EBITDA).</cite>
+        <cite>Ranges as of {VALUATION_DATES.marketLong} (prices {VALUATION_DATES.marketIso}, May-2026 guidances, EUR/USD 1.1424) · {SOURCES.market.status}. BlackLine / BILL / nCino / Workiva refreshed; Esker is the pre-buyout historical reference; Q2 Holdings and SPS Commerce indicative (H1-2025, not refreshed). Multiples are forward FY+1. EV / non-GAAP operating income — proxy tiers are marked *.</cite>
         <div className="twoup" style={{ marginTop: 32 }}>
-          <div><h3>Retained multiples for Sidetrade</h3><table className="data" style={{ marginTop: 10 }}><thead><tr><th>Tier</th><th className="num">EV / Sales</th><th className="num">EV / EBITDA</th></tr></thead><tbody><tr><td className="label">Low — min of refreshed peers</td><td className="num">2.4x</td><td className="num">10.0x*</td></tr><tr><td className="label">Base — median of refreshed peers</td><td className="num strong">2.6x</td><td className="num strong">12.6x*</td></tr><tr><td className="label">High — max of refreshed peers</td><td className="num">3.2x</td><td className="num">17.2x*</td></tr></tbody></table></div>
+          <div><h3>Retained multiples for Sidetrade</h3><table className="data" style={{ marginTop: 10 }}><thead><tr><th>Tier</th><th className="num">EV / Sales</th><th className="num">EV / non-GAAP operating income — proxy</th></tr></thead><tbody><tr><td className="label">Low — min of refreshed peers</td><td className="num">2.4x</td><td className="num">10.0x*</td></tr><tr><td className="label">Base — median of refreshed peers</td><td className="num strong">2.6x</td><td className="num strong">12.6x*</td></tr><tr><td className="label">High — max of refreshed peers</td><td className="num">3.2x</td><td className="num">17.2x*</td></tr></tbody></table><p style={{ fontSize: 12, color: "var(--ink-3)", marginTop: 10 }}>Implied EV = equal-weighted average of the EV/Sales method and the proxy method, applied to 2026E estimates.</p></div>
           <div><h3>Range implied — stand-alone</h3><div className="result-strip three" style={{ marginTop: 10 }}><div className="cell"><div className="k">Low</div><div className="v">{fmtM(VALUATION_CONTEXT.tradingRange.low)}</div><div className="d">EV implicit</div></div><div className="cell"><div className="k">Base</div><div className="v accent">{fmtM(VALUATION_CONTEXT.tradingRange.base)}</div><div className="d">EV implicit</div></div><div className="cell"><div className="k">High</div><div className="v">{fmtM(VALUATION_CONTEXT.tradingRange.high)}</div><div className="d">EV implicit</div></div></div><p style={{ fontSize: 13, color: "var(--ink-3)", marginTop: 14 }}>The refreshed peer range sits below both the DCF (<strong style={{ color: "var(--bordeaux)" }}>~{fmtM(VALUATION_CONTEXT.fairValueEv)} EV</strong>) and Sidetrade’s own market EV (~{fmtM(VALUATION_CONTEXT.marketEv)} at €{VALUATION_CONTEXT.sharePriceRef.toFixed(0)}/share, {VALUATION_DATES.marketMedium}): derated US peers act as a sentiment floor. The gap is an assumed premium debate — organic growth, profitability, FR small-cap scarcity — not a convergence.</p></div>
         </div>
         <details className="method"><summary>Methodology</summary><div className="body"><p><strong>Logic.</strong> Sidetrade is compared with listed European and North-American B2B SaaS companies sharing subscription, profitability, growth and Office-of-CFO characteristics.</p><p><strong>Limitations.</strong> Sidetrade's size and liquidity may warrant a discount to larger listed peers. Forward FY+1 multiples reflect the market window dated {VALUATION_DATES.marketLong}.</p></div></details>
@@ -802,19 +817,19 @@ FCF  = EBIT × (1 − tax) + D&A − Capex − ΔWC`}</pre>
       <section className="block" id="lbo">
         <div className="sec-head"><div className="left"><div className="num-tag">07 — LBO</div><h2>Sponsor affordability · what a PE could pay for a 20–25% IRR</h2></div><div className="right">Not a fundamental fair value — an affordability test that frames the sponsor pricing logic.</div></div>
         <div className="twoup"><div><h3>Base case assumptions</h3><table className="data" style={{ marginTop: 10 }}><tbody><tr><td className="label">Entry EV (Base affordability)</td><td className="num strong">{fmtM(LBO_REFERENCE.entryEv, 1)}</td></tr><tr><td className="label">EBITDA 2025</td><td className="num">{fmtM(FY25.ebitda, 1)}</td></tr><tr><td className="label">Acquisition debt (4.0x EBITDA)</td><td className="num">~{fmtM(LBO_REFERENCE.acquisitionDebt, 1)}</td></tr><tr><td className="label">Sponsor equity</td><td className="num">~{fmtM(LBO_REFERENCE.sponsorEquity, 0)} (after ~{fmtM(LBO_REFERENCE.founderRollover, 0)} founder rollover)</td></tr><tr><td className="label">Holding period</td><td className="num">{LBO_REFERENCE.holdingPeriodYears} years</td></tr><tr><td className="label">Interest rate</td><td className="num">~{fmtPct(LBO_REFERENCE.interestRate)} all-in (E3M + 479bps)</td></tr><tr><td className="label">Cash sweep</td><td className="num">{fmtPct(LBO_REFERENCE.cashSweep, 0)} of excess FCF + 1% mandatory amort.</td></tr><tr><td className="label">Exit EBITDA 2030 (Base)</td><td className="num">{fmtM(LBO_REFERENCE.exitEbitda2030, 1)}</td></tr><tr><td className="label">Exit multiple (Base)</td><td className="num">{LBO_REFERENCE.exitMultiple.toFixed(1)}x EBITDA</td></tr><tr className="total"><td>Target IRR (Base)</td><td className="num">~{fmtPct(LBO_REFERENCE.baseIrr)}</td></tr></tbody></table><p style={{ fontSize: 12.5, color: "var(--ink-3)", marginTop: 12 }}><strong>Leverage convention.</strong> The 4.0x assumption reflects an illustrative acquisition financing package in which existing debt is refinanced; it is distinct from the current balance-sheet covenant.</p></div><div><h3>Range</h3><div className="result-strip three" style={{ marginTop: 10 }}><div className="cell"><div className="k">Low</div><div className="v">{fmtM(VALUATION_CONTEXT.lboRange.low, 1)}</div><div className="d">IRR target {fmtPct(VALUATION_CONTEXT.lboIrr.low, 0)}</div></div><div className="cell"><div className="k">Base</div><div className="v accent">{fmtM(VALUATION_CONTEXT.lboRange.base, 1)}</div><div className="d">IRR target {fmtPct(VALUATION_CONTEXT.lboIrr.base)}</div></div><div className="cell"><div className="k">High</div><div className="v">{fmtM(VALUATION_CONTEXT.lboRange.high, 1)}</div><div className="d">IRR target {fmtPct(VALUATION_CONTEXT.lboIrr.high, 0)}</div></div></div><p style={{ fontSize: 13, color: "var(--ink-3)", marginTop: 14 }}>The range reflects sponsor IRR hurdles of {fmtPct(VALUATION_CONTEXT.lboIrr.low, 0)} down to {fmtPct(VALUATION_CONTEXT.lboIrr.high, 0)} at a fixed {LBO_REFERENCE.exitMultiple.toFixed(0)}x exit multiple. Base affordability is ~{fmtM(VALUATION_CONTEXT.lboRange.base)} versus the {fmtM(VALUATION_CONTEXT.fairValueEv)} DCF reference. <strong>{SOURCES.engine.status}</strong> · sponsor affordability, not fundamental fair value.</p></div></div>
-        <details className="method"><summary>Methodology</summary><div className="body"><p>Entry EV is solved from target sponsor IRR, holding period, leverage, interest, exit EBITDA and exit multiple. The result is most sensitive to the IRR hurdle and exit multiple.</p><p className="src">Exit sensitivity range: {fmtM(waccExit.flat()[0])} to {fmtM(waccExit.flat().at(-1))}.</p></div></details>
+        <details className="method"><summary>Methodology</summary><div className="body"><p>Entry EV is solved from target sponsor IRR, holding period, leverage, interest, exit EBITDA and exit multiple. The result is most sensitive to the IRR hurdle and exit multiple.</p></div></details>
       </section>
 
       <section className="block" id="football">
         <div className="sec-head"><div className="left"><div className="num-tag">08 — Football field</div><h2>Four methods, one view</h2></div><div className="right">Only the DCF scenario marker responds to Bear / Base / Bull. The range endpoints and all other references remain fixed.</div></div>
         <FootballField activeScenario={activeScenario} language={language} scenarioResults={scenarioResults} />
         <div className="grid-3" style={{ marginTop: 24 }}>
-          <div className="card" style={{ borderTop: "3px solid var(--bordeaux)" }}><div className="mono-k" style={{ color: "var(--bordeaux)" }}>Stand-alone fair value</div><div className="big-card-value">{fmtM(VALUATION_CONTEXT.fairValueEv)} EV</div><p style={{ fontSize: 13, color: "var(--ink-2)", margin: 0 }}>DCF Gordon Growth central value — ~{((VALUATION_CONTEXT.fairValueEv / VALUATION_CONTEXT.marketEv - 1) * 100).toFixed(0)}% above the quoted market EV (~{fmtM(VALUATION_CONTEXT.marketEv)} at €{VALUATION_CONTEXT.sharePriceRef.toFixed(0)}/share, {VALUATION_DATES.marketMedium}). The reference number.</p></div>
+          <div className="card" style={{ borderTop: "3px solid var(--bordeaux)" }}><div className="mono-k" style={{ color: "var(--bordeaux)" }}>Stand-alone fair value · Central Base reference — fixed</div><div className="big-card-value">{fmtM(VALUATION_CONTEXT.fairValueEv)} EV</div><p style={{ fontSize: 13, color: "var(--ink-2)", margin: 0 }}>DCF Gordon Growth central value — ~{((VALUATION_CONTEXT.fairValueEv / VALUATION_CONTEXT.marketEv - 1) * 100).toFixed(0)}% above the quoted market EV (~{fmtM(VALUATION_CONTEXT.marketEv)} at €{VALUATION_CONTEXT.sharePriceRef.toFixed(0)}/share, {VALUATION_DATES.marketMedium}). The reference number.</p></div>
           <div className="card" style={{ borderTop: "3px solid var(--bull)" }}><div className="mono-k" style={{ color: "var(--bull)" }}>Control case</div><div className="big-card-value">{fmtM(VALUATION_CONTEXT.controlEv)} EV</div><p style={{ fontSize: 13, color: "var(--ink-2)", margin: 0 }}>Convergence with transaction precedents. ~40% control premium embedded.</p></div>
-          <div className="card" style={{ borderTop: "3px solid var(--market)" }}><div className="mono-k" style={{ color: "var(--market)" }}>Implied share price · Base</div><div className="big-card-value">~€{equityBridge("base").sharePrice.toFixed(0)}</div><p style={{ fontSize: 13, color: "var(--ink-2)", margin: 0 }}>({fmtM(VALUATION_CONTEXT.fairValueEv)} − {fmtM(NET_DEBT.strict, 1)} net debt) / {(FY25.dilutedShares / 1_000_000).toFixed(3)}m diluted shares = ~€{equityBridge("base").sharePrice.toFixed(0)} / share.</p></div>
+          <div className="card" style={{ borderTop: "3px solid var(--market)" }}><div className="mono-k" style={{ color: "var(--market)" }}>Implied share price · Central Base reference — fixed</div><div className="big-card-value">~€{equityBridge("base").sharePrice.toFixed(0)}</div><p style={{ fontSize: 13, color: "var(--ink-2)", margin: 0 }}>({fmtM(VALUATION_CONTEXT.fairValueEv)} − {fmtM(NET_DEBT.strict, 1)} net debt) / {(FY25.dilutedShares / 1_000_000).toFixed(3)}m diluted shares = ~€{equityBridge("base").sharePrice.toFixed(0)} / share.</p></div>
         </div>
-        <div className="equity-bridge-section" id="equity-bridge"><div className="section-kicker">EV → Equity → Share price</div><h3>From enterprise value to the shareholder outcome</h3><WaterfallBridge activeScenario={activeScenario} /><p><strong>Stand-alone range:</strong> {fmtM(VALUATION_CONTEXT.tradingRange.low)} – {fmtM(scenarioResults.bull.ev)} EV → ~€{((VALUATION_CONTEXT.tradingRange.low - NET_DEBT.strict) * 1_000_000 / FY25.dilutedShares).toFixed(0)}–€{equityBridge("bull").sharePrice.toFixed(0)} / share. <br /><strong>Extended range (incl. M&amp;A / LBO):</strong> {fmtM(VALUATION_CONTEXT.tradingRange.low)} – {fmtM(VALUATION_CONTEXT.transactionRange.high)} EV → ~€{((VALUATION_CONTEXT.tradingRange.low - NET_DEBT.strict) * 1_000_000 / FY25.dilutedShares).toFixed(0)}–€{((VALUATION_CONTEXT.transactionRange.high - NET_DEBT.strict) * 1_000_000 / FY25.dilutedShares).toFixed(0)} / share.</p></div>
-        <div className="conclusion-panel" id="conclusions"><div className="mono-k">Valuation synthesis</div><h3>Recurring revenue supports the stand-alone case; control value remains conditional.</h3><div className="conclusion-grid"><p>Published metrics show a profitable O2C SaaS profile, 87% subscription mix and 92% subscription gross margin; the 30–35% 2030 EBITDA margin is a company target, not an achieved result.</p><p>The Base DCF indicates <strong>~{fmtM(VALUATION_CONTEXT.fairValueEv)} EV</strong>, around <strong>€{equityBridge("base").sharePrice.toFixed(0)} per share</strong>, subject to the stated operating and discount-rate assumptions.</p><p>Workbook transaction comps indicate a <strong>~{fmtM(VALUATION_CONTEXT.controlEv)} EV</strong> control case, subject to comparability, CIR diligence and integration delivery.</p></div></div>
+        <div className="equity-bridge-section" id="equity-bridge"><div className="section-kicker">EV → Equity → Share price</div><h3>From enterprise value to the shareholder outcome</h3><WaterfallBridge activeScenario={activeScenario} language={language} /><p><strong>Stand-alone range:</strong> {fmtM(VALUATION_CONTEXT.tradingRange.low)} – {fmtM(scenarioResults.bull.ev)} EV → ~€{((VALUATION_CONTEXT.tradingRange.low - NET_DEBT.strict) * 1_000_000 / FY25.dilutedShares).toFixed(0)}–€{equityBridge("bull").sharePrice.toFixed(0)} / share. <br /><strong>Extended range (incl. M&amp;A / LBO):</strong> {fmtM(VALUATION_CONTEXT.tradingRange.low)} – {fmtM(VALUATION_CONTEXT.transactionRange.high)} EV → ~€{((VALUATION_CONTEXT.tradingRange.low - NET_DEBT.strict) * 1_000_000 / FY25.dilutedShares).toFixed(0)}–€{((VALUATION_CONTEXT.transactionRange.high - NET_DEBT.strict) * 1_000_000 / FY25.dilutedShares).toFixed(0)} / share.</p></div>
+        <div className="conclusion-panel" id="conclusions"><div className="mono-k">Valuation synthesis · Central Base reference — fixed</div><h3>Recurring revenue supports the stand-alone case; control value remains conditional.</h3><div className="conclusion-grid"><p>Published metrics show a profitable O2C SaaS profile, 87% subscription mix and 92% subscription gross margin; the 30–35% 2030 EBITDA margin is a company target, not an achieved result.</p><p>The central Base DCF reference indicates <strong>~{fmtM(VALUATION_CONTEXT.fairValueEv)} EV</strong>, around <strong>€{equityBridge("base").sharePrice.toFixed(0)} per share</strong>, subject to the stated operating and discount-rate assumptions.</p><p>Workbook transaction comps indicate a <strong>~{fmtM(VALUATION_CONTEXT.controlEv)} EV</strong> control case, subject to comparability, CIR diligence and integration delivery.</p></div></div>
       </section>
 
       <section className="block" id="red-flags">

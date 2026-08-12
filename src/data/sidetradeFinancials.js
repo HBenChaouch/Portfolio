@@ -105,9 +105,15 @@ export const QOE = Object.freeze({
   cirReported: 3.482,
   publishedEbitdaExCir: 9.902,
   adjustmentsEstimate: 0.8,
+  adjustmentComponents: Object.freeze({
+    transactionCosts: 0.7,
+    integrationCosts: 0.3,
+    capitalisedResearchAndDevelopment: -0.2,
+  }),
   adjustedEbitdaExCir: 10.702,
   adjustedEbitdaInclCir: 14.184,
   proFormaRange: Object.freeze({ low: 13.7, high: 14.7 }),
+  ezyCollectSensitivity: 0.5,
   source: SOURCES.qoe,
 });
 

@@ -314,7 +314,8 @@ try {
         "Que faut-il pour rendre Opella autonome — à quel coût, avec quel besoin de cash, dans quel délai et avec quels risques de dérive ?",
         "l’écart cumulé de cash lié à la séparation, mesuré par rapport au maintien dans le périmètre vendeur",
         "Montants arrondis à l’affichage",
-        "IT 40 M€ · Support 30 M€ · Distribution 25 M€ · Qualité et réglementaire 25 M€",
+        "Coût brut des fonctions autonomes",
+        "Avant reprise de 91,8 M€ d’allocations vendeur · impact incrémental en FY2029 : (28,2 M€) avant fiscalité",
         "TSA 99 M€ · Coûts ponctuels 152 M€ · Capex de séparation 45 M€",
         "Point haut observé sur l’horizon modélisé",
         "Impact EBITDA récurrent net",
@@ -330,7 +331,8 @@ try {
         "What does it take for Opella to stand on its own — at what cost, with how much cash, on what timeline, and with which execution risks?",
         "cumulative separation-related cash gap, measured against continued inclusion in the seller perimeter",
         "Amounts are rounded for display",
-        "IT €40m · Support €30m · Distribution €25m · Quality &amp; regulatory €25m",
+        "Gross cost of autonomous functions",
+        "Before adding back €91.8m of seller allocations · incremental impact in FY2029: (€28.2m) before tax",
         "TSA €99m · One-offs €152m · Separation capex €45m",
         "High point observed over the model horizon",
         "Net recurring EBITDA impact",
@@ -354,6 +356,10 @@ try {
   }
   assert.doesNotMatch(markupText(opellaFr), /besoin de financement|coût total de séparation|somme bottom-up|plafond|maximum terminal|pic transitoire/i);
   assert.doesNotMatch(markupText(opellaEn), /funding need|funding requirement|total separation cost|bottom-up sum|ceiling|terminal maximum|transient peak/i);
+  assert.ok(markupText(opellaFr).includes("Cash après coûts modélisés"));
+  assert.ok(markupText(opellaFr).includes("Avant financement, intérêts et éléments non modélisés"));
+  assert.ok(markupText(opellaEn).includes("Cash after modelled costs"));
+  assert.ok(markupText(opellaEn).includes("Before financing, interest and unmodelled items"));
   for (const required of [
     "Le double run correspond à la coexistence de la facture TSA et des fonctions autonomes montées en charge ; aucune troisième charge n’est ajoutée.",
     "Marge proxy indicative",

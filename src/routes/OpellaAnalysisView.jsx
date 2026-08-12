@@ -556,7 +556,10 @@ function CashBridgeGraphic({
         <span>{copy("cash.bridgeUnit", { period: periodLabel(period) })}</span>
       </div>
       <div className="cash-bridge-heading">
-        <span>{copy("cash.headline")}</span>
+        <span>
+          {copy("cash.headline")}
+          <small>{copy("cash.headline.detail")}</small>
+        </span>
         <strong>{formatMoney(total, language)}</strong>
       </div>
       <dl className="cash-bridge-lines">
@@ -932,15 +935,15 @@ export default function OpellaAnalysisView() {
   const horizonMargin = result.modules.m1.margin[result.calendar.maxHorizon];
   const revenueGrowthContribution = (horizonRevenue - baseRevenue) * baseMargin;
   const marginExpansionContribution = horizonRevenue * (horizonMargin - baseMargin);
-  const formatBridgeNumber = (value, signed = false) => {
-    const formatted = formatNumber(Math.abs(value), language, 1);
+  const formatBridgeNumber = (value, signed = false, decimals = 1) => {
+    const formatted = formatNumber(Math.abs(value), language, decimals);
     if (value < 0) return `(${formatted})`;
     return signed && value > 0 ? `+${formatted}` : formatted;
   };
   const transactionStep = {
     axisLabel: copy("standalone.axis.transactionEbitda"),
     detail: null,
-    displayValue: formatBridgeNumber(transactionEbitda),
+    displayValue: formatBridgeNumber(transactionEbitda, false, 0),
     end: transactionEbitda,
     id: "transaction-ebitda",
     kind: "total",
@@ -1528,7 +1531,11 @@ export default function OpellaAnalysisView() {
         </div>
         <div aria-label={copy("nav.executive")} className="opella-kpi-grid">
           <MetricTile
-            detail={runRateBreakdown}
+            detail={copy("kpi.runRate.detail", {
+              allocations: formatMoney(allocationBridgeStep.value, language),
+              net: formatAccountingMoney(recurringEbitdaImpact, language),
+              period: periodLabel(horizonPeriod),
+            })}
             detailClassName="opella-kpi-explanation"
             label={copy("kpi.runRate")}
             outputId="O-RUNRATE"

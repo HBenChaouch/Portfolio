@@ -1916,6 +1916,7 @@
 .cash-bridge-chart { background: var(--paper); border: 1px solid var(--line-strong); margin-top: 34px; padding: 20px 24px 18px; }
 .cash-bridge-heading { align-items: baseline; border-bottom: 1px solid var(--line-strong); display: flex; justify-content: space-between; padding-bottom: 14px; }
 .cash-bridge-heading span { color: var(--ink-3); font: 10px var(--mono); letter-spacing: .06em; text-transform: uppercase; }
+.cash-bridge-heading span small { display: block; font: 10px/1.4 var(--sans); letter-spacing: 0; margin-top: 4px; max-width: 52ch; text-transform: none; }
 .cash-bridge-heading strong { color: var(--bordeaux); font: 26px var(--serif); }
 .cash-bridge-chart ol { list-style: none; margin: 0; padding: 8px 0 0; }
 .cash-bridge-chart li { align-items: center; display: grid; gap: 16px; grid-template-columns: minmax(170px, .9fr) minmax(240px, 1.6fr) auto; min-height: 42px; }

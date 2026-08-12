@@ -283,10 +283,12 @@ try {
     attributeValues(opellaEnglishDom, "data-source-location"),
     "Opella FR/EN source locations must remain identical",
   );
+  const opellaSnapshot = JSON.parse(await read("integrations/opella/snapshot.json"));
+  const roundedPeak = Math.round(opellaSnapshot.outputs["O-PEAK"].value);
   for (const [outputId, frenchValue, englishValue] of [
     ["O-RUNRATE", "120 M€", "€120m"],
     ["O-SEPCOST", "296 M€", "€296m"],
-    ["O-PEAK", "321 M€", "€321m"],
+    ["O-PEAK", `${roundedPeak} M€`, `€${roundedPeak}m`],
     ["O-STEADY", "FY2028", "FY2028"],
   ]) {
     assert.ok(opellaFrenchDom.includes(`data-output-id="${outputId}"`));

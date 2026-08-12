@@ -412,7 +412,6 @@ function SourceRegistry({ copy, language, snapshot, sourcesById }) {
                   ev: formatBillions(snapshot.m1.enterpriseValue.value, language, 0),
                   multiple: formatMultiple(snapshot.m1.entryMultiple.value, language, 0),
                   reportedRevenue: formatMoney(snapshot.m1.reportedRevenue.value, language, { decimals: 0 }),
-                  roundedRevenue: formatBillions(snapshot.m1.revenue.value, language, 0),
                 })}</p>
               </div>
               <span className="source-category">{copy(`sources.role.${source.evidence_role}`)}</span>

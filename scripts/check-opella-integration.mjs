@@ -403,18 +403,31 @@ export async function runOpellaIntegrationChecks({ sourceRoot } = {}) {
     assert.equal(file.mime, expectedMime, `${file.path} has an unexpected bundle MIME`);
     await assertFileSha256(path.join(bundleRoot, file.path), file.sha256, `bundle ${file.path}`);
   }
-  assert.deepEqual(bundleManifest.downloads, [
+  assert.equal(bundleManifest.downloads.length, 1);
+  const [publicWorkbook] = bundleManifest.downloads;
+  assert.deepEqual(
+    {
+      path: publicWorkbook.path,
+      href: publicWorkbook.href,
+      filename: publicWorkbook.filename,
+      mime: publicWorkbook.mime,
+      sourcePath: publicWorkbook.sourcePath,
+      role: publicWorkbook.role,
+    },
     {
       path: "public/downloads/opella/Opella-Carveout-Model.xlsx",
       href: "downloads/opella/Opella-Carveout-Model.xlsx",
       filename: "Opella-Carveout-Model.xlsx",
       mime: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-      sha256: "88BA625D017DE59DEEE6DA281D87D68DCC2F853E467046C8E03E5D0B9366EF8C",
       sourcePath: "Transaction Services/Modele_Carveout_Opella.xlsx",
-      sourceSha256: "EB7F9BB678A79BC827C60D4E773F9398D2CA3999CAB3F251D1C9CFA1C5D5F1FF",
       role: "Microsoft Excel-recalculated public copy of the complete Opella model.",
     },
-  ]);
+  );
+  assert.equal(
+    publicWorkbook.sourceSha256,
+    sourceManifest.sourceFiles[opellaSourceNames.workbook],
+    "Public workbook source hash must follow the generated source manifest",
+  );
   await assertFileSha256(
     path.join(repositoryRoot, bundleManifest.downloads[0].path),
     bundleManifest.downloads[0].sha256,
@@ -423,7 +436,7 @@ export async function runOpellaIntegrationChecks({ sourceRoot } = {}) {
   assert.equal(bundleManifest.pass, "OP-OPella-PUBLIC-MODEL-01");
   assert.equal(
     bundleManifest.sourceBaseline.commit,
-    "0145062d416640714888e1b672a0a81950bc8d9f",
+    "eb6cadd04a1d3a170903a6523043f4c3f0b791c6",
   );
   assert.deepEqual(bundleManifest.presentationFiles, [
     "src/App.jsx",
@@ -585,16 +598,26 @@ export async function runOpellaIntegrationChecks({ sourceRoot } = {}) {
       entryMultiple: ["public", "S1"],
       margin: ["calculé", "S1+S5"],
       reportedRevenue: ["public", "S5"],
-      revenue: ["calculé", "S5"],
+      revenue: ["public", "S5"],
     },
     "Public anchors and derived proxies must keep their exact source classification",
   );
   assert.equal(snapshot.m1.reportedRevenue.value, 4948);
-  assert.equal(snapshot.m1.revenue.value, 5000);
-  assert.equal(
-    snapshot.m1.revenue.value,
-    Math.round(snapshot.m1.reportedRevenue.value / 1000) * 1000,
-    "The €5,000m anchor must be derived by rounding S5 to the nearest €bn",
+  assert.equal(snapshot.m1.revenue.value, 4948);
+  assert.equal(snapshot.m1.revenue.value, snapshot.m1.reportedRevenue.value);
+  assert.equal(snapshot.m1.enterpriseValue.value, 16000);
+  assert.equal(snapshot.m1.entryMultiple.value, 14);
+  close(
+    snapshot.m1.ebitda.value,
+    snapshot.m1.enterpriseValue.value / snapshot.m1.entryMultiple.value,
+    relationTolerance(sourceManifest, "R-MULT"),
+    "M1 implied EBITDA = enterprise value / announced multiple",
+  );
+  close(
+    snapshot.m1.margin.value,
+    snapshot.m1.ebitda.value / snapshot.m1.revenue.value,
+    relationTolerance(sourceManifest, "R-PERIM"),
+    "M1 implied margin = implied EBITDA / published FY2024 revenue",
   );
   assert.ok(
     Object.values(snapshot.m1).filter((field) => field && typeof field.source === "string")

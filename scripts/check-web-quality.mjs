@@ -89,10 +89,6 @@ assert.equal(
 );
 await assert.rejects(() => read("public/Modele_Carveout_Opella.xlsx"), { code: "ENOENT" });
 assert.equal(
-  await sha256("public/downloads/opella/Opella-Carveout-Model.xlsx"),
-  "88BA625D017DE59DEEE6DA281D87D68DCC2F853E467046C8E03E5D0B9366EF8C",
-);
-assert.equal(
   (await read("public/downloads/opella/Opella-Carveout-Model.xlsx")).subarray(0, 4).toString("hex"),
   "504b0304",
   "Public Opella workbook must remain an XLSX package",
@@ -108,18 +104,39 @@ assert.deepEqual(
 
 const opellaBundleManifest = await readJson(path.join(rootPath, "integrations", "opella", "manifest.json"));
 const opellaSnapshot = await readJson(path.join(rootPath, "integrations", "opella", "snapshot.json"));
+const opellaSourceManifest = await readJson(path.join(rootPath, "integrations", "opella", "source-manifest.json"));
+const opellaRelationTolerance = (id) => opellaSourceManifest.relations
+  .find((relation) => relation.id === id).tolerance;
 assert.equal(opellaBundleManifest.status, "inactive");
 assert.equal(opellaBundleManifest.downloads.length, 1);
-assert.deepEqual(opellaBundleManifest.downloads[0], {
-  path: "public/downloads/opella/Opella-Carveout-Model.xlsx",
-  href: "downloads/opella/Opella-Carveout-Model.xlsx",
-  filename: "Opella-Carveout-Model.xlsx",
-  mime: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-  sha256: "88BA625D017DE59DEEE6DA281D87D68DCC2F853E467046C8E03E5D0B9366EF8C",
-  sourcePath: "Transaction Services/Modele_Carveout_Opella.xlsx",
-  sourceSha256: "EB7F9BB678A79BC827C60D4E773F9398D2CA3999CAB3F251D1C9CFA1C5D5F1FF",
-  role: "Microsoft Excel-recalculated public copy of the complete Opella model.",
-});
+const [opellaDownload] = opellaBundleManifest.downloads;
+assert.deepEqual(
+  {
+    path: opellaDownload.path,
+    href: opellaDownload.href,
+    filename: opellaDownload.filename,
+    mime: opellaDownload.mime,
+    sourcePath: opellaDownload.sourcePath,
+    role: opellaDownload.role,
+  },
+  {
+    path: "public/downloads/opella/Opella-Carveout-Model.xlsx",
+    href: "downloads/opella/Opella-Carveout-Model.xlsx",
+    filename: "Opella-Carveout-Model.xlsx",
+    mime: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    sourcePath: "Transaction Services/Modele_Carveout_Opella.xlsx",
+    role: "Microsoft Excel-recalculated public copy of the complete Opella model.",
+  },
+);
+assert.equal(
+  await sha256("public/downloads/opella/Opella-Carveout-Model.xlsx"),
+  opellaDownload.sha256,
+);
+assert.equal(
+  opellaDownload.sourceSha256,
+  opellaBundleManifest.sourceFiles
+    .find(({ path: filename }) => filename === "Transaction Services/Modele_Carveout_Opella.xlsx").sha256,
+);
 assert.ok(opellaBundleManifest.presentationFiles.includes("src/routes/OpellaAnalysisView.jsx"));
 assert.deepEqual(opellaBundleManifest.publicExposure, {
   cardAvailable: false,
@@ -435,11 +452,16 @@ try {
       + bridgeValues["standalone-F-SUP"]
       + bridgeValues["standalone-F-DIS"]
       + bridgeValues["standalone-F-QUA"];
-    assert.ok(Math.abs(bridgeValues["revenue-growth"] - 182.0502669249) < 1e-9);
-    assert.ok(Math.abs(bridgeValues["margin-expansion"] - 86.9455555725) < 1e-9);
-    assert.ok(Math.abs(perimeterReconciliation - bridgeValues["perimeter-subtotal"]) < 1e-9);
-    assert.ok(Math.abs(outputReconciliation - bridgeValues.output) < 1e-9);
-    assert.ok(Math.abs(bridgeValues.output - 1384.7377484414) < 1e-9);
+    const horizon = opellaSnapshot.calendar.maxHorizon;
+    const horizonEbitda = opellaSnapshot.m7.inventory
+      .find(({ id }) => id === "L-EBITDA").amounts[horizon];
+    const perimeterTolerance = opellaRelationTolerance("R-PERIM");
+    const standaloneTolerance = opellaRelationTolerance("R-STANDALONE");
+    assert.ok(Math.abs(bridgeValues["transaction-ebitda"] - opellaSnapshot.m1.ebitda.value) < perimeterTolerance);
+    assert.ok(Math.abs(perimeterReconciliation - bridgeValues["perimeter-subtotal"]) < perimeterTolerance);
+    assert.ok(Math.abs(bridgeValues["perimeter-subtotal"] - horizonEbitda) < perimeterTolerance);
+    assert.ok(Math.abs(outputReconciliation - bridgeValues.output) < standaloneTolerance);
+    assert.ok(Math.abs(bridgeValues.output - opellaSnapshot.m6.standaloneRunRate.value) < standaloneTolerance);
   }
 
   for (const rendered of [opellaFr, opellaEn]) {

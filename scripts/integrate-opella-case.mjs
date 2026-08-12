@@ -18,7 +18,7 @@ const bundleRoot = path.join(repositoryRoot, "integrations", "opella");
 const defaultSourceRoot = path.resolve(
   process.env.OPELLA_SOURCE ?? path.join(repositoryRoot, "..", "Transaction Services"),
 );
-const parentBaseline = "0145062d416640714888e1b672a0a81950bc8d9f";
+const parentBaseline = "eb6cadd04a1d3a170903a6523043f4c3f0b791c6";
 const publicWorkbookPath = "public/downloads/opella/Opella-Carveout-Model.xlsx";
 const publicWorkbookHref = "downloads/opella/Opella-Carveout-Model.xlsx";
 

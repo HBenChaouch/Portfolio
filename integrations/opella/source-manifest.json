@@ -20,9 +20,9 @@
     "determinismProof": "les propriétés du document sont figées à BUILD_STAMP ; deux exécutions produisent les mêmes SHA-256 du workbook, du snapshot et du manifeste"
   },
   "sourceFiles": {
-    "build_carveout.py": "1326555BEAD88D6626585174242BEC4AA613F50870FCB27F93D439BAE93B1788",
-    "Modele_Carveout_Opella.xlsx": "EB7F9BB678A79BC827C60D4E773F9398D2CA3999CAB3F251D1C9CFA1C5D5F1FF",
-    "opella_case_snapshot.json": "17FDD4392282DCC5498505BDF87512FCAD59D052D21ADDE50436DC61C7BE12EC"
+    "build_carveout.py": "7AC6D08BD01755B3865AB2E67778B68706E91B70A869A33DF8C8A11CFBDEA412",
+    "Modele_Carveout_Opella.xlsx": "CA4626ACB57BADC2AD25ABEF5667BCDF84BC088B344C7FFB7EB70288BCC74C57",
+    "opella_case_snapshot.json": "31FFAE580B6541DE9177D9BCE0BA918758FB7FB2D8DB294388913DD5895817FD"
   },
   "sourceContract": {
     "requiredIds": [
@@ -285,6 +285,7 @@
   "expectedFormulaCells": {
     "note": "Clés du registre de cellules du générateur qui doivent porter une formule et non une constante (G1). Le harnais impose cette liste minimale indépendamment du manifeste.",
     "keys": [
+      "m1.margin",
       "m1.ebitda",
       "m1.multiple",
       "m1.own_sum",

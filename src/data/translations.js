@@ -485,7 +485,7 @@ const fr = {
   "Finance and analytics portfolio": "Portfolio finance et analytics",
   "Portfolio · Finance & Analytics": "Portfolio · Finance & Analytics",
   "Finance and analytics work.": "Travaux en finance et analytics.",
-  "This portfolio presents three projects: a public-company valuation, a carve-out model and a real-estate downside monitoring cockpit.": "Ce portfolio présente trois projets : une analyse de valorisation cotée, un modèle de carve-out et un cockpit de suivi downside immobilier.",
+  "Three self-built cases: a listed-company valuation with DCF scenarios, comparables and LBO affordability; a carve-out model covering the stand-alone perimeter, TSA unwind and separation costs; and a fund downside cockpit for covenants and liquidity. Figures carry their source status, market references are dated, and the underlying workbooks are downloadable.": "Trois cas construits de bout en bout : une valorisation de société cotée avec scénarios DCF, comparables et affordability LBO ; un modèle de carve-out couvrant le périmètre stand-alone, la sortie des TSA et les coûts de séparation ; et un cockpit de downside fonds pour covenants et liquidité. Les chiffres portent leur statut de source, les références de marché sont datées et les workbooks sous-jacents sont téléchargeables.",
   "Projects": "Projets",
   "Valuation analysis": "Analyse de valorisation",
   "Investment judgment, translated into usable analytical cases.": "Le jugement d’investissement, traduit en cas analytiques directement exploitables.",

@@ -24,7 +24,7 @@ export default function PortfolioHome() {
           <p className="eyebrow">Portfolio · Finance &amp; Analytics</p>
           <h1>Finance and analytics work.</h1>
         </div>
-        <p>This portfolio presents three projects: a public-company valuation, a carve-out model and a real-estate downside monitoring cockpit.</p>
+        <p>Three self-built cases: a listed-company valuation with DCF scenarios, comparables and LBO affordability; a carve-out model covering the stand-alone perimeter, TSA unwind and separation costs; and a fund downside cockpit for covenants and liquidity. Figures carry their source status, market references are dated, and the underlying workbooks are downloadable.</p>
       </section>
 
       <section className="home-selection" aria-label="Portfolio cases">

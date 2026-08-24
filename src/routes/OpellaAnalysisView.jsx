@@ -488,7 +488,8 @@ function SourceRegistry({ copy, language, snapshot, sourcesById }) {
 
 function SignedWaterfall({ ariaLabel, items }) {
   const bridgeMaximum = Math.max(...items.flatMap(({ end, start }) => [start, end]));
-  const scaleMaximum = Math.max(1550, bridgeMaximum);
+  const waterfallLabelHeadroomRatio = 1.08;
+  const scaleMaximum = Math.max(1550, bridgeMaximum * waterfallLabelHeadroomRatio);
   const scaleMinimum = 0;
   const scaleRange = scaleMaximum;
   const position = (value) => (scaleMaximum - value) / scaleRange * 100;
@@ -650,10 +651,26 @@ function OneOffNatureTable({ copy, items, language, total }) {
 }
 
 function OneOffPhasingChart({ copy, language, periods, transitionEconomics }) {
-  const barScaleMaximum = 100;
-  const cumulativeScaleMaximum = 180;
-  const barScaleTicks = [100, 80, 60, 40, 20, 0];
-  const cumulativeScaleTicks = [180, 120, 60, 0];
+  const periodValues = periods.map(({ value }) => value);
+  const barScaleMaximum = Math.max(
+    100,
+    Math.ceil((Math.max(...periodValues, Number.EPSILON)) / 25) * 25,
+  );
+  let cumulativePeak = 0;
+  let runningTotal = 0;
+  for (const value of periodValues) {
+    runningTotal += value;
+    cumulativePeak = Math.max(cumulativePeak, runningTotal);
+  }
+  const cumulativeScaleMaximum = Math.max(180, Math.ceil(cumulativePeak / 60) * 60);
+  const barScaleTicks = [];
+  for (let tick = barScaleMaximum; tick >= 0; tick -= barScaleMaximum / 5) {
+    barScaleTicks.push(tick);
+  }
+  const cumulativeScaleTicks = [];
+  for (let tick = cumulativeScaleMaximum; tick >= 0; tick -= cumulativeScaleMaximum / 3) {
+    cumulativeScaleTicks.push(tick);
+  }
   let cumulative = 0;
   const points = periods.map((period, index) => {
     cumulative += period.value;

@@ -315,6 +315,24 @@
     },
     {
       "file": "src/routes/OpellaAnalysisView.jsx",
+      "node": "waterfall label headroom ratio",
+      "value": "1.08",
+      "reason": "Presentation-only chart headroom above the tallest waterfall level so labels stay inside the plot."
+    },
+    {
+      "file": "src/routes/OpellaAnalysisView.jsx",
+      "node": "one-off axis rounding step",
+      "value": "25",
+      "reason": "Non-financial chart axis rounding increment."
+    },
+    {
+      "file": "src/routes/OpellaAnalysisView.jsx",
+      "node": "cumulative axis interval count",
+      "value": "3",
+      "reason": "Non-financial chart axis geometry."
+    },
+    {
+      "file": "src/routes/OpellaAnalysisView.jsx",
       "node": "chart view height",
       "value": "260",
       "reason": "Non-financial SVG geometry."

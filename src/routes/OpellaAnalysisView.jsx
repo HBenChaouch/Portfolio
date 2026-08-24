@@ -5,7 +5,12 @@ import {
 import DataTable from "../components/DataTable.jsx";
 import MetricTile from "../components/MetricTile.jsx";
 import { useLanguage } from "../context/LanguageContext.jsx";
-import { useOpellaScenario } from "../context/OpellaScenarioContext.jsx";
+import {
+  OPELLA_PRESET_LEVER_ORDER,
+  OPELLA_SCENARIO_PRESETS,
+  opellaActivePresetId,
+  useOpellaScenario,
+} from "../context/OpellaScenarioContext.jsx";
 import {
   createOpellaCopy,
   opellaDiligenceItems,
@@ -1252,37 +1257,9 @@ export default function OpellaAnalysisView() {
     pk: pk ? periodLabel(pk) : copy("common.notApplicable"),
   });
   const leverContracts = opellaFinancials.contracts.engine.levers;
-  const leverOrder = ["S-COST", "S-ONEOFF", "S-OPS", "S-TSA"];
-  const scenarioPresets = [
-    {
-      id: "prudent",
-      selections: {
-        "S-COST": "haute",
-        "S-ONEOFF": "haute",
-        "S-OPS": "basse",
-        "S-TSA": "haute",
-      },
-    },
-    {
-      id: "central",
-      selections: Object.fromEntries(leverOrder.map((id) => [id, "centrale"])),
-    },
-    {
-      id: "favorable",
-      selections: {
-        "S-COST": "basse",
-        "S-ONEOFF": "basse",
-        "S-OPS": "haute",
-        "S-TSA": "basse",
-      },
-    },
-  ];
-  const selectionMatches = (candidate) => leverOrder.every(
-    (id) => selections[id] === candidate[id],
-  );
-  const activePreset = scenarioPresets.find(({ selections: candidate }) => (
-    selectionMatches(candidate)
-  ))?.id ?? "custom";
+  const leverOrder = OPELLA_PRESET_LEVER_ORDER;
+  const scenarioPresets = OPELLA_SCENARIO_PRESETS;
+  const activePreset = opellaActivePresetId(selections);
   const centralOutputs = centralResult.outputs;
   const activeOutputs = result.outputs;
   const scenarioPeriod = (output, id) => periodCalendarDisplay(

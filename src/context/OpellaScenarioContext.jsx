@@ -26,6 +26,47 @@ const CENTRAL_STATE = "centrale";
 const READING_POSITION_STABILIZATION_FRAMES = Object.keys(OPELLA_SCENARIO_PARAMS).length;
 const READING_POSITION_TOLERANCE_PX = 1 / 2;
 
+export const OPELLA_PRESET_LEVER_ORDER = Object.freeze([
+  "S-COST",
+  "S-ONEOFF",
+  "S-OPS",
+  "S-TSA",
+]);
+
+export const OPELLA_SCENARIO_PRESETS = Object.freeze([
+  Object.freeze({
+    id: "prudent",
+    selections: Object.freeze({
+      "S-COST": "haute",
+      "S-ONEOFF": "haute",
+      "S-OPS": "basse",
+      "S-TSA": "haute",
+    }),
+  }),
+  Object.freeze({
+    id: "central",
+    selections: Object.freeze(Object.fromEntries(
+      OPELLA_PRESET_LEVER_ORDER.map((id) => [id, CENTRAL_STATE]),
+    )),
+  }),
+  Object.freeze({
+    id: "favorable",
+    selections: Object.freeze({
+      "S-COST": "basse",
+      "S-ONEOFF": "basse",
+      "S-OPS": "haute",
+      "S-TSA": "basse",
+    }),
+  }),
+]);
+
+export function opellaActivePresetId(selections) {
+  const matching = OPELLA_SCENARIO_PRESETS.find(({ selections: candidate }) => (
+    OPELLA_PRESET_LEVER_ORDER.every((id) => selections[id] === candidate[id])
+  ));
+  return matching?.id ?? "custom";
+}
+
 function selectionsFromSearch(search) {
   const params = new URLSearchParams(search);
   return Object.fromEntries(Object.entries(OPELLA_SCENARIO_PARAMS).map(([id, parameter]) => [

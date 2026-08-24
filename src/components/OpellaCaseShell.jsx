@@ -1,6 +1,10 @@
 import { useMemo } from "react";
 import { useLanguage } from "../context/LanguageContext.jsx";
-import { useOpellaScenario } from "../context/OpellaScenarioContext.jsx";
+import {
+  OPELLA_SCENARIO_PRESETS,
+  opellaActivePresetId,
+  useOpellaScenario,
+} from "../context/OpellaScenarioContext.jsx";
 import {
   createOpellaCopy,
   opellaNavigation,
@@ -14,8 +18,9 @@ import PortfolioCaseShell from "./PortfolioCaseShell.jsx";
 
 export default function OpellaCaseShell() {
   const { language } = useLanguage();
-  const { isCentral, reset } = useOpellaScenario();
+  const { isCentral, reset, selections, setScenario } = useOpellaScenario();
   const copy = useMemo(() => createOpellaCopy(language), [language]);
+  const activePreset = opellaActivePresetId(selections);
   const sidebarGroups = useMemo(() => opellaNavigation.map((group) => ({
     label: copy(group.label),
     items: group.items.map(([title, hash]) => ({ title: copy(title), hash })),
@@ -23,7 +28,26 @@ export default function OpellaCaseShell() {
 
   const controls = (
     <>
-      <span className="opella-model-status">{copy("shell.status")}</span>
+      <div
+        aria-label={copy("shell.presetsLabel")}
+        className="scenario-segment opella-control-presets"
+        role="group"
+      >
+        {OPELLA_SCENARIO_PRESETS.map((preset) => (
+          <button
+            aria-pressed={activePreset === preset.id}
+            className={activePreset === preset.id ? "active" : ""}
+            key={preset.id}
+            onClick={() => setScenario(preset.selections)}
+            type="button"
+          >
+            {copy(`shell.preset.${preset.id}`)}
+          </button>
+        ))}
+      </div>
+      {activePreset === "custom" ? (
+        <span className="opella-control-custom">{copy("shell.preset.custom")}</span>
+      ) : null}
       <a
         className="opella-shell-download"
         download={opellaPublicWorkbook.file}

@@ -512,7 +512,7 @@ export default function AnalysisView() {
           <span>·</span>
           <span>{SOURCE_STATUS.MARKET_AS_OF}</span>
         </div>
-        <h1>Sidetrade stand-alone value centres on <span className="accent">~{fmtM(VALUATION_CONTEXT.fairValueEv)} EV (DCF)</span> — ~7% above the quoted market EV — with ~{fmtM(VALUATION_CONTEXT.controlEv)} EV in a control case.</h1>
+        <h1>Sidetrade stand-alone value centres on <span className="accent">~{fmtM(VALUATION_CONTEXT.fairValueEv)} EV (DCF)</span>{` — ~${Math.round((VALUATION_CONTEXT.fairValueEv / VALUATION_CONTEXT.marketEv - 1) * 100)}% above the quoted market EV — with ~`}{fmtM(VALUATION_CONTEXT.controlEv)} EV in a control case.</h1>
         <p className="sub">
           A four-method triangulation — DCF, trading comps, transaction comps and LBO affordability — applied to <strong>Sidetrade</strong> (Euronext Growth: ALBFR), a profitable AI-native Order-to-Cash SaaS. Toggle Bear / Base / Bull to recompose the DCF and watch the football field react.
         </p>
@@ -758,6 +758,7 @@ FCF  = EBIT × (1 − tax) + D&A − Capex − ΔWC`}</pre>
               <li><strong>Normalised tax rate.</strong> 2025 P&amp;L shows a €2.15m net tax credit including CIR effects. Scenario assumptions are 25% Bear, 22% Base and 20% Bull.</li>
               <li><strong>WACC.</strong> The workbook bridges a 9.7% Base WACC and retains 9.5%; scenario bounds are 10.5% Bear and 8.5% Bull.</li>
               <li><strong>Terminal growth.</strong> 2.0%–3.0%, capped at 3% in Bull.</li>
+              <li><strong>Discounting convention.</strong> Forecast FCFs are discounted with a mid-year convention; the Gordon Growth terminal value is discounted at full year 5 — a conservative combination, held explicit here.</li>
               <li><strong>Q1 2026 actuals.</strong> Published growth of +17% reported / +21% constant currency total and +27% constant currency subscriptions is consistent with, but does not prove, the Base 2026 growth assumption.</li>
             </ol>
           </div>

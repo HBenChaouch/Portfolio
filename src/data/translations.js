@@ -254,6 +254,8 @@ const fr = {
   "Normalised tax rate.": "Taux d’imposition normalisé.",
   "The workbook bridges a{{0}} Base WACC and retains{{1}}; scenario bounds are{{2}} Bear and{{3}} Bull.": "Le workbook établit un WACC central de{{0}} et retient{{1}} ; les bornes sont de{{2}} en Bear et{{3}} en Bull.",
   "{{0}}–{{1}}, capped at {{2}} in Bull.": "{{0}}–{{1}}, plafonné à {{2}} en Bull.",
+  "Discounting convention.": "Convention d’actualisation.",
+  "Forecast FCFs are discounted with a mid-year convention; the Gordon Growth terminal value is discounted at full year 5 — a conservative combination, held explicit here.": "Les FCF prévisionnels sont actualisés en convention mid-year ; la valeur terminale de Gordon Growth est actualisée à l’année 5 pleine — une combinaison conservatrice, maintenue explicite.",
   "Published growth of {{0}} reported / {{1}} constant currency total and {{2}} constant currency subscriptions is consistent with, but does not prove, the Base 2026 growth assumption.": "La croissance publiée de {{0}} / {{1}} à changes constants et de {{2}} sur les abonnements est cohérente avec l’hypothèse Base 2026, sans toutefois la démontrer.",
   "Q1 2026 actuals.": "Réalisé T1 2026.",
   "05 — Trading comps": "05 — Comparables boursiers",

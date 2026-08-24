@@ -1891,6 +1891,7 @@ export default function OpellaAnalysisView() {
         title={copy("cash.title")}
       >
         <p className="opella-section-intro">{copy("cash.intro")}</p>
+        <p className="opella-section-intro">{copy("cash.financingScope")}</p>
         <div className="cash-funding-content" id="funding-need">
           <div className="cash-funding-grid">
             <CashBridgeGraphic
@@ -2160,7 +2161,7 @@ export default function OpellaAnalysisView() {
           <section>
             <h3>{copy("sources.limitationsTitle")}</h3>
             <ul>
-              {["estimates", "stub", "noFullCashflow", "noUnderwriting"].map((id) => (
+              {["estimates", "stub", "noFullCashflow", "noUnderwriting", "noFinancing", "taxConvention", "costConventions"].map((id) => (
                 <li key={id}>{copy(`sources.limit.${id}`)}</li>
               ))}
             </ul>

@@ -10,3 +10,5 @@ __pycache__/
 *.pyc
 test-artifacts/
 .agent-logs/
+_archive/
+docs/internal/

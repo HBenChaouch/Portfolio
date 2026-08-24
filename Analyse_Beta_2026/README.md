@@ -45,3 +45,5 @@ node .\build_workbook.mjs
 ```
 
 Le premier script nécessite une connexion Internet. Avant toute présentation éloignée du 15 juillet 2026, rafraîchir les prix, les contrôles officiels et les données de structure de capital.
+
+Dépendance de génération : `build_workbook.mjs` repose sur le paquet `@oai/artifact-tool`, non distribué publiquement ; la régénération du classeur suppose donc cet environnement. Les classeurs, séries et contrôles commités dans `outputs/`, `raw_data/` et `audit/` font foi et restent intégralement auditables sans réexécution.

@@ -4,6 +4,7 @@ dist/
 .env.local
 .DS_Store
 npm-debug.log*
+.cockpit-source/
 
 # Hygiene (audit passe 0 pt 1 / reserve R2 — R6 du 16/07/2026)
 ~$*

@@ -23,7 +23,7 @@ import os
 from openpyxl import load_workbook
 
 _DIR = os.path.dirname(os.path.abspath(__file__))
-WB = os.path.join(_DIR, "Sidetrade_Valuation_2026_v2.xlsx")
+WB = os.path.join(_DIR, "public", "Sidetrade_Valuation_2026_v2.xlsx")
 # Cached DCF values are read from the same workbook (data_only): run a full
 # Excel/LibreOffice recalculation after any openpyxl save, which wipes them.
 WB_DATA = WB

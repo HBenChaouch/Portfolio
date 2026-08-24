@@ -58,6 +58,12 @@ export const SOURCES = Object.freeze({
     label: "DCF and LBO outputs",
     status: SOURCE_STATUS.CALCULATED,
   },
+  betaStudy: {
+    label: "Sidetrade beta regression study",
+    file: "Sidetrade_Analyse_Beta_2Y_Weekly_2026-07-15.xlsx",
+    date: VALUATION_DATES.marketMedium,
+    status: SOURCE_STATUS.CALCULATED,
+  },
 });
 
 // DCF anchors retain calculation precision. Reported values
@@ -190,4 +196,13 @@ export const LBO_REFERENCE = Object.freeze({
   baseIrr: 0.225,
   dcfEntryIrr: 0.1636,
   source: SOURCES.workbook,
+});
+
+// Beta-study evidence not represented elsewhere in the site data layer.
+// The retained WACC itself lives in SCENARIOS; do not duplicate it here.
+export const BETA_STUDY = Object.freeze({
+  betaRetained: 1.15,
+  betaRegressionCentral: 1.06,
+  erp: 0.055,
+  source: SOURCES.betaStudy,
 });

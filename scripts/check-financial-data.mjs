@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 import {
+  BETA_STUDY,
   CASH_CONVERSION,
   DISPLAY_VALUES,
   FY25,
@@ -149,6 +150,9 @@ assert.equal(LBO_REFERENCE.cashSweep, 0.75);
 assert.equal(LBO_REFERENCE.exitMultiple, 15);
 assert.equal(LBO_REFERENCE.baseIrr, 0.225);
 assert.equal(LBO_REFERENCE.dcfEntryIrr, 0.1636);
+assert.equal(BETA_STUDY.betaRetained, 1.15);
+assert.equal(BETA_STUDY.betaRegressionCentral, 1.06);
+assert.equal(BETA_STUDY.erp, 0.055);
 assert.deepEqual(VALUATION_CONTEXT.tradingRange, { low: 171, base: 202, high: 264 });
 assert.deepEqual(VALUATION_CONTEXT.transactionRange, { low: 289, base: 411, high: 547 });
 assert.deepEqual(TRANSACTION_COMPS.selectedMultiples, { low: 4.7, base: 6.7, high: 8.9 });

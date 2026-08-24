@@ -9225,3 +9225,12 @@ a {
     padding: 0 8px;
   }
 }
+.inline-download {
+  color: var(--bordeaux);
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.inline-download:hover {
+  text-decoration: underline;
+}

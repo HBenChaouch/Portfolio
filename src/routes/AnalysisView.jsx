@@ -761,7 +761,7 @@ FCF  = EBIT × (1 − tax) + D&A − Capex − ΔWC`}</pre>
               <li><strong>WACC.</strong> The workbook bridges a 9.7% Base WACC and retains 9.5%; scenario bounds are 10.5% Bear and 8.5% Bull.</li>
               <li><strong>Terminal growth.</strong> 2.0%–3.0%, capped at 3% in Bull.</li>
               <li><strong>Discounting convention.</strong> Forecast FCFs are discounted with a mid-year convention; the Gordon Growth terminal value is discounted at full year 5 — a conservative combination, held explicit here.</li>
-              <li><strong>Cost of equity.</strong> {`The model retains a ${BETA_STUDY.betaRetained} levered beta. A separate 2-year weekly peer regression supports ~${BETA_STUDY.betaRegressionCentral} after delevering/relevering to the target capital structure; the retained beta is therefore a deliberately prudent assumption. ERP is ${(BETA_STUDY.erp * 100).toFixed(1)}%.`}</li>
+              <li><strong>Cost of equity.</strong> {`The model retains a ${BETA_STUDY.betaRetained} levered beta. A separate 2-year weekly peer regression supports ~${BETA_STUDY.betaRegressionCentral} after delevering/relevering to the target capital structure; the retained beta is therefore a deliberately prudent assumption. ERP is ${(BETA_STUDY.erp * 100).toFixed(1)}%.`} <a className="inline-download" href={betaStudyUrl} download={SOURCES.betaStudy.file}>{`Download the beta study (XLSX)`}</a></li>
               <li><strong>Q1 2026 actuals.</strong> Published growth of +17% reported / +21% constant currency total and +27% constant currency subscriptions is consistent with, but does not prove, the Base 2026 growth assumption.</li>
             </ol>
           </div>
@@ -851,7 +851,7 @@ FCF  = EBIT × (1 − tax) + D&A − Capex − ΔWC`}</pre>
         <div className="sec-head"><div className="left"><div className="num-tag">Reference</div><h2>Sources</h2></div><div className="right">Workbook and original public-source downloads.</div></div>
         <div className="grid-3">
           <a className="card source-card" href={betaStudyUrl} download={SOURCES.betaStudy.file}><h3>{SOURCES.betaStudy.label}</h3><p>WACC documentation · XLSX download<br />2Y weekly · {SOURCES.betaStudy.date}</p></a>
-          <a className="card source-card" download={SOURCES.workbook.file} href={SOURCES.workbook.href}><h3>{SOURCES.workbook.label}</h3><p>Valuation model · XLSX download<br />{SOURCES.workbook.status}</p></a>
+          <a className="card source-card" download={SOURCES.workbook.downloadAs} href={SOURCES.workbook.href}><h3>{SOURCES.workbook.label}</h3><p>Valuation model · XLSX download<br />{SOURCES.workbook.status}</p></a>
           <a className="card source-card" href={SOURCES.annualResults.href} target="_blank" rel="noopener"><h3>{SOURCES.annualResults.label}</h3><p>Press release · {SOURCES.annualResults.date}<br />{SOURCES.annualResults.status}</p></a>
           <a className="card source-card" href={SOURCES.statutoryReport.href} target="_blank" rel="noopener"><h3>{SOURCES.statutoryReport.label}</h3><p>KPMG / Yuma Audit · {SOURCES.statutoryReport.date}<br />{SOURCES.statutoryReport.status}</p></a>
           <a className="card source-card" href={SOURCES.strategicPlan.href} target="_blank" rel="noopener"><h3>{SOURCES.strategicPlan.label}</h3><p>Strategic Plan · {SOURCES.strategicPlan.date}<br />{SOURCES.strategicPlan.status}</p></a>

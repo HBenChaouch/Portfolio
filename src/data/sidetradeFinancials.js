@@ -19,8 +19,9 @@ export const VALUATION_DATES = Object.freeze({
 
 export const SOURCES = Object.freeze({
   workbook: {
-    label: "Sidetrade Valuation 2026 v2",
+    label: "Sidetrade Valuation 2026",
     file: "Sidetrade_Valuation_2026_v2.xlsx",
+    downloadAs: "Sidetrade_Valuation_2026.xlsx",
     href: publicAsset("Sidetrade_Valuation_2026_v2.xlsx"),
     status: SOURCE_STATUS.CALCULATED,
   },

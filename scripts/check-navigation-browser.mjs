@@ -1441,7 +1441,7 @@ try {
     "1280x720": "fr",
     "1920x1080": "en",
   };
-  const opellaReviewDirectory = path.resolve(".agent-logs", "op-web-hero-01-review");
+  const opellaReviewDirectory = path.resolve("test-artifacts", "navigation-browser");
   await mkdir(opellaReviewDirectory, { recursive: true });
   for (const [width, height] of [[360, 800], [390, 844], [430, 932], [1280, 720], [1920, 1080]]) {
     await command("Emulation.setDeviceMetricsOverride", {
@@ -1614,7 +1614,7 @@ try {
     opellaResponsive[viewportId] = {
       ...state,
       language: visualLanguage,
-      screenshot: path.join(".agent-logs", "op-web-hero-01-review", screenshotName),
+      screenshot: path.join("test-artifacts", "navigation-browser", screenshotName),
       visualAnchor,
     };
   }

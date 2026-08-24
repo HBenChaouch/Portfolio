@@ -3,7 +3,7 @@ param(
 )
 
 $ErrorActionPreference = 'Stop'
-$expectedHash = 'B0D93B0A7BF346C2D02D90DC6F83D23C80D9422D902AF1E95E7CA40D385F8ECD'
+$expectedHash = '6C7DF89C549C1F441783F5D4ECA16C86CFF75C35D36BF0A496E4FC7ABAF75AA3'
 $officeRelNs = 'http://schemas.openxmlformats.org/officeDocument/2006/relationships'
 $errorTokens = @('#REF!', '#DIV/0!', '#VALUE!', '#NAME?', '#N/A', '#NUM!', '#NULL!')
 $invariant = [System.Globalization.CultureInfo]::InvariantCulture

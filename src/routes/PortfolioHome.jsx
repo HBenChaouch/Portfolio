@@ -4,27 +4,58 @@ import Localized from "../components/Localized.jsx";
 import { useLanguage } from "../context/LanguageContext.jsx";
 import { portfolioCases } from "../data/portfolioCases.js";
 
+const CV_EN_FILE = "Hamza_Ben_Chaouch_CV_EN.pdf";
+const CV_EN_AVAILABLE = false;
+
+const asset = (file) => `${import.meta.env.BASE_URL.replace(/\/$/, "")}/${file}`;
+
+const CONTACT_LINKS = [
+  { label: "Email", href: "mailto:hamza.benchaouch@essec.edu" },
+  { label: "LinkedIn", href: "https://www.linkedin.com/in/hbenchaouch" },
+  { label: "GitHub", href: "https://github.com/HBenChaouch" },
+];
+
 export default function PortfolioHome() {
   const { language, t } = useLanguage();
 
   return (
     <Localized><main className="portfolio-home">
       <header className="home-masthead">
-        <div className="home-identity">
-          <strong>Hamza Ben Chaouch</strong>
-          <span>ESSEC Grande École · Finance &amp; Analytics</span>
-        </div>
-        <div className="home-contact">
-          <a href="mailto:hamza.benchaouch@essec.edu">hamza.benchaouch@essec.edu</a>
-          <LanguageToggle />
-        </div>
+        <div className="home-identity"><strong>Hamza Ben Chaouch</strong></div>
+        <LanguageToggle />
       </header>
+
+      <section className="home-id-block">
+        <img
+          alt=""
+          className="home-id-portrait"
+          src={asset("Hamza_Ben_Chaouch_Headshot.jpg")}
+        />
+        <div className="home-id-body">
+          <p className="home-id-name">Hamza Ben Chaouch</p>
+          <p className="home-id-line">ESSEC Grande École · Finance &amp; Analytics</p>
+          <p className="home-id-line">Paris, France</p>
+          <p className="home-id-toolkit">{t("Financial modeling · Valuation · Python · Power BI · Data analysis")}</p>
+          <p className="home-id-contact">
+            {CONTACT_LINKS.map((link) => (
+              <a href={link.href} key={link.label} rel="noopener">{link.label}</a>
+            ))}
+            <a download="Hamza_Ben_Chaouch_CV_FR.pdf" href={asset("Hamza_Ben_Chaouch_CV_FR.pdf")}>CV FR</a>
+            {CV_EN_AVAILABLE ? (
+              <a download={CV_EN_FILE} href={asset(CV_EN_FILE)}>CV EN</a>
+            ) : null}
+          </p>
+        </div>
+      </section>
+
       <section className="home-hero">
         <div>
           <p className="eyebrow">Portfolio · Finance &amp; Analytics</p>
           <h1>Finance and analytics work.</h1>
         </div>
-        <p>Three self-built cases: a listed-company valuation with DCF scenarios, comparables and LBO affordability; a carve-out model covering the stand-alone perimeter, TSA unwind and separation costs; and a fund downside cockpit for covenants and liquidity. Figures carry their source status, market references are dated, and the underlying workbooks are downloadable.</p>
+        <div>
+          <p>Three self-built cases: a listed-company valuation with DCF scenarios, comparables and LBO affordability; a carve-out model covering the stand-alone perimeter, TSA unwind and separation costs; and a fund downside cockpit for covenants and liquidity. Figures carry their source status, market references are dated, and the underlying workbooks are downloadable.</p>
+        </div>
       </section>
 
       <section className="home-selection" aria-label="Portfolio cases">

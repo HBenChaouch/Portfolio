@@ -262,6 +262,7 @@ const fr = {
   "WACC documentation · XLSX download": "Documentation du WACC · téléchargement XLSX",
   "2Y weekly": "Hebdo 2 ans",
   "Download the beta study (XLSX)": "Télécharger l’étude du bêta (XLSX)",
+  "Financial modeling · Valuation · Python · Power BI · Data analysis": "Modélisation financière · Valorisation · Python · Power BI · Analyse de données",
   "Published growth of {{0}} reported / {{1}} constant currency total and {{2}} constant currency subscriptions is consistent with, but does not prove, the Base 2026 growth assumption.": "La croissance publiée de {{0}} / {{1}} à changes constants et de {{2}} sur les abonnements est cohérente avec l’hypothèse Base 2026, sans toutefois la démontrer.",
   "Q1 2026 actuals.": "Réalisé T1 2026.",
   "05 — Trading comps": "05 — Comparables boursiers",

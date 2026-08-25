@@ -197,7 +197,8 @@ assert.match(fallbackScript, /cases\/opella-carve-out/);
 assert.match(fallbackScript, /cases\/opella-carve-out\/analysis/);
 const sitemap = await text("public/sitemap.xml");
 assert.match(sitemap, /Portfolio\/cases\/real-estate-downside\//);
-assert.match(sitemap, /Portfolio\/cases\/opella-carve-out\/analysis\//);
+assert.match(sitemap, /Portfolio\/cases\/opella-carve-out\/analysis<\/loc>/);
+assert.doesNotMatch(sitemap, /Portfolio\/cases\/opella-carve-out\/analysis\//);
 
 const caseShell = await text("src/components/CaseShell.jsx");
 const portfolioCaseShell = await text("src/components/PortfolioCaseShell.jsx");
@@ -223,7 +224,7 @@ const portfolioHome = await text("src/routes/PortfolioHome.jsx");
 const app = await text("src/App.jsx");
 const integrationScript = await text("scripts/integrate-real-estate-case.mjs");
 assert.match(portfolioHome, /item\.static/);
-assert.doesNotMatch(portfolioHome, /target="_blank"/);
+assert.match(portfolioHome, /rel="noopener"/);
 assert.match(integrationScript, /dist\/cases\/real-estate-downside/);
 assert.match(integrationScript, /cffddcf705b8e6c60f89baa6683e4c45a77fc5c4/);
 assert.match(app, /path="\/cases\/opella-carve-out"/);

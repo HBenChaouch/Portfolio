@@ -8,6 +8,7 @@
     "build": "vite build && node scripts/create-spa-fallback.mjs && node scripts/integrate-real-estate-case.mjs",
     "preview": "vite preview",
     "build:pages": "node scripts/with-pages-base.mjs build",
+    "prepreview:pages": "node scripts/with-pages-base.mjs build",
     "preview:pages": "node scripts/with-pages-base.mjs preview",
     "test:financial": "node scripts/check-financial-data.mjs",
     "test:workbook": "node scripts/run-workbook-check.mjs",

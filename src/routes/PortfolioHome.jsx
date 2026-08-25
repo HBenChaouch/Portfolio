@@ -21,7 +21,6 @@ export default function PortfolioHome() {
   return (
     <Localized><main className="portfolio-home">
       <header className="home-masthead">
-        <div className="home-identity"><strong>Hamza Ben Chaouch</strong></div>
         <LanguageToggle />
       </header>
 

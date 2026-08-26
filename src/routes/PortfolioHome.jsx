@@ -10,7 +10,6 @@ const CV_EN_AVAILABLE = false;
 const asset = (file) => `${import.meta.env.BASE_URL.replace(/\/$/, "")}/${file}`;
 
 const CONTACT_LINKS = [
-  { label: "Email", href: "mailto:hamza.benchaouch@essec.edu" },
   { label: "LinkedIn", href: "https://www.linkedin.com/in/hbenchaouch" },
   { label: "GitHub", href: "https://github.com/HBenChaouch" },
 ];
@@ -20,10 +19,6 @@ export default function PortfolioHome() {
 
   return (
     <Localized><main className="portfolio-home">
-      <header className="home-masthead">
-        <LanguageToggle />
-      </header>
-
       <section className="home-id-block">
         <img
           alt=""
@@ -36,15 +31,17 @@ export default function PortfolioHome() {
           <p className="home-id-line">Paris, France</p>
           <p className="home-id-toolkit">{t("Financial modeling · Valuation · Python · Power BI · Data analysis")}</p>
           <p className="home-id-contact">
+            <a href="mailto:hamza.benchaouch@essec.edu">Email</a>
             {CONTACT_LINKS.map((link) => (
-              <a href={link.href} key={link.label} rel="noopener">{link.label}</a>
+              <a href={link.href} key={link.label} rel="noopener" target="_blank">{link.label}</a>
             ))}
-            <a download="Hamza_Ben_Chaouch_CV_FR.pdf" href={asset("Hamza_Ben_Chaouch_CV_FR.pdf")}>CV FR</a>
+            <a href={asset("Hamza_Ben_Chaouch_CV_FR.pdf")} rel="noopener" target="_blank">CV FR</a>
             {CV_EN_AVAILABLE ? (
-              <a download={CV_EN_FILE} href={asset(CV_EN_FILE)}>CV EN</a>
+              <a href={asset(CV_EN_FILE)} rel="noopener" target="_blank">CV EN</a>
             ) : null}
           </p>
         </div>
+        <LanguageToggle />
       </section>
 
       <section className="home-hero">

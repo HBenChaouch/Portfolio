@@ -40,6 +40,8 @@ jobs:
         run: npm run test:i18n
       - name: Build auditable site
         run: npm run build
+      - name: Beta study asset check
+        run: npm run test:beta-asset
       - name: Real Estate integration checks
         run: npm run test:real-estate
       - name: Browser navigation and responsive checks

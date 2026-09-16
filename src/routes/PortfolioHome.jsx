@@ -5,7 +5,6 @@ import { useLanguage } from "../context/LanguageContext.jsx";
 import { portfolioCases } from "../data/portfolioCases.js";
 
 const CV_EN_FILE = "Hamza_Ben_Chaouch_CV_EN.pdf";
-const CV_EN_AVAILABLE = false;
 
 const asset = (file) => `${import.meta.env.BASE_URL.replace(/\/$/, "")}/${file}`;
 
@@ -36,9 +35,7 @@ export default function PortfolioHome() {
               <a href={link.href} key={link.label} rel="noopener" target="_blank">{link.label}</a>
             ))}
             <a href={asset("Hamza_Ben_Chaouch_CV_FR.pdf")} rel="noopener" target="_blank">CV FR</a>
-            {CV_EN_AVAILABLE ? (
-              <a href={asset(CV_EN_FILE)} rel="noopener" target="_blank">CV EN</a>
-            ) : null}
+            <a href={asset(CV_EN_FILE)} rel="noopener" target="_blank">CV EN</a>
           </p>
         </div>
         <LanguageToggle />

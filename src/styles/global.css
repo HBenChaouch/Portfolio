@@ -9223,7 +9223,9 @@ a {
   font-family: var(--mono);
   font-size: 12px;
   letter-spacing: .02em;
-  text-decoration-color: var(--line-strong);
+  text-decoration: underline;
+  text-decoration-color: currentColor;
+  text-decoration-thickness: 1px;
   text-underline-offset: 4px;
 }
 

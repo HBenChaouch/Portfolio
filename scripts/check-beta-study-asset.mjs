@@ -6,7 +6,7 @@ import assert from "node:assert/strict";
 const canonicalPath = path.resolve(
   "Analyse_Beta_2026/outputs/beta_sidetrade_20260715/Sidetrade_Analyse_Beta_2Y_Weekly_2026-07-15.xlsx",
 );
-const pinnedSha256 = "E3E559087E65C43F789B2D46FC507E145804DD463CD35AD543C880AF360ED704";
+const pinnedSha256 = "C61AFD0AA743E322609958C14C1083FA6DFAE4F2642A3719360406D8B533503D";
 
 const sha256 = (buffer) => createHash("sha256").update(buffer).digest("hex").toUpperCase();
 

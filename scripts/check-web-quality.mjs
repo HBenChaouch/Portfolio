@@ -85,7 +85,7 @@ assert.equal(portfolioCases[2].external, undefined);
 
 assert.equal(
   await sha256("public/Sidetrade_Valuation_2026_v2.xlsx"),
-  "6C7DF89C549C1F441783F5D4ECA16C86CFF75C35D36BF0A496E4FC7ABAF75AA3",
+  "7C341F9F1C2C8949882B36D5C86B111409A9E199C6CC8BA902B1FE40B9EE3052",
 );
 await assert.rejects(() => read("public/Modele_Carveout_Opella.xlsx"), { code: "ENOENT" });
 assert.equal(
@@ -185,7 +185,7 @@ assert.match(workflow, /github\.sha/);
 assert.match(workflow, /enablement: true/);
 assert.match(workflow, /actions\/deploy-pages@v4/);
 assert.match(workflow, /repository: HBenChaouch\/cockpit-fund-controlling/);
-assert.match(workflow, /ref: cffddcf705b8e6c60f89baa6683e4c45a77fc5c4/);
+assert.match(workflow, /ref: 7bb064239a6cfa984520044c91666fcb010e7720/);
 const styles = await text("src/styles/global.css");
 assert.match(styles, /\.analysis-view \.result-strip \.cell[\s\S]*?min-width: 0/);
 assert.match(styles, /\.case-grid-item:first-child[\s\S]*?grid-row: span 2/);
@@ -226,7 +226,7 @@ const integrationScript = await text("scripts/integrate-real-estate-case.mjs");
 assert.match(portfolioHome, /item\.static/);
 assert.match(portfolioHome, /rel="noopener"/);
 assert.match(integrationScript, /dist\/cases\/real-estate-downside/);
-assert.match(integrationScript, /cffddcf705b8e6c60f89baa6683e4c45a77fc5c4/);
+assert.match(integrationScript, /7bb064239a6cfa984520044c91666fcb010e7720/);
 assert.match(app, /path="\/cases\/opella-carve-out"/);
 assert.match(app, /path="\/cases\/opella-carve-out\/analysis"/);
 assert.doesNotMatch(integrationScript, /opella-carve-out/);

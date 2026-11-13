@@ -1,4 +1,4 @@
-import { FY25, SCENARIOS, VALUATION_CONTEXT } from "../data/sidetradeFinancials.js";
+import { FY25, MARGIN_PATH_PROGRESS, SCENARIOS, VALUATION_CONTEXT } from "../data/sidetradeFinancials.js";
 
 export { FY25, SCENARIOS, VALUATION_CONTEXT };
 
@@ -48,14 +48,14 @@ function linearMarginPath(scenario) {
 
 function frontLoadedMarginPath(scenario) {
   return YEARS.map((_, index) => {
-    const progress = Math.sqrt(index / 5);
+    const progress = MARGIN_PATH_PROGRESS.frontLoaded[index];
     return FY25.ebitdaMargin + (scenario.ebitdaMargin2030 - FY25.ebitdaMargin) * progress;
   });
 }
 
 function backLoadedMarginPath(scenario) {
   return YEARS.map((_, index) => {
-    const progress = Math.pow(index / 5, 2);
+    const progress = MARGIN_PATH_PROGRESS.backLoaded[index];
     return FY25.ebitdaMargin + (scenario.ebitdaMargin2030 - FY25.ebitdaMargin) * progress;
   });
 }

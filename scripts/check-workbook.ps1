@@ -3,7 +3,7 @@ param(
 )
 
 $ErrorActionPreference = 'Stop'
-$expectedHash = '2EE5038077E51B9D82B00A3F59C75C8D065047BCA70AD483E2F7DCD32F5C34A9'
+$expectedHash = '91BE9D5B898384B6F7843ABD48535A23F6C65CC297E3960F925B5777C403DFCB'
 $officeRelNs = 'http://schemas.openxmlformats.org/officeDocument/2006/relationships'
 $errorTokens = @('#REF!', '#DIV/0!', '#VALUE!', '#NAME?', '#N/A', '#NUM!', '#NULL!')
 $invariant = [System.Globalization.CultureInfo]::InvariantCulture
@@ -136,6 +136,23 @@ try {
     Assert-Close ([double]$actual) ([double]$sentinel[2]) ([double]$sentinel[3]) "$($sentinel[0])!$($sentinel[1])"
   }
 
+  $marginSheet = Get-Sheet 'Margin_path'
+  $startMargin = [double](Get-CellValue $marginSheet $sharedStrings 'C5')
+  $endMargin = [double](Get-CellValue $marginSheet $sharedStrings 'C6')
+  $timingWeights = @{
+    C = @(0.30, 0.52, 0.72, 0.88, 1.0)
+    D = @(0.10, 0.26, 0.48, 0.73, 1.0)
+  }
+  foreach ($column in @('C', 'D')) {
+    foreach ($index in 0..4) {
+      $reference = "$column$($index + 9)"
+      $expectedMargin = $startMargin + ($endMargin - $startMargin) * $timingWeights[$column][$index]
+      Assert-Close ([double](Get-CellValue $marginSheet $sharedStrings $reference)) $expectedMargin 1e-12 "Margin_path!$reference timing"
+    }
+  }
+  Assert-Close ([double](Get-CellValue $marginSheet $sharedStrings 'C37') * 100) 0.8059182841746254 1e-10 'Front-loaded EV change (%)'
+  Assert-Close ([double](Get-CellValue $marginSheet $sharedStrings 'D37') * 100) -0.824103543679891 1e-10 'Back-loaded EV change (%)'
+
   $formulaErrors = @()
   foreach ($entry in $archive.Entries | Where-Object { $_.FullName -match '^xl/worksheets/[^/]+\.xml$' }) {
     $sheet = Read-ZipXml $archive $entry.FullName
@@ -149,6 +166,7 @@ try {
   Write-Host "Workbook SHA-256: $actualHash"
   Write-Host 'Workbook checks: 14/14 PASS; global PASS'
   Write-Host "Workbook sentinels: $($sentinels.Count)/$($sentinels.Count) OK"
+  Write-Host 'Margin timing paths: 10/10 weights and both EV percentage changes OK'
   Write-Host 'Cached Excel formula errors: 0'
 }
 finally {

@@ -135,6 +135,13 @@ export const NET_DEBT = Object.freeze({
   source: SOURCES.statutoryReport,
 });
 
+// Timing paths retained in the canonical workbook's Margin_path sheet.
+// The central linear trajectory remains unchanged.
+export const MARGIN_PATH_PROGRESS = Object.freeze({
+  frontLoaded: Object.freeze([0, 0.30, 0.52, 0.72, 0.88, 1]),
+  backLoaded: Object.freeze([0, 0.10, 0.26, 0.48, 0.73, 1]),
+});
+
 export const SCENARIOS = Object.freeze({
   bear: Object.freeze({ growth: [0.12, 0.10, 0.08, 0.07, 0.06], ebitdaMargin2030: 0.26, taxRate: 0.25, daPct: 0.020, capexPct: 0.030, wcPct: 0.10, wacc: 0.105, g: 0.020 }),
   base: Object.freeze({ growth: [0.17, 0.15, 0.13, 0.11, 0.09], ebitdaMargin2030: 0.32, taxRate: 0.22, daPct: 0.020, capexPct: 0.027, wcPct: 0.07, wacc: 0.095, g: 0.025 }),

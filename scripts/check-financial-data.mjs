@@ -6,6 +6,7 @@ import {
   DISPLAY_VALUES,
   FY25,
   LBO_REFERENCE,
+  MARGIN_PATH_PROGRESS,
   NET_DEBT,
   QOE,
   SCENARIOS,
@@ -117,12 +118,23 @@ close(waccExitSensitivity[0][0], 382.937381638919, 1e-9);
 close(waccExitSensitivity[4][4], 440.001666088685, 1e-9);
 
 const marginPath = marginPathSensitivity("base");
+assert.deepEqual(MARGIN_PATH_PROGRESS.frontLoaded, [0, 0.30, 0.52, 0.72, 0.88, 1]);
+assert.deepEqual(MARGIN_PATH_PROGRESS.backLoaded, [0, 0.10, 0.26, 0.48, 0.73, 1]);
+for (const progress of Object.values(MARGIN_PATH_PROGRESS)) {
+  assert.equal(progress.length, 6);
+  assert.equal(progress[0], 0);
+  assert.equal(progress[5], 1);
+  assert.ok(progress.every((weight, index) => weight >= 0 && weight <= 1 && (index === 0 || weight >= progress[index - 1])));
+  for (const scenario of Object.values(SCENARIOS)) {
+    close(FY25.ebitdaMargin + (scenario.ebitdaMargin2030 - FY25.ebitdaMargin) * progress[5], scenario.ebitdaMargin2030);
+  }
+}
 close(marginPath.linear, sentinels.base.ev);
-close(marginPath.frontLoaded, 305.408403155064, 1e-9);
-close(marginPath.backLoaded, 296.493180822050, 1e-9);
+close(marginPath.frontLoaded, 303.549509750776, 1e-9);
+close(marginPath.backLoaded, 298.644922612227, 1e-9);
 assert.ok(Math.abs(marginPath.linear - workbookSensitivityReference.marginPath.linear) <= 0.15);
-assert.ok(Math.abs(marginPath.frontLoaded - workbookSensitivityReference.marginPath.frontLoaded) <= 2.5);
-assert.ok(Math.abs(marginPath.backLoaded - workbookSensitivityReference.marginPath.backLoaded) <= 2.5);
+assert.ok(Math.abs(marginPath.frontLoaded - workbookSensitivityReference.marginPath.frontLoaded) <= 0.15);
+assert.ok(Math.abs(marginPath.backLoaded - workbookSensitivityReference.marginPath.backLoaded) <= 0.15);
 
 for (const scenario of Object.keys(sentinels)) {
   assert.ok(crossCheckFcf(scenario).every((year) => year.ok), `${scenario} FCF cross-check failed`);

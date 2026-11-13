@@ -3,7 +3,7 @@ param(
 )
 
 $ErrorActionPreference = 'Stop'
-$expectedHash = '6C7DF89C549C1F441783F5D4ECA16C86CFF75C35D36BF0A496E4FC7ABAF75AA3'
+$expectedHash = 'EF0A8F7459CDE60B49563813B3DC9543CA744AB135A88B6FC7D3BF958A357098'
 $officeRelNs = 'http://schemas.openxmlformats.org/officeDocument/2006/relationships'
 $errorTokens = @('#REF!', '#DIV/0!', '#VALUE!', '#NAME?', '#N/A', '#NUM!', '#NULL!')
 $invariant = [System.Globalization.CultureInfo]::InvariantCulture
@@ -119,6 +119,12 @@ try {
     @('Equity_bridge', 'C18', 1536790.0, 1e-6),
     @('Equity_bridge', 'C20', 186.45392419333777, 1e-9),
     @('Inputs', 'C48', 1.15, 1e-9),
+    @('FY25_base', 'B32', -169.0, 1e-9),
+    @('FY25_base', 'B33', 672.0, 1e-9),
+    @('FY25_base', 'B17', 10267.0, 1e-9),
+    @('FY25_base', 'B23', 13384.0, 1e-9),
+    @('Inputs', 'C9', 0.672, 1e-9),
+    @('Inputs', 'C30', 0.02, 1e-9),
     @('FY25_base', 'B46', 30.981, 1e-9),
     @('FY25_base', 'B49', 14.654, 1e-9),
     @('FY25_base', 'B55', 2.947, 1e-9),

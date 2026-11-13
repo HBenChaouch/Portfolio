@@ -319,7 +319,7 @@ capital.getRange("B13:B21").format.numberFormat = fmt.beta;
 capital.getRange("B15:B17").format.numberFormat = fmt.pct;
 capital.getRange("B22:B23").format.numberFormat = fmt.pct2;
 capital.getRange("A25:M25").merge();
-capital.getRange("A25").formulas = [["=\"Conclusion : bêta statistique central = \"&TEXT(B18,\"0.00x\")&\" ; le bêta 1,15x du modèle est supérieur de \"&TEXT(B21,\"0.00x\")&\" et ajoute environ \"&TEXT(B23,\"0.00%\")&\" au coût des fonds propres.\""]];
+capital.getRange("A25").formulas = [["=\"Conclusion : bêta statistique central = \"&ROUND(B18,2)&\"x\"&\" ; le bêta 1,15x du modèle est supérieur de \"&ROUND(B21,2)&\"x\"&\" et ajoute environ \"&ROUND(B23*100,2)&\"%\"&\" au coût des fonds propres.\""]];
 capital.getRange("A25:M25").format = { fill: C.paleGreen, font: { bold: true, color: C.dark }, wrapText: true, borders: { preset: "outside", style: "thin", color: C.border } };
 capital.getRange("A25:M25").format.rowHeight = 42;
 capital.getRange("A1:A25").format.columnWidth = 34;
@@ -453,7 +453,7 @@ chart.setPosition("F10", "L23");
 
 section(summary, summary.getRange("A25:L25"), "CONCLUSION POUR LE WACC");
 summary.getRange("A27:L29").merge();
-summary.getRange("A27").formulas = [["=\"La régression conduit à un bêta relevered central de \"&TEXT('Structure Capital'!B18,\"0.00x\")&\". Le bêta 1,15x déjà retenu dans le modèle est supérieur de \"&TEXT('Structure Capital'!B21,\"0.00x\")&\" et augmente le coût des fonds propres d’environ \"&TEXT('Structure Capital'!B23,\"0.00%\")&\" : son maintien est donc défendable comme choix prudent.\""]];
+summary.getRange("A27").formulas = [["=\"La régression conduit à un bêta relevered central de \"&ROUND('Structure Capital'!B18,2)&\"x\"&\". Le bêta 1,15x déjà retenu dans le modèle est supérieur de \"&ROUND('Structure Capital'!B21,2)&\"x\"&\" et augmente le coût des fonds propres d’environ \"&ROUND('Structure Capital'!B23*100,2)&\"%\"&\" : son maintien est donc défendable comme choix prudent.\""]];
 summary.getRange("A27:L29").format = { fill: C.paleGreen, font: { bold: true, color: C.dark }, wrapText: true, borders: { preset: "outside", style: "medium", color: "#70AD47" }, verticalAlignment: "center" };
 summary.getRange("A31:L34").merge();
 summary.getRange("A31").values = [["Méthode : clôtures quotidiennes ajustées Yahoo → dernière séance de chaque semaine → rendements logarithmiques → OLS → désendettement Hamada sur dette brute / capitalisation → médiane des peers → réendettement avec D/(D+E)=20% et IS 25,83%. Contrôles croisés Euronext et Nasdaq : 46/46 réussis."]];

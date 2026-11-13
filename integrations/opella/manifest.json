@@ -12,11 +12,11 @@
   "sourceFiles": [
     {
       "path": "Transaction Services/build_carveout.py",
-      "sha256": "7BF67B75A18993AD061F2DC39C2D6A6262E6D5C0DCFD7B7051B1FEEA25D759BD"
+      "sha256": "05B233A439A204143F810AC364F95B70520763BBDF4B3044E4AEA3F6CA3421EF"
     },
     {
       "path": "Transaction Services/Modele_Carveout_Opella.xlsx",
-      "sha256": "8A80C1F623141F1BADF0768B66BB7BA3874A4B63DA7ED6CD97651E145E81ED65"
+      "sha256": "7D8C7E8CDF8CCD5270B8C00607C466745FA21220D1E7E4BD400CA869C7E7215F"
     },
     {
       "path": "Transaction Services/opella_case_snapshot.json",
@@ -24,7 +24,7 @@
     },
     {
       "path": "Transaction Services/opella_integration_manifest.json",
-      "sha256": "925BE33D8CCE4A8AD329CBAAADC18D2EF51F7F9376A5C0819033ECC0B13FF1CA"
+      "sha256": "B5D2B690538B7112DB3D36E9D2F7B3A6F5D30BF008B32A410FFF3935A7A0488A"
     }
   ],
   "snapshotIdentity": {
@@ -41,13 +41,13 @@
     },
     {
       "path": "source-manifest.json",
-      "sha256": "925BE33D8CCE4A8AD329CBAAADC18D2EF51F7F9376A5C0819033ECC0B13FF1CA",
+      "sha256": "B5D2B690538B7112DB3D36E9D2F7B3A6F5D30BF008B32A410FFF3935A7A0488A",
       "mime": "application/json",
       "role": "Byte-identical O1 chain, relation, tolerance, lineage and vector contract."
     },
     {
       "path": "engine-contract.json",
-      "sha256": "7B05C39A20CAF8C5FBCCBA84F0F351838B2C552D84F763053D3B512919681AFC",
+      "sha256": "0038577AB3B14F40DF6F099DDE00EA4D77847115D061DB75768328A55B9072D0",
       "mime": "application/json",
       "role": "Generated extraction of the O1 scenario lever constants required by the JavaScript engine."
     },
@@ -86,9 +86,9 @@
       "href": "downloads/opella/Opella-Carveout-Model.xlsx",
       "filename": "Opella-Carveout-Model.xlsx",
       "mime": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-      "sha256": "60C0B3157FAA05C6C0E5AE76FF05836846517C998ABFAC1E0DF70A4C55D88895",
+      "sha256": "7633F9BBB2A745D2659EA0A5A3EC375FC92CE0419A8BEC26AF03811D0080B7BF",
       "sourcePath": "Transaction Services/Modele_Carveout_Opella.xlsx",
-      "sourceSha256": "8A80C1F623141F1BADF0768B66BB7BA3874A4B63DA7ED6CD97651E145E81ED65",
+      "sourceSha256": "7D8C7E8CDF8CCD5270B8C00607C466745FA21220D1E7E4BD400CA869C7E7215F",
       "role": "Microsoft Excel-recalculated public copy of the complete Opella model."
     }
   ],

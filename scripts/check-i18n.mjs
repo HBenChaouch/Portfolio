@@ -89,6 +89,7 @@ for (const [language, dictionary] of Object.entries(opellaCopyDictionaries)) {
 }
 
 const frenchDomProbes = [
+  "Rollover ownership is determined on entry equity value before transaction/financing fees and related settlements. The sponsor bears those costs without additional management dilution.",
   "The per-share calculation retains the published diluted share count without a treasury-share adjustment. Treasury shares are not deducted from the denominator and no separate treasury-share value is added to equity.",
   "The retained diluted share count is not adjusted for treasury shares; no separate treasury-share value is added to the equity bridge.",
   "85,300 shares",

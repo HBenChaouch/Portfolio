@@ -85,7 +85,7 @@ assert.equal(portfolioCases[2].external, undefined);
 
 assert.equal(
   await sha256("public/Sidetrade_Valuation_2026_v2.xlsx"),
-  "91BE9D5B898384B6F7843ABD48535A23F6C65CC297E3960F925B5777C403DFCB",
+  "11A54DD96D71BF3E394E149877E0F93F3B538D755BA1ABBAC7A18389B2065E29",
 );
 await assert.rejects(() => read("public/Modele_Carveout_Opella.xlsx"), { code: "ENOENT" });
 assert.equal(

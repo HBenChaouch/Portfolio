@@ -18,6 +18,8 @@ Conventions (per Build Spec v3, tax fixed 15-Jul-2026):
   fixed per portfolio audit note of 15-Jul-2026, section 4.6.
 - Earn-outs + ezyCollect deferred settled at close (Uses)
 - Rollover: Novasque 35% stake x 35% rolled = 12.25% of equity purchase
+- Ownership uses entry equity value before fees and related settlements.
+  The sponsor bears those costs without additional management dilution.
 """
 import os
 from openpyxl import load_workbook

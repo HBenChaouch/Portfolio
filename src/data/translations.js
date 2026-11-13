@@ -1,4 +1,5 @@
 const fr = {
+  "Rollover ownership is determined on entry equity value before transaction/financing fees and related settlements. The sponsor bears those costs without additional management dilution.": "La participation de rollover est déterminée sur la valeur des capitaux propres à l’entrée, avant frais de transaction, frais de financement et règlements assimilés. Le sponsor supporte ces coûts sans dilution additionnelle du management.",
   "Skip to analysis": "Aller à l’analyse",
   "Sidetrade · Valuation": "Sidetrade · Valorisation",
   "Investment case": "Cas d’investissement",

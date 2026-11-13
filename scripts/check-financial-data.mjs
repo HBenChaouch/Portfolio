@@ -48,7 +48,7 @@ close(
 );
 assert.equal(Math.round(VALUATION_CONTEXT.controlEquityUpside * 100), 48);
 assert.equal(VALUATION_CONTEXT.controlEv, 411);
-assert.equal(DISPLAY_VALUES.grossFinancialDebt, 30.8);
+assert.equal(DISPLAY_VALUES.grossFinancialDebt, Number(NET_DEBT.grossFinancialDebt.toFixed(1)));
 
 const sentinels = {
   bear: { ev: 157.888142308419, equity: 143.234142308419, share: 93.203458057652 },

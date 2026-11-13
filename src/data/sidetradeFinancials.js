@@ -91,7 +91,7 @@ export const FY25 = Object.freeze({
 // Published page conventions are stored separately from exact workbook values.
 export const DISPLAY_VALUES = Object.freeze({
   subscriptionRevenue: 53.5,
-  grossFinancialDebt: 30.8,
+  grossFinancialDebt: 31.0,
   cashAndMarketableSecurities: 16.3,
 });
 

@@ -89,6 +89,9 @@ for (const [language, dictionary] of Object.entries(opellaCopyDictionaries)) {
 }
 
 const frenchDomProbes = [
+  "The per-share calculation retains the published diluted share count without a treasury-share adjustment. Treasury shares are not deducted from the denominator and no separate treasury-share value is added to equity.",
+  "The retained diluted share count is not adjusted for treasury shares; no separate treasury-share value is added to the equity bridge.",
+  "85,300 shares",
   "O2C/P2P · French SaaS · pre-buyout reference",
   "French listed O2C/P2P SaaS, exact same sector and geography. Pre-Bridgepoint take-private trading multiple. Best read-through to Sidetrade's standalone listed multiple.",
   "AP/AR automation + payments",

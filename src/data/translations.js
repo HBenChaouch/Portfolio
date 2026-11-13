@@ -284,7 +284,7 @@ const fr = {
   "Retained multiples for Sidetrade": "Multiples retenus pour Sidetrade",
   "EV / non-GAAP operating income — proxy": "VE / résultat opérationnel non-GAAP — proxy",
   "EV / non-GAAP operating income — proxy tiers are marked *.": "Les multiples VE / résultat opérationnel non-GAAP — proxy sont marqués *.",
-  "Implied EV = equal-weighted average of the EV/Sales method and the proxy method, applied to 2026E estimates.": "VE implicite = moyenne équipondérée de la méthode EV/CA et de la méthode proxy, appliquées aux estimations 2026E.",
+  "Implied EV = equal-weighted average of EV/Sales applied to 2026E revenue and EV/non-GAAP operating income applied to 2026E EBIT. The earnings multiple remains an imperfect proxy.": "VE implicite = moyenne équipondérée de VE/CA appliqué au chiffre d’affaires 2026E et de VE/résultat opérationnel non-GAAP appliqué à l’EBIT 2026E. Le multiple de résultat reste un proxy imparfait.",
   "Tier": "Niveau",
   "Low — min of refreshed peers": "Bas — minimum des comparables actualisés",
   "Base — median of refreshed peers": "Base — médiane des comparables actualisés",

@@ -3,7 +3,7 @@ param(
 )
 
 $ErrorActionPreference = 'Stop'
-$expectedHash = 'EF0A8F7459CDE60B49563813B3DC9543CA744AB135A88B6FC7D3BF958A357098'
+$expectedHash = '7C341F9F1C2C8949882B36D5C86B111409A9E199C6CC8BA902B1FE40B9EE3052'
 $officeRelNs = 'http://schemas.openxmlformats.org/officeDocument/2006/relationships'
 $errorTokens = @('#REF!', '#DIV/0!', '#VALUE!', '#NAME?', '#N/A', '#NUM!', '#NULL!')
 $invariant = [System.Globalization.CultureInfo]::InvariantCulture
@@ -104,9 +104,10 @@ try {
     @('Margin_path', 'B35', 301.1945261610796, 1e-9),
     @('Margin_path', 'C35', 303.62190791834485, 1e-9),
     @('Margin_path', 'D35', 298.71237139761627, 1e-9),
-    @('Football_field', 'B6', 171.0, 1e-9),
-    @('Football_field', 'C6', 202.0, 1e-9),
-    @('Football_field', 'D6', 264.0, 1e-9),
+    @('Trading_comps', 'F18', 15.68911968, 1e-9),
+    @('Football_field', 'B6', 164.0, 1e-9),
+    @('Football_field', 'C6', 193.0, 1e-9),
+    @('Football_field', 'D6', 251.0, 1e-9),
     @('Football_field', 'B7', 289.0, 1e-9),
     @('Football_field', 'C7', 411.0, 1e-9),
     @('Football_field', 'D7', 547.0, 1e-9),

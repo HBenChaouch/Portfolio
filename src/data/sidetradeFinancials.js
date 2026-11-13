@@ -162,7 +162,7 @@ export const VALUATION_CONTEXT = Object.freeze({
   controlPremium: 0.20,
   liquidityDiscount: -0.05,
   interestCoverage: 7.1,
-  tradingRange: Object.freeze({ low: 171, base: 202, high: 264 }),
+  tradingRange: Object.freeze({ low: 164, base: 193, high: 251 }),
   transactionRange,
   lboRange: Object.freeze({ low: 222.5, base: 241.9, high: 283.5 }),
   lboIrr: Object.freeze({ low: 0.25, base: 0.225, high: 0.18 }),

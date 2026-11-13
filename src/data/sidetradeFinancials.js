@@ -135,7 +135,7 @@ export const NET_DEBT = Object.freeze({
   source: SOURCES.statutoryReport,
 });
 
-// Timing paths retained in the canonical workbook's Margin_path sheet.
+// Timing paths retained in the Margin_path worksheet.
 // The central linear trajectory remains unchanged.
 export const MARGIN_PATH_PROGRESS = Object.freeze({
   frontLoaded: Object.freeze([0, 0.30, 0.52, 0.72, 0.88, 1]),

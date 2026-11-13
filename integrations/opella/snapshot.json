@@ -671,7 +671,7 @@
         "R-STEADY"
       ],
       "outputs": [
-        "outputs.O-STEADY @ Calendrier!C14"
+        "outputs.O-STEADY @ Calendrier!C18"
       ]
     },
     {
@@ -1048,16 +1048,16 @@
           "monthly": "'M4 TSA'!C6",
           "startMonth": "'M4 TSA'!D6",
           "duration": "'M4 TSA'!E6",
-          "calendarDuration": "Calendrier!C19",
+          "calendarDuration": "Calendrier!C23",
           "exitMonth": "'M4 TSA'!F6",
           "extensionAvailable": "'M4 TSA'!G6",
           "doubleRunMonths": "'M4 TSA'!H6",
           "monthsByPeriod": {
-            "P1": "Calendrier!D19",
-            "P2": "Calendrier!E19",
-            "P3": "Calendrier!F19",
-            "P4": "Calendrier!G19",
-            "P5": "Calendrier!H19"
+            "P1": "Calendrier!D23",
+            "P2": "Calendrier!E23",
+            "P3": "Calendrier!F23",
+            "P4": "Calendrier!G23",
+            "P5": "Calendrier!H23"
           },
           "costByPeriod": {
             "P1": "'M4 TSA'!J6",
@@ -1066,7 +1066,7 @@
             "P4": "'M4 TSA'!M6",
             "P5": "'M4 TSA'!N6"
           },
-          "exitStrategy": "'M4 TSA'!O6"
+          "exitStrategy": "'M4 TSA'!S6"
         }
       },
       {
@@ -1097,16 +1097,16 @@
           "monthly": "'M4 TSA'!C7",
           "startMonth": "'M4 TSA'!D7",
           "duration": "'M4 TSA'!E7",
-          "calendarDuration": "Calendrier!C20",
+          "calendarDuration": "Calendrier!C24",
           "exitMonth": "'M4 TSA'!F7",
           "extensionAvailable": "'M4 TSA'!G7",
           "doubleRunMonths": "'M4 TSA'!H7",
           "monthsByPeriod": {
-            "P1": "Calendrier!D20",
-            "P2": "Calendrier!E20",
-            "P3": "Calendrier!F20",
-            "P4": "Calendrier!G20",
-            "P5": "Calendrier!H20"
+            "P1": "Calendrier!D24",
+            "P2": "Calendrier!E24",
+            "P3": "Calendrier!F24",
+            "P4": "Calendrier!G24",
+            "P5": "Calendrier!H24"
           },
           "costByPeriod": {
             "P1": "'M4 TSA'!J7",
@@ -1115,7 +1115,7 @@
             "P4": "'M4 TSA'!M7",
             "P5": "'M4 TSA'!N7"
           },
-          "exitStrategy": "'M4 TSA'!O7"
+          "exitStrategy": "'M4 TSA'!S7"
         }
       },
       {
@@ -1146,16 +1146,16 @@
           "monthly": "'M4 TSA'!C8",
           "startMonth": "'M4 TSA'!D8",
           "duration": "'M4 TSA'!E8",
-          "calendarDuration": "Calendrier!C21",
+          "calendarDuration": "Calendrier!C25",
           "exitMonth": "'M4 TSA'!F8",
           "extensionAvailable": "'M4 TSA'!G8",
           "doubleRunMonths": "'M4 TSA'!H8",
           "monthsByPeriod": {
-            "P1": "Calendrier!D21",
-            "P2": "Calendrier!E21",
-            "P3": "Calendrier!F21",
-            "P4": "Calendrier!G21",
-            "P5": "Calendrier!H21"
+            "P1": "Calendrier!D25",
+            "P2": "Calendrier!E25",
+            "P3": "Calendrier!F25",
+            "P4": "Calendrier!G25",
+            "P5": "Calendrier!H25"
           },
           "costByPeriod": {
             "P1": "'M4 TSA'!J8",
@@ -1164,7 +1164,7 @@
             "P4": "'M4 TSA'!M8",
             "P5": "'M4 TSA'!N8"
           },
-          "exitStrategy": "'M4 TSA'!O8"
+          "exitStrategy": "'M4 TSA'!S8"
         }
       },
       {
@@ -1195,16 +1195,16 @@
           "monthly": "'M4 TSA'!C9",
           "startMonth": "'M4 TSA'!D9",
           "duration": "'M4 TSA'!E9",
-          "calendarDuration": "Calendrier!C22",
+          "calendarDuration": "Calendrier!C26",
           "exitMonth": "'M4 TSA'!F9",
           "extensionAvailable": "'M4 TSA'!G9",
           "doubleRunMonths": "'M4 TSA'!H9",
           "monthsByPeriod": {
-            "P1": "Calendrier!D22",
-            "P2": "Calendrier!E22",
-            "P3": "Calendrier!F22",
-            "P4": "Calendrier!G22",
-            "P5": "Calendrier!H22"
+            "P1": "Calendrier!D26",
+            "P2": "Calendrier!E26",
+            "P3": "Calendrier!F26",
+            "P4": "Calendrier!G26",
+            "P5": "Calendrier!H26"
           },
           "costByPeriod": {
             "P1": "'M4 TSA'!J9",
@@ -1213,7 +1213,7 @@
             "P4": "'M4 TSA'!M9",
             "P5": "'M4 TSA'!N9"
           },
-          "exitStrategy": "'M4 TSA'!O9"
+          "exitStrategy": "'M4 TSA'!S9"
         }
       },
       {
@@ -1244,16 +1244,16 @@
           "monthly": "'M4 TSA'!C10",
           "startMonth": "'M4 TSA'!D10",
           "duration": "'M4 TSA'!E10",
-          "calendarDuration": "Calendrier!C23",
+          "calendarDuration": "Calendrier!C27",
           "exitMonth": "'M4 TSA'!F10",
           "extensionAvailable": "'M4 TSA'!G10",
           "doubleRunMonths": "'M4 TSA'!H10",
           "monthsByPeriod": {
-            "P1": "Calendrier!D23",
-            "P2": "Calendrier!E23",
-            "P3": "Calendrier!F23",
-            "P4": "Calendrier!G23",
-            "P5": "Calendrier!H23"
+            "P1": "Calendrier!D27",
+            "P2": "Calendrier!E27",
+            "P3": "Calendrier!F27",
+            "P4": "Calendrier!G27",
+            "P5": "Calendrier!H27"
           },
           "costByPeriod": {
             "P1": "'M4 TSA'!J10",
@@ -1262,7 +1262,7 @@
             "P4": "'M4 TSA'!M10",
             "P5": "'M4 TSA'!N10"
           },
-          "exitStrategy": "'M4 TSA'!O10"
+          "exitStrategy": "'M4 TSA'!S10"
         }
       }
     ],
@@ -2598,7 +2598,7 @@
   },
   "m8": {
     "entryLeverage": 4.0,
-    "equityCheque": 10469.1864477937,
+    "equityCheque": 11591.8994285714,
     "note": "encadré secondaire illustratif ; aucun retour sponsor, ni multiple de sortie, ni taux de rendement, ni grille de sensibilité de sortie"
   },
   "outputs": {

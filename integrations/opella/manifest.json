@@ -12,42 +12,42 @@
   "sourceFiles": [
     {
       "path": "Transaction Services/build_carveout.py",
-      "sha256": "7AC6D08BD01755B3865AB2E67778B68706E91B70A869A33DF8C8A11CFBDEA412"
+      "sha256": "7BF67B75A18993AD061F2DC39C2D6A6262E6D5C0DCFD7B7051B1FEEA25D759BD"
     },
     {
       "path": "Transaction Services/Modele_Carveout_Opella.xlsx",
-      "sha256": "CA4626ACB57BADC2AD25ABEF5667BCDF84BC088B344C7FFB7EB70288BCC74C57"
+      "sha256": "8A80C1F623141F1BADF0768B66BB7BA3874A4B63DA7ED6CD97651E145E81ED65"
     },
     {
       "path": "Transaction Services/opella_case_snapshot.json",
-      "sha256": "31FFAE580B6541DE9177D9BCE0BA918758FB7FB2D8DB294388913DD5895817FD"
+      "sha256": "7B047785FCE3D8A4A22E9959364509659BFC8DD515666D520189AC6677E5238E"
     },
     {
       "path": "Transaction Services/opella_integration_manifest.json",
-      "sha256": "256B0F653867267435ED5F2D5A89E8A369BE3AA34712AE139E9E7B74D92F6B26"
+      "sha256": "925BE33D8CCE4A8AD329CBAAADC18D2EF51F7F9376A5C0819033ECC0B13FF1CA"
     }
   ],
   "snapshotIdentity": {
     "source": "Transaction Services/opella_case_snapshot.json",
     "bundle": "snapshot.json",
-    "sha256": "31FFAE580B6541DE9177D9BCE0BA918758FB7FB2D8DB294388913DD5895817FD"
+    "sha256": "7B047785FCE3D8A4A22E9959364509659BFC8DD515666D520189AC6677E5238E"
   },
   "bundleFiles": [
     {
       "path": "snapshot.json",
-      "sha256": "31FFAE580B6541DE9177D9BCE0BA918758FB7FB2D8DB294388913DD5895817FD",
+      "sha256": "7B047785FCE3D8A4A22E9959364509659BFC8DD515666D520189AC6677E5238E",
       "mime": "application/json",
       "role": "Byte-identical O1 semantic snapshot and sole carrier of financial values."
     },
     {
       "path": "source-manifest.json",
-      "sha256": "256B0F653867267435ED5F2D5A89E8A369BE3AA34712AE139E9E7B74D92F6B26",
+      "sha256": "925BE33D8CCE4A8AD329CBAAADC18D2EF51F7F9376A5C0819033ECC0B13FF1CA",
       "mime": "application/json",
       "role": "Byte-identical O1 chain, relation, tolerance, lineage and vector contract."
     },
     {
       "path": "engine-contract.json",
-      "sha256": "7A8357108950CED6FA3211349E346CA04B7A1587C4645F9DB022F147877C2250",
+      "sha256": "7B05C39A20CAF8C5FBCCBA84F0F351838B2C552D84F763053D3B512919681AFC",
       "mime": "application/json",
       "role": "Generated extraction of the O1 scenario lever constants required by the JavaScript engine."
     },
@@ -86,9 +86,9 @@
       "href": "downloads/opella/Opella-Carveout-Model.xlsx",
       "filename": "Opella-Carveout-Model.xlsx",
       "mime": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-      "sha256": "FDC61EA436C0607405DE3860806E15C7AFDC26D91277A4C28D1704A91865B6B6",
+      "sha256": "60C0B3157FAA05C6C0E5AE76FF05836846517C998ABFAC1E0DF70A4C55D88895",
       "sourcePath": "Transaction Services/Modele_Carveout_Opella.xlsx",
-      "sourceSha256": "CA4626ACB57BADC2AD25ABEF5667BCDF84BC088B344C7FFB7EB70288BCC74C57",
+      "sourceSha256": "8A80C1F623141F1BADF0768B66BB7BA3874A4B63DA7ED6CD97651E145E81ED65",
       "role": "Microsoft Excel-recalculated public copy of the complete Opella model."
     }
   ],

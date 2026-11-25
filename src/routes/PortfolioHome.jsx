@@ -4,8 +4,6 @@ import Localized from "../components/Localized.jsx";
 import { useLanguage } from "../context/LanguageContext.jsx";
 import { portfolioCases } from "../data/portfolioCases.js";
 
-const CV_EN_FILE = "Hamza_Ben_Chaouch_CV_EN.pdf";
-
 const asset = (file) => `${import.meta.env.BASE_URL.replace(/\/$/, "")}/${file}`;
 
 const CONTACT_LINKS = [
@@ -35,7 +33,6 @@ export default function PortfolioHome() {
               <a href={link.href} key={link.label} rel="noopener" target="_blank">{link.label}</a>
             ))}
             <a href={asset("Hamza_Ben_Chaouch_CV_FR.pdf")} rel="noopener" target="_blank">CV FR</a>
-            <a href={asset(CV_EN_FILE)} rel="noopener" target="_blank">CV EN</a>
           </p>
         </div>
         <LanguageToggle />
